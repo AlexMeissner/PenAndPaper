@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DungeonsAndDragons5e\**" />
+    <EmbeddedResource Remove="DungeonsAndDragons5e\**" />
+    <None Remove="DungeonsAndDragons5e\**" />
+    <Page Remove="DungeonsAndDragons5e\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resource\splash1.jpg" />
+    <None Remove="Resource\splash2.jpg" />
+    <None Remove="Resource\splash3.jpg" />
+    <None Remove="Resource\splash4.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Flurl.Http" Version="3.2.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
+    <ProjectReference Include="..\DungeonsAndDragons5e.View\DungeonsAndDragons5e.View.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resource\splash1.jpg" />
+    <Resource Include="Resource\splash2.jpg" />
+    <Resource Include="Resource\splash3.jpg" />
+    <Resource Include="Resource\splash4.jpg" />
+  </ItemGroup>
+
+</Project>

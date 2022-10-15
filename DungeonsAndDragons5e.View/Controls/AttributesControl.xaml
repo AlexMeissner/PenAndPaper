@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="DungeonsAndDragons5e.View.Controls.AttributesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="clr-namespace:DungeonsAndDragons5e.View.Controls"
+             xmlns:dataTransfer="clr-namespace:DungeonsAndDragons5e.DataTransfer;assembly=DungeonsAndDragons5e.DataTransfer"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=dataTransfer:AttributesViewModel}"
+             d:DesignHeight="700" d:DesignWidth="400">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <!-- Skills -->
+                <TextBlock Grid.ColumnSpan="2" Text="Fertigkeiten" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <controls:NameValueControl PropertyName="Akrobatik" PropertyValue="{Binding Acrobatics}"/>
+                <controls:NameValueControl PropertyName="Arkane Kunde" PropertyValue="{Binding Arcana}"/>
+                <controls:NameValueControl PropertyName="Athletik" PropertyValue="{Binding Athletics}"/>
+                <controls:NameValueControl PropertyName="Auftreten" PropertyValue="{Binding Performance}"/>
+                <controls:NameValueControl PropertyName="Einschüchtern" PropertyValue="{Binding Intimidation}"/>
+                <controls:NameValueControl PropertyName="Fingerfertigkeit" PropertyValue="{Binding SlightOfHand}"/>
+                <controls:NameValueControl PropertyName="Geschichte" PropertyValue="{Binding History}"/>
+                <controls:NameValueControl PropertyName="Heilkunde" PropertyValue="{Binding Medicine}"/>
+                <controls:NameValueControl PropertyName="Heimlich" PropertyValue="{Binding Stealth}"/>
+                <controls:NameValueControl PropertyName="Mit Tieren umgehen" PropertyValue="{Binding AnimalHandling}"/>
+                <controls:NameValueControl PropertyName="Motiv erkennen" PropertyValue="{Binding Insight}"/>
+                <controls:NameValueControl PropertyName="Nachforschungen" PropertyValue="{Binding Investigation}"/>
+                <controls:NameValueControl PropertyName="Naturkunde" PropertyValue="{Binding Nature}"/>
+                <controls:NameValueControl PropertyName="Religion" PropertyValue="{Binding Religion}"/>
+                <controls:NameValueControl PropertyName="Täuschen" PropertyValue="{Binding Deception}"/>
+                <controls:NameValueControl PropertyName="Überlebenskunst" PropertyValue="{Binding Survival}"/>
+                <controls:NameValueControl PropertyName="Überzeugen" PropertyValue="{Binding Persuasion}"/>
+                <controls:NameValueControl PropertyName="Wahrnehmung" PropertyValue="{Binding Perception}"/>
+
+                <!-- Attributes -->
+                <TextBlock Grid.ColumnSpan="2" Text="Attribute" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthModificator}"/>
+                <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexterityModificator}"/>
+                <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionModificator}"/>
+                <controls:NameValueControl PropertyName="Intelligenz" PropertyValue="{Binding IntelligenceModificator}"/>
+                <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomModificator}"/>
+                <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaModificator}"/>
+
+                <!-- Passive Perception -->
+                <controls:NameValueControl PropertyName="Passive Wahrnehmung" PropertyValue="{Binding PassivePerception}"/>
+
+                <!-- Saving Throws -->
+                <TextBlock Grid.ColumnSpan="2" Text="Rettungswürfe" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthSavingThrow}"/>
+                <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexteritySavingThrow}"/>
+                <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionSavingThrow}"/>
+                <controls:NameValueControl PropertyName="Intelligenz" PropertyValue="{Binding IntelligenceSavingThrow}"/>
+                <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomSavingThrow}"/>
+                <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaSavingThrow}"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
