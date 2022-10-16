@@ -1,19 +1,19 @@
 ﻿using Client.Helper;
-using Client.Services;
 using Client.Services.API;
-using DataTransfer.Login;
+using Client.Services;
 using System.Windows;
 using System.Windows.Controls;
+using DataTransfer.Login;
 
 namespace Client.View
 {
-    public partial class LoginPage : Page
+    public partial class RegisterPage : Page
     {
         private readonly IPageNavigator _pageNavigator;
         private readonly ISessionData _sessionData;
         private readonly IAuthenticationApi _authenticationApi;
 
-        public LoginPage(IPageNavigator pageNavigator, ISessionData sessionData, IAuthenticationApi loginApi)
+        public RegisterPage(IPageNavigator pageNavigator, ISessionData sessionData, IAuthenticationApi loginApi)
         {
             InitializeComponent();
             _pageNavigator = pageNavigator;
@@ -22,16 +22,21 @@ namespace Client.View
             BackgroundImage.ImageSource = RandomBackgroundImage.GetImageFromResource();
         }
 
-        private async void OnLogin(object sender, RoutedEventArgs e)
+        private void OnAbort(object sender, RoutedEventArgs e)
         {
-            if (EmailBox.Text.Length > 0 && PasswordBox.Password.Length > 0)
-            {
-                UserCredentialsDto userCredentials = new(
-                    Email: EmailBox.Text, 
-                    Username: string.Empty, 
-                    Password: Password.Encrypt(PasswordBox.Password));
+            _pageNavigator.OpenPage<LoginPage>();
+        }
 
-                var response = await _authenticationApi.LoginAsync(userCredentials);
+        private async void OnRegister(object sender, RoutedEventArgs e)
+        {
+            if (EmailBox.Text.Length > 0 &&
+                Email.IsValid(EmailBox.Text) &&
+                UsernameBox.Text.Length > 0 &&
+                PasswordBox.Password.Length > 0 &&
+                PasswordBox.Password == PasswordBoxRepeat.Password)
+            {
+                UserCredentialsDto userCredentials = new(Email: EmailBox.Text, Username: UsernameBox.Text, Password: Password.Encrypt(PasswordBox.Password));
+                var response = await _authenticationApi.RegisterAsync(userCredentials);
 
                 if (response.Error is null)
                 {
@@ -43,11 +48,6 @@ namespace Client.View
                     MessageBox.Show(response.Error.Message, "Authentifizierungsfehler", MessageBoxButton.OK);
                 }
             }
-        }
-
-        private void OnRegister(object sender, RoutedEventArgs e)
-        {
-            _pageNavigator.OpenPage<RegisterPage>();
         }
     }
 }

@@ -1,19 +1,24 @@
-﻿<Page x:Class="Client.View.LoginPage"
+﻿<Page x:Class="Client.View.RegisterPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client.View"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="LoginPage">
+      Title="RegisterPage">
     <Grid>
         <Grid.Background>
             <ImageBrush x:Name="BackgroundImage" d:ImageSource="/Client;component/Resource/splash1.jpg" Stretch="UniformToFill"/>
         </Grid.Background>
 
-        <Border Width="250" Height="145" Background="#AA000000" CornerRadius="4" Padding="4 0 4 5">
+        <Border Width="250" Height="245" Background="#AA000000" CornerRadius="4" Padding="4 0 4 5">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="25"/>
                     <RowDefinition Height="25"/>
@@ -23,15 +28,19 @@
 
                 <TextBlock Grid.Row="0" FontWeight="Bold" FontSize="20" Foreground="White" Text="Email"/>
                 <TextBox Grid.Row="1" FontWeight="Bold" FontSize="15" Name="EmailBox"/>
-                <TextBlock Grid.Row="2" FontWeight="Bold" FontSize="20" Foreground="White" Text="Passwort"/>
-                <PasswordBox Grid.Row="3" Name="PasswordBox" FontSize="15"/>
-                <Grid Grid.Row="4">
+                <TextBlock Grid.Row="2" FontWeight="Bold" FontSize="20" Foreground="White" Text="Username"/>
+                <TextBox Grid.Row="3" FontWeight="Bold" FontSize="15" Name="UsernameBox"/>
+                <TextBlock Grid.Row="4" FontWeight="Bold" FontSize="20" Foreground="White" Text="Passwort"/>
+                <PasswordBox Grid.Row="5" Name="PasswordBox" FontSize="15"/>
+                <TextBlock Grid.Row="6" FontWeight="Bold" FontSize="20" Foreground="White" Text="Passwort (wiederholen)"/>
+                <PasswordBox Grid.Row="7" Name="PasswordBoxRepeat" FontSize="15"/>
+                <Grid Grid.Row="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Margin="0 5 1 0" Content="Einloggen" Click="OnLogin"/>
+                    <Button Grid.Column="0" Margin="0 5 1 0" Content="Abbrechen" Click="OnAbort"/>
                     <Button Grid.Column="1" Margin="1 5 0 0" Content="Registrieren" Click="OnRegister"/>
                 </Grid>
             </Grid>

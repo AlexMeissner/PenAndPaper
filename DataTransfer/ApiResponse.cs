@@ -4,6 +4,7 @@
     {
         Exception,
         Initialization,
+        InvalidLogin,
         NoContent,
         Unauthorized,
     }

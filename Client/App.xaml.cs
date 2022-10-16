@@ -23,13 +23,14 @@ namespace Client
         {
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
-            services.AddTransient<ILoginApi, LoginApi>();
+            services.AddTransient<IAuthenticationApi, AuthenticationApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)
         {
             services.AddTransient<MainWindow>();
             services.AddTransient<LoginPage>();
+            services.AddTransient<RegisterPage>();
             services.AddTransient<CampaignSelectionPage>();
         }
 

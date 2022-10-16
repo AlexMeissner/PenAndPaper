@@ -17,9 +17,9 @@ namespace Client.Helper
             return request;
         }
 
-        private static ApiResponse<TModel> ErrorGenerator<TModel>(ErrorDetails error)
+        private static ApiResponse<T> ErrorGenerator<T>(ErrorDetails error)
         {
-            return ApiResponse<TModel>.Failure(error);
+            return ApiResponse<T>.Failure(error);
         }
 
         private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -27,10 +27,10 @@ namespace Client.Helper
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        private static async Task<TResponse> ProcessResponseAsync<TResponse>(
+        private static async Task<T> ProcessResponseAsync<T>(
             HttpResponseMessage response,
-            Func<ErrorDetails, TResponse> errorGenerator)
-            where TResponse : ApiResponse
+            Func<ErrorDetails, T> errorGenerator)
+            where T : ApiResponse
         {
             if (response.Content.Headers.ContentLength == 0)
             {
@@ -40,11 +40,11 @@ namespace Client.Helper
 
             await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
-            TResponse? apiResponse;
+            T? apiResponse;
 
             try
             {
-                apiResponse = await JsonSerializer.DeserializeAsync<TResponse>(stream, SerializerOptions).ConfigureAwait(false);
+                apiResponse = await JsonSerializer.DeserializeAsync<T>(stream, SerializerOptions).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -95,24 +95,39 @@ namespace Client.Helper
             return new ErrorDetails(ErrorCode.Exception, exception.Message);
         }
 
-        private static async Task<ApiResponse<TResponse>> HandleException<TResponse>(Exception exception)
+        public static async Task<ApiResponse<T>> HandleException<T>(Exception exception)
         {
             var error = await GetExceptionErrorDetails(exception);
-            return ApiResponse<TResponse>.Failure(error);
+            return ApiResponse<T>.Failure(error);
         }
 
-        public static async Task<ApiResponse<TResponse>> GetAsync<TResponse>(this string url)
+        public static async Task<ApiResponse<T>> GetAsync<T>(this string url)
         {
             var request = GenerateRequest(url);
 
             try
             {
                 var response = await request.GetAsync().ConfigureAwait(false);
-                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator<TResponse>).ConfigureAwait(false);
+                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator<T>).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                return await HandleException<TResponse>(exception).ConfigureAwait(false);
+                return await HandleException<T>(exception).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<ApiResponse<T>> PostAsync<T>(this string url, object payload)
+        {
+            var request = GenerateRequest(url);
+
+            try
+            {
+                var response = await request.PostJsonAsync(payload).ConfigureAwait(false);
+                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator<T>).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                return await HandleException<T>(exception).ConfigureAwait(false);
             }
         }
     }

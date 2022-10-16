@@ -1,6 +1,7 @@
 ﻿using DataTransfer;
 using DataTransfer.Login;
 using Microsoft.AspNetCore.Mvc;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -8,23 +9,18 @@ namespace Server.Controllers
     [Route("[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly ILogger<LoginController> _logger;
+        private readonly IUserAuthentication _userAuthentication;
 
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(IUserAuthentication userAuthentication)
         {
-            _logger = logger;
+            _userAuthentication = userAuthentication;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<ApiResponse<LoginDto>>> Get()
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<LoginDto>>> LoginAsync(UserCredentialsDto userCredentials)
         {
-            _logger.LogInformation("LoginController.Get");
-            LoginDto t = new()
-            {
-                State = LoginState.Success,
-                UserId = 1
-            };
-            return new ApiResponse<LoginDto>(t, null);
+            var response = await _userAuthentication.LoginAsync(userCredentials.Email, userCredentials.Password).ConfigureAwait(false);
+            return this.SendResponse<LoginDto>(response);
         }
     }
 }
