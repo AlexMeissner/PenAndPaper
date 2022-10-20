@@ -24,6 +24,8 @@ namespace Client
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
+            services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();
+            services.AddTransient<IUserApi, UserApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)
@@ -32,6 +34,7 @@ namespace Client
             services.AddTransient<LoginPage>();
             services.AddTransient<RegisterPage>();
             services.AddTransient<CampaignSelectionPage>();
+            services.AddTransient<CampaignCreationPage>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

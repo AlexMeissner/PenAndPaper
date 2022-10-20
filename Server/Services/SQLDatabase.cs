@@ -10,5 +10,7 @@ namespace Server.Services
         }
 
         public DbSet<DbUser> Users { get; set; }
+        public DbSet<DbCampaign> Campaigns { get; set; }
+        public DbSet<DbUserInCampaign> UsersInCampaign { get; set; }
     }
 }

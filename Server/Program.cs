@@ -40,11 +40,10 @@ class ServerMain
     private static void AddServices(IServiceCollection services)
     {
         services.AddTransient<IUserAuthentication, UserAuthentication>();
+        services.AddTransient<ICampaignCreation, CampaignCreation>();
+        services.AddTransient<IUser, User>();
     }
 }
 
 //DungeonsAndDragons5e.DungeonsAndDragons5e rules = new();
 //var a = rules.ToString();
-
-// EntityFramework
-// SQLite

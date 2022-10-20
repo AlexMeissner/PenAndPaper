@@ -13,6 +13,12 @@ namespace Server.Controllers
             }
         }
 
+        public static ActionResult<ApiResponse> SendResponse(this ControllerBase controller, ApiResponse response)
+        {
+            PostProcessResponse(response, controller.HttpContext);
+            return response.Error is null ? controller.Ok(response) : controller.BadRequest(response);
+        }
+
         public static ActionResult<ApiResponse<T>> SendResponse<T>(this ControllerBase controller, ApiResponse response)
         {
             PostProcessResponse(response, controller.HttpContext);

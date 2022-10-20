@@ -1,5 +1,6 @@
 ﻿using Client.Helper;
 using Client.Services;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Client.View
@@ -15,6 +16,11 @@ namespace Client.View
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
             BackgroundImage.ImageSource = RandomBackgroundImage.GetImageFromResource();
+        }
+
+        private void OnCreateCampaign(object sender, RoutedEventArgs e)
+        {
+            _pageNavigator.OpenPage<CampaignCreationPage>();
         }
     }
 }

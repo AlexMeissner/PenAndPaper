@@ -17,6 +17,11 @@ namespace Client.Helper
             return request;
         }
 
+        private static ApiResponse ErrorGenerator(ErrorDetails error)
+        {
+            return ApiResponse.Failure(error);
+        }
+
         private static ApiResponse<T> ErrorGenerator<T>(ErrorDetails error)
         {
             return ApiResponse<T>.Failure(error);
@@ -95,6 +100,32 @@ namespace Client.Helper
             return new ErrorDetails(ErrorCode.Exception, exception.Message);
         }
 
+        private static async Task<ApiResponse> HandleException(Exception exception)
+        {
+            ApiResponse response;
+
+            if (exception is FlurlHttpException httpException)
+            {
+                var content = await httpException.GetResponseJsonAsync().ConfigureAwait(false);
+
+                if (JsonSerializer.Deserialize<ApiResponse>(content, SerializerOptions) is { } deserialized)
+                {
+                    response = deserialized;
+                }
+                else
+                {
+                    response = ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, httpException.Message));
+                }
+            }
+            else
+            {
+                var error = await GetExceptionErrorDetails(exception);
+                response = ApiResponse.Failure(error);
+            }
+
+            return response;
+        }
+
         public static async Task<ApiResponse<T>> HandleException<T>(Exception exception)
         {
             var error = await GetExceptionErrorDetails(exception);
@@ -113,6 +144,21 @@ namespace Client.Helper
             catch (Exception exception)
             {
                 return await HandleException<T>(exception).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<ApiResponse> PostAsync(this string url, object payload)
+        {
+            var request = GenerateRequest(url);
+
+            try
+            {
+                var response = await request.PostJsonAsync(payload).ConfigureAwait(false);
+                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                return await HandleException(exception).ConfigureAwait(false);
             }
         }
 

@@ -4,6 +4,7 @@ using Client.Services.API;
 using DataTransfer.Login;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Client.View
 {
@@ -27,8 +28,8 @@ namespace Client.View
             if (EmailBox.Text.Length > 0 && PasswordBox.Password.Length > 0)
             {
                 UserCredentialsDto userCredentials = new(
-                    Email: EmailBox.Text, 
-                    Username: string.Empty, 
+                    Email: EmailBox.Text,
+                    Username: string.Empty,
                     Password: Password.Encrypt(PasswordBox.Password));
 
                 var response = await _authenticationApi.LoginAsync(userCredentials);
@@ -48,6 +49,19 @@ namespace Client.View
         private void OnRegister(object sender, RoutedEventArgs e)
         {
             _pageNavigator.OpenPage<RegisterPage>();
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.End || e.Key == Key.Return)
+            {
+                OnLogin(sender, e);
+            }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Keyboard.Focus(EmailBox);
         }
     }
 }

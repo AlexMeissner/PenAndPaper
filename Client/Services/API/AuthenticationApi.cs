@@ -15,12 +15,14 @@ namespace Client.Services.API
     {
         public Task<ApiResponse<LoginDto>> LoginAsync(UserCredentialsDto payload)
         {
+            // TODO
             string url = "https://localhost:7099/Login";
             return url.PostAsync<LoginDto>(payload);
         }
 
         public Task<ApiResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload)
         {
+            // TODO
             string url = "https://localhost:7099/Register";
             return url.PostAsync<LoginDto>(payload);
         }

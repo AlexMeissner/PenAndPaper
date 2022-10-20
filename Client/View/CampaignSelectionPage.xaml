@@ -86,7 +86,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Button Grid.Column="0" Margin="2" Content="Beitreten"/>
-                    <Button Grid.Column="1" Margin="2" Content="Erstellen"/>
+                    <Button Grid.Column="1" Margin="2" Content="Erstellen" Click="OnCreateCampaign"/>
                 </Grid>
             </Grid>
         </Border>

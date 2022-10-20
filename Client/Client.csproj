@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
     <None Remove="Resource\splash2.jpg" />
     <None Remove="Resource\splash3.jpg" />
     <None Remove="Resource\splash4.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
