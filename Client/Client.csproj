@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resource\DungeonsAndDragons.png" />
     <None Remove="Resource\splash1.jpg" />
     <None Remove="Resource\splash2.jpg" />
     <None Remove="Resource\splash3.jpg" />
@@ -38,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resource\DungeonsAndDragons.png" />
     <Resource Include="Resource\splash1.jpg" />
     <Resource Include="Resource\splash2.jpg" />
     <Resource Include="Resource\splash3.jpg" />

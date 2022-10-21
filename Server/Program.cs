@@ -40,6 +40,7 @@ class ServerMain
     private static void AddServices(IServiceCollection services)
     {
         services.AddTransient<IUserAuthentication, UserAuthentication>();
+        services.AddTransient<ICampaignOverview, CampaignOverview>();
         services.AddTransient<ICampaignCreation, CampaignCreation>();
         services.AddTransient<IUser, User>();
     }

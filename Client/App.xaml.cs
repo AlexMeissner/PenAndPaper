@@ -25,6 +25,7 @@ namespace Client
             services.AddSingleton<ISessionData>(new SessionData());
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();
+            services.AddTransient<ICampaignOverviewApi, CampaignOverviewApi>();
             services.AddTransient<IUserApi, UserApi>();
         }
 
@@ -35,6 +36,8 @@ namespace Client
             services.AddTransient<RegisterPage>();
             services.AddTransient<CampaignSelectionPage>();
             services.AddTransient<CampaignCreationPage>();
+            services.AddTransient<CampaignGamemasterViewPage>();
+            services.AddTransient<CampaignPlayerViewPage>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
