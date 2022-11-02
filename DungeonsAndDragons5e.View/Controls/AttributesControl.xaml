@@ -10,14 +10,9 @@
              d:DesignHeight="700" d:DesignWidth="400">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
             <StackPanel>
                 <!-- Skills -->
-                <TextBlock Grid.ColumnSpan="2" Text="Fertigkeiten" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Fertigkeiten" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <controls:NameValueControl PropertyName="Akrobatik" PropertyValue="{Binding Acrobatics}"/>
                 <controls:NameValueControl PropertyName="Arkane Kunde" PropertyValue="{Binding Arcana}"/>
                 <controls:NameValueControl PropertyName="Athletik" PropertyValue="{Binding Athletics}"/>
@@ -38,7 +33,7 @@
                 <controls:NameValueControl PropertyName="Wahrnehmung" PropertyValue="{Binding Perception}"/>
 
                 <!-- Attributes -->
-                <TextBlock Grid.ColumnSpan="2" Text="Attribute" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Attribute" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthModificator}"/>
                 <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexterityModificator}"/>
                 <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionModificator}"/>
@@ -50,7 +45,7 @@
                 <controls:NameValueControl PropertyName="Passive Wahrnehmung" PropertyValue="{Binding PassivePerception}"/>
 
                 <!-- Saving Throws -->
-                <TextBlock Grid.ColumnSpan="2" Text="Rettungswürfe" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Rettungswürfe" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthSavingThrow}"/>
                 <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexteritySavingThrow}"/>
                 <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionSavingThrow}"/>
