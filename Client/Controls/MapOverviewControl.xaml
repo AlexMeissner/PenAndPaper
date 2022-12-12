@@ -21,7 +21,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBox Grid.Column="0" Margin="2"/>
-            <Button Grid.Column="1" Margin="2" Content="Neue Karte"/>
+            <Button Grid.Column="1" Margin="2" Content="Neue Karte" Click="OnCreateMap"/>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl>

@@ -10,11 +10,11 @@
         <StackPanel HorizontalAlignment="Left">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Bezieht sich auf den selektierten Token oder Landmark."/>
             <Border Width="300" CornerRadius="4" BorderBrush="Black" BorderThickness="2" Margin="2" Padding="2">
+                <!--
                 <StackPanel>
-                    <!-- Name -->
                     <TextBlock Text="Charakter-Name" FontWeight="Bold" HorizontalAlignment="Center"/>
                     <Border BorderBrush="Black" BorderThickness="1"/>
-                    <!-- Skills -->
+
                     <TextBlock Text="Fertigkeiten" FontWeight="Bold" HorizontalAlignment="Center"/>
                     <controls:NameValueControl PropertyName="Akrobatik" PropertyValue="{Binding Acrobatics}"/>
                     <controls:NameValueControl PropertyName="Arkane Kunde" PropertyValue="{Binding Arcana}"/>
@@ -35,7 +35,6 @@
                     <controls:NameValueControl PropertyName="Überzeugen" PropertyValue="{Binding Persuasion}"/>
                     <controls:NameValueControl PropertyName="Wahrnehmung" PropertyValue="{Binding Perception}"/>
 
-                    <!-- Attributes -->
                     <TextBlock Text="Attribute" FontWeight="Bold" HorizontalAlignment="Center"/>
                     <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthModificator}"/>
                     <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexterityModificator}"/>
@@ -44,10 +43,8 @@
                     <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomModificator}"/>
                     <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaModificator}"/>
 
-                    <!-- Passive Perception -->
                     <controls:NameValueControl PropertyName="Passive Wahrnehmung" PropertyValue="{Binding PassivePerception}"/>
 
-                    <!-- Saving Throws -->
                     <TextBlock Text="Rettungswürfe" FontWeight="Bold" HorizontalAlignment="Center"/>
                     <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthSavingThrow}"/>
                     <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexteritySavingThrow}"/>
@@ -56,7 +53,8 @@
                     <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomSavingThrow}"/>
                     <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaSavingThrow}"/>
                 </StackPanel>
-            </Border>
+                -->
+        </Border>
         </StackPanel>
         <StackPanel HorizontalAlignment="Center">
             <TextBlock Text="Wüfel"/>

@@ -22,6 +22,7 @@ class ServerMain
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
+        // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Client.View;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Client.Controls
 {
@@ -7,6 +9,16 @@ namespace Client.Controls
         public MapOverviewControl()
         {
             InitializeComponent();
+        }
+
+        private void OnCreateMap(object sender, RoutedEventArgs e)
+        {
+            MapCreationWindow mapCreationWindow = new();
+
+            if (mapCreationWindow.ShowDialog() == true)
+            {
+
+            }
         }
     }
 }
