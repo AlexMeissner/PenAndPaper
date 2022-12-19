@@ -1,7 +1,9 @@
 ﻿using Client.Converter;
+using DataTransfer;
 using DataTransfer.Map;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -14,14 +16,16 @@ namespace Client.View
 
         public MapCreationWindow()
         {
-            InitializeComponent();
             MapCreation = new();
+            MapCreation.Grid.Size = 100;
+            MapCreation.Grid.IsActive = true;
+            InitializeComponent();
         }
 
         public MapCreationWindow(MapCreationDto mapCreation)
         {
-            InitializeComponent();
             MapCreation = mapCreation;
+            InitializeComponent();
         }
 
         private void OnCancel(object sender, RoutedEventArgs e)

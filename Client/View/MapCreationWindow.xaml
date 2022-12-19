@@ -6,11 +6,17 @@
         xmlns:converter="clr-namespace:Client.Converter"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="MapCreationWindow" Height="450" Width="800"
+        Title="Karten Editor" 
+        Width="800"
+        Height="450" 
+        WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converter:ByteArrayToBitmapImageConverter x:Key="ByteArrayToBitmapImageConverter"/>
+        <converter:ByteArrayToBitmapImageWidthConverter x:Key="ByteArrayToBitmapImageWidthConverter"/>
+        <converter:ByteArrayToBitmapImageHeightConverter x:Key="ByteArrayToBitmapImageHeightConverter"/>
+        <converter:GridToRectConverter x:Key="GridToRectConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,18 +40,18 @@
                     <Border Grid.Row="1" Grid.Column="0" Margin="4" BorderBrush="Black" BorderThickness="1">
                         <Canvas>
                             <Canvas.Background>
-                                <ImageBrush ImageSource="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
+                                <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
                             </Canvas.Background>
-                            <Rectangle Width="1000" Height="800" Visibility="{Binding MapCreation.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Rectangle Width="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding MapCreation.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Rectangle.Fill>
-                                    <DrawingBrush TileMode="Tile" Viewport="0,0,1000,1000" ViewportUnits="Absolute">
+                                    <DrawingBrush TileMode="Tile" Viewport="{Binding MapCreation.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
                                         <DrawingBrush.Drawing>
                                             <GeometryDrawing>
                                                 <GeometryDrawing.Geometry>
-                                                    <RectangleGeometry Rect="0,0,100,100"/>
+                                                    <RectangleGeometry Rect="{Binding MapCreation.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
                                                 </GeometryDrawing.Geometry>
                                                 <GeometryDrawing.Pen>
-                                                    <Pen Brush="Black" Thickness="0.1"/>
+                                                    <Pen Brush="#88000000" Thickness="1"/>
                                                 </GeometryDrawing.Pen>
                                             </GeometryDrawing>
                                         </DrawingBrush.Drawing>
@@ -80,8 +86,8 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
 
-                <Slider x:Name="GridSlider" Grid.Column="0" Minimum="1" Maximum="100" IsSnapToTickEnabled="True" Value="{Binding MapCreation.Grid.Size}"/>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Text="{Binding ElementName=GridSlider, Path=Value}"/>
+                <Slider x:Name="GridSlider" Grid.Column="0" Minimum="1" Maximum="1000" VerticalAlignment="Center" IsSnapToTickEnabled="True" Value="{Binding MapCreation.Grid.Size}"/>
+                <TextBox Grid.Column="1" Width="40" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding MapCreation.Grid.Size}"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1" Margin="0,100,0,0" Grid.RowSpan="2">
