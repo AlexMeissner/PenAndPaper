@@ -7,6 +7,9 @@
              xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Background>
+        <ImageBrush ImageSource="/Client;component/Resource/splash1.jpg"/>
+    </UserControl.Background>
     <Grid>
         <!--
         <StackPanel HorizontalAlignment="Left">
@@ -86,8 +89,8 @@
             </StackPanel>
             <controls:DiceRollerControl x:Name="DiceRoller" HorizontalAlignment="Center" Visibility="Collapsed"/>
         </StackPanel>
-        
-        
+
+
         <!--
         <Expander HorizontalAlignment="Right" Header="Encounter Builder">
             <Grid>
