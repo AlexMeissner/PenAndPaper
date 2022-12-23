@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:Client.Controls"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <!--
         <StackPanel HorizontalAlignment="Left">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Bezieht sich auf den selektierten Token oder Landmark."/>
             <Border Width="300" CornerRadius="4" BorderBrush="Black" BorderThickness="2" Margin="2" Padding="2">
-                <!--
                 <StackPanel>
                     <TextBlock Text="Charakter-Name" FontWeight="Bold" HorizontalAlignment="Center"/>
                     <Border BorderBrush="Black" BorderThickness="1"/>
@@ -53,16 +54,41 @@
                     <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomSavingThrow}"/>
                     <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaSavingThrow}"/>
                 </StackPanel>
-                -->
-        </Border>
+            </Border>        
         </StackPanel>
-        <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Wüfel"/>
-            <TextBlock Text="Notes"/>
-            <TextBlock Text="Lexikon"/>
-            <TextBlock Text="Musik Player"/>
-            <TextBlock Text="Player Cursor"/>
+        -->
+        <!-- 
+        TODO:
+        Player Cursor
+        -->
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+            <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button Width="50" Margin="2">
+                    <fa5:SvgAwesome Icon="Solid_User" ToolTip="Charakter"/>
+                </Button>
+                <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice">
+                    <fa5:SvgAwesome Icon="Solid_DiceD20" ToolTip="Würfeln"/>
+                </Button>
+                <Button Width="50" Margin="2">
+                    <fa5:SvgAwesome Icon="Solid_Wrench" ToolTip="Einstellungen"/>
+                </Button>
+                <Button Width="50" Margin="2">
+                    <fa5:SvgAwesome Icon="Solid_BookOpen" ToolTip="Lexikon"/>
+                </Button>
+            </StackPanel>
+            <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal" Name="DicePanel" Visibility="Collapsed">
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D4" Click="OnRollD4"/>
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D6" Click="OnRollD6"/>
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D8" Click="OnRollD8"/>
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D10" Click="OnRollD10"/>
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D12" Click="OnRollD12"/>
+                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D20" Click="OnRollD20"/>
+            </StackPanel>
+            <controls:DiceRollerControl x:Name="DiceRoller" HorizontalAlignment="Center" Visibility="Collapsed"/>
         </StackPanel>
+        
+        
+        <!--
         <Expander HorizontalAlignment="Right" Header="Encounter Builder">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -70,10 +96,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="250"/>
                 </Grid.ColumnDefinitions>
-
-                <!-- Filter -->
-                <!-- List -->
-                <!-- Summary -->
+                
                 <StackPanel Grid.Column="2">
                     <TextBlock Margin="0 0 0 5" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Text="ZUSAMMENFASSUNG"/>
                     <Border BorderThickness="0 2 0 2" BorderBrush="Gray">
@@ -180,5 +203,6 @@
                 </StackPanel>
             </Grid>
         </Expander>
+        -->
     </Grid>
 </UserControl>

@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="Client.Controls.DiceRollerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Controls"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             mc:Ignorable="d">
+    <Border Background="#44000000" BorderBrush="Black" BorderThickness="2" CornerRadius="4">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock FontFamily="Consolas" FontSize="15" FontWeight="Bold" Margin="4" VerticalAlignment="Center" Name="CharacterName"/>
+
+            <StackPanel Name="DiceD4" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+            </StackPanel>
+
+            <StackPanel Name="DiceD6" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+            </StackPanel>
+
+            <StackPanel Name="DiceD8" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+            </StackPanel>
+
+            <StackPanel Name="DiceD10" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+            </StackPanel>
+
+            <StackPanel Name="DiceD12" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2" Foreground="#555"/>
+            </StackPanel>
+
+            <StackPanel Name="DiceD20" Orientation="Horizontal" Height="50" Visibility="Collapsed">
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+                <fa5:SvgAwesome Icon="Solid_DiceD20" Margin="2"/>
+            </StackPanel>
+
+            <Border Width="50" Background="#333" Margin="2" CornerRadius="4">
+                <TextBlock Name="RolledNumberText" Foreground="White" FontFamily="Consolas" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>
