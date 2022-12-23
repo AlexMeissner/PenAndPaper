@@ -73,7 +73,7 @@ namespace Client.Controls
             {
                 if (image is SvgAwesome svgAwesome)
                 {
-                    svgAwesome.Foreground = (Brush)new BrushConverter().ConvertFromString("#555")!;
+                    svgAwesome.Foreground = (Brush)new BrushConverter().ConvertFromString("#777")!;
                 }
             }
 
