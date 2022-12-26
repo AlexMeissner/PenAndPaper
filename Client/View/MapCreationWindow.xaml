@@ -21,8 +21,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <TabControl BorderThickness="0">
             <TabItem Header="Bild hochladen">
@@ -75,12 +75,16 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" FontWeight="Bold" Text="Grid Einstellungen"/>
-            <CheckBox Grid.Row="1" Content="Aktiv" IsChecked="{Binding MapCreation.Grid.IsActive}"/>
-            <TextBlock Grid.Row="2" Text="Gridgröße"/>
-            <Grid Grid.Row="3">
+            <TextBlock Grid.Row="0" FontWeight="Bold" Text="Name"/>
+            <TextBox Grid.Row="1" Text="{Binding MapCreation.Name}"/>
+            <TextBlock Grid.Row="2" FontWeight="Bold" Text="Grid Einstellungen"/>
+            <CheckBox Grid.Row="3" Content="Aktiv" IsChecked="{Binding MapCreation.Grid.IsActive}"/>
+            <TextBlock Grid.Row="4" Text="Gridgröße"/>
+            <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="50"/>
@@ -90,7 +94,7 @@
                 <TextBox Grid.Column="1" Width="40" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding MapCreation.Grid.Size}"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1" Margin="0,100,0,0" Grid.RowSpan="2">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

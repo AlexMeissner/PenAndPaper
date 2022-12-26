@@ -3,11 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Client.Controls"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:converter="clr-namespace:Client.Converter"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <!-- TODO: Karten anhand von Skizzen mit KI generieren lassen -->
+    <UserControl.Resources>
+        <converter:ByteArrayToBitmapImageConverter x:Key="ByteArrayToBitmapImageConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -20,11 +24,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2"/>
+            <TextBox Grid.Column="0" Margin="2" FontFamily="Consolas" FontSize="20" Name="FilterTextBox" TextChanged="OnTextChanged"/>
             <Button Grid.Column="1" Margin="2" Content="Neue Karte" Click="OnCreateMap"/>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl>
+            <ItemsControl Name="OverviewItemsControl" ItemsSource="{Binding MapOverview.Items}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -33,70 +37,23 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Width="200" Height="200" CornerRadius="4" BorderBrush="Black" BorderThickness="2" Padding="5" Margin="5">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="UniformToFill"/>
+                            </Border.Background>
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="15"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="30"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Center" Text="Karten-Name"/>
-                                <Image Grid.Row="1" Source="/Client;component/Resource/splash1.jpg" Stretch="Uniform"/>
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Button Grid.Column="0" Margin="2" Content="Aktivieren"/>
-                                    <Button Grid.Column="1" Margin="2" Content="Löschen"/>
-                                </Grid>
+                                <Border Background="#222" CornerRadius="4" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                    <TextBlock Margin="2" FontSize="20" FontFamily="Consolas" Foreground="White" Text="{Binding Name}"/>
+                                </Border>
+                                <Button Width="30" Height="30" Background="#222" BorderBrush="Black" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2">
+                                    <fa5:SvgAwesome Foreground="Red" Icon="Solid_TrashAlt" Margin="2"/>
+                                </Button>
+                                <Button Width="30" Height="30" Background="#222" BorderBrush="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="2">
+                                    <fa5:SvgAwesome Foreground="Green" Icon="Solid_Play" Margin="2"/>
+                                </Button>                                
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
-                <system:String>Item #1</system:String>
             </ItemsControl>
         </ScrollViewer>
     </Grid>
