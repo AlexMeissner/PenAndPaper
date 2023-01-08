@@ -14,6 +14,7 @@ namespace Client.Services
     public class PageNavigator : IPageNavigator
     {
         private readonly IServiceProvider _serviceProvider;
+
         public PageNavigator(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

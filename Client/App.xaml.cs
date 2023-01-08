@@ -26,6 +26,8 @@ namespace Client
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();
             services.AddTransient<ICampaignOverviewApi, CampaignOverviewApi>();
+            services.AddTransient<ICampaignUpdatesApi, CampaignUpdatesApi>();
+            services.AddTransient<ICampaignUpdates, CampaignUpdates>();
             services.AddTransient<IUserApi, UserApi>();
         }
 

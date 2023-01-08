@@ -43,6 +43,7 @@ class ServerMain
         services.AddTransient<IUserAuthentication, UserAuthentication>();
         services.AddTransient<ICampaignOverview, CampaignOverview>();
         services.AddTransient<ICampaignCreation, CampaignCreation>();
+        services.AddTransient<ICampaignUpdates, CampaignUpdates>();
         services.AddTransient<IUser, User>();
     }
 }

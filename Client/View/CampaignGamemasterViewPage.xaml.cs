@@ -8,12 +8,14 @@ namespace Client.View
     {
         private readonly IPageNavigator _pageNavigator;
         private readonly ISessionData _sessionData;
+        private readonly ICampaignUpdates _campaignUpdates;
 
-        public CampaignGamemasterViewPage(IPageNavigator pageNavigator, ISessionData sessionData)
+        public CampaignGamemasterViewPage(IPageNavigator pageNavigator, ISessionData sessionData, ICampaignUpdates campaignUpdates)
         {
             InitializeComponent();
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
+            _campaignUpdates = campaignUpdates;
         }
 
         private void OnExit(object sender, RoutedEventArgs e)
