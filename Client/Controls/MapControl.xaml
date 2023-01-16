@@ -5,12 +5,43 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:Client.Controls"
              xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:converter="clr-namespace:Client.Converter"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             Loaded="OnLoaded"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converter:ByteArrayToBitmapImageConverter x:Key="ByteArrayToBitmapImageConverter"/>
+        <converter:ByteArrayToBitmapImageWidthConverter x:Key="ByteArrayToBitmapImageWidthConverter"/>
+        <converter:ByteArrayToBitmapImageHeightConverter x:Key="ByteArrayToBitmapImageHeightConverter"/>
+        <converter:GridToRectConverter x:Key="GridToRectConverter"/>
+    </UserControl.Resources>
     <UserControl.Background>
         <ImageBrush ImageSource="/Client;component/Resource/splash1.jpg"/>
     </UserControl.Background>
     <Grid>
+        <Canvas>
+            <Canvas.Background>
+                <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
+            </Canvas.Background>
+            <Rectangle Width="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding Map.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Rectangle.Fill>
+                    <DrawingBrush TileMode="Tile" Viewport="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing>
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry Rect="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
+                                </GeometryDrawing.Geometry>
+                                <GeometryDrawing.Pen>
+                                    <Pen Brush="#88000000" Thickness="1"/>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Canvas>
         <!--
         <StackPanel HorizontalAlignment="Left">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Bezieht sich auf den selektierten Token oder Landmark."/>

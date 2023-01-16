@@ -1,42 +1,63 @@
-﻿using Client.Converter;
+﻿using Client.Services;
+using Client.Services.API;
 using Client.View;
 using DataTransfer.Map;
 using System;
-using System.Globalization;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media.Imaging;
 
 namespace Client.Controls
 {
     public partial class MapOverviewControl : UserControl
     {
-        public MapOverviewDto MapOverview { get; set; }
+        public MapOverviewDto MapOverview { get; set; } = new();
 
-        public MapOverviewControl()
+        private readonly IMapApi _mapApi;
+        private readonly IMapOverviewApi _mapOverviewApi;
+        private readonly IActiveMapApi _activeMapApi;
+        private readonly ISessionData _sessionData;
+
+        public MapOverviewControl(IMapApi mapApi, IMapOverviewApi mapOverviewApi, IActiveMapApi activeMapApi, ISessionData sessionData, ICampaignUpdates campaignUpdates)
         {
-            ByteArrayToBitmapImageConverter converter = new();
-            BitmapImage image = new(new Uri(@"W:\PenAndPaper\LoTR\WhosThatCharacter.png"));
-            var data = converter.ConvertBack(image, typeof(byte[]), image, CultureInfo.CurrentCulture) as byte[];
+            _mapApi = mapApi;
+            _mapOverviewApi = mapOverviewApi;
+            _activeMapApi = activeMapApi;
+            _sessionData = sessionData;
 
-            MapOverview = new()
-            {
-                Items = new[]
-                {
-                    new MapOverviewItemDto() { Name="Peter", ImageData = data },
-                    new MapOverviewItemDto() { Name="Hans", ImageData = data },
-                    new MapOverviewItemDto() { Name="Gustav", ImageData = data },
-                    new MapOverviewItemDto() { Name="Olaf", ImageData = data },
-                    new MapOverviewItemDto() { Name="Günther", ImageData = data },
-                }
-            }; // TODO: Get from Rest API
+            campaignUpdates.MapCollectionChanged += OnMapCollectionChanged;
 
             InitializeComponent();
 
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(OverviewItemsControl.ItemsSource);
-            view.Filter = OnFilter;
+
+        }
+
+        private async void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            await Update();
+        }
+
+        private async void OnMapCollectionChanged(object? sender, EventArgs e)
+        {
+            await Update();
+        }
+
+        private async Task Update()
+        {
+            if (_sessionData.CampaignId is int campaignId)
+            {
+                var response = await _mapOverviewApi.GetAsync(campaignId);
+
+                if (response.Error is null)
+                {
+                    MapOverview.Items = response.Data.Items;
+                }
+                else
+                {
+                    throw new Exception(response.Error.Message);
+                }
+            }
         }
 
         private bool OnFilter(object item)
@@ -59,14 +80,74 @@ namespace Client.Controls
             CollectionViewSource.GetDefaultView(OverviewItemsControl.ItemsSource).Refresh();
         }
 
-        private void OnCreateMap(object sender, RoutedEventArgs e)
+        private async void OnCreateMap(object sender, RoutedEventArgs e)
         {
             MapCreationWindow mapCreationWindow = new();
 
-            if (mapCreationWindow.ShowDialog() == true)
+            if (mapCreationWindow.ShowDialog() == true && _sessionData.CampaignId is int campaignId)
             {
-                // TODO: Add new item to view and upload via Rest API
-                // mapCreationWindow.MapCreation;
+                mapCreationWindow.MapCreation.CampaignId = campaignId;
+                await _mapApi.PostAsync(mapCreationWindow.MapCreation);
+            }
+        }
+
+        private async void OnPlay(object sender, RoutedEventArgs e)
+        {
+            if (_sessionData.CampaignId is int campaignId &&
+                sender is Button button &&
+                button.DataContext is MapOverviewItemDto mapOverviewItemDto)
+            {
+                var payload = new ActiveMapDto()
+                {
+                    CampaignId = campaignId,
+                    MapId = mapOverviewItemDto.MapId,
+                };
+
+                var response = await _activeMapApi.PutAsync(payload);
+
+                if (response.Error is not null)
+                {
+                    MessageBox.Show(response.Error.Message);
+                }
+            }
+        }
+
+        private async void OnEdit(object sender, RoutedEventArgs e)
+        {
+            if (_sessionData.CampaignId is int campaignId &&
+                sender is Button button &&
+                button.DataContext is MapOverviewItemDto mapOverviewItemDto)
+            {
+                var response = await _mapApi.GetAsync(mapOverviewItemDto.MapId);
+
+                if (response.Error is null)
+                {
+                    MapCreationWindow mapCreationWindow = new(response.Data);
+
+                    if (mapCreationWindow.ShowDialog() == true)
+                    {
+                        mapCreationWindow.MapCreation.CampaignId = campaignId;
+                        await _mapApi.PutAsync(mapCreationWindow.MapCreation);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(response.Error.Message);
+                }
+            }
+        }
+
+        private async void OnDelete(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button &&
+                button.DataContext is MapOverviewItemDto mapOverviewItemDto)
+            {
+                var response = await _mapApi.DeleteAsync(mapOverviewItemDto.MapId);
+
+                if (response.Error is not null)
+                {
+                    MessageBox.Show(response.Error.Message);
+                }
             }
         }
     }

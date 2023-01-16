@@ -1,4 +1,7 @@
-﻿using Client.Services;
+﻿using Client.Controls;
+using Client.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,9 +12,12 @@ namespace Client.View
         private readonly IPageNavigator _pageNavigator;
         private readonly ISessionData _sessionData;
 
-        public CampaignPlayerViewPage(IPageNavigator pageNavigator, ISessionData sessionData)
+        public CampaignPlayerViewPage(IServiceProvider serviceProvider, IPageNavigator pageNavigator, ISessionData sessionData)
         {
             InitializeComponent();
+
+            MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
+
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
         }

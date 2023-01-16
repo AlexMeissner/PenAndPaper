@@ -24,9 +24,10 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> RegisterAsync(CampaignCreationDto payload)
+        public async Task<ActionResult<ApiResponse>> PostAsync(CampaignCreationDto payload)
         {
             var response = await _campaignCreation.PostAsync(payload);
+            // TODO: Create entry in 'ActiveCampaignElements' initialize with '-1'
             return this.SendResponse(response);
         }
     }

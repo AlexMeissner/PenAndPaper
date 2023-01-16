@@ -1,13 +1,14 @@
 namespace DataTransfer.Map
 {
-    public class MapOverviewItemDto : PropertyChangedNotifier
+    public class MapOverviewItemDto
     {
         public string Name { get; set; } = string.Empty;
+        public int MapId { get; set; }
         public byte[]? ImageData { get; set; }
     }
 
-    public class MapOverviewDto
+    public class MapOverviewDto : PropertyChangedNotifier
     {
-        public ICollection<MapOverviewItemDto> Items { get; set; }
+        public ICollection<MapOverviewItemDto> Items { get; set; } = Array.Empty<MapOverviewItemDto>();
     }
 }

@@ -176,5 +176,35 @@ namespace Client.Helper
                 return await HandleException<T>(exception).ConfigureAwait(false);
             }
         }
+
+        public static async Task<ApiResponse> PutAsync(this string url, object payload)
+        {
+            var request = GenerateRequest(url);
+
+            try
+            {
+                var response = await request.PutJsonAsync(payload).ConfigureAwait(false);
+                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                return await HandleException(exception).ConfigureAwait(false);
+            }
+        }
+
+        public static async Task<ApiResponse> DeleteAsync(this string url)
+        {
+            var request = GenerateRequest(url);
+
+            try
+            {
+                var response = await request.DeleteAsync().ConfigureAwait(false);
+                return await ProcessResponseAsync(response.ResponseMessage, ErrorGenerator).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                return await HandleException(exception).ConfigureAwait(false);
+            }
+        }
     }
 }

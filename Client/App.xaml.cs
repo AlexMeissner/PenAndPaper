@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Controls;
+using Client.Services;
 using Client.Services.API;
 using Client.View;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +25,13 @@ namespace Client
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
+            services.AddTransient<IActiveMapApi, ActiveMapApi>();
             services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();
             services.AddTransient<ICampaignOverviewApi, CampaignOverviewApi>();
             services.AddTransient<ICampaignUpdatesApi, CampaignUpdatesApi>();
             services.AddTransient<ICampaignUpdates, CampaignUpdates>();
+            services.AddTransient<IMapApi, MapApi>();
+            services.AddTransient<IMapOverviewApi, MapOverviewApi>();
             services.AddTransient<IUserApi, UserApi>();
         }
 
@@ -40,6 +44,8 @@ namespace Client
             services.AddTransient<CampaignCreationPage>();
             services.AddTransient<CampaignGamemasterViewPage>();
             services.AddTransient<CampaignPlayerViewPage>();
+            services.AddTransient<MapControl>();
+            services.AddTransient<MapOverviewControl>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

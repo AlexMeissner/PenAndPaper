@@ -3,9 +3,10 @@
     public class CampaignUpdateDto
     {
         public int CampaignId { get; set; }
-        public int MapChange { get; set; }
-        public int TokenChange { get; set; }
-        public int DiceRoll { get; set; }
-        public int MusicChange { get; set; }
+        public long MapChange { get; set; }
+        public long MapCollectionChange { get; set; }
+        public long TokenChange { get; set; }
+        public long DiceRoll { get; set; }
+        public long MusicChange { get; set; }
     }
 }

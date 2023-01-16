@@ -26,12 +26,11 @@ namespace Server.Services
             {
                 var campaignUpdate = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == campaignId);
 
-
-
                 payload = new()
                 {
                     CampaignId = campaignUpdate.CampaignId,
                     MapChange = campaignUpdate.MapChange,
+                    MapCollectionChange = campaignUpdate.MapCollectionChange,
                     TokenChange = campaignUpdate.TokenChange,
                     DiceRoll = campaignUpdate.DiceRoll,
                     MusicChange = campaignUpdate.MusicChange

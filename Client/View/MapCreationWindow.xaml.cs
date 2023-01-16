@@ -1,9 +1,7 @@
 ﻿using Client.Converter;
-using DataTransfer;
 using DataTransfer.Map;
 using Microsoft.Win32;
 using System;
-using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -12,7 +10,7 @@ namespace Client.View
 {
     public partial class MapCreationWindow : Window
     {
-        public MapCreationDto MapCreation { get; set; }
+        public MapDto MapCreation { get; set; }
 
         public MapCreationWindow()
         {
@@ -22,7 +20,7 @@ namespace Client.View
             InitializeComponent();
         }
 
-        public MapCreationWindow(MapCreationDto mapCreation)
+        public MapCreationWindow(MapDto mapCreation)
         {
             MapCreation = mapCreation;
             InitializeComponent();

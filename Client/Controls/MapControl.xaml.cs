@@ -1,6 +1,9 @@
-﻿using DataTransfer.Dice;
-using System.Collections.Generic;
+﻿using Client.Services;
+using Client.Services.API;
+using DataTransfer.Dice;
+using DataTransfer.Map;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,9 +13,26 @@ namespace Client.Controls
 {
     public partial class MapControl : UserControl
     {
-        public MapControl()
+        private readonly ISessionData _sessionData;
+        private readonly IMapApi _mapApi;
+        private readonly IActiveMapApi _activeMapApi;
+
+        public MapDto Map { get; set; } = new();
+
+        public MapControl(ISessionData sessionData, IMapApi mapApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
         {
+            _sessionData = sessionData;
+            _mapApi = mapApi;
+            _activeMapApi = activeMapApi;
+
+            campaignUpdates.MapChanged += OnMapChanged;
+
             InitializeComponent();
+        }
+
+        private async void OnMapChanged(object? sender, EventArgs e)
+        {
+            await Update();
         }
 
         private void OnShowDice(object sender, MouseEventArgs e)
@@ -187,6 +207,40 @@ namespace Client.Controls
             };
 
             DiceRoller.Show(diceRollDto);
+        }
+
+        private async void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            await Update();
+        }
+
+        private async Task Update()
+        {
+            if (_sessionData.CampaignId is int campaignId)
+            {
+                var activeMapResponse = await _activeMapApi.GetAsync(campaignId);
+
+                if (activeMapResponse.Error is not null)
+                {
+                    MessageBox.Show(activeMapResponse.Error.Message);
+                    return;
+                }
+
+                if (activeMapResponse.Data.MapId > 0)
+                {
+                    var mapResponse = await _mapApi.GetAsync(activeMapResponse.Data.MapId);
+
+                    if (mapResponse.Error is not null)
+                    {
+                        MessageBox.Show(mapResponse.Error.Message);
+                        return;
+                    }
+
+                    Map.ImageData = mapResponse.Data.ImageData;
+                    Map.Grid.IsActive = mapResponse.Data.Grid.IsActive;
+                    Map.Grid.Size = mapResponse.Data.Grid.Size;
+                }
+            }
         }
     }
 }

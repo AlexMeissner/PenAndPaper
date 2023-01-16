@@ -101,7 +101,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Margin="4" Content="Abbrechen" Click="OnCancel"/>
-            <Button Grid.Column="1" Margin="4" Content="Erstellen" Click="OnCreate"/>
+            <Button Grid.Column="1" Margin="4" Content="Speichern" Click="OnCreate"/>
         </Grid>
     </Grid>
 </Window>

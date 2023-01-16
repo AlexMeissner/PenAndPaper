@@ -1,5 +1,6 @@
 using Server.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 class ServerMain
 {
@@ -11,6 +12,7 @@ class ServerMain
 
         string DbPath = @"W:\\Code\\PenAndPaper\\Database.db"; // TODO
 
+        //builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={DbPath}").LogTo(Console.WriteLine, LogLevel.Warning, DbContextLoggerOptions.DefaultWithLocalTime | DbContextLoggerOptions.SingleLine));
         builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={DbPath}"));
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,6 +46,8 @@ class ServerMain
         services.AddTransient<ICampaignOverview, CampaignOverview>();
         services.AddTransient<ICampaignCreation, CampaignCreation>();
         services.AddTransient<ICampaignUpdates, CampaignUpdates>();
+        services.AddTransient<IMap, Map>();
+        services.AddTransient<IMapOverview, MapOverview>();
         services.AddTransient<IUser, User>();
     }
 }

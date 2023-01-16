@@ -23,7 +23,7 @@
 
             <TabControl Grid.Column="0">
                 <TabItem Header="Aktive Karte">
-                    <controls:MapControl/>
+                    <ContentPresenter Name="MapPresenter"/>
                 </TabItem>
             </TabControl>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
@@ -43,7 +43,7 @@
 
             <TabControl Grid.Column="0">
                 <TabItem Header="Karten Übersicht">
-                    <controls:MapOverviewControl/>
+                    <ContentPresenter Name="MapOverviewPresenter"/>
                 </TabItem>
             </TabControl>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>

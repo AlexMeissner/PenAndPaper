@@ -8,6 +8,7 @@ namespace Client.Services
     public interface ICampaignUpdates
     {
         event EventHandler MapChanged;
+        event EventHandler MapCollectionChanged;
         event EventHandler TokenChanged;
         event EventHandler DiceRolled;
         event EventHandler MusicChanged;
@@ -16,6 +17,7 @@ namespace Client.Services
     public class CampaignUpdates : ICampaignUpdates
     {
         public event EventHandler? MapChanged;
+        public event EventHandler? MapCollectionChanged;
         public event EventHandler? TokenChanged;
         public event EventHandler? DiceRolled;
         public event EventHandler? MusicChanged;
@@ -42,9 +44,10 @@ namespace Client.Services
             {
                 var campaignUpdates = await _campaignUpdatesApi.GetAsync(campaignId);
 
-                if (campaignUpdates is not null)
+                if (campaignUpdates is not null && campaignUpdates.Data is not null)
                 {
                     _campaignUpdates.MapChange = RaiseEvent(MapChanged, campaignUpdates.Data.MapChange, _campaignUpdates.MapChange);
+                    _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, campaignUpdates.Data.MapCollectionChange, _campaignUpdates.MapCollectionChange);
                     _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, campaignUpdates.Data.TokenChange, _campaignUpdates.TokenChange);
                     _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, campaignUpdates.Data.DiceRoll, _campaignUpdates.DiceRoll);
                     _campaignUpdates.MusicChange = RaiseEvent(MusicChanged, campaignUpdates.Data.MusicChange, _campaignUpdates.MusicChange);
@@ -52,7 +55,7 @@ namespace Client.Services
             }
         }
 
-        private int RaiseEvent(EventHandler? eventHandler, int serverTime, int clientTime)
+        private long RaiseEvent(EventHandler? eventHandler, long serverTime, long clientTime)
         {
             if (serverTime > clientTime)
             {
