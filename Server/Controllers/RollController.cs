@@ -2,7 +2,6 @@
 using DataTransfer.Dice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Server.Database;
 using Server.Services;
 using System.Text.Json;
 
@@ -35,8 +34,8 @@ namespace Server.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ApiResponse>> PostAsync(RollDiceDto payload)
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse>> PutAsync(RollDiceDto payload)
         {
             try
             {
@@ -46,7 +45,7 @@ namespace Server.Controllers
 
                 var player = await _dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
 
-                DiceRollResultDto diceRoll = new()
+                DiceRollResultDto diceRollResult = new()
                 {
                     Name = player.Username,
                     Succeeded = new()
@@ -55,23 +54,19 @@ namespace Server.Controllers
                 for (int i = 1; i <= max; ++i)
                 {
                     bool success = i <= roll;
-                    diceRoll.Succeeded.Add(success);
+                    diceRollResult.Succeeded.Add(success);
                 }
 
-                diceRoll.Succeeded = diceRoll.Succeeded.OrderBy(x => random.Next()).ToList();
+                diceRollResult.Succeeded = diceRollResult.Succeeded.OrderBy(x => random.Next()).ToList();
 
-                var serializedData = JsonSerializer.Serialize(diceRoll);
-
-                var data = new DbDiceRoll()
-                {
-                    CampaignId = payload.CampaignId,
-                    Roll = serializedData
-                };
+                var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == payload.CampaignId);
+                diceRoll.Roll = JsonSerializer.Serialize(diceRollResult);
 
                 var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
                 update.DiceRoll = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                await _dbContext.DiceRolls.AddAsync(data);
+                // TODO: Fill default entry on campaign creation
+
                 await _dbContext.SaveChangesAsync();
 
                 return ApiResponse.Success;
@@ -82,18 +77,15 @@ namespace Server.Controllers
             }
         }
 
-        private static int DiceToInt(Dice dice)
+        private static int DiceToInt(Dice dice) => dice switch
         {
-            return dice switch
-            {
-                Dice.D4 => 4,
-                Dice.D6 => 6,
-                Dice.D8 => 8,
-                Dice.D10 => 10,
-                Dice.D12 => 12,
-                Dice.D20 => 20,
-                _ => throw new ArgumentException("Dice not implemented"),
-            };
-        }
+            Dice.D4 => 4,
+            Dice.D6 => 6,
+            Dice.D8 => 8,
+            Dice.D10 => 10,
+            Dice.D12 => 12,
+            Dice.D20 => 20,
+            _ => throw new ArgumentException("Dice not implemented"),
+        };
     }
 }

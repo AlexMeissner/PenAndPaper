@@ -18,13 +18,18 @@ namespace Client.Controls
             InitializeComponent();
         }
 
-        public async void Show(DiceRollDto diceRollDto)
+        public async Task Show(DiceRollResultDto diceRollResult)
         {
+            if (diceRollResult.Name is null || diceRollResult.Succeeded is null)
+            {
+                return;
+            }
+
             Interlocked.Increment(ref RunningRolls);
 
             int successes = 0;
             RolledNumberText.Text = successes.ToString();
-            CharacterName.Text = diceRollDto.Name;
+            CharacterName.Text = diceRollResult.Name;
 
             DiceD4.Visibility = Visibility.Collapsed;
             DiceD6.Visibility = Visibility.Collapsed;
@@ -35,11 +40,11 @@ namespace Client.Controls
             Visibility = Visibility.Visible;
 
             const int totalTime = 2000;
-            int timeGap = totalTime / diceRollDto.Succeeded.Count;
+            int timeGap = totalTime / diceRollResult.Succeeded.Count;
 
             UIElementCollection diceImages;
 
-            switch (diceRollDto.Succeeded.Count)
+            switch (diceRollResult.Succeeded.Count)
             {
                 case 4:
                     DiceD4.Visibility = Visibility.Visible;
@@ -77,17 +82,16 @@ namespace Client.Controls
                 }
             }
 
-            for (int index = 0; index < diceRollDto.Succeeded.Count; ++index)
+            for (int index = 0; index < diceRollResult.Succeeded.Count; ++index)
             {
                 if (diceImages[index] is SvgAwesome image)
                 {
-                    image.Foreground = diceRollDto.Succeeded[index] ? Brushes.Green : Brushes.Red;
-                    successes = diceRollDto.Succeeded[index] ? successes + 1 : successes;
+                    image.Foreground = diceRollResult.Succeeded[index] ? Brushes.Green : Brushes.Red;
+                    successes = diceRollResult.Succeeded[index] ? successes + 1 : successes;
                     RolledNumberText.Text = successes.ToString();
                     await Task.Delay(timeGap);
                 }
             }
-
 
             const int timeToHide = 10000;
             await Task.Delay(timeToHide);

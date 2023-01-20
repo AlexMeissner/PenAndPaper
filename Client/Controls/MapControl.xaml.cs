@@ -3,7 +3,6 @@ using Client.Services.API;
 using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,17 +14,20 @@ namespace Client.Controls
     {
         private readonly ISessionData _sessionData;
         private readonly IMapApi _mapApi;
+        private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
 
         public MapDto Map { get; set; } = new();
 
-        public MapControl(ISessionData sessionData, IMapApi mapApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
+        public MapControl(ISessionData sessionData, IMapApi mapApi, IRollApi rollApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
         {
             _sessionData = sessionData;
             _mapApi = mapApi;
+            _rollApi = rollApi;
             _activeMapApi = activeMapApi;
 
             campaignUpdates.MapChanged += OnMapChanged;
+            campaignUpdates.DiceRolled += OnDiceRolled;
 
             InitializeComponent();
         }
@@ -33,6 +35,23 @@ namespace Client.Controls
         private async void OnMapChanged(object? sender, EventArgs e)
         {
             await Update();
+        }
+
+        private async void OnDiceRolled(object? sender, EventArgs e)
+        {
+            if (_sessionData.CampaignId is int campaignId)
+            {
+                var rollDiceResult = await _rollApi.GetAsync(campaignId);
+
+                if (rollDiceResult.Error is null)
+                {
+                    await Dispatcher.InvokeAsync(new Action(async () => await DiceRoller.Show(rollDiceResult.Data)));
+                }
+                else
+                {
+                    MessageBox.Show(rollDiceResult.Error.Message);
+                }
+            }
         }
 
         private void OnShowDice(object sender, MouseEventArgs e)
@@ -47,166 +66,51 @@ namespace Client.Controls
             DicePanel.Visibility = Visibility.Collapsed;
         }
 
-        private void OnRollD4(object sender, RoutedEventArgs e)
+        private async Task RollDice(Dice dice)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
-
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
+            if (_sessionData.CampaignId is int campaignId && _sessionData.UserId is int playerId)
             {
-                Name = "Roll D4",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
+                DicePanel.Visibility = Visibility.Collapsed;
 
-            DiceRoller.Show(diceRollDto);
+                var payload = new RollDiceDto()
+                {
+                    CampaignId = campaignId,
+                    PlayerId = playerId,
+                    Dice = dice
+                };
+
+                await _rollApi.PutAsync(payload);
+            }
         }
 
-        private void OnRollD6(object sender, RoutedEventArgs e)
+        private async void OnRollD4(object sender, RoutedEventArgs e)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
-
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
-            {
-                Name = "Roll D6",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
-
-            DiceRoller.Show(diceRollDto);
+            await RollDice(Dice.D4);
         }
 
-        private void OnRollD8(object sender, RoutedEventArgs e)
+        private async void OnRollD6(object sender, RoutedEventArgs e)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
-
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
-            {
-                Name = "Roll D8",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
-
-            DiceRoller.Show(diceRollDto);
+            await RollDice(Dice.D6);
         }
 
-        private void OnRollD10(object sender, RoutedEventArgs e)
+        private async void OnRollD8(object sender, RoutedEventArgs e)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
-
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
-            {
-                Name = "Roll D10",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
-
-            DiceRoller.Show(diceRollDto);
+            await RollDice(Dice.D8);
         }
 
-        private void OnRollD12(object sender, RoutedEventArgs e)
+        private async void OnRollD10(object sender, RoutedEventArgs e)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
-
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
-            {
-                Name = "Roll D12",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
-
-            DiceRoller.Show(diceRollDto);
+            await RollDice(Dice.D10);
         }
 
-        private void OnRollD20(object sender, RoutedEventArgs e)
+        private async void OnRollD12(object sender, RoutedEventArgs e)
         {
-            DicePanel.Visibility = Visibility.Collapsed;
+            await RollDice(Dice.D12);
+        }
 
-            var random = new Random();
-
-            var diceRollDto = new DiceRollDto()
-            {
-                Name = "Roll D20",
-                Succeeded = new List<bool>
-                {
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                    random.Next(2) == 1,
-                }
-            };
-
-            DiceRoller.Show(diceRollDto);
+        private async void OnRollD20(object sender, RoutedEventArgs e)
+        {
+            await RollDice(Dice.D20);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

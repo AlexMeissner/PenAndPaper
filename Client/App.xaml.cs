@@ -33,6 +33,7 @@ namespace Client
             services.AddTransient<IMapApi, MapApi>();
             services.AddTransient<IMapOverviewApi, MapOverviewApi>();
             services.AddTransient<IUserApi, UserApi>();
+            services.AddTransient<IRollApi, RollApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)
