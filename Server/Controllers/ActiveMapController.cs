@@ -1,5 +1,4 @@
 ﻿using DataTransfer;
-using DataTransfer.Campaign;
 using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
