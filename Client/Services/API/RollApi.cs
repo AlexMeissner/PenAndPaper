@@ -13,19 +13,23 @@ namespace Client.Services.API
 
     public class RollApi : IRollApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public RollApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         Task<ApiResponse<DiceRollResultDto>> IRollApi.GetAsync(int campaignId)
         {
-            // TODO
-            string url = $"https://localhost:7099/Roll?campaignId={campaignId}";
+            string url = _endPointProvider.BaseURL + $"Roll?campaignId={campaignId}";
             return url.GetAsync<DiceRollResultDto>();
         }
 
         public Task<ApiResponse> PutAsync(RollDiceDto payload)
         {
-            // TODO
-            string url = "https://localhost:7099/Roll";
+            string url = _endPointProvider.BaseURL + "Roll";
             return url.PutAsync(payload);
-
         }
     }
 }

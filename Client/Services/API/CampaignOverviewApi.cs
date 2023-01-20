@@ -12,10 +12,16 @@ namespace Client.Services.API
 
     public class CampaignOverviewApi : ICampaignOverviewApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public CampaignOverviewApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<CampaignOverviewDto>> GetAsync(int userId)
         {
-            // TODO
-            string url = $"https://localhost:7099/CampaignOverview?userId={userId}";
+            string url = _endPointProvider.BaseURL + $"CampaignOverview?userId={userId}";
             return url.GetAsync<CampaignOverviewDto>();
         }
     }

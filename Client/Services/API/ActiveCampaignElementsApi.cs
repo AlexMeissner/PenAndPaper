@@ -13,17 +13,22 @@ namespace Client.Services.API
 
     public class ActiveMapApi : IActiveMapApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public ActiveMapApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<ActiveMapDto>> GetAsync(int campaignId)
         {
-            // TODO
-            string url = $"https://localhost:7099/ActiveMap?campaignId={campaignId}";
+            string url = _endPointProvider.BaseURL + $"ActiveMap?campaignId={campaignId}";
             return url.GetAsync<ActiveMapDto>();
         }
 
         public Task<ApiResponse> PutAsync(ActiveMapDto payload)
         {
-            // TODO
-            string url = "https://localhost:7099/ActiveMap";
+            string url = _endPointProvider.BaseURL + "ActiveMap";
             return url.PutAsync(payload);
         }
     }

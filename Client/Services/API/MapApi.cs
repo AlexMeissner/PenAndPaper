@@ -15,31 +15,34 @@ namespace Client.Services.API
 
     public class MapApi : IMapApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public MapApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<MapDto>> GetAsync(int MapId)
         {
-            // TODO
-            string url = $"https://localhost:7099/Map?mapId={MapId}";
+            string url = _endPointProvider.BaseURL + $"Map?mapId={MapId}";
             return url.GetAsync<MapDto>();
         }
 
         public Task<ApiResponse> PostAsync(MapDto payload)
         {
-            // TODO
-            string url = $"https://localhost:7099/Map";
+            string url = _endPointProvider.BaseURL + "Map";
             return url.PostAsync(payload);
         }
 
         public Task<ApiResponse> PutAsync(MapDto payload)
         {
-            // TODO
-            string url = $"https://localhost:7099/Map";
+            string url = _endPointProvider.BaseURL + "Map";
             return url.PutAsync(payload);
         }
 
         public Task<ApiResponse> DeleteAsync(int MapId)
         {
-            // TODO
-            string url = $"https://localhost:7099/Map?mapId={MapId}";
+            string url = _endPointProvider.BaseURL + $"Map?mapId={MapId}";
             return url.DeleteAsync();
         }
     }

@@ -24,6 +24,7 @@ namespace Client
         {
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
+            services.AddTransient<IEndPointProvider, EndPointProvider>();
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<IActiveMapApi, ActiveMapApi>();
             services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();

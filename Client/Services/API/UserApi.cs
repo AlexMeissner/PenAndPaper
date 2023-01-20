@@ -12,10 +12,16 @@ namespace Client.Services.API
 
     public class UserApi : IUserApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public UserApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<UsersDto>> GetAsync(int userId)
         {
-            // TODO
-            string url = $"https://localhost:7099/User?userId={userId}";
+            string url = _endPointProvider.BaseURL + $"User?userId={userId}";
             return url.GetAsync<UsersDto>();
         }
     }

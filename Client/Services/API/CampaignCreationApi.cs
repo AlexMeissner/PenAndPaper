@@ -13,17 +13,22 @@ namespace Client.Services.API
 
     public class CampaignCreationApi : ICampaignCreationApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public CampaignCreationApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<CampaignCreationDto>> GetAsync(int CampaignId)
         {
-            // TODO
-            string url = $"https://localhost:7099/CampaignCreation?campaignId={CampaignId}";
+            string url = _endPointProvider.BaseURL + $"CampaignCreation?campaignId={CampaignId}";
             return url.GetAsync<CampaignCreationDto>();
         }
 
         public Task<ApiResponse> PostAsync(CampaignCreationDto payload)
         {
-            // TODO
-            string url = $"https://localhost:7099/CampaignCreation";
+            string url = _endPointProvider.BaseURL + "CampaignCreation";
             return url.PostAsync(payload);
         }
     }

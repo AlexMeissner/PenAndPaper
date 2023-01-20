@@ -13,17 +13,22 @@ namespace Client.Services.API
 
     public class AuthenticationApi : IAuthenticationApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public AuthenticationApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<LoginDto>> LoginAsync(UserCredentialsDto payload)
         {
-            // TODO
-            string url = "https://localhost:7099/Login";
+            string url = _endPointProvider.BaseURL + "Login";
             return url.PostAsync<LoginDto>(payload);
         }
 
         public Task<ApiResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload)
         {
-            // TODO
-            string url = "https://localhost:7099/Register";
+            string url = _endPointProvider.BaseURL + "Register";
             return url.PostAsync<LoginDto>(payload);
         }
     }

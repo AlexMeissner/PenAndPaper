@@ -12,10 +12,16 @@ namespace Client.Services.API
 
     public class MapOverviewApi : IMapOverviewApi
     {
+        private readonly IEndPointProvider _endPointProvider;
+
+        public MapOverviewApi(IEndPointProvider endPointProvider)
+        {
+            _endPointProvider = endPointProvider;
+        }
+
         public Task<ApiResponse<MapOverviewDto>> GetAsync(int campaignId)
         {
-            // TODO
-            string url = $"https://localhost:7099/MapOverview?campaignId={campaignId}";
+            string url = _endPointProvider.BaseURL + $"MapOverview?campaignId={campaignId}";
             return url.GetAsync<MapOverviewDto>();
         }
     }
