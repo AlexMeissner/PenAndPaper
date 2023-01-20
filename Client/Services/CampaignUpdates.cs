@@ -26,7 +26,10 @@ namespace Client.Services
         private readonly ISessionData _sessionData;
         private readonly ICampaignUpdatesApi _campaignUpdatesApi;
 
-        private CampaignUpdateDto _campaignUpdates = new();
+        private readonly CampaignUpdateDto _campaignUpdates = new()
+        {
+            DiceRoll = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
 
         public CampaignUpdates(ISessionData sessionData, ICampaignUpdatesApi campaignUpdatesApi)
         {
