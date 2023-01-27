@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Server.Database;
 
-namespace Server.Services
+namespace Server.Database
 {
     public class SQLDatabase : DbContext
     {

@@ -1,6 +1,5 @@
-using Server.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Server.Database;
 
 class ServerMain
 {
@@ -19,8 +18,6 @@ class ServerMain
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        AddServices(builder.Services);
-
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -38,17 +35,6 @@ class ServerMain
         app.MapControllers();
 
         app.Run();
-    }
-
-    private static void AddServices(IServiceCollection services)
-    {
-        services.AddTransient<IUserAuthentication, UserAuthentication>();
-        services.AddTransient<ICampaignOverview, CampaignOverview>();
-        services.AddTransient<ICampaignCreation, CampaignCreation>();
-        services.AddTransient<ICampaignUpdates, CampaignUpdates>();
-        services.AddTransient<IMap, Map>();
-        services.AddTransient<IMapOverview, MapOverview>();
-        services.AddTransient<IUser, User>();
     }
 }
 

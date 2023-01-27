@@ -3,7 +3,6 @@ using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
-using Server.Services;
 
 namespace Server.Controllers
 {
@@ -12,19 +11,38 @@ namespace Server.Controllers
     public class MapController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly IMap _map;
 
-        public MapController(SQLDatabase dbContext, IMap map)
+        public MapController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _map = map;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<MapDto>>> GetAsync(int mapId)
         {
-            var response = await _map.GetAsync(mapId);
-            return this.SendResponse<MapDto>(response);
+            try
+            {
+                var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
+
+                var payload = new MapDto()
+                {
+                    Id = map.Id,
+                    CampaignId = map.CampaignId,
+                    Name = map.Name,
+                    ImageData = map.ImageData,
+                    Grid = new()
+                    {
+                        IsActive = map.GridIsActive,
+                        Size = map.GridSize
+                    }
+                };
+
+                return this.SendResponse<MapDto>(ApiResponse<MapDto>.Success(payload));
+            }
+            catch (Exception exception)
+            {
+                return this.SendResponse<MapDto>(ApiResponse<MapDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message)));
+            }
         }
 
         [HttpPost]

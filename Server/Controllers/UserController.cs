@@ -1,7 +1,8 @@
 ﻿using DataTransfer;
 using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
-using Server.Services;
+using Microsoft.EntityFrameworkCore;
+using Server.Database;
 
 namespace Server.Controllers
 {
@@ -9,18 +10,27 @@ namespace Server.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUser _user;
+        private readonly SQLDatabase _dbContext;
 
-        public UserController(IUser user)
+        public UserController(SQLDatabase dbContext)
         {
-            _user = user;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<UsersDto>>> GetAsync(int userId)
         {
-            var response = await _user.GetAsync(userId);
-            return this.SendResponse<UsersDto>(response);
+            try
+            {
+                var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
+                var payload = new UsersDto() { Id = user.Id, Username = user.Username, Email = user.Email };
+                var response = ApiResponse<UsersDto>.Success(payload);
+                return this.SendResponse<UsersDto>(response);
+            }
+            catch (Exception exception)
+            {
+                return ApiResponse<UsersDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+            }
         }
     }
 }

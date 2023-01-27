@@ -1,7 +1,7 @@
 ﻿using DataTransfer;
 using DataTransfer.Login;
 using Microsoft.AspNetCore.Mvc;
-using Server.Services;
+using Server.Database;
 
 namespace Server.Controllers
 {
@@ -9,23 +9,37 @@ namespace Server.Controllers
     [Route("[controller]")]
     public class RegisterController : ControllerBase
     {
-        private readonly IUserAuthentication _userAuthentication;
+        private readonly SQLDatabase _dbContext;
 
-        public RegisterController(IUserAuthentication userAuthentication)
+        public RegisterController(SQLDatabase dbContext)
         {
-            _userAuthentication = userAuthentication;
+            _dbContext = dbContext;
         }
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<LoginDto>>> RegisterAsync(UserCredentialsDto userCredentials)
         {
-            var response = await _userAuthentication.RegisterAsync(
-                userCredentials.Email, 
-                userCredentials.Username, 
-                userCredentials.Password).
-                ConfigureAwait(false);
+            try
+            {
+                var entry = await _dbContext.Users.AddAsync(new()
+                {
+                    Email = userCredentials.Email,
+                    Username = userCredentials.Username,
+                    Password = userCredentials.Password
+                });
 
-            return this.SendResponse<LoginDto>(response);
+                await _dbContext.SaveChangesAsync();
+
+                var payload = new LoginDto() { UserId = entry.Entity.Id };
+                var response = ApiResponse<LoginDto>.Success(payload);
+
+                return this.SendResponse<LoginDto>(response);
+            }
+            catch (Exception exception)
+            {
+                var response = ApiResponse<LoginDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.SendResponse<LoginDto>(response);
+            }
         }
     }
 }

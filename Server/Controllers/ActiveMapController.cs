@@ -2,7 +2,7 @@
 using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Server.Services;
+using Server.Database;
 
 namespace Server.Controllers
 {

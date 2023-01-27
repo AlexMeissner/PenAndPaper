@@ -2,7 +2,7 @@
 using DataTransfer.Dice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Server.Services;
+using Server.Database;
 using System.Text.Json;
 
 namespace Server.Controllers
