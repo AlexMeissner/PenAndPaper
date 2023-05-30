@@ -11,6 +11,7 @@ namespace Server.Database
         public DbSet<DbCampaignUpdates> CampaignUpdates { get; set; }
         public DbSet<DbUserInCampaign> UsersInCampaign { get; set; }
         public DbSet<DbMap> Maps { get; set; }
+        public DbSet<DbSound> Sounds { get; set; }
 
         public SQLDatabase(DbContextOptions<SQLDatabase> options) : base(options)
         {

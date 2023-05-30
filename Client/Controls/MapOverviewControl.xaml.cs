@@ -29,8 +29,6 @@ namespace Client.Controls
             campaignUpdates.MapCollectionChanged += OnMapCollectionChanged;
 
             InitializeComponent();
-
-
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

@@ -19,6 +19,7 @@ namespace Client.View
 
             MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
             MapOverviewPresenter.Content = serviceProvider.GetRequiredService<MapOverviewControl>();
+            SoundPresenter.Content = serviceProvider.GetRequiredService<GamemasterMusicControl>();
 
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;

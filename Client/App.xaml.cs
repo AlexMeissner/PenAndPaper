@@ -22,8 +22,10 @@ namespace Client
 
         private static void ConfigureServices(ServiceCollection services)
         {
+            services.AddTransient<ICache, Cache>();
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
+            services.AddTransient<IAudioPlayer, AudioPlayer>();
             services.AddTransient<IEndPointProvider, EndPointProvider>();
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<IActiveMapApi, ActiveMapApi>();
@@ -35,6 +37,7 @@ namespace Client
             services.AddTransient<IMapOverviewApi, MapOverviewApi>();
             services.AddTransient<IUserApi, UserApi>();
             services.AddTransient<IRollApi, RollApi>();
+            services.AddTransient<ISoundApi, SoundApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)
@@ -48,10 +51,14 @@ namespace Client
             services.AddTransient<CampaignPlayerViewPage>();
             services.AddTransient<MapControl>();
             services.AddTransient<MapOverviewControl>();
+            services.AddTransient<GamemasterMusicControl>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            var player = ServiceProvider.GetService<IAudioPlayer>()!;
+            player.Play(@"W:\test.wav");
+
             var mainWindow = ServiceProvider.GetService<MainWindow>()!;
             mainWindow.Show();
         }

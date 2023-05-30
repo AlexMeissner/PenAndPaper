@@ -54,8 +54,8 @@
                 </Grid.RowDefinitions>
 
                 <TabControl Grid.Row="0">
-                    <TabItem Header="Musik">
-                        <controls:GamemasterMusicControl/>
+                    <TabItem Header="Sound">
+                        <ContentPresenter Name="SoundPresenter"/>
                     </TabItem>
                 </TabControl>
                 <Grid Grid.Row="1">
