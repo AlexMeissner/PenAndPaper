@@ -56,9 +56,6 @@ namespace Client
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var player = ServiceProvider.GetService<IAudioPlayer>()!;
-            player.Play(@"W:\test.wav");
-
             var mainWindow = ServiceProvider.GetService<MainWindow>()!;
             mainWindow.Show();
         }

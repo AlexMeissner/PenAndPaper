@@ -1,4 +1,5 @@
-﻿using Client.Services.API;
+﻿using Client.Services;
+using Client.Services.API;
 using Client.View;
 using DataTransfer.Sound;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace Client.Controls
         public ICollection<SoundOverviewItemDto> Effects { get; set; } = new ObservableCollection<SoundOverviewItemDto>();
 
         private readonly ISoundApi SoundApi;
+        private readonly IAudioPlayer AudioPlayer;
 
-        public GamemasterMusicControl(ISoundApi soundApi)
+        public GamemasterMusicControl(ISoundApi soundApi, IAudioPlayer audioPlayer)
         {
             SoundApi = soundApi;
+            AudioPlayer = audioPlayer;
 
             InitializeComponent();
 
@@ -31,12 +34,14 @@ namespace Client.Controls
             effectsCollectionView.Filter = EffectsFilter;
         }
 
-        private void OnClicked(object sender, RoutedEventArgs e)
+        private void OnPlaySound(object sender, RoutedEventArgs e)
         {
-            if (sender is SoundDto sound)
-            {
+            AudioPlayer.Play(@"C:\Users\Alex\Downloads\bock.mp3");
+        }
 
-            }
+        private void OnStopSound(object sender, RoutedEventArgs e)
+        {
+            AudioPlayer.Stop();
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

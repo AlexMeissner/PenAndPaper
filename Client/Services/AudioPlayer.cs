@@ -1,81 +1,54 @@
-﻿using System;
-using System.IO;
-using System.Media;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using NAudio.Wave;
+using System;
 
 namespace Client.Services
 {
-    // Cache sound files on client side to reduce data which needs to be sent
     public interface IAudioPlayer
     {
-        void Pause();
-        Task Play(byte[] data);
-        Task Play(string filepath);
-        Task Resume();
+        void Play(string filepath);
         void Stop();
     }
 
     public class AudioPlayer : IAudioPlayer
     {
-        private SoundPlayer? _soundPlayer;
-        private long _pause;
+        public event EventHandler? Finished;
+        public event EventHandler? Stopped;
 
-        public void Pause()
+        private WaveOut? WaveOut;
+        private Mp3FileReader? WaveProvider;
+
+        public void Play(string filepath)
         {
-            _pause = _soundPlayer?.Stream.Position ?? 0;
-            _soundPlayer?.Stop();
-        }
-
-        public Task Play(byte[] data)
-        {
-            _pause = 0;
-
-            return Task.Run(() =>
+            if (WaveOut is not null)
             {
-                var ms = new MemoryStream(data);
-                _soundPlayer = new(ms);                
-                //_soundPlayer.Stream.Seek(0, SeekOrigin.Begin);
-                //_soundPlayer.Stream.Write(data, 0, data.Length);
-                _soundPlayer.Play();
-            });
+                WaveOut.PlaybackStopped -= OnPlaybackStopped;
+            }
+
+            WaveProvider = new Mp3FileReader(filepath);
+            WaveOut = new WaveOut();
+            WaveOut.Init(WaveProvider);
+            WaveOut.PlaybackStopped += OnPlaybackStopped;
+            WaveOut.Play();
         }
 
-        public async Task Play(string filepath)
+        private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            //var data = await File.ReadAllBytesAsync(filepath);
-            //await Play(data);
-
-            //var data = await File.ReadAllBytesAsync(filepath);
-            //var s = new MemoryStream(data);
-            //var player = new MediaPlayer();
-            //player.Source = MediaSource.
-            //IRandomAccessStream ras = s.As
-            //player.Open(new Uri(filepath));
-            //player.Play();
-            //player.Volume = 0.9;
-
-            //var s = new SoundPlayer(filepath);
-            //s.Play();
-
-            //var ms = new MemoryStream(data, true);
-            //var a = new SoundPlayer(ms);
-            //a.Play();
-        }
-
-        public Task Resume()
-        {
-            return Task.Run(() =>
+            if (WaveOut is not null && WaveProvider is not null)
             {
-                _soundPlayer.Stream.Seek(_pause, SeekOrigin.Begin);
-                _soundPlayer.Play();
-            });
+                if (WaveProvider.CurrentTime == WaveProvider.TotalTime)
+                {
+                    Finished?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    Stopped?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
 
         public void Stop()
         {
-            _pause = 0;
-            _soundPlayer.Stop();
+            WaveOut?.Stop();
         }
     }
 }
