@@ -53,7 +53,7 @@ namespace Client.Services
                     _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, campaignUpdates.Data.MapCollectionChange, _campaignUpdates.MapCollectionChange);
                     _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, campaignUpdates.Data.TokenChange, _campaignUpdates.TokenChange);
                     _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, campaignUpdates.Data.DiceRoll, _campaignUpdates.DiceRoll);
-                    _campaignUpdates.MusicChange = RaiseEvent(MusicChanged, campaignUpdates.Data.MusicChange, _campaignUpdates.MusicChange);
+                    _campaignUpdates.SoundChange = RaiseEvent(MusicChanged, campaignUpdates.Data.SoundChange, _campaignUpdates.SoundChange);
                 }
             }
         }

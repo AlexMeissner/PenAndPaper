@@ -24,7 +24,7 @@ namespace Server.Controllers
             {
                 var response = new SoundOverviewDto()
                 {
-                    Items = await _dbContext.Sounds.Select(x => new SoundOverviewItemDto(x.Name, x.Type, x.Tags)).ToListAsync()
+                    Items = await _dbContext.Sounds.Select(x => new SoundOverviewItemDto(x.Id, x.Name, x.Type, x.Tags)).ToListAsync()
                 };
 
                 return ApiResponse<SoundOverviewDto>.Success(response);

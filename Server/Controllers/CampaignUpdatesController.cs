@@ -31,7 +31,7 @@ namespace Server.Controllers
                     MapCollectionChange = campaignUpdate.MapCollectionChange,
                     TokenChange = campaignUpdate.TokenChange,
                     DiceRoll = campaignUpdate.DiceRoll,
-                    MusicChange = campaignUpdate.MusicChange
+                    SoundChange = campaignUpdate.SoundChange
                 };
 
                 var response = ApiResponse<CampaignUpdateDto>.Success(payload);

@@ -2,6 +2,7 @@
 using Client.Services.API;
 using Client.View;
 using DataTransfer.Sound;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,12 +18,19 @@ namespace Client.Controls
         public ICollection<SoundOverviewItemDto> AmbientSounds { get; set; } = new ObservableCollection<SoundOverviewItemDto>();
         public ICollection<SoundOverviewItemDto> Effects { get; set; } = new ObservableCollection<SoundOverviewItemDto>();
 
+        private readonly ISessionData SessionData;
         private readonly ISoundApi SoundApi;
+        private readonly IActiveSoundApi ActiveSoundApi;
         private readonly IAudioPlayer AudioPlayer;
 
-        public GamemasterMusicControl(ISoundApi soundApi, IAudioPlayer audioPlayer)
+        private int PlaylistIndex = 0;
+        private IList<SoundOverviewItemDto> Playlist = Array.Empty<SoundOverviewItemDto>();
+
+        public GamemasterMusicControl(ISessionData sessionData, ISoundApi soundApi, IAudioPlayer audioPlayer, IActiveSoundApi activeSoundApi)
         {
+            SessionData = sessionData;
             SoundApi = soundApi;
+            ActiveSoundApi = activeSoundApi;
             AudioPlayer = audioPlayer;
 
             InitializeComponent();
@@ -32,16 +40,64 @@ namespace Client.Controls
 
             var effectsCollectionView = (CollectionView)CollectionViewSource.GetDefaultView(EffectsControl.ItemsSource);
             effectsCollectionView.Filter = EffectsFilter;
+
+            AudioPlayer.Stopped += OnAmbientStopped;
         }
 
-        private void OnPlaySound(object sender, RoutedEventArgs e)
+        private async void OnAmbientStopped(object? sender, EventArgs e)
         {
-            AudioPlayer.Play(@"C:\Users\Alex\Downloads\bock.mp3");
+            PlaylistIndex = (PlaylistIndex + 1) % Playlist.Count;
+
+            if (Playlist.Count > 0 && SessionData.CampaignId is int campaignId)
+            {
+                var payload = new ActiveSoundDto()
+                {
+                    CampaignId = campaignId,
+                    AmbientId = Playlist[PlaylistIndex].Id
+                };
+                await ActiveSoundApi.PutAsync(payload);
+            }
         }
 
-        private void OnStopSound(object sender, RoutedEventArgs e)
+        private async void OnPlayAmbient(object sender, RoutedEventArgs e)
         {
-            AudioPlayer.Stop();
+            if (sender is Button button && button.DataContext is SoundOverviewItemDto sound && SessionData.CampaignId is int campaignId)
+            {
+                Playlist.Clear();
+
+                var payload = new ActiveSoundDto()
+                {
+                    CampaignId = campaignId,
+                    AmbientId = sound.Id
+                };
+                await ActiveSoundApi.PutAsync(payload);
+            }
+        }
+
+        private async void OnPlayEffect(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is SoundOverviewItemDto sound && SessionData.CampaignId is int campaignId)
+            {
+                var payload = new ActiveSoundDto()
+                {
+                    CampaignId = campaignId,
+                    EffectId = sound.Id
+                };
+                await ActiveSoundApi.PutAsync(payload);
+            }
+        }
+
+        private async void OnStopSound(object sender, RoutedEventArgs e)
+        {
+            if (SessionData.CampaignId is int campaignId)
+            {
+                var payload = new ActiveSoundDto()
+                {
+                    CampaignId = campaignId,
+                    AmbientId = -1
+                };
+                await ActiveSoundApi.PutAsync(payload);
+            }
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -137,9 +193,23 @@ namespace Client.Controls
             CollectionViewSource.GetDefaultView(EffectsControl.ItemsSource).Refresh();
         }
 
-        private void OnPlayAll(object sender, RoutedEventArgs e)
+        private async void OnPlayAll(object sender, RoutedEventArgs e)
         {
+            PlaylistIndex = 0;
 
+            var filteredAmbientSounds = ((CollectionView)CollectionViewSource.GetDefaultView(AmbientControl.ItemsSource)).Cast<SoundOverviewItemDto>();
+            var random = new Random();
+            Playlist = filteredAmbientSounds.Select(x => new { key = random.Next(), x }).OrderBy(y => y.key).Select(z => z.x).ToList();
+
+            if (SessionData.CampaignId is int campaignId)
+            {
+                var payload = new ActiveSoundDto()
+                {
+                    CampaignId = campaignId,
+                    AmbientId = Playlist[PlaylistIndex].Id
+                };
+                await ActiveSoundApi.PutAsync(payload);
+            }
         }
     }
 }

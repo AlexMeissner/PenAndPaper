@@ -29,6 +29,7 @@ namespace Client
             services.AddTransient<IEndPointProvider, EndPointProvider>();
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<IActiveMapApi, ActiveMapApi>();
+            services.AddTransient<IActiveSoundApi, ActiveSoundApi>();
             services.AddTransient<ICampaignCreationApi, CampaignCreationApi>();
             services.AddTransient<ICampaignOverviewApi, CampaignOverviewApi>();
             services.AddTransient<ICampaignUpdatesApi, CampaignUpdatesApi>();

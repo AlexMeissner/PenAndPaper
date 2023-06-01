@@ -70,7 +70,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Margin="1" Click="OnPlaySound">
+                            <Button Grid.Column="0" Margin="1" Click="OnPlayAmbient">
                                 <fa5:SvgAwesome Icon="Solid_PlayCircle"/>
                             </Button>
                             <Button Grid.Column="1" Margin="1" Click="OnStopSound">

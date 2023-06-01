@@ -5,6 +5,9 @@ namespace Client.Services
 {
     public interface IAudioPlayer
     {
+        event EventHandler Finished;
+        event EventHandler Stopped;
+
         void Play(string filepath);
         void Stop();
     }
