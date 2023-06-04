@@ -15,23 +15,23 @@ namespace Client.Services.API
 
     public class SoundApi : ISoundApi
     {
-        private readonly ICache _Cache;
         private readonly IEndPointProvider EndPointProvider;
 
-        public SoundApi(ICache cache, IEndPointProvider endPointProvider)
+        public SoundApi(IEndPointProvider endPointProvider)
         {
-            _Cache = cache;
             EndPointProvider = endPointProvider;
         }
 
         public Task<ApiResponse<SoundDto>> GetAsync(int id)
         {
-            throw new System.NotImplementedException();
+            string url = EndPointProvider.BaseURL + $"Sound";
+            return url.GetAsync<SoundDto>();
         }
 
         public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id)
         {
-            throw new System.NotImplementedException();
+            string url = EndPointProvider.BaseURL + $"SoundData";
+            return url.GetAsync<SoundDataDto>();
         }
 
         public Task<ApiResponse<SoundOverviewDto>> GetOverviewAsync()

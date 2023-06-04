@@ -24,7 +24,7 @@ namespace Client.Controls
         private readonly IAudioPlayer AudioPlayer;
 
         private int PlaylistIndex = 0;
-        private IList<SoundOverviewItemDto> Playlist = Array.Empty<SoundOverviewItemDto>();
+        private IList<SoundOverviewItemDto> Playlist = new List<SoundOverviewItemDto>();
 
         public GamemasterMusicControl(ISessionData sessionData, ISoundApi soundApi, IAudioPlayer audioPlayer, IActiveSoundApi activeSoundApi)
         {
