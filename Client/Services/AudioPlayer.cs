@@ -98,7 +98,7 @@ namespace Client.Services
                 var filename = string.Format("{0}.{1}", sound.Data.Id, "mp3");
 
                 if (!Cache.Contains(CacheType.AmbientSound, filename) ||
-                    Checksum.CreateHash(Cache.GetData(CacheType.AmbientSound, filename)) != sound.Data.Checksum)
+                    Checksum.CreateHash(await Cache.GetData(CacheType.AmbientSound, filename)) != sound.Data.Checksum)
                 {
                     var soundData = await SoundApi.GetDataAsync(campaignId);
 
@@ -107,7 +107,7 @@ namespace Client.Services
                         return;
                     }
 
-                    Cache.Add(CacheType.AmbientSound, filename, soundData.Data.Data);
+                    await Cache.Add(CacheType.AmbientSound, filename, soundData.Data.Data);
                 }
 
                 Play(Cache.GetPath(CacheType.AmbientSound, filename));
@@ -142,7 +142,7 @@ namespace Client.Services
                 var filename = string.Format("{0}.{1}", sound.Data.Id, "mp3");
 
                 if (!Cache.Contains(CacheType.SoundEffect, filename) ||
-                    Checksum.CreateHash(Cache.GetData(CacheType.SoundEffect, filename)) != sound.Data.Checksum)
+                    Checksum.CreateHash(await Cache.GetData(CacheType.SoundEffect, filename)) != sound.Data.Checksum)
                 {
                     var soundData = await SoundApi.GetDataAsync(campaignId);
 
@@ -151,7 +151,7 @@ namespace Client.Services
                         return;
                     }
 
-                    Cache.Add(CacheType.SoundEffect, filename, soundData.Data.Data);
+                    await Cache.Add(CacheType.SoundEffect, filename, soundData.Data.Data);
                 }
 
                 Play(Cache.GetPath(CacheType.SoundEffect, filename));

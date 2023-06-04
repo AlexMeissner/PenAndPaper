@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Client.Services
 {
@@ -11,9 +12,9 @@ namespace Client.Services
 
     public interface ICache
     {
-        bool Add(CacheType type, string filename, byte[] data);
+        Task Add(CacheType type, string filename, byte[] data);
         bool Contains(CacheType type, string filename);
-        byte[] GetData(CacheType type, string filename);
+        Task<byte[]> GetData(CacheType type, string filename);
         string GetPath(CacheType type, string filename);
     }
 
@@ -29,24 +30,24 @@ namespace Client.Services
             }
         }
 
-        public bool Add(CacheType type, string filename, byte[] data)
+        public Task Add(CacheType type, string filename, byte[] data)
         {
-            throw new NotImplementedException();
+            return File.WriteAllBytesAsync(GetPath(type, filename), data);
         }
 
         public bool Contains(CacheType type, string filename)
         {
-            throw new NotImplementedException();
+            return File.Exists(GetPath(type, filename));
         }
 
-        public byte[] GetData(CacheType type, string filename)
+        public Task<byte[]> GetData(CacheType type, string filename)
         {
-            throw new NotImplementedException();
+            return File.ReadAllBytesAsync(GetPath(type, filename));
         }
 
         public string GetPath(CacheType type, string filename)
         {
-            throw new NotImplementedException();
+            return Path.Combine(CacheDirectory, type.ToString(), filename);
         }
     }
 }
