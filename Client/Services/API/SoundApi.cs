@@ -24,13 +24,13 @@ namespace Client.Services.API
 
         public Task<ApiResponse<SoundDto>> GetAsync(int id)
         {
-            string url = EndPointProvider.BaseURL + $"Sound";
+            string url = EndPointProvider.BaseURL + $"Sound?id=" + id;
             return url.GetAsync<SoundDto>();
         }
 
         public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id)
         {
-            string url = EndPointProvider.BaseURL + $"SoundData";
+            string url = EndPointProvider.BaseURL + $"SoundData?id=" + id;
             return url.GetAsync<SoundDataDto>();
         }
 

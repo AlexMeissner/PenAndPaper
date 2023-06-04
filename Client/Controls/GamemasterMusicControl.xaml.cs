@@ -41,15 +41,15 @@ namespace Client.Controls
             var effectsCollectionView = (CollectionView)CollectionViewSource.GetDefaultView(EffectsControl.ItemsSource);
             effectsCollectionView.Filter = EffectsFilter;
 
-            AudioPlayer.Stopped += OnAmbientStopped;
+            AudioPlayer.Finished += OnAmbientFinished;
         }
 
-        private async void OnAmbientStopped(object? sender, EventArgs e)
+        private async void OnAmbientFinished(object? sender, EventArgs e)
         {
-            PlaylistIndex = (PlaylistIndex + 1) % Playlist.Count;
-
             if (Playlist.Count > 0 && SessionData.CampaignId is int campaignId)
             {
+                PlaylistIndex = (PlaylistIndex + 1) % Playlist.Count;
+
                 var payload = new ActiveSoundDto()
                 {
                     CampaignId = campaignId,
@@ -105,9 +105,19 @@ namespace Client.Controls
             await LoadOverview();
         }
 
-        private async void OnAddSound(object sender, RoutedEventArgs e)
+        private async void OnAddAmbientSound(object sender, RoutedEventArgs e)
         {
-            var window = new SoundCreationWindow();
+            await OnAddSound(SoundType.Ambient);
+        }
+
+        private async void OnAddSoundEffect(object sender, RoutedEventArgs e)
+        {
+            await OnAddSound(SoundType.Effect);
+        }
+
+        private async Task OnAddSound(SoundType type)
+        {
+            var window = new SoundCreationWindow(type);
 
             if (window.ShowDialog() is true)
             {

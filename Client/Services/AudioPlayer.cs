@@ -88,7 +88,7 @@ namespace Client.Services
                     return;
                 }
 
-                var sound = await SoundApi.GetAsync(campaignId);
+                var sound = await SoundApi.GetAsync((int)id);
 
                 if (sound.Error is not null)
                 {
@@ -100,7 +100,7 @@ namespace Client.Services
                 if (!Cache.Contains(CacheType.AmbientSound, filename) ||
                     Checksum.CreateHash(await Cache.GetData(CacheType.AmbientSound, filename)) != sound.Data.Checksum)
                 {
-                    var soundData = await SoundApi.GetDataAsync(campaignId);
+                    var soundData = await SoundApi.GetDataAsync((int)id);
 
                     if (soundData.Error is not null)
                     {
@@ -132,7 +132,7 @@ namespace Client.Services
                     return;
                 }
 
-                var sound = await SoundApi.GetAsync(campaignId);
+                var sound = await SoundApi.GetAsync((int)id);
 
                 if (sound.Error is not null)
                 {
@@ -144,7 +144,7 @@ namespace Client.Services
                 if (!Cache.Contains(CacheType.SoundEffect, filename) ||
                     Checksum.CreateHash(await Cache.GetData(CacheType.SoundEffect, filename)) != sound.Data.Checksum)
                 {
-                    var soundData = await SoundApi.GetDataAsync(campaignId);
+                    var soundData = await SoundApi.GetDataAsync((int)id);
 
                     if (soundData.Error is not null)
                     {

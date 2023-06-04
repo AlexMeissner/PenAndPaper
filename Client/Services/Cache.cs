@@ -32,7 +32,15 @@ namespace Client.Services
 
         public Task Add(CacheType type, string filename, byte[] data)
         {
-            return File.WriteAllBytesAsync(GetPath(type, filename), data);
+            var filepath = GetPath(type, filename);
+            var directory = Path.GetDirectoryName(filepath)!;
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            return File.WriteAllBytesAsync(filepath, data);
         }
 
         public bool Contains(CacheType type, string filename)

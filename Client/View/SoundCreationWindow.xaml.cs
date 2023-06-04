@@ -1,7 +1,8 @@
 ﻿using DataTransfer.Sound;
+using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,12 +11,11 @@ namespace Client.View
 {
     public partial class SoundCreationWindow : Window
     {
-        public SoundCreationDto CreationData { get; set; } = new SoundCreationDto(string.Empty, SoundType.Ambient, new ObservableCollection<string>(), Array.Empty<byte>());
+        public SoundCreationDto CreationData { get; set; }
 
-        public static IEnumerable<SoundType> SoundTypeValues => Enum.GetValues(typeof(SoundType)).Cast<SoundType>();
-
-        public SoundCreationWindow()
+        public SoundCreationWindow(SoundType type)
         {
+            CreationData = new(string.Empty, type, new ObservableCollection<string>(), Array.Empty<byte>());
             InitializeComponent();
         }
 
@@ -48,9 +48,17 @@ namespace Client.View
             }
         }
 
-        private void OnUploadFile(object sender, RoutedEventArgs e)
+        private async void OnUploadFile(object sender, RoutedEventArgs e)
         {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "MP3 (*.mp3)|*.mp3"
+            };
 
+            if (openFileDialog.ShowDialog() is true)
+            {
+                CreationData.Data = await File.ReadAllBytesAsync(openFileDialog.FileName);
+            }
         }
     }
 }
