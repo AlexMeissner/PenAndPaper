@@ -11,7 +11,8 @@ namespace Client.Services
         event EventHandler MapCollectionChanged;
         event EventHandler TokenChanged;
         event EventHandler DiceRolled;
-        event EventHandler MusicChanged;
+        event EventHandler AmbientSoundChanged;
+        event EventHandler SoundEffectChanged;
     }
 
     public class CampaignUpdates : ICampaignUpdates
@@ -20,7 +21,8 @@ namespace Client.Services
         public event EventHandler? MapCollectionChanged;
         public event EventHandler? TokenChanged;
         public event EventHandler? DiceRolled;
-        public event EventHandler? MusicChanged;
+        public event EventHandler? AmbientSoundChanged;
+        public event EventHandler? SoundEffectChanged;
 
         private readonly Timer _timer = new();
         private readonly ISessionData _sessionData;
@@ -53,7 +55,8 @@ namespace Client.Services
                     _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, campaignUpdates.Data.MapCollectionChange, _campaignUpdates.MapCollectionChange);
                     _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, campaignUpdates.Data.TokenChange, _campaignUpdates.TokenChange);
                     _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, campaignUpdates.Data.DiceRoll, _campaignUpdates.DiceRoll);
-                    _campaignUpdates.SoundChange = RaiseEvent(MusicChanged, campaignUpdates.Data.SoundChange, _campaignUpdates.SoundChange);
+                    _campaignUpdates.AmbientSoundChange = RaiseEvent(AmbientSoundChanged, campaignUpdates.Data.AmbientSoundChange, _campaignUpdates.AmbientSoundChange);
+                    _campaignUpdates.SoundEffectChange = RaiseEvent(SoundEffectChanged, campaignUpdates.Data.SoundEffectChange, _campaignUpdates.SoundEffectChange);
                 }
             }
         }

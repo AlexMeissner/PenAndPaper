@@ -87,7 +87,7 @@ namespace Client.Controls
             }
         }
 
-        private async void OnStopSound(object sender, RoutedEventArgs e)
+        private async void OnStopAmbient(object sender, RoutedEventArgs e)
         {
             if (SessionData.CampaignId is int campaignId)
             {

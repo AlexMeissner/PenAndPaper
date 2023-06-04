@@ -3,6 +3,7 @@ using DataTransfer.Sound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using System.Security.Cryptography;
 
 namespace Server.Controllers
 {
@@ -24,7 +25,7 @@ namespace Server.Controllers
             {
                 if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is DbSound sound)
                 {
-                    return ApiResponse<SoundDto>.Success(new(sound.Name, sound.Data));
+                    return ApiResponse<SoundDto>.Success(new(sound.Id, Checksum.CreateHash(sound.Data)));
                 }
 
                 return ApiResponse<SoundDto>.Failure(new ErrorDetails(ErrorCode.NoContent, $"There is no sound with id {id}."));

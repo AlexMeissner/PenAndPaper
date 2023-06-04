@@ -2,13 +2,13 @@
 {
     public class SoundDto
     {
-        public string Name { get; set; }
-        public byte[] Data { get; set; }
+        public int Id { get; set; }
+        public string Checksum { get; set; }
 
-        public SoundDto(string name, byte[] data)
+        public SoundDto(int id, string checksum)
         {
-            Name = name;
-            Data = data;
+            Id = id;
+            Checksum = checksum;
         }
     }
 }

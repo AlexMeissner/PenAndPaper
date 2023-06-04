@@ -51,13 +51,13 @@ namespace Server.Controllers
 
                 if (payload.AmbientId is int ambientId && activeCampaignElements.AmbientId != ambientId)
                 {
-                    update.SoundChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    update.AmbientSoundChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     activeCampaignElements.AmbientId = ambientId;
                     await _dbContext.SaveChangesAsync();
                 }
                 if (payload.EffectId is int effectId && activeCampaignElements.EffectId != effectId)
                 {
-                    update.SoundChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    update.SoundEffectChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     activeCampaignElements.EffectId = effectId;
                     await _dbContext.SaveChangesAsync();
                 }

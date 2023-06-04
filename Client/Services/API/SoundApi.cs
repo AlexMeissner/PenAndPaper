@@ -9,6 +9,7 @@ namespace Client.Services.API
     {
         public Task<ApiResponse<SoundOverviewDto>> GetOverviewAsync();
         public Task<ApiResponse<SoundDto>> GetAsync(int id);
+        public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id);
         public Task<ApiResponse> PostAsync(SoundCreationDto payload);
     }
 
@@ -24,6 +25,11 @@ namespace Client.Services.API
         }
 
         public Task<ApiResponse<SoundDto>> GetAsync(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id)
         {
             throw new System.NotImplementedException();
         }

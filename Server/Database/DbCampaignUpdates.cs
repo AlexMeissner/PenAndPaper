@@ -8,6 +8,7 @@
         public long MapCollectionChange { get; set; }
         public long TokenChange { get; set; }
         public long DiceRoll { get; set; }
-        public long SoundChange { get; set; }
+        public long AmbientSoundChange { get; set; }
+        public long SoundEffectChange { get; set; }
     }
 }

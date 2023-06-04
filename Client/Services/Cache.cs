@@ -1,32 +1,50 @@
 ﻿using System;
+using System.IO;
 
 namespace Client.Services
 {
+    public enum CacheType
+    {
+        AmbientSound,
+        SoundEffect,
+    }
+
     public interface ICache
     {
-        bool Add(string filename, byte[] data);
-        bool Exists(string filename);
-        byte[] Get(string filename);
+        bool Add(CacheType type, string filename, byte[] data);
+        bool Contains(CacheType type, string filename);
+        byte[] GetData(CacheType type, string filename);
+        string GetPath(CacheType type, string filename);
     }
 
     public class Cache : ICache
     {
+        private readonly string CacheDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PenAndPaper");
+
         public Cache()
         {
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (!Directory.Exists(CacheDirectory))
+            {
+                Directory.CreateDirectory(CacheDirectory);
+            }
         }
 
-        public bool Add(string filename, byte[] data)
+        public bool Add(CacheType type, string filename, byte[] data)
         {
             throw new NotImplementedException();
         }
 
-        public bool Exists(string filename)
+        public bool Contains(CacheType type, string filename)
         {
             throw new NotImplementedException();
         }
 
-        public byte[] Get(string filename)
+        public byte[] GetData(CacheType type, string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetPath(CacheType type, string filename)
         {
             throw new NotImplementedException();
         }
