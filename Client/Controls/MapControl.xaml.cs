@@ -36,7 +36,7 @@ namespace Client.Controls
 
         private async void OnMapChanged(object? sender, EventArgs e)
         {
-            await Update();
+            await Update();            
         }
 
         private async void OnDiceRolled(object? sender, EventArgs e)
@@ -146,6 +146,8 @@ namespace Client.Controls
                     Map.Grid.IsActive = mapResponse.Data.Grid.IsActive;
                     Map.Grid.Size = mapResponse.Data.Grid.Size;
                 }
+
+                ZoomableCanvas.Reset();
             }
         }
     }
