@@ -118,7 +118,7 @@
                 <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D12" Click="OnRollD12"/>
                 <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D20" Click="OnRollD20"/>
             </StackPanel>
-            <controls:DiceRollerControl x:Name="DiceRoller" HorizontalAlignment="Center" Visibility="Collapsed"/>
+            <ContentPresenter Name="DiceRollerPresenter" HorizontalAlignment="Center" Visibility="Visible"/>
         </StackPanel>
 
 

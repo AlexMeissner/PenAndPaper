@@ -52,6 +52,7 @@ namespace Client
             services.AddTransient<CampaignPlayerViewPage>();
             services.AddTransient<MapControl>();
             services.AddTransient<MapOverviewControl>();
+            services.AddTransient<DiceRollerControl>();
             services.AddTransient<GamemasterMusicControl>();
         }
 

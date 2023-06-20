@@ -41,7 +41,7 @@ namespace Server.Controllers
             {
                 var random = new Random();
                 int max = DiceToInt(payload.Dice);
-                int roll = random.Next(1, max);
+                int roll = random.Next(1, max + 1);
 
                 var player = await _dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
 

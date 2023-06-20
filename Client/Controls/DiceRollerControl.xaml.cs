@@ -1,4 +1,5 @@
-﻿using DataTransfer.Dice;
+﻿using Client.Services;
+using DataTransfer.Dice;
 using FontAwesome5;
 using System;
 using System.Threading;
@@ -13,8 +14,12 @@ namespace Client.Controls
     {
         private int RunningRolls = 0;
 
-        public DiceRollerControl()
+        private readonly IAudioPlayer AudioPlayer;
+
+        public DiceRollerControl(IAudioPlayer audioPlayer)
         {
+            AudioPlayer = audioPlayer;
+
             InitializeComponent();
         }
 
@@ -38,9 +43,6 @@ namespace Client.Controls
             DiceD12.Visibility = Visibility.Collapsed;
             DiceD20.Visibility = Visibility.Collapsed;
             Visibility = Visibility.Visible;
-
-            const int totalTime = 2000;
-            int timeGap = totalTime / diceRollResult.Succeeded.Count;
 
             UIElementCollection diceImages;
 
@@ -84,12 +86,32 @@ namespace Client.Controls
 
             for (int index = 0; index < diceRollResult.Succeeded.Count; ++index)
             {
+                successes = diceRollResult.Succeeded[index] ? successes + 1 : successes;
+
+                if (index == diceRollResult.Succeeded.Count - 1 && (successes == 1 || successes == diceRollResult.Succeeded.Count))
+                {
+                    const int rollMinId = 11;
+                    const int rollMaxId = 12;
+                    int soundId = successes == 1 ? rollMinId : rollMaxId;
+                    AudioPlayer.Play(soundId);
+                }
+                else
+                {
+                    if (diceRollResult.Succeeded[index])
+                    {
+                        AudioPlayer.Play(9);
+                    }
+                    else
+                    {
+                        AudioPlayer.Play(10);
+                    }
+                }
+
                 if (diceImages[index] is SvgAwesome image)
                 {
                     image.Foreground = diceRollResult.Succeeded[index] ? Brushes.Green : Brushes.Red;
-                    successes = diceRollResult.Succeeded[index] ? successes + 1 : successes;
                     RolledNumberText.Text = successes.ToString();
-                    await Task.Delay(timeGap);
+                    await Task.Delay(200);
                 }
             }
 

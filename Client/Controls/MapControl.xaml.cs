@@ -2,6 +2,7 @@
 using Client.Services.API;
 using DataTransfer.Dice;
 using DataTransfer.Map;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,7 +20,7 @@ namespace Client.Controls
 
         public MapDto Map { get; set; } = new();
 
-        public MapControl(ISessionData sessionData, IMapApi mapApi, IRollApi rollApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
+        public MapControl(IServiceProvider serviceProvider, ISessionData sessionData, IMapApi mapApi, IRollApi rollApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
         {
             _sessionData = sessionData;
             _mapApi = mapApi;
@@ -28,8 +29,9 @@ namespace Client.Controls
 
             campaignUpdates.MapChanged += OnMapChanged;
             campaignUpdates.DiceRolled += OnDiceRolled;
-
             InitializeComponent();
+
+            DiceRollerPresenter.Content = serviceProvider.GetRequiredService<DiceRollerControl>();
         }
 
         private async void OnMapChanged(object? sender, EventArgs e)
@@ -45,7 +47,7 @@ namespace Client.Controls
 
                 if (rollDiceResult.Error is null)
                 {
-                    await Dispatcher.InvokeAsync(new Action(async () => await DiceRoller.Show(rollDiceResult.Data)));
+                    await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRollerControl)DiceRollerPresenter.Content).Show(rollDiceResult.Data)));
                 }
                 else
                 {

@@ -7,6 +7,8 @@ namespace Client.Services
 {
     public interface IAudioPlayer
     {
+        void Play(int id);
+
         event EventHandler Finished;
         event EventHandler Stopped;
     }
@@ -33,6 +35,36 @@ namespace Client.Services
 
             campaignUpdates.AmbientSoundChanged += OnAmbientSoundChanged;
             campaignUpdates.SoundEffectChanged += OnSoundEffectChanged;
+        }
+
+        public async void Play(int id)
+        {
+            var sound = await SoundApi.GetAsync(id);
+
+            if (sound.Error is not null)
+            {
+                return;
+            }
+
+            var filename = string.Format("{0}.{1}", sound.Data.Id, "mp3");
+
+            if (!Cache.Contains(CacheType.SoundEffect, filename) ||
+                Checksum.CreateHash(await Cache.GetData(CacheType.SoundEffect, filename)) != sound.Data.Checksum)
+            {
+                var soundData = await SoundApi.GetDataAsync(id);
+
+                if (soundData.Error is not null)
+                {
+                    return;
+                }
+
+                await Cache.Add(CacheType.SoundEffect, filename, soundData.Data.Data);
+            }
+
+            var waveProvider = new Mp3FileReader(Cache.GetPath(CacheType.SoundEffect, filename));
+            var waveOut = new WaveOut();
+            waveOut.Init(waveProvider);
+            waveOut.Play();
         }
 
         private void Play(string filepath)
@@ -127,34 +159,10 @@ namespace Client.Services
 
                 var id = activeSound.Data.EffectId;
 
-                if (id is null || id == -1)
+                if (id is int effectId && effectId != -1)
                 {
-                    return;
+                    Play(effectId);
                 }
-
-                var sound = await SoundApi.GetAsync((int)id);
-
-                if (sound.Error is not null)
-                {
-                    return;
-                }
-
-                var filename = string.Format("{0}.{1}", sound.Data.Id, "mp3");
-
-                if (!Cache.Contains(CacheType.SoundEffect, filename) ||
-                    Checksum.CreateHash(await Cache.GetData(CacheType.SoundEffect, filename)) != sound.Data.Checksum)
-                {
-                    var soundData = await SoundApi.GetDataAsync((int)id);
-
-                    if (soundData.Error is not null)
-                    {
-                        return;
-                    }
-
-                    await Cache.Add(CacheType.SoundEffect, filename, soundData.Data.Data);
-                }
-
-                Play(Cache.GetPath(CacheType.SoundEffect, filename));
             }
         }
     }
