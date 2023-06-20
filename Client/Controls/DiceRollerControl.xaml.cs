@@ -1,6 +1,7 @@
 ﻿using Client.Services;
 using DataTransfer.Dice;
-using FontAwesome5;
+using FontAwesome;
+using FontAwesome.Sharp;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,7 +79,7 @@ namespace Client.Controls
 
             foreach (var image in diceImages)
             {
-                if (image is SvgAwesome svgAwesome)
+                if (image is IconImage svgAwesome)
                 {
                     svgAwesome.Foreground = (Brush)new BrushConverter().ConvertFromString("#777")!;
                 }
@@ -107,7 +108,7 @@ namespace Client.Controls
                     }
                 }
 
-                if (diceImages[index] is SvgAwesome image)
+                if (diceImages[index] is IconImage image)
                 {
                     image.Foreground = diceRollResult.Succeeded[index] ? Brushes.Green : Brushes.Red;
                     RolledNumberText.Text = successes.ToString();

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              Name="GamemasterMusicCtrl"
              mc:Ignorable="d" 
              Loaded="OnLoaded"
@@ -36,7 +36,7 @@
                     </Style>
                 </Button.Resources>
                 <!-- Try out FontAwesome.Sharp instead of current NuGet Package for more icons -->
-                <fa5:SvgAwesome Icon="Solid_Play"/>
+                <fa:IconImage Icon="Play"/>
             </Button>
             <Button Grid.Column="1" Margin="2" Click="OnStopAmbient">
                 <Button.Resources>
@@ -44,7 +44,7 @@
                         <Setter Property="CornerRadius" Value="5"/>
                     </Style>
                 </Button.Resources>
-                <fa5:SvgAwesome Icon="Solid_Stop"/>
+                <fa:IconImage Icon="Stop"/>
             </Button>
             <TextBox Name="AmbientFilterTextBox" Grid.Column="2" Margin="2" VerticalContentAlignment="Center" FontFamily="Consolas" TextChanged="OnAmbientFilterChanged">
                 <TextBox.Resources>
@@ -59,7 +59,7 @@
                         <Setter Property="CornerRadius" Value="5"/>
                     </Style>
                 </Button.Resources>
-                <fa5:SvgAwesome Icon="Solid_PlusCircle"/>
+                <fa:IconImage Icon="PlusCircle"/>
             </Button>
         </Grid>
 
@@ -79,7 +79,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Grid.Column="0" Margin="1" Click="OnPlayAmbient">
-                                <fa5:SvgAwesome Icon="Solid_PlayCircle"/>
+                                <fa:IconImage Icon="PlayCircle"/>
                             </Button>
                             <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" FontFamily="Consolas" Text="{Binding Name}"/>
 
@@ -122,7 +122,7 @@
                         <Setter Property="CornerRadius" Value="5"/>
                     </Style>
                 </Button.Resources>
-                <fa5:SvgAwesome Icon="Solid_PlusCircle"/>
+                <fa:IconImage Icon="PlusCircle"/>
             </Button>
         </Grid>
 
@@ -142,7 +142,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Grid.Column="0" Margin="1" Click="OnPlayEffect">
-                                <fa5:SvgAwesome Icon="Solid_PlayCircle"/>
+                                <fa:IconImage Icon="PlayCircle"/>
                             </Button>
                             <TextBlock Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" FontFamily="Consolas" Text="{Binding Name}"/>
 

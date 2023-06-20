@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:Client.Controls"
-             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:converter="clr-namespace:Client.Converter"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Loaded="OnLoaded"
@@ -98,16 +98,16 @@
         <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Button Width="50" Margin="2">
-                    <fa5:SvgAwesome Icon="Solid_User" ToolTip="Charakter"/>
+                    <fa:IconImage Icon="UserAlt" ToolTip="Charakter"/>
                 </Button>
                 <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice">
-                    <fa5:SvgAwesome Icon="Solid_DiceD20" ToolTip="Würfeln"/>
+                    <fa:IconImage Icon="DiceD20" ToolTip="Würfeln"/>
                 </Button>
                 <Button Width="50" Margin="2">
-                    <fa5:SvgAwesome Icon="Solid_Wrench" ToolTip="Einstellungen"/>
+                    <fa:IconImage Icon="Wrench" ToolTip="Einstellungen"/>
                 </Button>
                 <Button Width="50" Margin="2">
-                    <fa5:SvgAwesome Icon="Solid_BookOpen" ToolTip="Lexikon"/>
+                    <fa:IconImage Icon="BookOpen" ToolTip="Lexikon"/>
                 </Button>
             </StackPanel>
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal" Name="DicePanel" Visibility="Collapsed">
