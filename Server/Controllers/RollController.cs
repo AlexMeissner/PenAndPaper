@@ -12,15 +12,19 @@ namespace Server.Controllers
     public class RollController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<RollController> _logger;
 
-        public RollController(SQLDatabase dbContext)
+        public RollController(SQLDatabase dbContext, ILogger<RollController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<DiceRollResultDto>>> GetAsync(int campaignId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == campaignId);
@@ -37,6 +41,8 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> PutAsync(RollDiceDto payload)
         {
+            _logger.LogInformation(nameof(PutAsync));
+
             try
             {
                 var random = new Random();

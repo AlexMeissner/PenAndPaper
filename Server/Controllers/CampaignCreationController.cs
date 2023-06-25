@@ -12,15 +12,19 @@ namespace Server.Controllers
     public class CampaignCreationController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<CampaignCreationController> _logger;
 
-        public CampaignCreationController(SQLDatabase dbContext)
+        public CampaignCreationController(SQLDatabase dbContext, ILogger<CampaignCreationController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<CampaignCreationDto>>> GetAsync(int campaignId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 CampaignCreationDto payload;
@@ -72,6 +76,7 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> PostAsync(CampaignCreationDto payload)
         {
+            _logger.LogInformation(nameof(PostAsync));
             // TODO: Create entry in 'ActiveCampaignElements' initialize with '-1'
 
             try

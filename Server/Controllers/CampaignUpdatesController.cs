@@ -11,15 +11,19 @@ namespace Server.Controllers
     public class CampaignUpdatesController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<CampaignUpdatesController> _logger;
 
-        public CampaignUpdatesController(SQLDatabase dbContext)
+        public CampaignUpdatesController(SQLDatabase dbContext, ILogger<CampaignUpdatesController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<CampaignUpdateDto>>> GetAsync(int campaignId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 var campaignUpdate = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == campaignId);

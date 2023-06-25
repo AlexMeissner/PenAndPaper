@@ -11,15 +11,19 @@ namespace Server.Controllers
     public class ActiveMapController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<ActiveMapController> _logger;
 
-        public ActiveMapController(SQLDatabase dbContext)
+        public ActiveMapController(SQLDatabase dbContext, ILogger<ActiveMapController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<ActiveMapDto>>> GetAsync(int campaignId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             ActiveMapDto payload;
 
             try
@@ -43,6 +47,8 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> PutAsync(ActiveMapDto payload)
         {
+            _logger.LogInformation(nameof(PutAsync));
+
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == payload.CampaignId);

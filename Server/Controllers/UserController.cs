@@ -11,15 +11,19 @@ namespace Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(SQLDatabase dbContext)
+        public UserController(SQLDatabase dbContext, ILogger<UserController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<UsersDto>>> GetAsync(int userId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);

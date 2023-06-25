@@ -11,15 +11,19 @@ namespace Server.Controllers
     public class MapController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<MapController> _logger;
 
-        public MapController(SQLDatabase dbContext)
+        public MapController(SQLDatabase dbContext, ILogger<MapController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<MapDto>>> GetAsync(int mapId)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
@@ -48,6 +52,8 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> PostAsync(MapDto payload)
         {
+            _logger.LogInformation(nameof(PostAsync));
+
             try
             {
                 var dbMap = new DbMap()
@@ -77,6 +83,8 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> PutAsync(MapDto payload)
         {
+            _logger.LogInformation(nameof(PutAsync));
+
             try
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == payload.Id);
@@ -102,6 +110,8 @@ namespace Server.Controllers
         [HttpDelete]
         public async Task<ActionResult<ApiResponse>> DeleteAsync(int mapId)
         {
+            _logger.LogInformation(nameof(DeleteAsync));
+
             try
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);

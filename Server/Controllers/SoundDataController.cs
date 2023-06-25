@@ -11,15 +11,19 @@ namespace Server.Controllers
     public class SoundDataController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ILogger<SoundDataController> _logger;
 
-        public SoundDataController(SQLDatabase dbContext)
+        public SoundDataController(SQLDatabase dbContext, ILogger<SoundDataController> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<SoundDataDto>>> GetAsync(int id)
         {
+            _logger.LogInformation(nameof(GetAsync));
+
             try
             {
                 if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is DbSound sound)
