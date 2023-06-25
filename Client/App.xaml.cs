@@ -25,7 +25,8 @@ namespace Client
             services.AddTransient<ICache, Cache>();
             services.AddSingleton<IPageNavigator, PageNavigator>();
             services.AddSingleton<ISessionData>(new SessionData());
-            services.AddTransient<IAudioPlayer, AudioPlayer>();
+            services.AddSingleton<IAudioPlayer, AudioPlayer>();
+            services.AddSingleton<ISettings, Settings>();
             services.AddTransient<IEndPointProvider, EndPointProvider>();
             services.AddTransient<IAuthenticationApi, AuthenticationApi>();
             services.AddTransient<IActiveMapApi, ActiveMapApi>();

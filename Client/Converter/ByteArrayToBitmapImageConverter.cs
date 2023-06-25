@@ -10,7 +10,7 @@ namespace Client.Converter
     {
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is byte[] data)
+            if (value is byte[] data && data.Length > 0)
             {
                 using MemoryStream stream = new(data);
 

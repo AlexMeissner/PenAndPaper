@@ -101,7 +101,7 @@
                     <fa:IconImage Icon="DiceD20" ToolTip="Würfeln"/>
                 </Button>
                 <Button Width="50" Margin="2">
-                    <fa:IconImage Icon="Wrench" ToolTip="Einstellungen"/>
+                    <fa:IconImage Icon="Gear" ToolTip="Einstellungen"/>
                 </Button>
                 <Button Width="50" Margin="2">
                     <fa:IconImage Icon="BookOpen" ToolTip="Lexikon"/>

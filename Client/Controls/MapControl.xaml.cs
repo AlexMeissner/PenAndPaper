@@ -36,7 +36,7 @@ namespace Client.Controls
 
         private async void OnMapChanged(object? sender, EventArgs e)
         {
-            await Update();            
+            await Update();
         }
 
         private async void OnDiceRolled(object? sender, EventArgs e)
