@@ -37,22 +37,22 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="200" Height="200" CornerRadius="4" BorderBrush="Black" BorderThickness="2" Padding="5" Margin="5">
+                        <Border Width="200" Height="200" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" BorderThickness="2" Padding="5" Margin="5">
                             <Border.Background>
                                 <ImageBrush ImageSource="{Binding ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="UniformToFill"/>
                             </Border.Background>
                             <Grid>
-                                <Border Background="#222" CornerRadius="4" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <Border Background="#222" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
                                     <TextBlock Margin="2" FontSize="20" FontFamily="Consolas" Foreground="White" Text="{Binding Name}"/>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                    <Button Width="30" Height="30" Background="#222" BorderBrush="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="OnPlay">
+                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="OnPlay">
                                         <fa:IconImage Foreground="Green" Icon="Play" Margin="2"/>
                                     </Button>
-                                    <Button Width="30" Height="30" Background="#222" BorderBrush="Black" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-1,0,-1,0" Click="OnEdit">
+                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-1,0,-1,0" Click="OnEdit">
                                         <fa:IconImage Foreground="LightGray" Icon="PencilAlt" Margin="2"/>
                                     </Button>
-                                    <Button Width="30" Height="30" Background="#222" BorderBrush="Black" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="OnDelete">
+                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="OnDelete">
                                         <fa:IconImage Foreground="Red" Icon="TrashAlt" Margin="2"/>
                                     </Button>                                    
                                 </StackPanel>

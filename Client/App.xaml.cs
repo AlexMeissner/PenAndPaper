@@ -55,6 +55,7 @@ namespace Client
             services.AddTransient<MapOverviewControl>();
             services.AddTransient<DiceRollerControl>();
             services.AddTransient<GamemasterMusicControl>();
+            services.AddTransient<SettingsControl>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

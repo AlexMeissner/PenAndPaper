@@ -12,7 +12,7 @@
             <ImageBrush x:Name="BackgroundImage" d:ImageSource="/Client;component/Resource/splash1.jpg" Stretch="UniformToFill"/>
         </Grid.Background>
 
-        <Border Width="250" Height="145" Background="#AA000000" CornerRadius="4" Padding="4 0 4 5">
+        <Border Width="250" Height="145" Background="{DynamicResource Theme_Color_Dominant_1_Transparent}" CornerRadius="4" Padding="4 0 4 5">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
@@ -22,9 +22,9 @@
                     <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" FontWeight="Bold" FontSize="20" Foreground="White" Text="Email"/>
+                <TextBlock Grid.Row="0" FontWeight="Bold" FontSize="20" Text="Email"/>
                 <TextBox Grid.Row="1" FontWeight="Bold" FontSize="15" Name="EmailBox"/>
-                <TextBlock Grid.Row="2" FontWeight="Bold" FontSize="20" Foreground="White" Text="Passwort"/>
+                <TextBlock Grid.Row="2" FontWeight="Bold" FontSize="20" Text="Passwort"/>
                 <PasswordBox Grid.Row="3" Name="PasswordBox" FontSize="15" KeyDown="OnKeyDown"/>
                 <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>

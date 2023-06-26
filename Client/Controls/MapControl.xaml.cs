@@ -17,6 +17,7 @@ namespace Client.Controls
         private readonly IMapApi _mapApi;
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
+        private readonly IServiceProvider _serviceProvider;
 
         public MapDto Map { get; set; } = new();
 
@@ -26,6 +27,7 @@ namespace Client.Controls
             _mapApi = mapApi;
             _rollApi = rollApi;
             _activeMapApi = activeMapApi;
+            _serviceProvider = serviceProvider;
 
             campaignUpdates.MapChanged += OnMapChanged;
             campaignUpdates.DiceRolled += OnDiceRolled;
@@ -149,6 +151,23 @@ namespace Client.Controls
 
                 ZoomableCanvas.Reset();
             }
+        }
+
+        private void OnOpenSettings(object sender, RoutedEventArgs e)
+        {
+            OpenPopupWindow("Einstellungen", _serviceProvider.GetRequiredService<SettingsControl>());
+        }
+
+        private void OnClosePopupWindow(object sender, RoutedEventArgs e)
+        {
+            PopupWindow.Visibility = Visibility.Collapsed;
+        }
+
+        private void OpenPopupWindow(string title, UserControl control)
+        {
+            PopupWindowTitle.Text = title;
+            PopupWindowContentPresenter.Content = control;
+            PopupWindow.Visibility = Visibility.Visible;
         }
     }
 }

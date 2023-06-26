@@ -18,7 +18,18 @@
         <converter:GridToRectConverter x:Key="GridToRectConverter"/>
     </UserControl.Resources>
     <Grid>
-        <controls:ZoomableCanvasControl x:Name="ZoomableCanvas">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <controls:ZoomableCanvasControl Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="ZoomableCanvas">
             <Grid>
                 <Image Source="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
                 <Rectangle Width="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding Map.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -37,7 +48,7 @@
                         </DrawingBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-            </Grid>            
+            </Grid>
         </controls:ZoomableCanvasControl>
         <!--
         <StackPanel HorizontalAlignment="Left">
@@ -92,18 +103,18 @@
         TODO:
         Player Cursor
         -->
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+        <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
-                <Button Width="50" Margin="2">
+                <Button Width="50" Margin="2" Visibility="Collapsed">
                     <fa:IconImage Icon="UserAlt" ToolTip="Charakter"/>
                 </Button>
                 <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice">
                     <fa:IconImage Icon="DiceD20" ToolTip="Würfeln"/>
                 </Button>
-                <Button Width="50" Margin="2">
+                <Button Width="50" Margin="2" Click="OnOpenSettings">
                     <fa:IconImage Icon="Gear" ToolTip="Einstellungen"/>
                 </Button>
-                <Button Width="50" Margin="2">
+                <Button Width="50" Margin="2" Visibility="Collapsed">
                     <fa:IconImage Icon="BookOpen" ToolTip="Lexikon"/>
                 </Button>
             </StackPanel>
@@ -235,5 +246,23 @@
             </Grid>
         </Expander>
         -->
+
+        <!-- Popup Window -->
+        <Border Grid.Column="1" Grid.Row="1" Panel.ZIndex="2" Name="PopupWindow" BorderBrush="Black" BorderThickness="1" Visibility="Collapsed">
+            <Grid Style="{DynamicResource TransparentGrid}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <TextBlock Name="PopupWindowTitle" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="20"/>
+                    <Button HorizontalAlignment="Right" Margin="1" Click="OnClosePopupWindow">
+                        <fa:IconImage Icon="Xmark"/>
+                    </Button>
+                </Grid>                
+                <ContentPresenter Grid.Row="1" Name="PopupWindowContentPresenter"/>
+            </Grid>
+        </Border>        
     </Grid>
 </UserControl>

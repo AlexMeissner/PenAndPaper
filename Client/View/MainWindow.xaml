@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Dungeons and Dragons" Height="450" Width="800"
+        Background="{DynamicResource Theme_Color_Dominant_1}"
         WindowStartupLocation="CenterScreen">
     <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
 </Window>
