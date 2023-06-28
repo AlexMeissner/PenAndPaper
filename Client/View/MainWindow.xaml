@@ -1,12 +1,17 @@
-﻿<Window x:Class="Client.View.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Dungeons and Dragons" Height="450" Width="800"
-        Background="{DynamicResource Theme_Color_Dominant_1}"
-        WindowStartupLocation="CenterScreen">
-    <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
-</Window>
+﻿<local:CustomWindow 
+    x:Class="Client.View.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Client.View"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Title="Dungeons and Dragons" Height="450" Width="800"
+    Background="{DynamicResource Theme_Color_Dominant_1}"
+    WindowStartupLocation="CenterScreen">
+
+    <Border BorderThickness="2" BorderBrush="{DynamicResource Theme_Color_Dominant_1}">
+        <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
+    </Border>
+</local:CustomWindow>

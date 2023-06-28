@@ -1,10 +1,9 @@
 ﻿using Client.Services;
-using System.Windows;
 using System.Windows.Navigation;
 
 namespace Client.View
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : CustomWindow
     {
         public IPageNavigator PageNavigator { get; }
 
