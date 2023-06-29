@@ -4,14 +4,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:local="clr-namespace:Client.View"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Title="Dungeons and Dragons" Height="450" Width="800"
+    Title="Dungeons and Dragons" 
+    Height="800" 
+    Width="1200"
     Background="{DynamicResource Theme_Color_Dominant_1}"
     WindowStartupLocation="CenterScreen">
 
     <Border BorderThickness="2" BorderBrush="{DynamicResource Theme_Color_Dominant_1}">
-        <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
+        <Grid>            
+            <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden" MouseLeftButtonDown="Drag"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Maximize">
+                    <fa:IconImage Icon="Square" Foreground="{DynamicResource Theme_Color_Font_2}"/>
+                </Button>
+                <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Close">
+                    <fa:IconImage Icon="X" Foreground="{DynamicResource Theme_Color_Font_2}"/>
+                </Button>
+            </StackPanel>
+            
+        </Grid>
     </Border>
 </local:CustomWindow>

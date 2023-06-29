@@ -38,7 +38,7 @@ namespace Client.View
             grid.Children.Add(CreateResizeBorder("bottomLeftSizeGrip", HorizontalAlignment.Left, VerticalAlignment.Bottom, Cursors.SizeNESW, style));
         }
 
-        private void Close(object sender, RoutedEventArgs e)
+        protected void Close(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -84,17 +84,17 @@ namespace Client.View
             return style;
         }
 
-        private void Drag(object sender, MouseButtonEventArgs e)
+        protected void Drag(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
 
-        private void Maximize(object sender, RoutedEventArgs e)
+        protected void Maximize(object sender, RoutedEventArgs e)
         {
             WindowState = (WindowState == WindowState.Maximized) ? WindowState.Normal : WindowState.Maximized;
         }
 
-        private void Minimize(object sender, RoutedEventArgs e)
+        protected void Minimize(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }

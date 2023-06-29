@@ -8,6 +8,12 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Dominant_1}"/>
     </Style>
 
+    <Style TargetType="Button" x:Key="TransparentButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_2}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
     <Style TargetType="Button" BasedOn="{StaticResource DefaultButton}"/>
     <!--#endregion-->
     
