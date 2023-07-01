@@ -1,4 +1,5 @@
 ﻿using Client.Services;
+using System.Windows;
 using System.Windows.Navigation;
 
 namespace Client.View
@@ -21,6 +22,12 @@ namespace Client.View
             {
                 e.Cancel = true;
             }
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            int margin = (WindowState == WindowState.Maximized) ? 5 : 0;
+            MainGrid.Margin = new(margin);
         }
     }
 }
