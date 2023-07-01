@@ -25,7 +25,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2" FontFamily="Consolas" FontSize="20" Name="FilterTextBox" TextChanged="OnTextChanged"/>
+            <TextBox Grid.Column="0" Margin="2" FontSize="20" Name="FilterTextBox" TextChanged="OnTextChanged"/>
             <Button Grid.Column="1" Margin="2" Content="Neue Karte" Click="OnCreateMap"/>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -43,7 +43,7 @@
                             </Border.Background>
                             <Grid>
                                 <Border Background="#222" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                    <TextBlock Margin="2" FontSize="20" FontFamily="Consolas" Foreground="White" Text="{Binding Name}"/>
+                                    <TextBlock Margin="2" FontSize="20" Foreground="White" Text="{Binding Name}"/>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
                                     <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="OnPlay">

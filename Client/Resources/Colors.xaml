@@ -5,6 +5,7 @@
     <SolidColorBrush x:Key="Theme_Color_Dominant_2" Color="#444444"/>
 
     <SolidColorBrush x:Key="Theme_Color_Secondary_1" Color="#0062FF"/>
+    <SolidColorBrush x:Key="Theme_Color_Secondary_2" Color="#7EA3DE"/>
 
     <SolidColorBrush x:Key="Theme_Color_Font_1" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Theme_Color_Font_2" Color="#CCCCCC"/>

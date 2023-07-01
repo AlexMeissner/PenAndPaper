@@ -28,7 +28,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="4" Text="Name" FontWeight="Bold"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Margin="4" FontFamily="Consolas" FontSize="15" Text="{Binding CreationData.Name}"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="4" FontSize="15" Text="{Binding CreationData.Name}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" Text="Typ" FontWeight="Bold"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Margin="4" Text="{Binding CreationData.Type}" FontStyle="Italic"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Margin="4" Text="Datei" FontWeight="Bold"/>
@@ -42,7 +42,7 @@
                     <DataTemplate>
                         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="4" Margin="1">
                             <Grid Height="30">
-                                <TextBlock Text="{Binding .}" Margin="4,0,0,0" FontSize="20" FontFamily="Consolas" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding .}" Margin="4,0,0,0" FontSize="20" VerticalAlignment="Center"/>
                                 <Button HorizontalAlignment="Right" Margin="4" Click="OnDeleteTag">
                                     <Button.Resources>
                                         <Style TargetType="{x:Type Border}">

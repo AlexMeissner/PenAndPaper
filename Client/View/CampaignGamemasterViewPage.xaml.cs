@@ -20,6 +20,8 @@ namespace Client.View
             MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
             MapOverviewPresenter.Content = serviceProvider.GetRequiredService<MapOverviewControl>();
             SoundPresenter.Content = serviceProvider.GetRequiredService<GamemasterMusicControl>();
+            PlayerPresenter.Content = serviceProvider.GetRequiredService<CharacterControl>();
+            NPCPresenter.Content = serviceProvider.GetService<MonsterControl>();
 
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;

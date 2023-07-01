@@ -31,6 +31,12 @@
                 <TabItem Header="Script">
                     <controls:ScriptControl/>
                 </TabItem>
+                <TabItem Header="Charaktere">
+                    <ContentPresenter Name="PlayerPresenter"/>
+                </TabItem>
+                <TabItem Header="Monster">
+                    <ContentPresenter Name="NPCPresenter"/>
+                </TabItem>
             </TabControl>
         </Grid>
         <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>

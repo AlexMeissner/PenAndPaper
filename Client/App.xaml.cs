@@ -40,6 +40,7 @@ namespace Client
             services.AddTransient<IUserApi, UserApi>();
             services.AddTransient<IRollApi, RollApi>();
             services.AddTransient<ISoundApi, SoundApi>();
+            services.AddTransient<ICharacterApi, CharacterApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)
@@ -56,6 +57,8 @@ namespace Client
             services.AddTransient<DiceRollerControl>();
             services.AddTransient<GamemasterMusicControl>();
             services.AddTransient<SettingsControl>();
+            services.AddTransient<CharacterControl>();
+            services.AddTransient<MonsterControl>();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

@@ -119,12 +119,12 @@
                 </Button>
             </StackPanel>
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal" Name="DicePanel" Visibility="Collapsed">
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D4" Click="OnRollD4"/>
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D6" Click="OnRollD6"/>
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D8" Click="OnRollD8"/>
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D10" Click="OnRollD10"/>
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D12" Click="OnRollD12"/>
-                <Button Width="50" FontFamily="Consolas" FontSize="25" Margin="2" Content="D20" Click="OnRollD20"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D4" Click="OnRollD4"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D6" Click="OnRollD6"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D8" Click="OnRollD8"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D10" Click="OnRollD10"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D12" Click="OnRollD12"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D20" Click="OnRollD20"/>
             </StackPanel>
             <ContentPresenter Name="DiceRollerPresenter" HorizontalAlignment="Center" Visibility="Visible"/>
         </StackPanel>

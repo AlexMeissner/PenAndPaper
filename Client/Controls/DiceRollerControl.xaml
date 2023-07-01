@@ -9,7 +9,7 @@
     <Border Background="#99000000" BorderBrush="Black" BorderThickness="2" CornerRadius="4">
         <StackPanel Orientation="Horizontal">
             <Border Background="#222" Margin="2" CornerRadius="4">
-                <TextBlock FontFamily="Consolas" FontSize="15" FontWeight="Bold" Margin="4" Foreground="White" VerticalAlignment="Center" Name="CharacterName"/>
+                <TextBlock FontSize="15" FontWeight="Bold" Margin="4" Foreground="White" VerticalAlignment="Center" Name="CharacterName"/>
             </Border>
 
             <StackPanel Name="DiceD4" Orientation="Horizontal" Height="50" Visibility="Collapsed">
@@ -91,7 +91,7 @@
             </StackPanel>
 
             <Border Width="50" Background="#222" Margin="2" CornerRadius="4">
-                <TextBlock Name="RolledNumberText" Foreground="White" FontFamily="Consolas" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Name="RolledNumberText" Foreground="White" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
         </StackPanel>
     </Border>

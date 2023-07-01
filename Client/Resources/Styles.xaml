@@ -85,6 +85,7 @@
     <!--#region TextBlock-->
     <Style TargetType="TextBlock" x:Key="DefaultTextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_1}"/>
+        <Setter Property="FontFamily" Value="Consolas"/>
     </Style>
 
     <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}"/>
