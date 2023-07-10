@@ -1,5 +1,6 @@
 ﻿using Client.Services;
 using Client.Services.API;
+using DataTransfer.Character;
 using DataTransfer.Dice;
 using DataTransfer.Map;
 using Microsoft.Extensions.DependencyInjection;
@@ -168,6 +169,14 @@ namespace Client.Controls
             PopupWindowTitle.Text = title;
             PopupWindowContentPresenter.Content = control;
             PopupWindow.Visibility = Visibility.Visible;
+        }
+
+        private void OnDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(typeof(CharacterOverviewItem)) is CharacterOverviewItem character)
+            {
+
+            }
         }
     }
 }

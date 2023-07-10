@@ -4,6 +4,7 @@ using DataTransfer.Character;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Client.Controls
 {
@@ -37,6 +38,16 @@ namespace Client.Controls
                         CharacterOverview.Items.Add(item);
                     }
                 }
+            }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                sender is ListView listView &&
+                listView.SelectedItem is CharacterOverviewItem character)
+            {
+                DragDrop.DoDragDrop(this, character, DragDropEffects.Copy);
             }
         }
     }

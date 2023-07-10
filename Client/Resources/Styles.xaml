@@ -44,6 +44,25 @@
     </Style>
     <!--#endregion-->
 
+    <!--#region ListView-->
+    <Style TargetType="ListView" x:Key="DefaultListView">
+    </Style>
+
+    <Style TargetType="ListView" BasedOn="{StaticResource DefaultListView}">
+        <Setter Property="Background" Value="{DynamicResource Theme_Color_Dominant_1}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ListViewItem-->
+    <Style TargetType="ListViewItem" x:Key="DefaultListViewItem">
+    </Style>
+
+    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItem}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+    <!--#endregion-->
+
     <!--#region PasswordBox-->
     <Style TargetType="PasswordBox" x:Key="DefaultPasswordBox">
         <Setter Property="Background" Value="{DynamicResource Theme_Color_Dominant_1}"/>
