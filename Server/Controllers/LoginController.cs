@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class LoginController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(SQLDatabase dbContext, ILogger<LoginController> logger)
+        public LoginController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<LoginDto>>> LoginAsync(UserCredentialsDto userCredentials)
         {
-            _logger.LogInformation(nameof(LoginAsync));
-
             try
             {
                 var entry = await _dbContext.Users.FirstAsync(x => x.Email == userCredentials.Email && x.Password == userCredentials.Password);

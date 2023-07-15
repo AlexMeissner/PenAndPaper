@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class CharacterOverviewController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<CharacterOverviewController> _logger;
 
-        public CharacterOverviewController(SQLDatabase dbContext, ILogger<CharacterOverviewController> logger)
+        public CharacterOverviewController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<CharacterOverviewDto>>> GetAsync(int campaignId)
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             try
             {
                 var charactersInCampaign = await _dbContext.CharactersInCampaign.Where(x => x.CampaignId == campaignId).ToListAsync();

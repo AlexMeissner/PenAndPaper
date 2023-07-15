@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class CampaignOverviewController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<CampaignOverviewController> _logger;
 
-        public CampaignOverviewController(SQLDatabase dbContext, ILogger<CampaignOverviewController> logger)
+        public CampaignOverviewController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<CampaignOverviewDto>>> GetAsync(int userId)
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             try
             {
                 var campainsWithUser = _dbContext.Campaigns.

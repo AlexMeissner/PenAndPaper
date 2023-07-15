@@ -10,19 +10,15 @@ namespace Server.Controllers
     public class RegisterController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<RegisterController> _logger;
 
-        public RegisterController(SQLDatabase dbContext, ILogger<RegisterController> logger)
+        public RegisterController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<LoginDto>>> RegisterAsync(UserCredentialsDto userCredentials)
         {
-            _logger.LogInformation(nameof(RegisterAsync));
-
             try
             {
                 var entry = await _dbContext.Users.AddAsync(new()

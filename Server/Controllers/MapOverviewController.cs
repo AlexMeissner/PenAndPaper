@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class MapOverviewController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<MapOverviewController> _logger;
 
-        public MapOverviewController(SQLDatabase dbContext, ILogger<MapOverviewController> logger)
+        public MapOverviewController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<MapOverviewDto>>> GetAsync(int campaignId)
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             try
             {
                 var maps = _dbContext.Maps.Where(x => x.CampaignId == campaignId);

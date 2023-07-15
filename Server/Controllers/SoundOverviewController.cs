@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class SoundOverviewController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<SoundOverviewController> _logger;
 
-        public SoundOverviewController(SQLDatabase dbContext, ILogger<SoundOverviewController> logger)
+        public SoundOverviewController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<SoundOverviewDto>>> GetAsync()
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             try
             {
                 var response = new SoundOverviewDto()

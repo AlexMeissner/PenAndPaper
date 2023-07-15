@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class TokenController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<TokenController> _logger;
 
-        public TokenController(SQLDatabase dbContext, ILogger<TokenController> logger)
+        public TokenController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<TokensDto>>> GetAsync(int mapId)
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             try
             {
                 var tokenIdsOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == mapId).Select(y => y.TokenId).ToListAsync();
@@ -80,8 +76,6 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse>> PostAsync(TokenCreationDto payload)
         {
-            _logger.LogInformation(nameof(PostAsync));
-
             try
             {
                 var tokensOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == payload.MapId).Select(y => y.TokenId).ToListAsync();
@@ -124,8 +118,6 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> PutAsync(TokenCreationDto payload)
         {
-            _logger.LogInformation(nameof(PutAsync));
-
             // TODO
             await _dbContext.SaveChangesAsync();
             return ApiResponse.Success;

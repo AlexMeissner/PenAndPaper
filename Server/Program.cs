@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Server.Database;
+using Server.Middleware;
 
 class ServerMain
 {
@@ -8,6 +10,15 @@ class ServerMain
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+
+        var logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(logger);
 
         string DbPath = @"W:\\Code\\PenAndPaper\\Database.db"; // TODO
 
@@ -27,6 +38,8 @@ class ServerMain
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseMiddleware<HttpLogger>();
 
         app.UseHttpsRedirection();
 

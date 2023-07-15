@@ -11,19 +11,15 @@ namespace Server.Controllers
     public class ActiveSoundController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
-        private readonly ILogger<ActiveSoundController> _logger;
 
-        public ActiveSoundController(SQLDatabase dbContext, ILogger<ActiveSoundController> logger)
+        public ActiveSoundController(SQLDatabase dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<ActiveSoundDto>>> GetAsync(int campaignId)
         {
-            _logger.LogInformation(nameof(GetAsync));
-
             ActiveSoundDto payload;
 
             try
@@ -48,8 +44,6 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<ActionResult<ApiResponse>> PutAsync(ActiveSoundDto payload)
         {
-            _logger.LogInformation(nameof(PutAsync));
-
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == payload.CampaignId);
