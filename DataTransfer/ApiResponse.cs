@@ -7,6 +7,7 @@
         InvalidLogin,
         NoContent,
         Unauthorized,
+        TokenAlreadyExists,
     }
 
     public record ErrorDetails(ErrorCode Code, string Message)

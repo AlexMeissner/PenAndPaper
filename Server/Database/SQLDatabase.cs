@@ -14,6 +14,8 @@ namespace Server.Database
         public DbSet<DbSound> Sounds { get; set; } = null!;
         public DbSet<DbCharacter> Characters { get; set; } = null!;
         public DbSet<DbCharactersInCampaign> CharactersInCampaign { get; set; } = null!;
+        public DbSet<DbToken> Tokens { get; set; } = null!;
+        public DbSet<DbTokensOnMap> TokensOnMap { get; set; } = null!;
 
         public SQLDatabase(DbContextOptions<SQLDatabase> options) : base(options)
         {

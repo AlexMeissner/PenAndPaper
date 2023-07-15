@@ -41,6 +41,7 @@ namespace Client
             services.AddTransient<IRollApi, RollApi>();
             services.AddTransient<ISoundApi, SoundApi>();
             services.AddTransient<ICharacterApi, CharacterApi>();
+            services.AddTransient<ITokenApi, TokenApi>();
         }
 
         private static void ConfigureViews(ServiceCollection services)

@@ -40,6 +40,7 @@ namespace Server.Controllers
                     var item = new CharacterOverviewItem
                     {
                         PlayerId = characterInCampaign.UserId,
+                        CharacterId = characterInCampaign.CharacterId,
                         PlayerName = "TODO", // TODO
                         CharacterName = character.Name,
                         Race = "TODO", // TODO

@@ -3,6 +3,7 @@
     public class CharacterOverviewItem
     {
         public int PlayerId { get; set; }
+        public int CharacterId { get; set; }
         public string PlayerName { get; set; }
         public string CharacterName { get; set; }
         public string Race { get; set; }

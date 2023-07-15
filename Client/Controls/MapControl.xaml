@@ -31,27 +31,51 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <controls:ZoomableCanvasControl Grid.ColumnSpan="3" Grid.RowSpan="3" x:Name="ZoomableCanvas">
-            <Grid>
-                <Image Source="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
-                <Rectangle Width="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding Map.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Rectangle.Fill>
-                        <DrawingBrush TileMode="Tile" Viewport="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
-                            <DrawingBrush.Drawing>
-                                <GeometryDrawing>
-                                    <GeometryDrawing.Geometry>
-                                        <RectangleGeometry Rect="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
-                                    </GeometryDrawing.Geometry>
-                                    <GeometryDrawing.Pen>
-                                        <Pen Brush="#88000000" Thickness="1"/>
-                                    </GeometryDrawing.Pen>
-                                </GeometryDrawing>
-                            </DrawingBrush.Drawing>
-                        </DrawingBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
-            </Grid>
-        </controls:ZoomableCanvasControl>
+        <!--
+                        <Grid>
+                            <Image Source="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
+                            <Rectangle Width="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding Map.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Rectangle.Fill>
+                                    <DrawingBrush TileMode="Tile" Viewport="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
+                                        <DrawingBrush.Drawing>
+                                            <GeometryDrawing>
+                                                <GeometryDrawing.Geometry>
+                                                    <RectangleGeometry Rect="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
+                                                </GeometryDrawing.Geometry>
+                                                <GeometryDrawing.Pen>
+                                                    <Pen Brush="#88000000" Thickness="1"/>
+                                                </GeometryDrawing.Pen>
+                                            </GeometryDrawing>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Grid>
+                        -->
+
+        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding Tokens.Items}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:ZoomableCanvasControl x:Name="ZoomableCanvas">
+
+                    </controls:ZoomableCanvasControl>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="Test" Background="Red"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <!--
         <StackPanel HorizontalAlignment="Left">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Bezieht sich auf den selektierten Token oder Landmark."/>
@@ -262,9 +286,9 @@
                     <Button HorizontalAlignment="Right" Margin="1" Click="OnClosePopupWindow">
                         <fa:IconImage Icon="Xmark"/>
                     </Button>
-                </Grid>                
+                </Grid>
                 <ContentPresenter Grid.Row="1" Name="PopupWindowContentPresenter"/>
             </Grid>
-        </Border>        
+        </Border>
     </Grid>
 </UserControl>
