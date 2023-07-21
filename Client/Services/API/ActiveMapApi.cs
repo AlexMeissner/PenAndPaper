@@ -1,35 +1,31 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface IActiveMapApi
     {
-        public Task<ApiResponse<ActiveMapDto>> GetAsync(int campaignId);
-        public Task<ApiResponse> PutAsync(ActiveMapDto payload);
+        public Task<HttpResponse<ActiveMapDto>> GetAsync(int campaignId);
+        public Task<HttpResponse> PutAsync(ActiveMapDto payload);
     }
 
     public class ActiveMapApi : IActiveMapApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public ActiveMapApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "ActiveMap");
         }
 
-        public Task<ApiResponse<ActiveMapDto>> GetAsync(int campaignId)
+        public Task<HttpResponse<ActiveMapDto>> GetAsync(int campaignId)
         {
-            string url = _endPointProvider.BaseURL + $"ActiveMap?campaignId={campaignId}";
-            return url.GetAsync<ActiveMapDto>();
+            return _request.GetAsync<ActiveMapDto>($"campaignId={campaignId}");
         }
 
-        public Task<ApiResponse> PutAsync(ActiveMapDto payload)
+        public Task<HttpResponse> PutAsync(ActiveMapDto payload)
         {
-            string url = _endPointProvider.BaseURL + "ActiveMap";
-            return url.PutAsync(payload);
+            return _request.PutAsync(payload);
         }
     }
 }

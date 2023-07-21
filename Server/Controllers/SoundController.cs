@@ -18,25 +18,25 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<SoundDto>>> GetAsync(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
                 if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is DbSound sound)
                 {
-                    return ApiResponse<SoundDto>.Success(new(sound.Id, Checksum.CreateHash(sound.Data)));
+                    return Ok(new SoundDto(sound.Id, Checksum.CreateHash(sound.Data)));
                 }
 
-                return ApiResponse<SoundDto>.Failure(new ErrorDetails(ErrorCode.NoContent, $"There is no sound with id {id}."));
+                return NotFound(id);
             }
             catch (Exception exception)
             {
-                return ApiResponse<SoundDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> PostAsync(SoundCreationDto payload)
+        public async Task<IActionResult> PostAsync(SoundCreationDto payload)
         {
             try
             {
@@ -50,11 +50,12 @@ namespace Server.Controllers
 
                 await _dbContext.Sounds.AddAsync(sound);
                 await _dbContext.SaveChangesAsync();
-                return this.SendResponse(ApiResponse.Success);
+
+                return Ok(sound);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
     }

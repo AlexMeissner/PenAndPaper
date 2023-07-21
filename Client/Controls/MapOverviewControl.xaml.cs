@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace Client.Controls
 {
@@ -47,14 +48,15 @@ namespace Client.Controls
             {
                 var response = await _mapOverviewApi.GetAsync(campaignId);
 
-                if (response.Error is null)
-                {
-                    MapOverview.Items = response.Data.Items;
-                }
-                else
-                {
-                    throw new Exception(response.Error.Message);
-                }
+                response.Match(
+                    success =>
+                    {
+                        MapOverview.Items = success.Items;
+                    },
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 
@@ -103,9 +105,9 @@ namespace Client.Controls
 
                 var response = await _activeMapApi.PutAsync(payload);
 
-                if (response.Error is not null)
+                if (response.Failed)
                 {
-                    MessageBox.Show(response.Error.Message);
+                    MessageBoxUtility.Show(response.StatusCode);
                 }
             }
         }
@@ -118,20 +120,21 @@ namespace Client.Controls
             {
                 var response = await _mapApi.GetAsync(mapOverviewItemDto.MapId);
 
-                if (response.Error is null)
-                {
-                    MapCreationWindow mapCreationWindow = new(response.Data);
-
-                    if (mapCreationWindow.ShowDialog() == true)
+                response.Match(
+                    async success =>
                     {
-                        mapCreationWindow.MapCreation.CampaignId = campaignId;
-                        await _mapApi.PutAsync(mapCreationWindow.MapCreation);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(response.Error.Message);
-                }
+                        MapCreationWindow mapCreationWindow = new(success);
+
+                        if (mapCreationWindow.ShowDialog() == true)
+                        {
+                            mapCreationWindow.MapCreation.CampaignId = campaignId;
+                            await _mapApi.PutAsync(mapCreationWindow.MapCreation);
+                        }
+                    },
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 
@@ -142,9 +145,9 @@ namespace Client.Controls
             {
                 var response = await _mapApi.DeleteAsync(mapOverviewItemDto.MapId);
 
-                if (response.Error is not null)
+                if (response.Failed)
                 {
-                    MessageBox.Show(response.Error.Message);
+                    MessageBoxUtility.Show(response.StatusCode);
                 }
             }
         }

@@ -9,8 +9,6 @@ class ServerMain
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-
         var logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.FromLogContext()
@@ -22,16 +20,13 @@ class ServerMain
 
         string DbPath = @"W:\\Code\\PenAndPaper\\Database.db"; // TODO
 
-        //builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={DbPath}").LogTo(Console.WriteLine, LogLevel.Warning, DbContextLoggerOptions.DefaultWithLocalTime | DbContextLoggerOptions.SingleLine));
         builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={DbPath}"));
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
         if (app.Environment.IsDevelopment())
         {

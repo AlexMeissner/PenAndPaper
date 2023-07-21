@@ -49,4 +49,8 @@
     <Resource Include="Resource\splash4.jpg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
+
 </Project>

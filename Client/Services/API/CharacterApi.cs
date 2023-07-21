@@ -1,28 +1,25 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Character;
+﻿using DataTransfer.Character;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface ICharacterApi
     {
-        public Task<ApiResponse<CharacterOverviewDto>> GetOverviewAsync(int campaignId);
+        public Task<HttpResponse<CharacterOverviewDto>> GetOverviewAsync(int campaignId);
     }
 
     public class CharacterApi : ICharacterApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public CharacterApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "CharacterOverview");
         }
 
-        public Task<ApiResponse<CharacterOverviewDto>> GetOverviewAsync(int campaignId)
+        public Task<HttpResponse<CharacterOverviewDto>> GetOverviewAsync(int campaignId)
         {
-            string url = _endPointProvider.BaseURL + $"CharacterOverview?campaignId={campaignId}";
-            return url.GetAsync<CharacterOverviewDto>();
+            return _request.GetAsync<CharacterOverviewDto>($"campaignId={campaignId}");
         }
     }
 }

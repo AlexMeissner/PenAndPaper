@@ -1,42 +1,37 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface ITokenApi
     {
-        public Task<ApiResponse<TokensDto>> GetAsync(int mapId);
-        public Task<ApiResponse> PostAsync(TokenCreationDto payload);
-        public Task<ApiResponse> PutAsync(TokenItem payload);
+        public Task<HttpResponse<TokensDto>> GetAsync(int mapId);
+        public Task<HttpResponse> PostAsync(TokenCreationDto payload);
+        public Task<HttpResponse> PutAsync(TokenItem payload);
     }
 
     public class TokenApi : ITokenApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public TokenApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "Token");
         }
 
-        public Task<ApiResponse<TokensDto>> GetAsync(int mapId)
+        public Task<HttpResponse<TokensDto>> GetAsync(int mapId)
         {
-            string url = _endPointProvider.BaseURL + $"Token?mapId={mapId}";
-            return url.GetAsync<TokensDto>();
+            return _request.GetAsync<TokensDto>($"mapId={mapId}");
         }
 
-        public Task<ApiResponse> PostAsync(TokenCreationDto payload)
+        public Task<HttpResponse> PostAsync(TokenCreationDto payload)
         {
-            string url = _endPointProvider.BaseURL + "Token";
-            return url.PostAsync(payload);
+            return _request.PostAsync(payload);
         }
 
-        public Task<ApiResponse> PutAsync(TokenItem payload)
+        public Task<HttpResponse> PutAsync(TokenItem payload)
         {
-            string url = _endPointProvider.BaseURL + "Token";
-            return url.PutAsync(payload);
+            return _request.PutAsync(payload);
         }
     }
 }

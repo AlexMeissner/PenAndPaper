@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Campaign;
+﻿using DataTransfer.Campaign;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<CampaignUpdateDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
             try
             {
@@ -35,13 +34,11 @@ namespace Server.Controllers
                     SoundEffectChange = campaignUpdate.SoundEffectChange
                 };
 
-                var response = ApiResponse<CampaignUpdateDto>.Success(payload);
-                return this.SendResponse<CampaignUpdateDto>(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<CampaignUpdateDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<CampaignUpdateDto>(response);
+                return this.InternalServerError(exception);
             }
         }
     }

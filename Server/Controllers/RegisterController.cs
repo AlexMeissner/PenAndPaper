@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Login;
+﻿using DataTransfer.Login;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database;
 
@@ -17,7 +16,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<LoginDto>>> RegisterAsync(UserCredentialsDto userCredentials)
+        public async Task<IActionResult> RegisterAsync(UserCredentialsDto userCredentials)
         {
             try
             {
@@ -30,15 +29,11 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                var payload = new LoginDto() { UserId = entry.Entity.Id };
-                var response = ApiResponse<LoginDto>.Success(payload);
-
-                return this.SendResponse<LoginDto>(response);
+                return Ok(entry.Entity.Id);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<LoginDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<LoginDto>(response);
+                return this.InternalServerError(exception);
             }
         }
     }

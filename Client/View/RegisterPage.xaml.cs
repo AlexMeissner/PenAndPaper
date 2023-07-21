@@ -38,15 +38,13 @@ namespace Client.View
                 UserCredentialsDto userCredentials = new(Email: EmailBox.Text, Username: UsernameBox.Text, Password: Password.Encrypt(PasswordBox.Password));
                 var response = await _authenticationApi.RegisterAsync(userCredentials);
 
-                if (response.Error is null)
-                {
-                    _sessionData.UserId = response.Data.UserId;
-                    _pageNavigator.OpenPage<CampaignSelectionPage>();
-                }
-                else
-                {
-                    MessageBox.Show(response.Error.Message, "Authentifizierungsfehler", MessageBoxButton.OK);
-                }
+                response.Match(
+                    success =>
+                    {
+                        _sessionData.UserId = success.UserId;
+                        _pageNavigator.OpenPage<CampaignSelectionPage>();
+                    },
+                    failure => MessageBoxUtility.Show(failure));
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Sound;
+﻿using DataTransfer.Sound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,31 +17,29 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<ActiveSoundDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
-            ActiveSoundDto payload;
-
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == campaignId);
 
-                payload = new()
+                var payload = new ActiveSoundDto()
                 {
                     CampaignId = activeCampaignElements.CampaignId,
                     AmbientId = activeCampaignElements.AmbientId,
                     EffectId = activeCampaignElements.EffectId,
                 };
+
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return ApiResponse<ActiveSoundDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
-
-            return ApiResponse<ActiveSoundDto>.Success(payload);
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> PutAsync(ActiveSoundDto payload)
+        public async Task<IActionResult> PutAsync(ActiveSoundDto payload)
         {
             try
             {
@@ -62,11 +59,11 @@ namespace Server.Controllers
                     await _dbContext.SaveChangesAsync();
                 }
 
-                return ApiResponse.Success;
+                return Ok(activeCampaignElements);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
     }

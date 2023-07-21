@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<MapOverviewDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
             try
             {
@@ -30,14 +29,11 @@ namespace Server.Controllers
                     Items = await mapOverviewItems.ToListAsync(),
                 };
 
-                var response = ApiResponse<MapOverviewDto>.Success(payload);
-
-                return this.SendResponse<MapOverviewDto>(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<MapOverviewDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<MapOverviewDto>(response);
+                return this.InternalServerError(exception);
             }
         }
 

@@ -1,28 +1,17 @@
-﻿using DataTransfer;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
 {
-    internal static class ControllerExtension
+    public static class ControllerExtension
     {
-        private static void PostProcessResponse(ApiResponse response, HttpContext content)
+        public static ObjectResult InternalServerError(this ControllerBase controller, object? value) 
         {
-            if (response.Error is not null)
-            {
-                response.Error.TraceIdentifier = content.TraceIdentifier;
-            }
+            return controller.StatusCode(500, value);
         }
 
-        public static ActionResult<ApiResponse> SendResponse(this ControllerBase controller, ApiResponse response)
+        public static ObjectResult NotImplemented(this ControllerBase controller, object? value)
         {
-            PostProcessResponse(response, controller.HttpContext);
-            return response.Error is null ? controller.Ok(response) : controller.BadRequest(response);
-        }
-
-        public static ActionResult<ApiResponse<T>> SendResponse<T>(this ControllerBase controller, ApiResponse response)
-        {
-            PostProcessResponse(response, controller.HttpContext);
-            return response.Error is null ? controller.Ok(response) : controller.BadRequest(response);
+            return controller.StatusCode(501, value);
         }
     }
 }

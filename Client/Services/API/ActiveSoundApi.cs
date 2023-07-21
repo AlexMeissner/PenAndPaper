@@ -1,35 +1,31 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Sound;
+﻿using DataTransfer.Sound;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface IActiveSoundApi
     {
-        public Task<ApiResponse<ActiveSoundDto>> GetAsync(int campaignId);
-        public Task<ApiResponse> PutAsync(ActiveSoundDto payload);
+        public Task<HttpResponse<ActiveSoundDto>> GetAsync(int campaignId);
+        public Task<HttpResponse> PutAsync(ActiveSoundDto payload);
     }
 
     public class ActiveSoundApi : IActiveSoundApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public ActiveSoundApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "ActiveSound");
         }
 
-        public Task<ApiResponse<ActiveSoundDto>> GetAsync(int campaignId)
+        public Task<HttpResponse<ActiveSoundDto>> GetAsync(int campaignId)
         {
-            string url = _endPointProvider.BaseURL + $"ActiveSound?campaignId={campaignId}";
-            return url.GetAsync<ActiveSoundDto>();
+            return _request.GetAsync<ActiveSoundDto>($"campaignId={campaignId}");
         }
 
-        public Task<ApiResponse> PutAsync(ActiveSoundDto payload)
+        public Task<HttpResponse> PutAsync(ActiveSoundDto payload)
         {
-            string url = _endPointProvider.BaseURL + "ActiveSound";
-            return url.PutAsync(payload);
+            return _request.PutAsync(payload);
         }
     }
 }

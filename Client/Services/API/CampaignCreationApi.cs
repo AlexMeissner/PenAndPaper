@@ -1,35 +1,31 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.CampaignCreation;
+﻿using DataTransfer.CampaignCreation;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface ICampaignCreationApi
     {
-        public Task<ApiResponse<CampaignCreationDto>> GetAsync(int CampaignId);
-        public Task<ApiResponse> PostAsync(CampaignCreationDto payload);
+        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int CampaignId);
+        public Task<HttpResponse> PostAsync(CampaignCreationDto payload);
     }
 
     public class CampaignCreationApi : ICampaignCreationApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public CampaignCreationApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "CampaignCreation");
         }
 
-        public Task<ApiResponse<CampaignCreationDto>> GetAsync(int CampaignId)
+        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int CampaignId)
         {
-            string url = _endPointProvider.BaseURL + $"CampaignCreation?campaignId={CampaignId}";
-            return url.GetAsync<CampaignCreationDto>();
+            return _request.GetAsync<CampaignCreationDto>($"campaignId={CampaignId}");
         }
 
-        public Task<ApiResponse> PostAsync(CampaignCreationDto payload)
+        public Task<HttpResponse> PostAsync(CampaignCreationDto payload)
         {
-            string url = _endPointProvider.BaseURL + "CampaignCreation";
-            return url.PostAsync(payload);
+            return _request.PostAsync(payload);
         }
     }
 }

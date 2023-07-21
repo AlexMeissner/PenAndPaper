@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.CampaignSelection;
+﻿using DataTransfer.CampaignSelection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<CampaignOverviewDto>>> GetAsync(int userId)
+        public async Task<IActionResult> GetAsync(int userId)
         {
             try
             {
@@ -49,14 +48,12 @@ namespace Server.Controllers
                 }
 
                 CampaignOverviewDto payload = new() { CampaignItems = campaignOverviewItems };
-                var response = ApiResponse<CampaignOverviewDto>.Success(payload);
 
-                return this.SendResponse<CampaignOverviewDto>(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<CampaignOverviewDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<CampaignOverviewDto>(response);
+                return this.InternalServerError(exception);
             }
         }
     }

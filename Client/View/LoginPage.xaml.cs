@@ -34,15 +34,16 @@ namespace Client.View
 
                 var response = await _authenticationApi.LoginAsync(userCredentials);
 
-                if (response.Error is null)
-                {
-                    _sessionData.UserId = response.Data.UserId;
-                    _pageNavigator.OpenPage<CampaignSelectionPage>();
-                }
-                else
-                {
-                    MessageBox.Show(response.Error.Message, "Authentifizierungsfehler", MessageBoxButton.OK);
-                }
+                response.Match(
+                    success =>
+                    {
+                        _sessionData.UserId = success.UserId;
+                        _pageNavigator.OpenPage<CampaignSelectionPage>();
+                    },
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 

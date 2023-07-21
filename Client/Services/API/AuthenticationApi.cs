@@ -1,35 +1,33 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Login;
+﻿using DataTransfer.Login;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface IAuthenticationApi
     {
-        public Task<ApiResponse<LoginDto>> LoginAsync(UserCredentialsDto payload);
-        public Task<ApiResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload);
+        public Task<HttpResponse<LoginDto>> LoginAsync(UserCredentialsDto payload);
+        public Task<HttpResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload);
     }
 
     public class AuthenticationApi : IAuthenticationApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _loginRequest;
+        private readonly HttpRequest _registerRequest;
 
         public AuthenticationApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _loginRequest = new(endPointProvider.BaseURL + "Login");
+            _registerRequest = new(endPointProvider.BaseURL + "Register");
         }
 
-        public Task<ApiResponse<LoginDto>> LoginAsync(UserCredentialsDto payload)
+        public Task<HttpResponse<LoginDto>> LoginAsync(UserCredentialsDto payload)
         {
-            string url = _endPointProvider.BaseURL + "Login";
-            return url.PostAsync<LoginDto>(payload);
+            return _loginRequest.PostAsync<LoginDto>(payload);
         }
 
-        public Task<ApiResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload)
+        public Task<HttpResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload)
         {
-            string url = _endPointProvider.BaseURL + "Register";
-            return url.PostAsync<LoginDto>(payload);
+            return _registerRequest.PostAsync<LoginDto>(payload);
         }
     }
 }

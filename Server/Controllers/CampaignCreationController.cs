@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.CampaignCreation;
+﻿using DataTransfer.CampaignCreation;
 using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +18,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<CampaignCreationDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
             try
             {
@@ -59,18 +58,16 @@ namespace Server.Controllers
                     };
                 }
 
-                var response = ApiResponse<CampaignCreationDto>.Success(payload);
-                return this.SendResponse<CampaignCreationDto>(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<CampaignCreationDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<CampaignCreationDto>(response);
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> PostAsync(CampaignCreationDto payload)
+        public async Task<IActionResult> PostAsync(CampaignCreationDto payload)
         {
             // TODO: Create entry in 'ActiveCampaignElements' initialize with '-1'
 
@@ -98,12 +95,12 @@ namespace Server.Controllers
                 }
 
                 await _dbContext.SaveChangesAsync();
-                return this.SendResponse(ApiResponse.Success);
+
+                return CreatedAtAction(nameof(GetAsync), dbCampaign.Id);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse(response);
+                return this.InternalServerError(exception);
             }
         }
     }

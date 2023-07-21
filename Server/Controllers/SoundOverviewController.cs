@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Sound;
+﻿using DataTransfer.Sound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,20 +17,20 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<SoundOverviewDto>>> GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
             try
             {
-                var response = new SoundOverviewDto()
+                var payload = new SoundOverviewDto()
                 {
                     Items = await _dbContext.Sounds.Select(x => new SoundOverviewItemDto(x.Id, x.Name, x.Type, x.Tags)).ToListAsync()
                 };
 
-                return ApiResponse<SoundOverviewDto>.Success(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return ApiResponse<SoundOverviewDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
     }

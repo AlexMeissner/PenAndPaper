@@ -1,49 +1,47 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Sound;
+﻿using DataTransfer.Sound;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface ISoundApi
     {
-        public Task<ApiResponse<SoundOverviewDto>> GetOverviewAsync();
-        public Task<ApiResponse<SoundDto>> GetAsync(int id);
-        public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id);
-        public Task<ApiResponse> PostAsync(SoundCreationDto payload);
+        public Task<HttpResponse<SoundOverviewDto>> GetOverviewAsync();
+        public Task<HttpResponse<SoundDto>> GetAsync(int id);
+        public Task<HttpResponse<SoundDataDto>> GetDataAsync(int id);
+        public Task<HttpResponse> PostAsync(SoundCreationDto payload);
     }
 
     public class SoundApi : ISoundApi
     {
-        private readonly IEndPointProvider EndPointProvider;
+        private readonly HttpRequest _soundRequest;
+        private readonly HttpRequest _soundDataRequest;
+        private readonly HttpRequest _soundOverviewRequest;
 
         public SoundApi(IEndPointProvider endPointProvider)
         {
-            EndPointProvider = endPointProvider;
+            _soundRequest = new(endPointProvider.BaseURL + "Sound");
+            _soundDataRequest = new(endPointProvider.BaseURL + "SoundData");
+            _soundOverviewRequest = new(endPointProvider.BaseURL + "SoundOverview");
         }
 
-        public Task<ApiResponse<SoundDto>> GetAsync(int id)
+        public Task<HttpResponse<SoundDto>> GetAsync(int id)
         {
-            string url = EndPointProvider.BaseURL + $"Sound?id=" + id;
-            return url.GetAsync<SoundDto>();
+            return _soundRequest.GetAsync<SoundDto>($"id={id}");
         }
 
-        public Task<ApiResponse<SoundDataDto>> GetDataAsync(int id)
+        public Task<HttpResponse<SoundDataDto>> GetDataAsync(int id)
         {
-            string url = EndPointProvider.BaseURL + $"SoundData?id=" + id;
-            return url.GetAsync<SoundDataDto>();
+            return _soundDataRequest.GetAsync<SoundDataDto>($"id={id}");
         }
 
-        public Task<ApiResponse<SoundOverviewDto>> GetOverviewAsync()
+        public Task<HttpResponse<SoundOverviewDto>> GetOverviewAsync()
         {
-            string url = EndPointProvider.BaseURL + $"SoundOverview";
-            return url.GetAsync<SoundOverviewDto>();
+            return _soundOverviewRequest.GetAsync<SoundOverviewDto>();
         }
 
-        public Task<ApiResponse> PostAsync(SoundCreationDto payload)
+        public Task<HttpResponse> PostAsync(SoundCreationDto payload)
         {
-            string url = EndPointProvider.BaseURL + $"Sound";
-            return url.PostAsync(payload);
+            return _soundRequest.PostAsync(payload);
         }
     }
 }

@@ -1,28 +1,25 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Campaign;
+﻿using DataTransfer.Campaign;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface ICampaignUpdatesApi
     {
-        public Task<ApiResponse<CampaignUpdateDto>> GetAsync(int campaignId);
+        public Task<HttpResponse<CampaignUpdateDto>> GetAsync(int campaignId);
     }
 
     public class CampaignUpdatesApi : ICampaignUpdatesApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public CampaignUpdatesApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "CampaignUpdates");
         }
 
-        public Task<ApiResponse<CampaignUpdateDto>> GetAsync(int campaignId)
+        public Task<HttpResponse<CampaignUpdateDto>> GetAsync(int campaignId)
         {
-            string url = _endPointProvider.BaseURL + $"CampaignUpdates?campaignId={campaignId}";
-            return url.GetAsync<CampaignUpdateDto>();
+            return _request.GetAsync<CampaignUpdateDto>($"campaignId={campaignId}");
         }
     }
 }

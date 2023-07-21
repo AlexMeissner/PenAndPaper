@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<TokensDto>>> GetAsync(int mapId)
+        public async Task<IActionResult> GetAsync(int mapId)
         {
             try
             {
@@ -65,24 +64,24 @@ namespace Server.Controllers
                     });
                 }
 
-                return ApiResponse<TokensDto>.Success(payload);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return ApiResponse<TokensDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> PostAsync(TokenCreationDto payload)
+        public async Task<IActionResult> PostAsync(TokenCreationDto payload)
         {
             try
             {
                 var tokensOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == payload.MapId).Select(y => y.TokenId).ToListAsync();
 
-                if (await _dbContext.Tokens.Where(y => tokensOnMap.Contains(y.Id)).AnyAsync(x => x.CharacterId != null && x.CharacterId == payload.CharacterId))
+                if (await _dbContext.Tokens.AnyAsync(x => tokensOnMap.Contains(x.Id) && x.CharacterId != null && x.CharacterId == payload.CharacterId))
                 {
-                    return ApiResponse.Failure(new ErrorDetails(ErrorCode.TokenAlreadyExists, string.Format("Character id {0}", payload.CharacterId)));
+                    return Conflict();
                 }
 
                 var token = new DbToken()
@@ -107,20 +106,20 @@ namespace Server.Controllers
                 update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 await _dbContext.SaveChangesAsync();
 
-                return ApiResponse.Success;
+                return Ok(token);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> PutAsync(TokenCreationDto payload)
+        public async Task<IActionResult> PutAsync(TokenCreationDto payload)
         {
             // TODO
             await _dbContext.SaveChangesAsync();
-            return ApiResponse.Success;
+            return this.NotImplemented(nameof(PutAsync));
         }
     }
 }

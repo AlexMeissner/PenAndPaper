@@ -72,13 +72,13 @@ namespace Client.View
         {
             var response = await _campaignCreationApi.PostAsync((DataContext as CampaignCreationDto)!);
 
-            if (response.Error is null)
+            if (response.Succeded)
             {
                 _pageNavigator.OpenPage<CampaignSelectionPage>();
             }
             else
             {
-                MessageBox.Show(response.Error.Message, "Fehler bei der Kampagnenerstellung", MessageBoxButton.OK);
+                MessageBoxUtility.Show(response.StatusCode);
             }
         }
 
@@ -86,28 +86,24 @@ namespace Client.View
         {
             var response = await _campaignCreationApi.GetAsync(_campaignId);
 
-            if (response.Error is null)
-            {
-                if (response.Data.Gamemaster is null)
+            response.Match(
+                async success =>
                 {
-                    var me = await _userApi.GetAsync(_sessionData.UserId ?? 0); // TODO: Why does '!' not work?
-
-                    if (response.Error is null)
+                    if (success.Gamemaster is null)
                     {
-                        response.Data.Gamemaster = me.Data;
-                    }
-                    else
-                    {
-                        throw new System.NullReferenceException(response.Error.Message);
-                    }
-                }
+                        var me = await _userApi.GetAsync(_sessionData.UserId ?? 0); // TODO: Why does '!' not work?
 
-                DataContext = response.Data;
-            }
-            else
-            {
-                throw new System.NullReferenceException(response.Error.Message);
-            }
+                        me.Match(
+                            s => success.Gamemaster = s,
+                            f => MessageBoxUtility.Show(f));
+                    }
+
+                    DataContext = success;
+                },
+                failure =>
+                {
+                    MessageBoxUtility.Show(failure);
+                });
         }
     }
 }

@@ -47,17 +47,19 @@ namespace Client.Services
         {
             if (_sessionData.CampaignId is int campaignId)
             {
-                var campaignUpdates = await _campaignUpdatesApi.GetAsync(campaignId);
+                var response = await _campaignUpdatesApi.GetAsync(campaignId);
 
-                if (campaignUpdates is not null && campaignUpdates.Data is not null)
+                response.Match(success =>
                 {
-                    _campaignUpdates.MapChange = RaiseEvent(MapChanged, campaignUpdates.Data.MapChange, _campaignUpdates.MapChange);
-                    _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, campaignUpdates.Data.MapCollectionChange, _campaignUpdates.MapCollectionChange);
-                    _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, campaignUpdates.Data.TokenChange, _campaignUpdates.TokenChange);
-                    _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, campaignUpdates.Data.DiceRoll, _campaignUpdates.DiceRoll);
-                    _campaignUpdates.AmbientSoundChange = RaiseEvent(AmbientSoundChanged, campaignUpdates.Data.AmbientSoundChange, _campaignUpdates.AmbientSoundChange);
-                    _campaignUpdates.SoundEffectChange = RaiseEvent(SoundEffectChanged, campaignUpdates.Data.SoundEffectChange, _campaignUpdates.SoundEffectChange);
-                }
+                    _campaignUpdates.MapChange = RaiseEvent(MapChanged, success.MapChange, _campaignUpdates.MapChange);
+                    _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, success.MapCollectionChange, _campaignUpdates.MapCollectionChange);
+                    _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, success.TokenChange, _campaignUpdates.TokenChange);
+                    _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, success.DiceRoll, _campaignUpdates.DiceRoll);
+                    _campaignUpdates.AmbientSoundChange = RaiseEvent(AmbientSoundChanged, success.AmbientSoundChange, _campaignUpdates.AmbientSoundChange);
+                    _campaignUpdates.SoundEffectChange = RaiseEvent(SoundEffectChanged, success.SoundEffectChange, _campaignUpdates.SoundEffectChange);
+                });
+
+
             }
         }
 

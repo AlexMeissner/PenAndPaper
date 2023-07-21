@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Login;
+﻿using DataTransfer.Login;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,26 +17,22 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<LoginDto>>> LoginAsync(UserCredentialsDto userCredentials)
+        public async Task<IActionResult> LoginAsync(UserCredentialsDto userCredentials)
         {
             try
             {
-                var entry = await _dbContext.Users.FirstAsync(x => x.Email == userCredentials.Email && x.Password == userCredentials.Password);
+                var entry = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userCredentials.Email && x.Password == userCredentials.Password);
 
                 if (entry is null)
                 {
-                    return ApiResponse<LoginDto>.Failure(new ErrorDetails(ErrorCode.InvalidLogin, "Email or password incorrect."));
+                    return Unauthorized();
                 }
 
-                var payload = new LoginDto() { UserId = entry.Id };
-                var response = ApiResponse<LoginDto>.Success(payload);
-
-                return this.SendResponse<LoginDto>(response);
+                return Ok(new LoginDto() { UserId = entry.Id });
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<LoginDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<LoginDto>(response);
+                return this.InternalServerError(exception);
             }
         }
     }

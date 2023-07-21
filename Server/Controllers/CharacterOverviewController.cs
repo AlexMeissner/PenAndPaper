@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Character;
+﻿using DataTransfer.Character;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<CharacterOverviewDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
             try
             {
@@ -57,14 +56,11 @@ namespace Server.Controllers
                     payload.Items.Add(item);
                 }
 
-                var response = ApiResponse<CharacterOverviewDto>.Success(payload);
-
-                return this.SendResponse<CharacterOverviewDto>(response);
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                var response = ApiResponse<CharacterOverviewDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
-                return this.SendResponse<CharacterOverviewDto>(response);
+                return this.InternalServerError(exception);
             }
         }
     }

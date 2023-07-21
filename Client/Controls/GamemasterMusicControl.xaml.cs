@@ -123,13 +123,13 @@ namespace Client.Controls
             {
                 var response = await SoundApi.PostAsync(window.CreationData);
 
-                if (response.Error is null)
+                if (response.Succeded)
                 {
                     await LoadOverview();
                 }
                 else
                 {
-                    MessageBox.Show(response.Error.Message, "Fehler bei Sounderstellung", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxUtility.Show(response.StatusCode);
                 }
             }
         }
@@ -138,27 +138,28 @@ namespace Client.Controls
         {
             var response = await SoundApi.GetOverviewAsync();
 
-            if (response.Error is null)
-            {
-                AmbientSounds.Clear();
-                Effects.Clear();
-
-                foreach (var item in response.Data.Items)
+            response.Match(
+                success =>
                 {
-                    if (item.Type == SoundType.Ambient)
+                    AmbientSounds.Clear();
+                    Effects.Clear();
+
+                    foreach (var item in success.Items)
                     {
-                        AmbientSounds.Add(item);
+                        if (item.Type == SoundType.Ambient)
+                        {
+                            AmbientSounds.Add(item);
+                        }
+                        else if (item.Type == SoundType.Effect)
+                        {
+                            Effects.Add(item);
+                        }
                     }
-                    else if (item.Type == SoundType.Effect)
-                    {
-                        Effects.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show(response.Error.Message, "Fehler bei Sounddateiabfrage", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                },
+                failure =>
+                {
+                    MessageBoxUtility.Show(failure);
+                });
         }
 
         private bool AmbientFilter(object item)

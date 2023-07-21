@@ -32,14 +32,9 @@ namespace Client.View
         {
             var response = await _campaignOverviewApi.GetAsync(_sessionData.UserId ?? 0); // TODO: why does '!' not work?
 
-            if (response.Error is null)
-            {
-                DataContext = response.Data;
-            }
-            else
-            {
-                throw new System.NullReferenceException(response.Error.Message);
-            }
+            response.Match(
+                success => DataContext = success,
+                failure => MessageBoxUtility.Show(failure));
         }
 
         private void OnEnterCampaign(object sender, RoutedEventArgs e)

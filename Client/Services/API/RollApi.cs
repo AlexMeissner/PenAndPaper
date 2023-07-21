@@ -1,35 +1,31 @@
-﻿using Client.Helper;
-using DataTransfer;
-using DataTransfer.Dice;
+﻿using DataTransfer.Dice;
 using System.Threading.Tasks;
 
 namespace Client.Services.API
 {
     public interface IRollApi
     {
-        public Task<ApiResponse<DiceRollResultDto>> GetAsync(int campaignId);
-        public Task<ApiResponse> PutAsync(RollDiceDto payload);
+        public Task<HttpResponse<DiceRollResultDto>> GetAsync(int campaignId);
+        public Task<HttpResponse> PutAsync(RollDiceDto payload);
     }
 
     public class RollApi : IRollApi
     {
-        private readonly IEndPointProvider _endPointProvider;
+        private readonly HttpRequest _request;
 
         public RollApi(IEndPointProvider endPointProvider)
         {
-            _endPointProvider = endPointProvider;
+            _request = new(endPointProvider.BaseURL + "Roll");
         }
 
-        Task<ApiResponse<DiceRollResultDto>> IRollApi.GetAsync(int campaignId)
+        public Task<HttpResponse<DiceRollResultDto>> GetAsync(int campaignId)
         {
-            string url = _endPointProvider.BaseURL + $"Roll?campaignId={campaignId}";
-            return url.GetAsync<DiceRollResultDto>();
+            return _request.GetAsync<DiceRollResultDto>($"campaignId={campaignId}");
         }
 
-        public Task<ApiResponse> PutAsync(RollDiceDto payload)
+        public Task<HttpResponse> PutAsync(RollDiceDto payload)
         {
-            string url = _endPointProvider.BaseURL + "Roll";
-            return url.PutAsync(payload);
+            return _request.PutAsync(payload);
         }
     }
 }

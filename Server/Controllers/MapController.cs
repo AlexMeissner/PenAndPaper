@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<MapDto>>> GetAsync(int mapId)
+        public async Task<IActionResult> GetAsync(int mapId)
         {
             try
             {
@@ -37,20 +36,20 @@ namespace Server.Controllers
                     }
                 };
 
-                return this.SendResponse<MapDto>(ApiResponse<MapDto>.Success(payload));
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return this.SendResponse<MapDto>(ApiResponse<MapDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message)));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse>> PostAsync(MapDto payload)
+        public async Task<IActionResult> PostAsync(MapDto payload)
         {
             try
             {
-                var dbMap = new DbMap()
+                var map = new DbMap()
                 {
                     CampaignId = payload.CampaignId,
                     Name = payload.Name,
@@ -59,23 +58,23 @@ namespace Server.Controllers
                     GridSize = payload.Grid.Size,
                 };
 
-                await _dbContext.Maps.AddAsync(dbMap);
+                await _dbContext.Maps.AddAsync(map);
 
                 var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
                 update.MapCollectionChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                 await _dbContext.SaveChangesAsync();
 
-                return ApiResponse.Success;
+                return CreatedAtAction(nameof(GetAsync), map.Id);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> PutAsync(MapDto payload)
+        public async Task<IActionResult> PutAsync(MapDto payload)
         {
             try
             {
@@ -91,16 +90,16 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return ApiResponse.Success;
+                return Ok(map);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpDelete]
-        public async Task<ActionResult<ApiResponse>> DeleteAsync(int mapId)
+        public async Task<IActionResult> DeleteAsync(int mapId)
         {
             try
             {
@@ -113,11 +112,11 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return ApiResponse.Success;
+                return Ok();
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
     }

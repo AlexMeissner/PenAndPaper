@@ -29,15 +29,15 @@ namespace Client.Controls
             {
                 var response = await _characterApi.GetOverviewAsync(campaignId);
 
-                if (response.Error is null)
-                {
-                    CharacterOverview.Items.Clear();
-
-                    foreach (var item in response.Data.Items)
+                response.Match(success =>
                     {
-                        CharacterOverview.Items.Add(item);
-                    }
-                }
+                        CharacterOverview.Items.Clear();
+
+                        foreach (var item in success.Items)
+                        {
+                            CharacterOverview.Items.Add(item);
+                        }
+                    });
             }
         }
 

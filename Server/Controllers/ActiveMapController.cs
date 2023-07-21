@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Map;
+﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -18,30 +17,29 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<ActiveMapDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
-            ActiveMapDto payload;
-
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == campaignId);
 
-                payload = new()
+                var payload = new ActiveMapDto()
                 {
                     CampaignId = activeCampaignElements.CampaignId,
                     MapId = activeCampaignElements.MapId,
                 };
+
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return ApiResponse<ActiveMapDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
 
-            return ApiResponse<ActiveMapDto>.Success(payload);
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> PutAsync(ActiveMapDto payload)
+        public async Task<IActionResult> PutAsync(ActiveMapDto payload)
         {
             try
             {
@@ -55,11 +53,11 @@ namespace Server.Controllers
                     await _dbContext.SaveChangesAsync();
                 }
 
-                return ApiResponse.Success;
+                return Ok(activeCampaignElements);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
     }

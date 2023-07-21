@@ -1,5 +1,6 @@
 ﻿using Client.Services;
 using Client.Services.API;
+using Client.View;
 using DataTransfer.Character;
 using DataTransfer.Dice;
 using DataTransfer.Map;
@@ -51,16 +52,17 @@ namespace Client.Controls
         {
             if (_sessionData.CampaignId is int campaignId)
             {
-                var rollDiceResult = await _rollApi.GetAsync(campaignId);
+                var result = await _rollApi.GetAsync(campaignId);
 
-                if (rollDiceResult.Error is null)
-                {
-                    await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRollerControl)DiceRollerPresenter.Content).Show(rollDiceResult.Data)));
-                }
-                else
-                {
-                    MessageBox.Show(rollDiceResult.Error.Message);
-                }
+                result.Match(
+                    async success =>
+                    {
+                        await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRollerControl)DiceRollerPresenter.Content).Show(success)));
+                    },
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 
@@ -140,29 +142,30 @@ namespace Client.Controls
             {
                 var activeMapResponse = await _activeMapApi.GetAsync(campaignId);
 
-                if (activeMapResponse.Error is not null)
-                {
-                    MessageBox.Show(activeMapResponse.Error.Message);
-                    return;
-                }
-
-                if (activeMapResponse.Data.MapId > 0)
-                {
-                    var mapResponse = await _mapApi.GetAsync(activeMapResponse.Data.MapId);
-
-                    if (mapResponse.Error is not null)
+                activeMapResponse.Match(
+                    async success =>
                     {
-                        MessageBox.Show(mapResponse.Error.Message);
-                        return;
-                    }
+                        var mapResponse = await _mapApi.GetAsync(success.MapId);
 
-                    Map.Id = activeMapResponse.Data.MapId;
-                    Map.ImageData = mapResponse.Data.ImageData;
-                    Map.Grid.IsActive = mapResponse.Data.Grid.IsActive;
-                    Map.Grid.Size = mapResponse.Data.Grid.Size;
-                }
+                        mapResponse.Match(
+                            s =>
+                            {
+                                Map.Id = success.MapId;
+                                Map.ImageData = s.ImageData;
+                                Map.Grid.IsActive = s.Grid.IsActive;
+                                Map.Grid.Size = s.Grid.Size;
 
-                //ZoomableCanvas.Reset();
+                                //ZoomableCanvas.Reset();
+                            },
+                            f =>
+                            {
+                                MessageBoxUtility.Show(f);
+                            });
+                    },
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 
@@ -170,15 +173,16 @@ namespace Client.Controls
         {
             var response = await _tokenApi.GetAsync(Map.Id);
 
-            if (response.Error is null)
-            {
-                Tokens.Items.Clear();
-
-                foreach (var item in response.Data.Items)
+            response.Match(
+                success =>
                 {
-                    Tokens.Items.Add(item);
-                }
-            }
+                    Tokens.Items.Clear();
+
+                    foreach (var item in success.Items)
+                    {
+                        Tokens.Items.Add(item);
+                    }
+                });
         }
 
         private void OnOpenSettings(object sender, RoutedEventArgs e)

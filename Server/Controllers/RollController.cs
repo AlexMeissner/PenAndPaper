@@ -1,5 +1,4 @@
-﻿using DataTransfer;
-using DataTransfer.Dice;
+﻿using DataTransfer.Dice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -19,23 +18,23 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<DiceRollResultDto>>> GetAsync(int campaignId)
+        public async Task<IActionResult> GetAsync(int campaignId)
         {
             try
             {
                 var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == campaignId);
-                var response = JsonSerializer.Deserialize<DiceRollResultDto>(diceRoll.Roll)!;
+                var payload = JsonSerializer.Deserialize<DiceRollResultDto>(diceRoll.Roll)!;
 
-                return this.SendResponse<DiceRollResultDto>(ApiResponse<DiceRollResultDto>.Success(response));
+                return Ok(payload);
             }
             catch (Exception exception)
             {
-                return ApiResponse<DiceRollResultDto>.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult<ApiResponse>> PutAsync(RollDiceDto payload)
+        public async Task<IActionResult> PutAsync(RollDiceDto payload)
         {
             try
             {
@@ -69,11 +68,11 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return ApiResponse.Success;
+                return Ok(diceRoll);
             }
             catch (Exception exception)
             {
-                return ApiResponse.Failure(new ErrorDetails(ErrorCode.Exception, exception.Message));
+                return this.InternalServerError(exception);
             }
         }
 
