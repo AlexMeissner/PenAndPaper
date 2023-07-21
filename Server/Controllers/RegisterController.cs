@@ -20,7 +20,7 @@ namespace Server.Controllers
         {
             try
             {
-                var entry = await _dbContext.Users.AddAsync(new()
+                var user = await _dbContext.Users.AddAsync(new()
                 {
                     Email = userCredentials.Email,
                     Username = userCredentials.Username,
@@ -29,7 +29,7 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(entry.Entity.Id);
+                return Ok(new LoginDto() { UserId = user.Entity.Id });
             }
             catch (Exception exception)
             {
