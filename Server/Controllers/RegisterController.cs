@@ -20,16 +20,19 @@ namespace Server.Controllers
         {
             try
             {
-                var user = await _dbContext.Users.AddAsync(new()
+                var user = new DbUser()
                 {
                     Email = userCredentials.Email,
                     Username = userCredentials.Username,
                     Password = userCredentials.Password
-                });
+                };
 
+                await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(new LoginDto() { UserId = user.Entity.Id });
+                var routeValue = new { id = user.Id };
+
+                return CreatedAtAction("GetAsync", nameof(UserController), routeValue, user);
             }
             catch (Exception exception)
             {

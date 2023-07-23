@@ -51,7 +51,7 @@ namespace Server.Controllers
                 await _dbContext.Sounds.AddAsync(sound);
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(sound);
+                return CreatedAtAction(nameof(GetAsync), sound.Id);
             }
             catch (Exception exception)
             {

@@ -106,7 +106,7 @@ namespace Server.Controllers
                 update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(token);
+                return CreatedAtAction(nameof(GetAsync), token.Id);
             }
             catch (Exception exception)
             {
