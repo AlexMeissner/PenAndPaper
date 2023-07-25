@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Controls.CharacterControl"
+﻿<UserControl x:Class="Client.Controls.CharacterList"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

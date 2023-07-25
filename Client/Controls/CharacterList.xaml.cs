@@ -10,14 +10,14 @@ using static Client.Services.ServiceExtension;
 namespace Client.Controls
 {
     [TransistentService]
-    public partial class CharacterControl : UserControl
+    public partial class CharacterList : UserControl
     {
         private readonly ICharacterApi _characterApi;
         private readonly ISessionData _sessionData;
 
         public CharacterOverviewDto CharacterOverview { get; set; } = new() { Items = new ObservableCollection<CharacterOverviewItem>() };
 
-        public CharacterControl(ICharacterApi characterApi, ISessionData sessionData)
+        public CharacterList(ICharacterApi characterApi, ISessionData sessionData)
         {
             _characterApi = characterApi;
             _sessionData = sessionData;

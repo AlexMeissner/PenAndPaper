@@ -1,5 +1,4 @@
-﻿using Client.Controls;
-using Client.Services;
+﻿using Client.Services;
 using Client.View;
 using Microsoft.Extensions.DependencyInjection;
 using System;
