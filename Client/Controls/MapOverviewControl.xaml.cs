@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Controls
 {
+    [TransistentService]
     public partial class MapOverviewControl : UserControl
     {
         public MapOverviewDto MapOverview { get; set; } = new();

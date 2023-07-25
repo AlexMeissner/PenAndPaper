@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Map;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -8,6 +9,7 @@ namespace Client.Services.API
         public Task<HttpResponse<MapOverviewDto>> GetAsync(int campaignId);
     }
 
+    [TransistentService]
     public class MapOverviewApi : IMapOverviewApi
     {
         private readonly HttpRequest _request;

@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Sound;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -9,6 +10,7 @@ namespace Client.Services.API
         public Task<HttpResponse> PutAsync(ActiveSoundDto payload);
     }
 
+    [TransistentService]
     public class ActiveSoundApi : IActiveSoundApi
     {
         private readonly HttpRequest _request;

@@ -1,5 +1,6 @@
 ﻿using DataTransfer.CampaignCreation;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -9,6 +10,7 @@ namespace Client.Services.API
         public Task<HttpResponse> PostAsync(CampaignCreationDto payload);
     }
 
+    [TransistentService]
     public class CampaignCreationApi : ICampaignCreationApi
     {
         private readonly HttpRequest _request;

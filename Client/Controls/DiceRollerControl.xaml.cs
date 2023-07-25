@@ -1,6 +1,5 @@
 ﻿using Client.Services;
 using DataTransfer.Dice;
-using FontAwesome;
 using FontAwesome.Sharp;
 using System;
 using System.Threading;
@@ -8,9 +7,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Controls
 {
+    [TransistentService]
     public partial class DiceRollerControl : UserControl
     {
         private int RunningRolls = 0;

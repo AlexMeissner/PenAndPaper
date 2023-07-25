@@ -1,4 +1,6 @@
-﻿namespace Client.Services
+﻿using static Client.Services.ServiceExtension;
+
+namespace Client.Services
 {
     public enum Theme
     {
@@ -18,6 +20,7 @@
         AudioSettings Audio { get; set; }
     }
 
+    [SingletonService]
     public class Settings : ISettings
     {
         public Theme Theme { get; set; }

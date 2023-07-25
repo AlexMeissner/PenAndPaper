@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -8,6 +9,7 @@ namespace Client.Services
         public int? CampaignId { get; set; }
     }
 
+    [SingletonService]
     public class SessionData : ISessionData
     {
         private int? _userId;

@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static Client.Services.ServiceExtension;
 
 namespace Client.View
 {
+    [TransistentService]
     public partial class CampaignCreationPage : Page
     {
         private readonly int _campaignId;

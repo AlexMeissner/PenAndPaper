@@ -5,9 +5,11 @@ using DataTransfer.Login;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static Client.Services.ServiceExtension;
 
 namespace Client.View
 {
+    [TransistentService]
     public partial class LoginPage : Page
     {
         private readonly IPageNavigator _pageNavigator;

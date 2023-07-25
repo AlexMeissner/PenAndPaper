@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Dice;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -9,6 +10,7 @@ namespace Client.Services.API
         public Task<HttpResponse> PutAsync(RollDiceDto payload);
     }
 
+    [TransistentService]
     public class RollApi : IRollApi
     {
         private readonly HttpRequest _request;

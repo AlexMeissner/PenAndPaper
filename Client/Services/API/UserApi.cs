@@ -1,5 +1,6 @@
 ﻿using DataTransfer.User;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -8,6 +9,7 @@ namespace Client.Services.API
         public Task<HttpResponse<UsersDto>> GetAsync(int userId);
     }
 
+    [TransistentService]
     public class UserApi : IUserApi
     {
         private readonly HttpRequest _request;

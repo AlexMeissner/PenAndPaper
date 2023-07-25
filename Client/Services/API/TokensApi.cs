@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Map;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -10,6 +11,7 @@ namespace Client.Services.API
         public Task<HttpResponse> PutAsync(TokenItem payload);
     }
 
+    [TransistentService]
     public class TokenApi : ITokenApi
     {
         private readonly HttpRequest _request;

@@ -4,9 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using static Client.Services.ServiceExtension;
 
 namespace Client.View
 {
+    [TransistentService]
     public partial class CampaignPlayerViewPage : Page
     {
         private readonly IPageNavigator _pageNavigator;

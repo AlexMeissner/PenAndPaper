@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Controls;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -11,6 +12,7 @@ namespace Client.Services
         public void OpenPage<T>() where T : Page;
     }
 
+    [SingletonService]
     public class PageNavigator : IPageNavigator
     {
         private readonly IServiceProvider _serviceProvider;

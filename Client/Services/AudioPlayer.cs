@@ -2,6 +2,7 @@
 using DataTransfer;
 using NAudio.Wave;
 using System;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -13,6 +14,7 @@ namespace Client.Services
         event EventHandler Stopped;
     }
 
+    [SingletonService]
     public class AudioPlayer : IAudioPlayer
     {
         public event EventHandler? Finished;

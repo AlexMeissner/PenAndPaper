@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Login;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -9,6 +10,7 @@ namespace Client.Services.API
         public Task<HttpResponse<LoginDto>> RegisterAsync(UserCredentialsDto payload);
     }
 
+    [TransistentService]
     public class AuthenticationApi : IAuthenticationApi
     {
         private readonly HttpRequest _loginRequest;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -18,6 +19,7 @@ namespace Client.Services
         string GetPath(CacheType type, string filename);
     }
 
+    [TransistentService]
     public class Cache : ICache
     {
         private readonly string CacheDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PenAndPaper");

@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Map;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -9,6 +10,7 @@ namespace Client.Services.API
         public Task<HttpResponse> PutAsync(ActiveMapDto payload);
     }
 
+    [TransistentService]
     public class ActiveMapApi : IActiveMapApi
     {
         private readonly HttpRequest _request;

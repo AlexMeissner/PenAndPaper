@@ -2,6 +2,7 @@
 using DataTransfer.Campaign;
 using System;
 using System.Timers;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -15,6 +16,7 @@ namespace Client.Services
         event EventHandler SoundEffectChanged;
     }
 
+    [SingletonService]
     public class CampaignUpdates : ICampaignUpdates
     {
         public event EventHandler? MapChanged;

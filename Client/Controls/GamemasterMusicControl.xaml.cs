@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Controls
 {
+    [TransistentService]
     public partial class GamemasterMusicControl : UserControl
     {
         public ICollection<SoundOverviewItemDto> AmbientSounds { get; set; } = new ObservableCollection<SoundOverviewItemDto>();

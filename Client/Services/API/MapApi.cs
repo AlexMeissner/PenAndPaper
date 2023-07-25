@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Map;
 using System.Threading.Tasks;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
@@ -11,6 +12,7 @@ namespace Client.Services.API
         public Task<HttpResponse> DeleteAsync(int MapId);
     }
 
+    [TransistentService]
     public class MapApi : IMapApi
     {
         private readonly HttpRequest _request;

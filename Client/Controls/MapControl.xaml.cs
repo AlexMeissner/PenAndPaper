@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Controls
 {
+    [TransistentService]
     public partial class MapControl : UserControl
     {
         private readonly ISessionData _sessionData;
