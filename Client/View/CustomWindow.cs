@@ -13,6 +13,7 @@ namespace Client.View
         public CustomWindow()
         {
             WindowStyle = WindowStyle.None;
+            ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
 
             Loaded += WindowLoaded;

@@ -25,11 +25,5 @@ namespace Client.View
                 e.Cancel = true;
             }
         }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            int margin = (WindowState == WindowState.Maximized) ? 5 : 0;
-            MainGrid.Margin = new(margin);
-        }
     }
 }
