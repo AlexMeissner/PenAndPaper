@@ -26,7 +26,6 @@ namespace Client.View
 
         private void OnExit(object sender, RoutedEventArgs e)
         {
-            _sessionData.CampaignId = null;
             _pageNavigator.OpenPage<CampaignSelectionPage>();
         }
     }

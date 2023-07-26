@@ -1,6 +1,7 @@
 ﻿using Client.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
@@ -9,6 +10,7 @@ namespace Client.Services
         public T Get<T>() where T : BaseViewModel;
     }
 
+    [TransistentService]
     public class ViewModelProvider : IViewModelProvider
     {
         private readonly IServiceProvider _serviceProvider;

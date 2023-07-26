@@ -32,7 +32,7 @@ namespace Client.View
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var response = await _campaignOverviewApi.GetAsync(_sessionData.UserId ?? 0); // TODO: why does '!' not work?
+            var response = await _campaignOverviewApi.GetAsync(_sessionData.UserId);
 
             response.Match(
                 success => DataContext = success,

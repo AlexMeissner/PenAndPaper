@@ -1,7 +1,5 @@
 ﻿using Client.Services;
-using Client.Services.API;
-using DataTransfer.Character;
-using System.Collections.ObjectModel;
+using Client.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,44 +10,25 @@ namespace Client.Controls
     [TransistentService]
     public partial class CharacterList : UserControl
     {
-        private readonly ICharacterApi _characterApi;
-        private readonly ISessionData _sessionData;
+        public CharacterListViewModel ViewModel => (CharacterListViewModel)DataContext;
 
-        public CharacterOverviewDto CharacterOverview { get; set; } = new() { Items = new ObservableCollection<CharacterOverviewItem>() };
-
-        public CharacterList(ICharacterApi characterApi, ISessionData sessionData)
+        public CharacterList(IViewModelProvider viewModelProvider)
         {
-            _characterApi = characterApi;
-            _sessionData = sessionData;
-
             InitializeComponent();
+            DataContext = viewModelProvider.Get<CharacterListViewModel>();
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (_sessionData.CampaignId is int campaignId)
-            {
-                var response = await _characterApi.GetOverviewAsync(campaignId);
-
-                response.Match(success =>
-                    {
-                        CharacterOverview.Items.Clear();
-
-                        foreach (var item in success.Items)
-                        {
-                            CharacterOverview.Items.Add(item);
-                        }
-                    });
-            }
+            // Bind this function instead
+            await ViewModel.Load();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed &&
-                sender is ListView listView &&
-                listView.SelectedItem is CharacterOverviewItem character)
+            if (e.LeftButton == MouseButtonState.Pressed && sender is ListView listView)
             {
-                DragDrop.DoDragDrop(this, character, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(this, listView.SelectedItem, DragDropEffects.Copy);
             }
         }
     }

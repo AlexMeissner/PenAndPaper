@@ -12,10 +12,8 @@ namespace Client.View
     public partial class CampaignGamemasterViewPage : Page
     {
         private readonly IPageNavigator _pageNavigator;
-        private readonly ISessionData _sessionData;
-        private readonly ICampaignUpdates _campaignUpdates;
 
-        public CampaignGamemasterViewPage(IServiceProvider serviceProvider, IPageNavigator pageNavigator, ISessionData sessionData, ICampaignUpdates campaignUpdates)
+        public CampaignGamemasterViewPage(IServiceProvider serviceProvider, IPageNavigator pageNavigator)
         {
             InitializeComponent();
 
@@ -26,13 +24,10 @@ namespace Client.View
             NPCPresenter.Content = serviceProvider.GetService<MonsterControl>();
 
             _pageNavigator = pageNavigator;
-            _sessionData = sessionData;
-            _campaignUpdates = campaignUpdates;
         }
 
         private void OnExit(object sender, RoutedEventArgs e)
         {
-            _sessionData.CampaignId = null;
             _pageNavigator.OpenPage<CampaignSelectionPage>();
         }
     }

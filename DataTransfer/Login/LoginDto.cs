@@ -2,6 +2,6 @@
 {
     public class LoginDto
     {
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

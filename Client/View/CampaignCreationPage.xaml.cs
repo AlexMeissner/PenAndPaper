@@ -93,7 +93,7 @@ namespace Client.View
                 {
                     if (success.Gamemaster is null)
                     {
-                        var me = await _userApi.GetAsync(_sessionData.UserId ?? 0); // TODO: Why does '!' not work?
+                        var me = await _userApi.GetAsync(_sessionData.UserId);
 
                         me.Match(
                             s => success.Gamemaster = s,

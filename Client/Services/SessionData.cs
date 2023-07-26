@@ -1,21 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
     public interface ISessionData : INotifyPropertyChanged
     {
-        public int? UserId { get; set; }
-        public int? CampaignId { get; set; }
+        public int UserId { get; set; }
+        public int CampaignId { get; set; }
     }
 
     [SingletonService]
     public class SessionData : ISessionData
     {
-        private int? _userId;
-        public int? UserId
+        private int _userId = -1;
+        public int UserId
         {
-            get => _userId;
+            get
+            {
+                return _userId;
+            }
             set
             {
                 _userId = value;
@@ -24,9 +28,17 @@ namespace Client.Services
         }
 
         private int? _campaignId;
-        public int? CampaignId
+        public int CampaignId
         {
-            get => _campaignId;
+            get
+            {
+                if (_campaignId is null)
+                {
+                    throw new NullReferenceException("Campaign id not set");
+                }
+
+                return (int)_campaignId;
+            }
             set
             {
                 _campaignId = value;

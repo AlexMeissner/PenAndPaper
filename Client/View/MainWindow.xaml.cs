@@ -1,5 +1,4 @@
 ﻿using Client.Services;
-using System.Windows;
 using System.Windows.Navigation;
 using static Client.Services.ServiceExtension;
 
