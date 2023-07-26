@@ -14,8 +14,8 @@ namespace Client.Controls
 
         public CharacterList(IViewModelProvider viewModelProvider)
         {
-            InitializeComponent();
             DataContext = viewModelProvider.Get<CharacterListViewModel>();
+            InitializeComponent();
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)

@@ -27,17 +27,12 @@ namespace Client.Services
             }
         }
 
-        private int? _campaignId;
+        private int _campaignId = -1;
         public int CampaignId
         {
             get
             {
-                if (_campaignId is null)
-                {
-                    throw new NullReferenceException("Campaign id not set");
-                }
-
-                return (int)_campaignId;
+                return _campaignId;
             }
             set
             {
