@@ -20,7 +20,6 @@ namespace Client.Controls
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            // Bind this function instead
             await ViewModel.Load();
         }
 
