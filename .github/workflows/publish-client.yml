@@ -31,11 +31,11 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
       
-    - name: Publish
-      run: dotnet publish -c Release -o ${{ env.DOTNET_ROOT }}\publish
+    #- name: Publish
+    #  run: dotnet publish -c Release -o ${{ env.DOTNET_ROOT }}\publish
       
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
-      with:
-        name: MSIX Package
-        path: ${{ env.DOTNET_ROOT }}\publish
+    #  with:
+    #    name: MSIX Package
+    #    path: ${{ env.DOTNET_ROOT }}\publish
