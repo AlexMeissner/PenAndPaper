@@ -63,14 +63,14 @@ namespace Client.Services.API
         public async Task<HttpResponse> PutAsync(object payload)
         {
             IFlurlRequest request = new FlurlRequest(_endpoint);
-            var response = await request.AllowAnyHttpStatus().PostJsonAsync(payload).ConfigureAwait(false);
+            var response = await request.AllowAnyHttpStatus().PutJsonAsync(payload).ConfigureAwait(false);
             return new HttpResponse(response.ResponseMessage.StatusCode);
         }
 
         public async Task<HttpResponse<T>> PutAsync<T>(object payload)
         {
             IFlurlRequest request = new FlurlRequest(_endpoint);
-            var response = await request.AllowAnyHttpStatus().PostJsonAsync(payload).ConfigureAwait(false);
+            var response = await request.AllowAnyHttpStatus().PutJsonAsync(payload).ConfigureAwait(false);
             return await ProcessResponseAsync<T>(response.ResponseMessage);
         }
 

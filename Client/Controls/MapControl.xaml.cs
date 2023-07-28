@@ -41,7 +41,7 @@ namespace Client.Controls
             campaignUpdates.TokenChanged += OnTokenChanged;
             InitializeComponent();
 
-            DiceRollerPresenter.Content = serviceProvider.GetRequiredService<DiceRollerControl>();
+            DiceRollerPresenter.Content = serviceProvider.GetRequiredService<DiceRoller>();
         }
 
         private async void OnMapChanged(object? sender, EventArgs e)
@@ -52,20 +52,17 @@ namespace Client.Controls
 
         private async void OnDiceRolled(object? sender, EventArgs e)
         {
-            if (_sessionData.CampaignId is int campaignId)
-            {
-                var result = await _rollApi.GetAsync(campaignId);
+            var result = await _rollApi.GetAsync(_sessionData.CampaignId);
 
-                result.Match(
-                    async success =>
-                    {
-                        await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRollerControl)DiceRollerPresenter.Content).Show(success)));
-                    },
-                    failure =>
-                    {
-                        MessageBoxUtility.Show(failure);
-                    });
-            }
+            result.Match(
+                async success =>
+                {
+                    await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRoller)DiceRollerPresenter.Content).ViewModel.Show(success)));
+                },
+                failure =>
+                {
+                    MessageBoxUtility.Show(failure);
+                });
         }
 
         private async void OnTokenChanged(object? sender, EventArgs e)
@@ -87,19 +84,16 @@ namespace Client.Controls
 
         private async Task RollDice(Dice dice)
         {
-            if (_sessionData.CampaignId is int campaignId && _sessionData.UserId is int playerId)
+            DicePanel.Visibility = Visibility.Collapsed;
+
+            var payload = new RollDiceDto()
             {
-                DicePanel.Visibility = Visibility.Collapsed;
-
-                var payload = new RollDiceDto()
-                {
-                    CampaignId = campaignId,
-                    PlayerId = playerId,
-                    Dice = dice
-                };
-
-                await _rollApi.PutAsync(payload);
-            }
+                CampaignId = _sessionData.CampaignId,
+                PlayerId = _sessionData.UserId,
+                Dice = dice
+            };
+            
+            await _rollApi.PutAsync(payload);
         }
 
         private async void OnRollD4(object sender, RoutedEventArgs e)
