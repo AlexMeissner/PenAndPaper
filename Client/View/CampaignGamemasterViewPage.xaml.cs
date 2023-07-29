@@ -19,7 +19,7 @@ namespace Client.View
 
             MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
             MapOverviewPresenter.Content = serviceProvider.GetRequiredService<MapOverviewControl>();
-            SoundPresenter.Content = serviceProvider.GetRequiredService<GamemasterMusicControl>();
+            SoundPresenter.Content = serviceProvider.GetRequiredService<MusicLibrary>();
             PlayerPresenter.Content = serviceProvider.GetRequiredService<CharacterList>();
             NPCPresenter.Content = serviceProvider.GetService<MonsterControl>();
 
