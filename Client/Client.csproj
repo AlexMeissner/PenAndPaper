@@ -21,6 +21,9 @@
     <None Remove="Resource\splash2.jpg" />
     <None Remove="Resource\splash3.jpg" />
     <None Remove="Resource\splash4.jpg" />
+    <None Remove="Resource\splash5.jpg" />
+    <None Remove="Resource\splash6.jpg" />
+    <None Remove="Resource\splash7.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +51,9 @@
     <Resource Include="Resource\splash2.jpg" />
     <Resource Include="Resource\splash3.jpg" />
     <Resource Include="Resource\splash4.jpg" />
+    <Resource Include="Resource\splash5.jpg" />
+    <Resource Include="Resource\splash6.jpg" />
+    <Resource Include="Resource\splash7.jpg" />
   </ItemGroup>
 
 </Project>
