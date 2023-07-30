@@ -75,60 +75,7 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-        <!--
-        <StackPanel HorizontalAlignment="Left">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Bezieht sich auf den selektierten Token oder Landmark."/>
-            <Border Width="300" CornerRadius="4" BorderBrush="Black" BorderThickness="2" Margin="2" Padding="2">
-                <StackPanel>
-                    <TextBlock Text="Charakter-Name" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <Border BorderBrush="Black" BorderThickness="1"/>
-
-                    <TextBlock Text="Fertigkeiten" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <controls:NameValueControl PropertyName="Akrobatik" PropertyValue="{Binding Acrobatics}"/>
-                    <controls:NameValueControl PropertyName="Arkane Kunde" PropertyValue="{Binding Arcana}"/>
-                    <controls:NameValueControl PropertyName="Athletik" PropertyValue="{Binding Athletics}"/>
-                    <controls:NameValueControl PropertyName="Auftreten" PropertyValue="{Binding Performance}"/>
-                    <controls:NameValueControl PropertyName="Einschüchtern" PropertyValue="{Binding Intimidation}"/>
-                    <controls:NameValueControl PropertyName="Fingerfertigkeit" PropertyValue="{Binding SlightOfHand}"/>
-                    <controls:NameValueControl PropertyName="Geschichte" PropertyValue="{Binding History}"/>
-                    <controls:NameValueControl PropertyName="Heilkunde" PropertyValue="{Binding Medicine}"/>
-                    <controls:NameValueControl PropertyName="Heimlich" PropertyValue="{Binding Stealth}"/>
-                    <controls:NameValueControl PropertyName="Mit Tieren umgehen" PropertyValue="{Binding AnimalHandling}"/>
-                    <controls:NameValueControl PropertyName="Motiv erkennen" PropertyValue="{Binding Insight}"/>
-                    <controls:NameValueControl PropertyName="Nachforschungen" PropertyValue="{Binding Investigation}"/>
-                    <controls:NameValueControl PropertyName="Naturkunde" PropertyValue="{Binding Nature}"/>
-                    <controls:NameValueControl PropertyName="Religion" PropertyValue="{Binding Religion}"/>
-                    <controls:NameValueControl PropertyName="Täuschen" PropertyValue="{Binding Deception}"/>
-                    <controls:NameValueControl PropertyName="Überlebenskunst" PropertyValue="{Binding Survival}"/>
-                    <controls:NameValueControl PropertyName="Überzeugen" PropertyValue="{Binding Persuasion}"/>
-                    <controls:NameValueControl PropertyName="Wahrnehmung" PropertyValue="{Binding Perception}"/>
-
-                    <TextBlock Text="Attribute" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthModificator}"/>
-                    <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexterityModificator}"/>
-                    <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionModificator}"/>
-                    <controls:NameValueControl PropertyName="Intelligenz" PropertyValue="{Binding IntelligenceModificator}"/>
-                    <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomModificator}"/>
-                    <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaModificator}"/>
-
-                    <controls:NameValueControl PropertyName="Passive Wahrnehmung" PropertyValue="{Binding PassivePerception}"/>
-
-                    <TextBlock Text="Rettungswürfe" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <controls:NameValueControl PropertyName="Stärke" PropertyValue="{Binding StrengthSavingThrow}"/>
-                    <controls:NameValueControl PropertyName="Geschicklichkeit" PropertyValue="{Binding DexteritySavingThrow}"/>
-                    <controls:NameValueControl PropertyName="Konsitution" PropertyValue="{Binding ConstitutionSavingThrow}"/>
-                    <controls:NameValueControl PropertyName="Intelligenz" PropertyValue="{Binding IntelligenceSavingThrow}"/>
-                    <controls:NameValueControl PropertyName="Weisheit" PropertyValue="{Binding WisdomSavingThrow}"/>
-                    <controls:NameValueControl PropertyName="Charisma" PropertyValue="{Binding CharismaSavingThrow}"/>
-                </StackPanel>
-            </Border>        
-        </StackPanel>
-        -->
-        <!-- 
-        TODO:
-        Player Cursor
-        -->
+        
         <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Button Width="50" Margin="2" Visibility="Collapsed">
