@@ -1,7 +1,5 @@
 ﻿using Client.Controls;
 using Client.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using static Client.Services.ServiceExtension;
@@ -13,15 +11,16 @@ namespace Client.View
     {
         private readonly IPageNavigator _pageNavigator;
 
-        public CampaignGamemasterViewPage(IServiceProvider serviceProvider, IPageNavigator pageNavigator)
+        public CampaignGamemasterViewPage(IControlProvider controlProvider, IPageNavigator pageNavigator)
         {
             InitializeComponent();
 
-            MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
-            MapOverviewPresenter.Content = serviceProvider.GetRequiredService<MapOverviewControl>();
-            SoundPresenter.Content = serviceProvider.GetRequiredService<MusicLibrary>();
-            PlayerPresenter.Content = serviceProvider.GetRequiredService<CharacterList>();
-            NPCPresenter.Content = serviceProvider.GetService<MonsterControl>();
+            MapPresenter.Content = controlProvider.Get<MapControl>();
+            MapOverviewPresenter.Content = controlProvider.Get<MapOverviewControl>();
+            SoundPresenter.Content = controlProvider.Get<MusicLibrary>();
+            PlayerPresenter.Content = controlProvider.Get<CharacterList>();
+            NPCPresenter.Content = controlProvider.Get<MonsterControl>();
+            ScriptPresenter.Content = controlProvider.Get<Script>();
 
             _pageNavigator = pageNavigator;
         }

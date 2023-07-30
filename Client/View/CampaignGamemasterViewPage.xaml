@@ -29,7 +29,7 @@
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
             <TabControl Grid.Column="2">
                 <TabItem Header="Script">
-                    <controls:ScriptControl/>
+                    <ContentPresenter Name="ScriptPresenter"/>
                 </TabItem>
                 <TabItem Header="Charaktere">
                     <ContentPresenter Name="PlayerPresenter"/>
