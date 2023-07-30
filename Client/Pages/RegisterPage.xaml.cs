@@ -1,12 +1,13 @@
 ﻿using Client.Helper;
-using Client.Services.API;
 using Client.Services;
+using Client.Services.API;
+using Client.Windows;
+using DataTransfer.Login;
 using System.Windows;
 using System.Windows.Controls;
-using DataTransfer.Login;
 using static Client.Services.ServiceExtension;
 
-namespace Client.View
+namespace Client.Pages
 {
     [TransistentService]
     public partial class RegisterPage : Page

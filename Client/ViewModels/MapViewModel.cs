@@ -1,7 +1,7 @@
 ﻿using Client.Commands;
 using Client.Services;
 using Client.Services.API;
-using Client.View;
+using Client.Windows;
 using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;

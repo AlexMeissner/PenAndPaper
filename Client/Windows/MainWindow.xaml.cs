@@ -1,8 +1,9 @@
-﻿using Client.Services;
+﻿using Client.Pages;
+using Client.Services;
 using System.Windows.Navigation;
 using static Client.Services.ServiceExtension;
 
-namespace Client.View
+namespace Client.Windows
 {
     [TransistentService]
     public partial class MainWindow : CustomWindow

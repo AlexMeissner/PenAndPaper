@@ -1,6 +1,7 @@
 ﻿using Client.Helper;
 using Client.Services;
 using Client.Services.API;
+using Client.Windows;
 using DataTransfer.CampaignCreation;
 using DataTransfer.User;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static Client.Services.ServiceExtension;
 
-namespace Client.View
+namespace Client.Pages
 {
     [TransistentService]
     public partial class CampaignCreationPage : Page

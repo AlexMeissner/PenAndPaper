@@ -4,7 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace Client.View
+namespace Client.Windows
 {
     public abstract class CustomWindow : Window
     {
@@ -92,7 +92,7 @@ namespace Client.View
 
         protected void Maximize(object sender, RoutedEventArgs e)
         {
-            WindowState = (WindowState == WindowState.Maximized) ? WindowState.Normal : WindowState.Maximized;
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
         protected void Minimize(object sender, RoutedEventArgs e)

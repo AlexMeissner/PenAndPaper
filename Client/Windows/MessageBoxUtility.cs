@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Windows;
 
-namespace Client.View
+namespace Client.Windows
 {
     internal static class MessageBoxUtility
     {

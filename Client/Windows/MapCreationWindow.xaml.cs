@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace Client.View
+namespace Client.Windows
 {
     public partial class MapCreationWindow : Window
     {

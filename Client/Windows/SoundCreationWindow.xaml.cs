@@ -7,7 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Client.View
+namespace Client.Windows
 {
     public partial class SoundCreationWindow : Window
     {

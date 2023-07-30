@@ -1,6 +1,6 @@
 ﻿using Client.Services;
-using Client.View;
 using Client.ViewModels;
+using Client.Windows;
 using DataTransfer.Sound;
 using System.Threading.Tasks;
 using System.Windows;

@@ -1,6 +1,6 @@
 ﻿using Client.Services;
-using Client.View;
 using Client.ViewModels;
+using Client.Windows;
 using DataTransfer.Map;
 using System.Windows;
 using System.Windows.Controls;

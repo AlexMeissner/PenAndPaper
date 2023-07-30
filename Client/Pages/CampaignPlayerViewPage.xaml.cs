@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using static Client.Services.ServiceExtension;
 
-namespace Client.View
+namespace Client.Pages
 {
     [TransistentService]
     public partial class CampaignPlayerViewPage : Page
