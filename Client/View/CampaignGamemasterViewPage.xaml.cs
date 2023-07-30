@@ -15,7 +15,7 @@ namespace Client.View
         {
             InitializeComponent();
 
-            MapPresenter.Content = controlProvider.Get<MapControl>();
+            MapPresenter.Content = controlProvider.Get<Map>();
             MapOverviewPresenter.Content = controlProvider.Get<MapOverview>();
             SoundPresenter.Content = controlProvider.Get<MusicLibrary>();
             PlayerPresenter.Content = controlProvider.Get<CharacterList>();

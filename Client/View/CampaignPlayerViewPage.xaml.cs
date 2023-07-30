@@ -18,7 +18,7 @@ namespace Client.View
         {
             InitializeComponent();
 
-            MapPresenter.Content = serviceProvider.GetRequiredService<MapControl>();
+            MapPresenter.Content = serviceProvider.GetRequiredService<Map>();
 
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
