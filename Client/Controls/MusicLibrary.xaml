@@ -47,7 +47,7 @@
                 </Button.Resources>
                 <fa:IconImage Icon="Stop"/>
             </Button>
-            <TextBox Grid.Column="2" Margin="2" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientFilter}" VerticalContentAlignment="Center" TextChanged="OnAmbientFilterChanged">
+            <TextBox Grid.Column="2" Margin="2" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientFilter, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" TextChanged="OnAmbientFilterChanged">
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -110,7 +110,7 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.EffectsFilter}" TextChanged="OnEffectsFilterChanged">
+            <TextBox Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.EffectsFilter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnEffectsFilterChanged">
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>

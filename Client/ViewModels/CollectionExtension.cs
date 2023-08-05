@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.ViewModels
@@ -29,7 +30,20 @@ namespace Client.ViewModels
             });
         }
 
-        // InvokeAdd
-        // InvokeRemove
+        public static async Task InvokeAddAsync<T>(this ICollection<T> collection, T item)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                collection.Add(item);
+            });
+        }
+
+        public static async Task InvokeRemoveAsync<T>(this ICollection<T> collection, T item)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                collection.Remove(item);
+            });
+        }
     }
 }

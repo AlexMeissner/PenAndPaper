@@ -93,9 +93,10 @@ namespace Client.Controls
             gitmap.Render(drawingVisual);
             gitmap.Freeze();
 
-            var gridImage = new Image();
-            //gridImage.SetValue(Panel.ZIndexProperty, -100);
-            gridImage.Source = gitmap;
+            var gridImage = new Image
+            {
+                Source = gitmap
+            };
 
             GridCanvas.Children.Add(gridImage);
         }
