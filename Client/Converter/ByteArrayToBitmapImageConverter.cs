@@ -8,6 +8,8 @@ namespace Client.Converter
 {
     public class ByteArrayToBitmapImageConverter : IValueConverter
     {
+        private static readonly CultureInfo CultureInfo = new("en-US");
+
         public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is byte[] data && data.Length > 0)
@@ -24,6 +26,11 @@ namespace Client.Converter
             }
 
             return null;
+        }
+
+        public BitmapImage Convert(byte[] data)
+        {
+            return (BitmapImage)Convert(data, typeof(BitmapImage), data, CultureInfo)!;
         }
 
         public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

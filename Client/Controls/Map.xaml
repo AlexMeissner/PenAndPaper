@@ -33,34 +33,10 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <!--
-                        <Grid>
-                            <Image Source="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
-                            <Rectangle Width="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding Map.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding Map.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Rectangle.Fill>
-                                    <DrawingBrush TileMode="Tile" Viewport="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
-                                        <DrawingBrush.Drawing>
-                                            <GeometryDrawing>
-                                                <GeometryDrawing.Geometry>
-                                                    <RectangleGeometry Rect="{Binding Map.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
-                                                </GeometryDrawing.Geometry>
-                                                <GeometryDrawing.Pen>
-                                                    <Pen Brush="#88000000" Thickness="1"/>
-                                                </GeometryDrawing.Pen>
-                                            </GeometryDrawing>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Grid>
-                        -->
-
-        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Tokens}">
+        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <controls:ZoomableCanvasControl x:Name="ZoomableCanvas">
-
-                    </controls:ZoomableCanvasControl>
+                    <controls:ZoomableCanvasControl x:Name="ZoomableCanvas" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -68,16 +44,30 @@
                 <Style TargetType="ContentPresenter">
                     <Setter Property="Canvas.Left" Value="{Binding X}"/>
                     <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                    <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="Test" Background="Red"/>
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type viewModels:BackgroundMapItem}">
+                    <Image Source="{Binding Image}"/>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:GridMapItem}">
+                    <controls:MapGrid Width="{Binding Width}" 
+                                      Height="{Binding Height}"
+                                      Color="{Binding Color}" LineThickness="{Binding LineThickness}" Size="{Binding Size}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewModels:TokenMapItem}">
+                    <Border BorderThickness="1" BorderBrush="Orange" Width="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}" Height="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}">
+                        <Grid>
+                            <Image Stretch="UniformToFill" Source="{Binding Image}"/>
+                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.Resources>
         </ItemsControl>
-        
+
         <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Button Width="50" Margin="2" Visibility="Collapsed">

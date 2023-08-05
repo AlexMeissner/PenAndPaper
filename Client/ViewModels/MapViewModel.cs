@@ -6,9 +6,11 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using static Client.Services.ServiceExtension;
 
 namespace Client.ViewModels
@@ -22,8 +24,11 @@ namespace Client.ViewModels
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
 
-        public MapDto Map { get; set; } = new();
-        public ObservableCollection<TokenItem> Tokens { get; set; } = new();
+        public int Id { get; private set; }
+        public ObservableCollection<IMapItem> Items { get; private set; } = new();
+
+        public BackgroundMapItem? Background => (BackgroundMapItem?)Items.FirstOrDefault(x => x is BackgroundMapItem);
+        public GridMapItem? Grid => (GridMapItem?)Items.FirstOrDefault(x => x is GridMapItem);
 
         public Visibility DiceVisibility { get; set; } = Visibility.Collapsed;
 
@@ -55,16 +60,16 @@ namespace Client.ViewModels
 
         public Task CreateToken(Point position, int characterId)
         {
-            if (Map.Grid.IsActive)
+            if (Grid is not null)
             {
-                position.X -= position.X % Map.Grid.Size;
-                position.Y -= position.Y % Map.Grid.Size;
+                position.X -= position.X % Grid.Size;
+                position.Y -= position.Y % Grid.Size;
             }
 
             TokenCreationDto payload = new()
             {
                 CampaignId = _sessionData.CampaignId,
-                MapId = Map.Id,
+                MapId = Id,
                 CharacterId = characterId,
                 X = (int)position.X,
                 Y = (int)position.Y
@@ -98,20 +103,37 @@ namespace Client.ViewModels
                 {
                     var mapResponse = await _mapApi.GetAsync(success.MapId);
 
-                    mapResponse.Match(
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        mapResponse.Match(
                         s =>
                         {
-                            Map.Id = success.MapId;
-                            Map.ImageData = s.ImageData;
-                            Map.Grid.IsActive = s.Grid.IsActive;
-                            Map.Grid.Size = s.Grid.Size;
+                            if (Background is not null)
+                            {
+                                Items.Remove(Background);
+                            }
+                            if (Grid is not null)
+                            {
+                                Items.Remove(Grid);
+                            }
+
+                            Id = success.MapId;
+
+                            var background = new BackgroundMapItem(s.ImageData);
+
+                            Items.Add(background);
+
+                            if (s.Grid.IsActive)
+                            {
+                                const int lineThickness = 1; // ToDo
+                                SolidColorBrush color = new(Colors.Red); // ToDo
+                                var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
+                                Items.Add(map);
+                            }
 
                             //ZoomableCanvas.Reset();
-                        },
-                        f =>
-                        {
-                            MessageBoxUtility.Show(f);
                         });
+                    });
                 },
                 failure =>
                 {
@@ -122,9 +144,23 @@ namespace Client.ViewModels
 
         public async Task UpdateTokens()
         {
-            var response = await _tokenApi.GetAsync(Map.Id);
+            var response = await _tokenApi.GetAsync(Id);
 
-            response.Match(success => { Tokens.ReplaceWith(success.Items); });
+
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                response.Match(success =>
+                {
+                    var tokens = Items.Where(x => x is TokenMapItem).ToList();
+                    Items.RemoveAll(tokens);
+
+                    foreach (var item in success.Items)
+                    {
+                        var token = new TokenMapItem(item.X, item.Y, item.Id, item.UserId, item.Name, item.Image);
+                        Items.Add(token);
+                    }
+                });
+            });
         }
 
         private async Task RollDice(Dice dice)

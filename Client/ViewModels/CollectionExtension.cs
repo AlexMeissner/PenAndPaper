@@ -17,5 +17,19 @@ namespace Client.ViewModels
                 }
             });
         }
+
+        public static async void RemoveAll<T>(this ICollection<T> collection, IList<T> items)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                foreach (var item in items)
+                {
+                    collection.Remove(item);
+                }
+            });
+        }
+
+        // InvokeAdd
+        // InvokeRemove
     }
 }
