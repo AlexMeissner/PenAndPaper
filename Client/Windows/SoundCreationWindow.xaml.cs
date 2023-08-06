@@ -1,7 +1,6 @@
-﻿using DataTransfer.Sound;
+﻿using Client.ViewModels;
+using DataTransfer.Sound;
 using Microsoft.Win32;
-using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -11,11 +10,11 @@ namespace Client.Windows
 {
     public partial class SoundCreationWindow : Window
     {
-        public SoundCreationDto CreationData { get; set; }
+        public SoundCreationViewModel ViewModel => (SoundCreationViewModel)DataContext;
 
         public SoundCreationWindow(SoundType type)
         {
-            CreationData = new(string.Empty, type, new ObservableCollection<string>(), Array.Empty<byte>());
+            DataContext = new SoundCreationViewModel(type);
             InitializeComponent();
         }
 
@@ -33,9 +32,9 @@ namespace Client.Windows
 
         private void OnAddTag(object sender, RoutedEventArgs e)
         {
-            if (TagTextBox.Text.Length > 0 && !CreationData.Tags.Any(x => x.ToLower() == TagTextBox.Text.ToLower()))
+            if (TagTextBox.Text.Length > 0 && !ViewModel.Tags.Any(x => x.ToLower() == TagTextBox.Text.ToLower()))
             {
-                CreationData.Tags.Add(TagTextBox.Text);
+                ViewModel.Tags.Add(TagTextBox.Text);
                 TagTextBox.Text = string.Empty;
             }
         }
@@ -44,7 +43,7 @@ namespace Client.Windows
         {
             if (sender is Button button && button.DataContext is string tag)
             {
-                CreationData.Tags.Remove(tag);
+                ViewModel.Tags.Remove(tag);
             }
         }
 
@@ -57,7 +56,7 @@ namespace Client.Windows
 
             if (openFileDialog.ShowDialog() is true)
             {
-                CreationData.Data = await File.ReadAllBytesAsync(openFileDialog.FileName);
+                ViewModel.Data = await File.ReadAllBytesAsync(openFileDialog.FileName);
             }
         }
     }

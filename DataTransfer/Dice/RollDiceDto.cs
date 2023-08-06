@@ -11,10 +11,5 @@
         D100
     }
 
-    public class RollDiceDto
-    {
-        public int CampaignId { get; set; }
-        public int PlayerId { get; set; }
-        public Dice Dice { get; set; }
-    }
+    public record RollDiceDto(int CampaignId, int PlayerId, Dice Dice);
 }

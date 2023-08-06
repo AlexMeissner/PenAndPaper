@@ -37,7 +37,14 @@ namespace Client.Controls
 
             if (mapCreationWindow.ShowDialog() == true)
             {
-                await ViewModel.CreateMap(mapCreationWindow.MapCreation);
+                var payload = new MapDto(
+                    Id: mapCreationWindow.ViewModel.Id,
+                    CampaignId: mapCreationWindow.ViewModel.CampaignId,
+                    Name: mapCreationWindow.ViewModel.Name,
+                    ImageData: mapCreationWindow.ViewModel.ImageData,
+                    Grid: new GridDto(mapCreationWindow.ViewModel.GridSize, mapCreationWindow.ViewModel.GridIsActive));
+
+                await ViewModel.CreateMap(payload);
             }
 
         }
@@ -56,7 +63,14 @@ namespace Client.Controls
 
                     if (mapCreationWindow.ShowDialog() == true)
                     {
-                        await ViewModel.UpdateMap(mapCreationWindow.MapCreation);
+                        var payload = new MapDto(
+                            Id: mapCreationWindow.ViewModel.Id,
+                            CampaignId: mapCreationWindow.ViewModel.CampaignId,
+                            Name: mapCreationWindow.ViewModel.Name,
+                            ImageData: mapCreationWindow.ViewModel.ImageData,
+                            Grid: new GridDto(mapCreationWindow.ViewModel.GridSize, mapCreationWindow.ViewModel.GridIsActive));
+
+                        await ViewModel.UpdateMap(payload);
                     }
                 },
                 failure =>

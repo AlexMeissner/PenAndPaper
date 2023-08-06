@@ -23,35 +23,31 @@ namespace Server.Controllers
             {
                 var charactersInCampaign = await _dbContext.CharactersInCampaign.Where(x => x.CampaignId == campaignId).ToListAsync();
 
-                var payload = new CharacterOverviewDto()
-                {
-                    Items = new List<CharacterOverviewItem>()
-                };
+                var payload = new CharacterOverviewDto(new List<CharacterOverviewItem>());
 
                 foreach (var characterInCampaign in charactersInCampaign)
                 {
                     var character = await _dbContext.Characters.FirstAsync(x => x.Id == characterInCampaign.CharacterId);
 
-                    var item = new CharacterOverviewItem
-                    {
-                        PlayerId = characterInCampaign.UserId,
-                        CharacterId = characterInCampaign.CharacterId,
-                        PlayerName = "TODO", // TODO
-                        CharacterName = character.Name,
-                        Race = "TODO", // TODO
-                        Class = "TODO", // TODO
-                        Image = character.Image,
-                        Level = 1, // TODO
-                        Health = 20, // TODO
-                        MaxHealth = 100, // TODO
-                        PassivePerception = 10, // TODO
-                        Strength = character.Strength,
-                        Dexterity = character.Dexterity,
-                        Constitution = character.Constitution,
-                        Intelligence = character.Intelligence,
-                        Wisdom = character.Wisdom,
-                        Charisma = character.Charisma,
-                    };
+                    var item = new CharacterOverviewItem(
+                        PlayerId: characterInCampaign.UserId,
+                        CharacterId: characterInCampaign.CharacterId,
+                        PlayerName: "TODO", // TODO
+                        CharacterName: character.Name,
+                        Race: "TODO", // TODO
+                        Class: "TODO", // TODO
+                        Image: character.Image,
+                        Level: 1, // TODO
+                        Health: 20, // TODO
+                        MaxHealth: 100, // TODO
+                        PassivePerception: 10, // TODO
+                        Strength: character.Strength,
+                        Dexterity: character.Dexterity,
+                        Constitution: character.Constitution,
+                        Intelligence: character.Intelligence,
+                        Wisdom: character.Wisdom,
+                        Charisma: character.Charisma
+                    );
 
                     payload.Items.Add(item);
                 }

@@ -22,12 +22,9 @@ namespace Server.Controllers
             try
             {
                 var maps = _dbContext.Maps.Where(x => x.CampaignId == campaignId);
-                var mapOverviewItems = maps.Select(x => new MapOverviewItemDto() { Name = x.Name, MapId = x.Id, ImageData = ScaleDown(x.ImageData) });
+                var mapOverviewItems = maps.Select(x => new MapOverviewItemDto(x.Name, x.Id, ScaleDown(x.ImageData)));
 
-                var payload = new MapOverviewDto()
-                {
-                    Items = await mapOverviewItems.ToListAsync(),
-                };
+                var payload = new MapOverviewDto(await mapOverviewItems.ToListAsync());
 
                 return Ok(payload);
             }
@@ -37,23 +34,18 @@ namespace Server.Controllers
             }
         }
 
-        private static byte[]? ScaleDown(byte[]? originalImageData)
+        private static byte[] ScaleDown(byte[] originalImageData)
         {
-            if (originalImageData is byte[] data)
-            {
-                byte[] scaledData = data;
+            byte[] scaledData = originalImageData;
 
-                // TODO
-                /*
-                 * ByteArrayToBitmapImageConverter converter = new();
-                 * BitmapImage image = new(new Uri(@"W:\PenAndPaper\LoTR\WhosThatCharacter.png"));
-                 * var data = converter.ConvertBack(image, typeof(byte[]), image, CultureInfo.CurrentCulture) as byte[];
-                 */
+            // TODO
+            /*
+             * ByteArrayToBitmapImageConverter converter = new();
+             * BitmapImage image = new(new Uri(@"W:\PenAndPaper\LoTR\WhosThatCharacter.png"));
+             * var data = converter.ConvertBack(image, typeof(byte[]), image, CultureInfo.CurrentCulture) as byte[];
+             */
 
-                return scaledData;
-            }
-
-            return null;
+            return scaledData;
         }
     }
 }

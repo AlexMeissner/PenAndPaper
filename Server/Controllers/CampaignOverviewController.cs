@@ -1,4 +1,4 @@
-﻿using DataTransfer.CampaignSelection;
+﻿using DataTransfer.Campaign;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -37,17 +37,15 @@ namespace Server.Controllers
                     var gamemaster = await _dbContext.Users.FirstAsync(x => gamemasterInCampaignWithUser.UserId == x.Id);
                     var players = _dbContext.Users.Where(x => playersInCampaignWithUser.Any(y => x.Id == y.UserId)).Select(x => x.Username);
 
-                    campaignOverviewItems.Add(new()
-                    {
-                        Id = campaign.Id,
-                        Name = campaign.Name,
-                        Gamemaster = gamemaster.Username,
-                        IsGamemaster = gamemaster.Id == userId,
-                        Characters = await players.ToListAsync()
-                    });
+                    campaignOverviewItems.Add(new CampaignOverviewItemDto(
+                        Id: campaign.Id,
+                        Name: campaign.Name,
+                        Gamemaster: gamemaster.Username,
+                        IsGamemaster: gamemaster.Id == userId,
+                        Characters: await players.ToListAsync()));
                 }
 
-                CampaignOverviewDto payload = new() { CampaignItems = campaignOverviewItems };
+                var payload = new CampaignOverviewDto(campaignOverviewItems);
 
                 return Ok(payload);
             }

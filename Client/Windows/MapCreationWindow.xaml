@@ -40,15 +40,15 @@
                     <Border Grid.Row="1" Grid.Column="0" Margin="4" BorderBrush="Black" BorderThickness="1">
                         <Canvas>
                             <Canvas.Background>
-                                <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
+                                <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
                             </Canvas.Background>
-                            <Rectangle Width="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding MapCreation.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding MapCreation.Grid.IsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Rectangle Width="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding ViewModel.GridIsActive, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <Rectangle.Fill>
-                                    <DrawingBrush TileMode="Tile" Viewport="{Binding MapCreation.Grid.Size, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
+                                    <DrawingBrush TileMode="Tile" Viewport="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
                                         <DrawingBrush.Drawing>
                                             <GeometryDrawing>
                                                 <GeometryDrawing.Geometry>
-                                                    <RectangleGeometry Rect="{Binding MapCreation.Grid.Size, Converter={StaticResource GridToRectConverter}}"/>
+                                                    <RectangleGeometry Rect="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}"/>
                                                 </GeometryDrawing.Geometry>
                                                 <GeometryDrawing.Pen>
                                                     <Pen Brush="#88000000" Thickness="1"/>
@@ -80,9 +80,9 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" FontWeight="Bold" Text="Name"/>
-            <TextBox Grid.Row="1" Text="{Binding MapCreation.Name}"/>
+            <TextBox Grid.Row="1" Text="{Binding ViewModel.Name}"/>
             <TextBlock Grid.Row="2" FontWeight="Bold" Text="Grid Einstellungen"/>
-            <CheckBox Grid.Row="3" Content="Aktiv" IsChecked="{Binding MapCreation.Grid.IsActive}"/>
+            <CheckBox Grid.Row="3" Content="Aktiv" IsChecked="{Binding ViewModel.GridIsActive}"/>
             <TextBlock Grid.Row="4" Text="Gridgröße"/>
             <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
@@ -90,8 +90,8 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
 
-                <Slider x:Name="GridSlider" Grid.Column="0" Minimum="1" Maximum="1000" VerticalAlignment="Center" IsSnapToTickEnabled="True" Value="{Binding MapCreation.Grid.Size}"/>
-                <TextBox Grid.Column="1" Width="40" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding MapCreation.Grid.Size}"/>
+                <Slider x:Name="GridSlider" Grid.Column="0" Minimum="1" Maximum="1000" VerticalAlignment="Center" IsSnapToTickEnabled="True" Value="{Binding ViewModel.GridSize}"/>
+                <TextBox Grid.Column="1" Width="40" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ViewModel.GridSize}"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="2">

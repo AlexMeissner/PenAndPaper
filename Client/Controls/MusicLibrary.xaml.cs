@@ -58,7 +58,8 @@ namespace Client.Controls
 
             if (window.ShowDialog() is true)
             {
-                await ViewModel.AddSound(window.CreationData);
+                var payload = new SoundCreationDto(window.ViewModel.Name, window.ViewModel.Type, window.ViewModel.Tags, window.ViewModel.Data);
+                await ViewModel.AddSound(payload);
             }
         }
     }

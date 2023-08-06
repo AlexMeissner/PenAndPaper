@@ -1,29 +1,8 @@
-﻿using System.Collections.ObjectModel;
-
-namespace DataTransfer.Map
+﻿namespace DataTransfer.Map
 {
-    public class TokenCreationDto
-    {
-        public int CampaignId { get; set; }
-        public int MapId { get; set; }
-        public int? CharacterId { get; set; }
-        public int? MonsterId { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-    }
+    public record TokenCreationDto(int CampaignId, int MapId, int? CharacterId, int? MonsterId, int X, int Y);
 
-    public class TokenItem
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public string Name { get; set; }
-        public byte[] Image { get; set; }
-    }
+    public record TokenItem(int Id, int UserId, int X, int Y, string Name, byte[] Image);
 
-    public class TokensDto
-    {
-        public ICollection<TokenItem> Items { get; set; } = new ObservableCollection<TokenItem>();
-    }
+    public record TokensDto(ICollection<TokenItem> Items);
 }

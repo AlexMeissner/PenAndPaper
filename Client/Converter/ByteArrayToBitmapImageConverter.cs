@@ -47,5 +47,10 @@ namespace Client.Converter
 
             return null;
         }
+
+        public byte[] ConvertBack(BitmapImage image)
+        {
+            return (byte[])ConvertBack(image, typeof(byte[]), image, CultureInfo)!;
+        }
     }
 }

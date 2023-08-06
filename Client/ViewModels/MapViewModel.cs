@@ -66,14 +66,15 @@ namespace Client.ViewModels
                 position.Y -= position.Y % Grid.Size;
             }
 
-            TokenCreationDto payload = new()
-            {
-                CampaignId = _sessionData.CampaignId,
-                MapId = Id,
-                CharacterId = characterId,
-                X = (int)position.X,
-                Y = (int)position.Y
-            };
+            var payload = new TokenCreationDto(
+
+                CampaignId: _sessionData.CampaignId,
+                MapId: Id,
+                CharacterId: characterId,
+                MonsterId: null,
+                X: (int)position.X,
+                Y: (int)position.Y
+            );
 
             return _tokenApi.PostAsync(payload);
         }
@@ -167,12 +168,11 @@ namespace Client.ViewModels
         {
             DiceVisibility = Visibility.Collapsed;
 
-            var payload = new RollDiceDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                PlayerId = _sessionData.UserId,
-                Dice = dice
-            };
+            var payload = new RollDiceDto(
+                CampaignId: _sessionData.CampaignId,
+                PlayerId: _sessionData.UserId,
+                Dice: dice
+            );
 
             await _rollApi.PutAsync(payload);
         }

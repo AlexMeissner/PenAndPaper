@@ -23,7 +23,7 @@ namespace Server.Controllers
             {
                 var tokenIdsOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == mapId).Select(y => y.TokenId).ToListAsync();
 
-                var payload = new TokensDto();
+                var items = new List<TokenItem>();
 
                 foreach (var tokenId in tokenIdsOnMap)
                 {
@@ -53,16 +53,16 @@ namespace Server.Controllers
                         image = Array.Empty<byte>();
                     }
 
-                    payload.Items.Add(new()
-                    {
-                        Id = token.Id,
-                        UserId = userId,
-                        X = token.X,
-                        Y = token.Y,
-                        Name = name,
-                        Image = image,
-                    });
+                    items.Add(new(
+                        Id: token.Id,
+                        UserId: userId,
+                        X: token.X,
+                        Y: token.Y,
+                        Name: name,
+                        Image: image));
                 }
+
+                var payload = new TokensDto(items);
 
                 return Ok(payload);
             }

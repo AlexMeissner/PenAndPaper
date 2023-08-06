@@ -23,18 +23,13 @@ namespace Server.Controllers
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
 
-                var payload = new MapDto()
-                {
-                    Id = map.Id,
-                    CampaignId = map.CampaignId,
-                    Name = map.Name,
-                    ImageData = map.ImageData,
-                    Grid = new()
-                    {
-                        IsActive = map.GridIsActive,
-                        Size = map.GridSize
-                    }
-                };
+                var payload = new MapDto(
+                    Id: map.Id,
+                    CampaignId: map.CampaignId,
+                    Name: map.Name,
+                    ImageData: map.ImageData,
+                    Grid: new(map.GridSize, map.GridIsActive)
+                );
 
                 return Ok(payload);
             }

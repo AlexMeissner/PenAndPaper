@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Effects;
 using static Client.Services.ServiceExtension;
 
 namespace Client.ViewModels
@@ -67,11 +68,11 @@ namespace Client.ViewModels
             {
                 PlaylistIndex = (PlaylistIndex + 1) % Playlist.Count;
 
-                var payload = new ActiveSoundDto()
-                {
-                    CampaignId = _sessionData.CampaignId,
-                    AmbientId = Playlist[PlaylistIndex].Id
-                };
+                var payload = new ActiveSoundDto(
+                    CampaignId: _sessionData.CampaignId,
+                    AmbientId: Playlist[PlaylistIndex].Id,
+                    EffectId: null
+                );
 
                 await _activeSoundApi.PutAsync(payload);
             }
@@ -81,33 +82,33 @@ namespace Client.ViewModels
         {
             Playlist.Clear();
 
-            var payload = new ActiveSoundDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                AmbientId = sound.Id
-            };
+            var payload = new ActiveSoundDto(
+                CampaignId: _sessionData.CampaignId,
+                AmbientId: sound.Id,
+                EffectId: null
+            );
 
             await _activeSoundApi.PutAsync(payload);
         }
 
         private async Task OnPlayEffect(SoundOverviewItemDto sound)
         {
-            var payload = new ActiveSoundDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                EffectId = sound.Id
-            };
+            var payload = new ActiveSoundDto(
+                CampaignId: _sessionData.CampaignId,
+                AmbientId: null,
+                EffectId: sound.Id
+            );
 
             await _activeSoundApi.PutAsync(payload);
         }
 
         private async Task OnStopAmbient()
         {
-            var payload = new ActiveSoundDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                AmbientId = -1
-            };
+            var payload = new ActiveSoundDto(
+                CampaignId: _sessionData.CampaignId,
+                AmbientId: -1,
+                EffectId: null
+            );
 
             await _activeSoundApi.PutAsync(payload);
         }
@@ -176,16 +177,16 @@ namespace Client.ViewModels
         {
             PlaylistIndex = 0;
 
-            //var filteredAmbientSounds = ((CollectionView)CollectionViewSource.GetDefaultView(AmbientControl.ItemsSource)).Cast<SoundOverviewItemDto>();
             var filteredAmbientSounds = ((CollectionView)CollectionViewSource.GetDefaultView(AmbientSounds)).Cast<SoundOverviewItemDto>();
             var random = new Random();
             Playlist = filteredAmbientSounds.Select(x => new { key = random.Next(), x }).OrderBy(y => y.key).Select(z => z.x).ToList();
 
-            var payload = new ActiveSoundDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                AmbientId = Playlist[PlaylistIndex].Id
-            };
+            var payload = new ActiveSoundDto(
+
+                CampaignId: _sessionData.CampaignId,
+                AmbientId: Playlist[PlaylistIndex].Id,
+                EffectId: null
+            );
 
             await _activeSoundApi.PutAsync(payload);
         }

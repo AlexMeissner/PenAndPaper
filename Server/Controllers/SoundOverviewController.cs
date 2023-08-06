@@ -21,10 +21,17 @@ namespace Server.Controllers
         {
             try
             {
-                var payload = new SoundOverviewDto()
+                var sounds = _dbContext.Sounds.Select(x => new { x.Id, x.Name, x.Type, x.Tags });
+
+                var items = new List<SoundOverviewItemDto>();
+
+                // ToDo: There has to be a way to do this with LINQ, but string.Split cannot be called inside LINQ Statement
+                foreach (var sound in sounds)
                 {
-                    Items = await _dbContext.Sounds.Select(x => new SoundOverviewItemDto(x.Id, x.Name, x.Type, x.Tags)).ToListAsync()
-                };
+                    items.Add(new SoundOverviewItemDto(sound.Id, sound.Name, sound.Type, sound.Tags.Split(';')));
+                }
+
+                var payload = new SoundOverviewDto(items);
 
                 return Ok(payload);
             }

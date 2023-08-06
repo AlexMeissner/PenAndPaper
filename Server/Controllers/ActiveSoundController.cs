@@ -23,12 +23,7 @@ namespace Server.Controllers
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == campaignId);
 
-                var payload = new ActiveSoundDto()
-                {
-                    CampaignId = activeCampaignElements.CampaignId,
-                    AmbientId = activeCampaignElements.AmbientId,
-                    EffectId = activeCampaignElements.EffectId,
-                };
+                var payload = new ActiveSoundDto(activeCampaignElements.CampaignId, activeCampaignElements.AmbientId, activeCampaignElements.EffectId);
 
                 return Ok(payload);
             }

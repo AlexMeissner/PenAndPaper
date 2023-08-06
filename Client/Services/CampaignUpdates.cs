@@ -30,10 +30,12 @@ namespace Client.Services
         private readonly ISessionData _sessionData;
         private readonly ICampaignUpdatesApi _campaignUpdatesApi;
 
-        private readonly CampaignUpdateDto _campaignUpdates = new()
-        {
-            DiceRoll = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
+        private long MapChange;
+        private long MapCollectionChange;
+        private long TokenChange;
+        private long DiceRoll = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        private long AmbientSoundChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        private long SoundEffectChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         public CampaignUpdates(ISessionData sessionData, ICampaignUpdatesApi campaignUpdatesApi)
         {
@@ -53,12 +55,12 @@ namespace Client.Services
 
                 response.Match(success =>
                 {
-                    _campaignUpdates.MapChange = RaiseEvent(MapChanged, success.MapChange, _campaignUpdates.MapChange);
-                    _campaignUpdates.MapCollectionChange = RaiseEvent(MapCollectionChanged, success.MapCollectionChange, _campaignUpdates.MapCollectionChange);
-                    _campaignUpdates.TokenChange = RaiseEvent(TokenChanged, success.TokenChange, _campaignUpdates.TokenChange);
-                    _campaignUpdates.DiceRoll = RaiseEvent(DiceRolled, success.DiceRoll, _campaignUpdates.DiceRoll);
-                    _campaignUpdates.AmbientSoundChange = RaiseEvent(AmbientSoundChanged, success.AmbientSoundChange, _campaignUpdates.AmbientSoundChange);
-                    _campaignUpdates.SoundEffectChange = RaiseEvent(SoundEffectChanged, success.SoundEffectChange, _campaignUpdates.SoundEffectChange);
+                    MapChange = RaiseEvent(MapChanged, success.MapChange, MapChange);
+                    MapCollectionChange = RaiseEvent(MapCollectionChanged, success.MapCollectionChange, MapCollectionChange);
+                    TokenChange = RaiseEvent(TokenChanged, success.TokenChange, TokenChange);
+                    DiceRoll = RaiseEvent(DiceRolled, success.DiceRoll, DiceRoll);
+                    AmbientSoundChange = RaiseEvent(AmbientSoundChanged, success.AmbientSoundChange, AmbientSoundChange);
+                    SoundEffectChange = RaiseEvent(SoundEffectChanged, success.SoundEffectChange, SoundEffectChange);
                 });
 
 

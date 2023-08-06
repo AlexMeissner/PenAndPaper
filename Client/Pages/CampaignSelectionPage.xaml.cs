@@ -2,7 +2,7 @@
 using Client.Services;
 using Client.Services.API;
 using Client.Windows;
-using DataTransfer.CampaignSelection;
+using DataTransfer.Campaign;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

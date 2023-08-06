@@ -1,7 +1,4 @@
 ﻿namespace DataTransfer.Login
 {
-    public class LoginDto
-    {
-        public int UserId { get; set; }
-    }
+    public record LoginDto(int UserId);
 }

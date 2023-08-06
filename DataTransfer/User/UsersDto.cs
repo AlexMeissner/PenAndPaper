@@ -1,9 +1,4 @@
 ﻿namespace DataTransfer.User
 {
-    public class UsersDto
-    {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-    }
+    public record UsersDto(int Id, string Username, string Email);
 }

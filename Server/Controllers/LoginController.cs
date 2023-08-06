@@ -28,7 +28,7 @@ namespace Server.Controllers
                     return Unauthorized();
                 }
 
-                return Ok(new LoginDto() { UserId = entry.Id });
+                return Ok(new LoginDto(entry.Id));
             }
             catch (Exception exception)
             {

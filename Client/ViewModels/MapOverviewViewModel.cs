@@ -39,21 +39,19 @@ namespace Client.ViewModels
             PlayCommand = new AsyncCommand<MapOverviewItemDto>(OnPlay);
         }
 
-        public Task<HttpResponse> CreateMap(MapDto payload)
+        public async Task<HttpResponse> CreateMap(MapDto payload)
         {
-            payload.CampaignId = _sessionData.CampaignId;
-            return _mapApi.PostAsync(payload);
+            return await _mapApi.PostAsync(payload with { CampaignId = _sessionData.CampaignId });
         }
 
-        public Task<HttpResponse<MapDto>> GetMap(MapOverviewItemDto item)
+        public async Task<HttpResponse<MapDto>> GetMap(MapOverviewItemDto item)
         {
-            return _mapApi.GetAsync(item.MapId);
+            return await _mapApi.GetAsync(item.MapId);
         }
 
-        public Task<HttpResponse> UpdateMap(MapDto payload)
+        public async Task<HttpResponse> UpdateMap(MapDto payload)
         {
-            payload.CampaignId = _sessionData.CampaignId;
-            return _mapApi.PutAsync(payload);
+            return await _mapApi.PutAsync(payload with { CampaignId = _sessionData.CampaignId });
         }
 
         public async Task Update()
@@ -84,11 +82,7 @@ namespace Client.ViewModels
 
         public async Task OnPlay(MapOverviewItemDto item)
         {
-            var payload = new ActiveMapDto()
-            {
-                CampaignId = _sessionData.CampaignId,
-                MapId = item.MapId,
-            };
+            var payload = new ActiveMapDto(_sessionData.CampaignId, item.MapId);
 
             await _activeMapApi.PutAsync(payload);
         }

@@ -44,19 +44,16 @@ namespace Server.Controllers
 
                 var player = await _dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
 
-                DiceRollResultDto diceRollResult = new()
-                {
-                    Name = player.Username,
-                    Succeeded = new()
-                };
+                var successes = new List<bool>();
 
                 for (int i = 1; i <= max; ++i)
                 {
                     bool success = i <= roll;
-                    diceRollResult.Succeeded.Add(success);
+                    successes.Add(success);
                 }
 
-                diceRollResult.Succeeded = diceRollResult.Succeeded.OrderBy(x => random.Next()).ToList();
+                var successesRandomOrder = successes.OrderBy(x => random.Next()).ToList();
+                var diceRollResult = new DiceRollResultDto(player.Username, successesRandomOrder);
 
                 var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == payload.CampaignId);
                 diceRoll.Roll = JsonSerializer.Serialize(diceRollResult);

@@ -23,16 +23,15 @@ namespace Server.Controllers
             {
                 var campaignUpdate = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == campaignId);
 
-                var payload = new CampaignUpdateDto()
-                {
-                    CampaignId = campaignUpdate.CampaignId,
-                    MapChange = campaignUpdate.MapChange,
-                    MapCollectionChange = campaignUpdate.MapCollectionChange,
-                    TokenChange = campaignUpdate.TokenChange,
-                    DiceRoll = campaignUpdate.DiceRoll,
-                    AmbientSoundChange = campaignUpdate.AmbientSoundChange,
-                    SoundEffectChange = campaignUpdate.SoundEffectChange
-                };
+                var payload = new CampaignUpdateDto(
+                    CampaignId: campaignUpdate.CampaignId,
+                    MapChange: campaignUpdate.MapChange,
+                    MapCollectionChange: campaignUpdate.MapCollectionChange,
+                    TokenChange: campaignUpdate.TokenChange,
+                    DiceRoll: campaignUpdate.DiceRoll,
+                    AmbientSoundChange: campaignUpdate.AmbientSoundChange,
+                    SoundEffectChange: campaignUpdate.SoundEffectChange
+                );
 
                 return Ok(payload);
             }

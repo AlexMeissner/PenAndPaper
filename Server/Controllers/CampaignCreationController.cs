@@ -1,4 +1,4 @@
-﻿using DataTransfer.CampaignCreation;
+﻿using DataTransfer.Campaign;
 using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,18 +24,16 @@ namespace Server.Controllers
             {
                 CampaignCreationDto payload;
 
-                var users = _dbContext.Users.Select(x => new UsersDto() { Id = x.Id, Email = x.Email, Username = x.Username });
+                var users = _dbContext.Users.Select(x => new UsersDto(x.Id, x.Username, x.Email));
 
                 if (campaignId == -1) // New campaign
                 {
-                    payload = new CampaignCreationDto()
-                    {
-                        CampaignId = campaignId,
-                        CampaignName = string.Empty,
-                        Gamemaster = null,
-                        UsersNotInCampaign = await users.ToListAsync().ConfigureAwait(false),
-                        UsersInCampaign = new List<UsersDto>()
-                    };
+                    payload = new CampaignCreationDto(
+                        CampaignId: campaignId,
+                        CampaignName: string.Empty,
+                        Gamemaster: null,
+                        UsersNotInCampaign: await users.ToListAsync().ConfigureAwait(false),
+                        UsersInCampaign: new List<UsersDto>());
                 }
                 else // Existing campaign
                 {
@@ -48,14 +46,13 @@ namespace Server.Controllers
                     var usersInCampaign = _dbContext.Users.Where(x => dbUserInCampaign.Any(y => x.Id == y.UserId));
                     var usersNotInCampaign = _dbContext.Users.Where(x => !usersInCampaign.Any(y => x.Id == y.Id));
 
-                    payload = new CampaignCreationDto()
-                    {
-                        CampaignId = campaignId,
-                        CampaignName = dbCampaign.Name,
-                        Gamemaster = new UsersDto() { Id = gamemaster.Id, Email = gamemaster.Email, Username = gamemaster.Username },
-                        UsersNotInCampaign = await usersInCampaign.Select(x => new UsersDto() { Id = x.Id, Username = x.Username, Email = x.Email }).ToListAsync(),
-                        UsersInCampaign = await usersNotInCampaign.Select(x => new UsersDto() { Id = x.Id, Username = x.Username, Email = x.Email }).ToListAsync()
-                    };
+                    payload = new CampaignCreationDto(
+                        CampaignId: campaignId,
+                        CampaignName: dbCampaign.Name,
+                        Gamemaster: new UsersDto(gamemaster.Id, gamemaster.Username, gamemaster.Email),
+                        UsersNotInCampaign: await usersInCampaign.Select(x => new UsersDto(x.Id, x.Username, x.Email)).ToListAsync(),
+                        UsersInCampaign: await usersNotInCampaign.Select(x => new UsersDto(x.Id, x.Username, x.Email)).ToListAsync()
+                    );
                 }
 
                 return Ok(payload);

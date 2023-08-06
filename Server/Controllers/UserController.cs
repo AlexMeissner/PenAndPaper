@@ -22,7 +22,7 @@ namespace Server.Controllers
             try
             {
                 var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
-                var payload = new UsersDto() { Id = user.Id, Username = user.Username, Email = user.Email };
+                var payload = new UsersDto(user.Id, user.Username, user.Email);
 
                 return Ok(payload);
             }

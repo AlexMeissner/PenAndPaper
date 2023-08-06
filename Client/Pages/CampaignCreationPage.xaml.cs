@@ -2,7 +2,7 @@
 using Client.Services;
 using Client.Services.API;
 using Client.Windows;
-using DataTransfer.CampaignCreation;
+using DataTransfer.Campaign;
 using DataTransfer.User;
 using System.Collections.Generic;
 using System.Windows;
@@ -97,11 +97,13 @@ namespace Client.Pages
                         var me = await _userApi.GetAsync(_sessionData.UserId);
 
                         me.Match(
-                            s => success.Gamemaster = s,
+                            s => DataContext = success with { Gamemaster = s },
                             f => MessageBoxUtility.Show(f));
                     }
-
-                    DataContext = success;
+                    else
+                    {
+                        DataContext = success;
+                    }
                 },
                 failure =>
                 {

@@ -1,4 +1,5 @@
 ﻿using Client.Converter;
+using Client.ViewModels;
 using DataTransfer.Map;
 using Microsoft.Win32;
 using System;
@@ -10,19 +11,26 @@ namespace Client.Windows
 {
     public partial class MapCreationWindow : Window
     {
-        public MapDto MapCreation { get; set; }
+        public MapCreationViewModel ViewModel => (MapCreationViewModel)DataContext;
 
         public MapCreationWindow()
         {
-            MapCreation = new();
-            MapCreation.Grid.Size = 100;
-            MapCreation.Grid.IsActive = true;
+            DataContext = new MapCreationViewModel();
             InitializeComponent();
         }
 
         public MapCreationWindow(MapDto mapCreation)
         {
-            MapCreation = mapCreation;
+            DataContext = new MapCreationViewModel()
+            {
+                Id = mapCreation.Id,
+                CampaignId = mapCreation.CampaignId,
+                Name = mapCreation.Name,
+                ImageData = mapCreation.ImageData,
+                GridIsActive = mapCreation.Grid.IsActive,
+                GridSize = mapCreation.Grid.Size,
+            };
+
             InitializeComponent();
         }
 
@@ -49,7 +57,7 @@ namespace Client.Windows
             {
                 ByteArrayToBitmapImageConverter converter = new();
                 BitmapImage image = new(new Uri(fileDialog.FileName));
-                MapCreation.ImageData = converter.ConvertBack(image, typeof(byte[]), image, CultureInfo.CurrentCulture) as byte[];
+                ViewModel.ImageData = converter.ConvertBack(image);
             }
         }
     }

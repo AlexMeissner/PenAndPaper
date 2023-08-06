@@ -23,11 +23,7 @@ namespace Server.Controllers
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == campaignId);
 
-                var payload = new ActiveMapDto()
-                {
-                    CampaignId = activeCampaignElements.CampaignId,
-                    MapId = activeCampaignElements.MapId,
-                };
+                var payload = new ActiveMapDto(activeCampaignElements.CampaignId, activeCampaignElements.MapId);
 
                 return Ok(payload);
             }

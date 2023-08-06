@@ -1,4 +1,4 @@
-﻿using DataTransfer.CampaignSelection;
+﻿using DataTransfer.Campaign;
 using System.Threading.Tasks;
 using static Client.Services.ServiceExtension;
 
