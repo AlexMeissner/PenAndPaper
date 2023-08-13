@@ -28,22 +28,13 @@ jobs:
     - name: Publish
       run: dotnet publish Client/Client.csproj -c Release -o ./publish
 
-    - name: Get Project Version
-      id: version
-      run: |
-        $csprojPath = "Client/Client.csproj"
-        $csprojContent = Get-Content -Path $csprojPath
-        $xml = [xml]$csprojContent
-        $version = $xml.Project.PropertyGroup.Version
-        Write-Host "::set-output name=version::$version"
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
         files: ./publish/*
-        tag_name: ${{ steps.version.outputs.version }}
-        release_name: Release ${{ steps.version.outputs.version }}
+        tag_name: v0.0.1
+        release_name: Release v0.0.1
         draft: false
         prerelease: false
       env:
