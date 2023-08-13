@@ -30,7 +30,9 @@ jobs:
 
     - name: Get Project Version
       id: version
-      run: echo "::set-output name=version::$(dotnet list MyProject/MyProject.csproj package --format nuspec | grep '<version>' | sed -e 's/.*<version>\([^<]*\)<\/version>.*/\1/')"
+      run: |
+        $version = [xml] (Get-Content -Path MyProject/MyProject.csproj).SelectSingleNode("//Project/PropertyGroup/Version").InnerText
+        Write-Host "::set-output name=version::$version"
 
     - name: Create Release
       id: create_release
