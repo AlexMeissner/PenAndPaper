@@ -25,14 +25,21 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore
       
-    - name: Build
-      run: dotnet build --configuration Release
-      
     - name: Publish
       run: dotnet publish Client/Client.csproj -c Release -o ./publish
-      
-    #- name: Upload build artifacts
-    #  uses: actions/upload-artifact@v3
-    #  with:
-    #    name: MSIX Package
-    #    path: ${{ env.DOTNET_ROOT }}\publish
+
+    - name: Get Project Version
+      id: version
+      run: echo "::set-output name=version::$(dotnet list MyProject/MyProject.csproj package --format nuspec | grep '<version>' | sed -e 's/.*<version>\([^<]*\)<\/version>.*/\1/')"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        files: ./publish/*
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
