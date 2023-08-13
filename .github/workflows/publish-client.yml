@@ -30,12 +30,10 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       with:
         files: ./publish/*
         tag_name: v0.0.1
-        release_name: Release v0.0.1
-        draft: false
-        prerelease: false
+        title: Release v0.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
