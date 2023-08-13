@@ -31,7 +31,10 @@ jobs:
     - name: Get Project Version
       id: version
       run: |
-        $version = [xml] (Get-Content -Path Client/Client.csproj).SelectSingleNode("//Project/PropertyGroup/Version").InnerText
+        $csprojPath = "Client/Client.csproj"
+        $csprojContent = Get-Content -Path $csprojPath
+        $xml = [xml]$csprojContent
+        $version = $xml.Project.PropertyGroup.Version
         Write-Host "::set-output name=version::$version"
 
     - name: Create Release
