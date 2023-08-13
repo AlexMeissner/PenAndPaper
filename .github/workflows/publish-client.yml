@@ -33,6 +33,9 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: ./publish/*
+        exclude: |
+          **/Source code.zip
+          **/Source code.tar.gz
         tag_name: v0.0.1
         name: Release v0.0.1
       env:
