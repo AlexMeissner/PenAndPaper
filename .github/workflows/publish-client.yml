@@ -30,8 +30,8 @@ jobs:
 
     - name: Remove Source Files
       run: |
-        rm -f ./publish/Source\ code.zip
-        rm -f ./publish/Source\ code.tar.gz
+        Remove-Item -Path './publish/Source code.zip' -Force
+        Remove-Item -Path './publish/Source code.tar.gz' -Force
 
     - name: Create Release
       id: create_release
