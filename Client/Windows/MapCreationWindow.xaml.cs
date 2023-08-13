@@ -3,7 +3,6 @@ using Client.ViewModels;
 using DataTransfer.Map;
 using Microsoft.Win32;
 using System;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Media.Imaging;
 

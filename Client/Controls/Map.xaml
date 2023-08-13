@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:Client.Controls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:converter="clr-namespace:Client.Converter"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
              d:DataContext="{d:DesignInstance viewModels:MapViewModel}"
              Name="MapControl"
@@ -14,13 +13,6 @@
              AllowDrop="True"
              Drop="OnDrop"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converter:ByteArrayToBitmapImageConverter x:Key="ByteArrayToBitmapImageConverter"/>
-        <converter:ByteArrayToBitmapImageWidthConverter x:Key="ByteArrayToBitmapImageWidthConverter"/>
-        <converter:ByteArrayToBitmapImageHeightConverter x:Key="ByteArrayToBitmapImageHeightConverter"/>
-        <converter:GridToRectConverter x:Key="GridToRectConverter"/>
-    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>

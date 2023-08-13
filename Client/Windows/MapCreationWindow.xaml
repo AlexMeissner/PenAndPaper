@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:converter="clr-namespace:Client.Converter"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
         Title="Karten Editor" 
@@ -11,13 +10,6 @@
         Height="450" 
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <converter:ByteArrayToBitmapImageConverter x:Key="ByteArrayToBitmapImageConverter"/>
-        <converter:ByteArrayToBitmapImageWidthConverter x:Key="ByteArrayToBitmapImageWidthConverter"/>
-        <converter:ByteArrayToBitmapImageHeightConverter x:Key="ByteArrayToBitmapImageHeightConverter"/>
-        <converter:GridToRectConverter x:Key="GridToRectConverter"/>
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
