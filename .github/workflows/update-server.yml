@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      DockerImageName: PenAndPaperServer:latest
+      DockerImageName: pen_and_paper_server:latest
 
     steps:
       - name: Checkout
