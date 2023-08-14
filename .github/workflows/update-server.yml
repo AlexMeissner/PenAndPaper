@@ -20,10 +20,10 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore Server/Server.csproj
 
       - name: Build Project
-        run: dotnet build Server/Server.csproj --configuration Release
+        run: dotnet build Server/Server.csproj --configuration Release --no-restore
 
       - name: Build Docker image
         run: |
