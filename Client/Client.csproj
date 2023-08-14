@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
-    <ProjectReference Include="..\DungeonsAndDragons5e.View\DungeonsAndDragons5e.View.csproj" />
   </ItemGroup>
 
   <ItemGroup>
