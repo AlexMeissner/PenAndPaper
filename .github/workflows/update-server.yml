@@ -1,0 +1,37 @@
+name: Update Server
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DockerImageName: PenAndPaperServer:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Build Project
+        run: dotnet build Server/Server.csproj --configuration Release
+
+      - name: Build Docker image
+        run: |
+          docker build -t $DockerImageName .
+          docker images
+
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u alexmeissner --password-stdin
+
+      - name: Push Docker image
+        run: docker push $DockerImageName
