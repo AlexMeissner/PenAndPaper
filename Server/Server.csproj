@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
-    <ProjectReference Include="..\DungeonsAndDragons5e\DungeonsAndDragons5e.csproj" />
   </ItemGroup>
 
 </Project>
