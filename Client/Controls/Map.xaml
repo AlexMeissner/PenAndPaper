@@ -28,7 +28,7 @@
         <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <controls:ZoomableCanvasControl x:Name="ZoomableCanvas" />
+                    <controls:ZoomableCanvasControl x:Name="ZoomableCanvas" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 

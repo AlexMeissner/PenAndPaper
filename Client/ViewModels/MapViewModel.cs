@@ -6,6 +6,7 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -142,9 +143,10 @@ namespace Client.ViewModels
                 });
         }
 
-
         public async Task UpdateTokens()
         {
+            Debug.WriteLine("Update Tokens");
+
             var response = await _tokenApi.GetAsync(Id);
 
 
@@ -162,6 +164,16 @@ namespace Client.ViewModels
                     }
                 });
             });
+        }
+
+        public async Task MoveMapItem(IMapItem item, int x, int y)
+        {
+            if (item is TokenMapItem token)
+            {
+                var payload = new TokenUpdateDto(_sessionData.CampaignId, token.Id, x, y);
+
+                await _tokenApi.PutAsync(payload);
+            }
         }
 
         private async Task RollDice(Dice dice)

@@ -115,11 +115,31 @@ namespace Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutAsync(TokenCreationDto payload)
+        public async Task<IActionResult> PutAsync(TokenUpdateDto payload)
         {
-            // TODO
-            await _dbContext.SaveChangesAsync();
-            return this.NotImplemented(nameof(PutAsync));
+            try
+            {
+                var token = await _dbContext.Tokens.FirstOrDefaultAsync(x => x.Id == payload.Id);
+
+                if (token is null)
+                {
+                    return NotFound(payload.Id);
+                }
+
+                token.X = payload.X;
+                token.Y = payload.Y;
+
+                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
+                update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(token);
+            }
+            catch (Exception exception)
+            {
+                return this.InternalServerError(exception);
+            }
         }
     }
 }

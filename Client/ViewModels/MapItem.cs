@@ -58,7 +58,7 @@ namespace Client.ViewModels
         public int ZIndex => 2;
     }
 
-    public class TokenMapItem : IMapItem
+    public class TokenMapItem : BaseViewModel, IMapItem
     {
         public int X { get; set; }
         public int Y { get; set; }

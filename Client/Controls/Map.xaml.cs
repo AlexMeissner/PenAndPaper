@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Controls
@@ -14,6 +15,8 @@ namespace Client.Controls
     public partial class Map : UserControl
     {
         private readonly IControlProvider _controlProvider;
+
+        private IMapItem? _selectedMapItem = null;
 
         public MapViewModel ViewModel => (MapViewModel)DataContext;
 
@@ -87,6 +90,46 @@ namespace Client.Controls
             {
                 var position = e.GetPosition(this);
                 await ViewModel.CreateToken(position, character.CharacterId);
+            }
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var mousePosition = e.GetPosition(this);
+
+            var hitTestResult = VisualTreeHelper.HitTest(this, mousePosition);
+
+            if (hitTestResult.VisualHit is FrameworkElement element &&
+                element.DataContext is IMapItem mapItem)
+            {
+                _selectedMapItem = mapItem;
+            }
+        }
+
+        private async void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_selectedMapItem is not null)
+            {
+                var mousePosition = e.GetPosition(this);
+                await ViewModel.MoveMapItem(_selectedMapItem, (int)mousePosition.X, (int)mousePosition.Y);
+                _selectedMapItem = null;
+            }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_selectedMapItem is TokenMapItem token)
+            {
+                var mousePosition = e.GetPosition(this);
+
+                if (ViewModel.Grid is not null)
+                {
+                    mousePosition.X -= mousePosition.X % ViewModel.Grid.Size;
+                    mousePosition.Y -= mousePosition.Y % ViewModel.Grid.Size;
+                }
+
+                token.X = (int)mousePosition.X;
+                token.Y = (int)mousePosition.Y;
             }
         }
     }

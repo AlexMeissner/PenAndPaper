@@ -8,7 +8,7 @@ namespace Client.Services.API
     {
         public Task<HttpResponse<TokensDto>> GetAsync(int mapId);
         public Task<HttpResponse> PostAsync(TokenCreationDto payload);
-        public Task<HttpResponse> PutAsync(TokenItem payload);
+        public Task<HttpResponse> PutAsync(TokenUpdateDto payload);
     }
 
     [TransistentService]
@@ -31,7 +31,7 @@ namespace Client.Services.API
             return _request.PostAsync(payload);
         }
 
-        public Task<HttpResponse> PutAsync(TokenItem payload)
+        public Task<HttpResponse> PutAsync(TokenUpdateDto payload)
         {
             return _request.PutAsync(payload);
         }

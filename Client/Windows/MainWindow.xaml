@@ -15,8 +15,9 @@
     WindowStartupLocation="CenterScreen">
 
     <Border BorderThickness="2" BorderBrush="{DynamicResource Theme_Color_Dominant_1}">
-        <Grid Name="MainGrid">            
-            <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden" MouseLeftButtonDown="Drag"/>
+        <Grid Name="MainGrid">
+            <Grid Panel.ZIndex="1" Height="20" Width="200" VerticalAlignment="Top" Background="Orange" MouseLeftButtonDown="Drag"/>
+            <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Maximize">
                     <fa:IconImage Icon="Square" Foreground="{DynamicResource Theme_Color_Font_2}"/>
