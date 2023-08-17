@@ -53,6 +53,8 @@
                     <Border BorderThickness="1" BorderBrush="Orange" Width="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}" Height="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}">
                         <Grid>
                             <Image Stretch="UniformToFill" Source="{Binding Image}"/>
+                            <TextBlock Text="{Binding X}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBlock Text="{Binding Y}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                             <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                         </Grid>
                     </Border>
