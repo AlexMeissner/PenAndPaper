@@ -22,8 +22,8 @@ namespace Client
             var mainWindow = _serviceProvider.GetService<MainWindow>()!;
             mainWindow.Show();
 
-            var testWindow = new TestWindow();
-            testWindow.Show();
+            //var testWindow = new TestWindow();
+            //testWindow.Show();
         }
     }
 }

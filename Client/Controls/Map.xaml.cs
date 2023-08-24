@@ -16,6 +16,9 @@ namespace Client.Controls
     {
         private readonly IControlProvider _controlProvider;
 
+        private readonly MatrixTransform Transformation = new();
+        private readonly float ZoomFactor = 1.1f;
+        private Point InitialMousePosition;
         private IMapItem? _selectedMapItem = null;
 
         public MapViewModel ViewModel => (MapViewModel)DataContext;
@@ -93,6 +96,28 @@ namespace Client.Controls
             }
         }
 
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scaleFactor = (e.Delta < 0) ? 1.0f / ZoomFactor : ZoomFactor;
+
+            var mousePostion = e.GetPosition(this);
+
+            var scaleMatrix = Transformation.Matrix;
+            scaleMatrix.ScaleAt(scaleFactor, scaleFactor, mousePostion.X, mousePostion.Y);
+            Transformation.Matrix = scaleMatrix;
+
+            foreach (var child in ViewModel.Items)
+            {
+                double sx = child.X * scaleFactor;
+                double sy = child.Y * scaleFactor;
+
+                child.X = (int)sx;
+                child.Y = (int)sy;
+
+                child.Transformation = Transformation;
+            }
+        }
+
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(this);
@@ -100,9 +125,13 @@ namespace Client.Controls
             var hitTestResult = VisualTreeHelper.HitTest(this, mousePosition);
 
             if (hitTestResult.VisualHit is FrameworkElement element &&
-                element.DataContext is IMapItem mapItem)
+                element.DataContext is TokenMapItem mapItem)
             {
                 _selectedMapItem = mapItem;
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                InitialMousePosition = Transformation.Inverse.Transform(e.GetPosition(this));
             }
         }
 
@@ -111,6 +140,13 @@ namespace Client.Controls
             if (_selectedMapItem is not null)
             {
                 var mousePosition = e.GetPosition(this);
+
+                if (ViewModel.Grid is not null)
+                {
+                    mousePosition.X -= mousePosition.X % ViewModel.Grid.Size;
+                    mousePosition.Y -= mousePosition.Y % ViewModel.Grid.Size;
+                }
+
                 await ViewModel.MoveMapItem(_selectedMapItem, (int)mousePosition.X, (int)mousePosition.Y);
                 _selectedMapItem = null;
             }
@@ -130,6 +166,18 @@ namespace Client.Controls
 
                 token.X = (int)mousePosition.X;
                 token.Y = (int)mousePosition.Y;
+            }
+            else if (e.RightButton == MouseButtonState.Pressed)
+            {
+                var mousePosition = Transformation.Inverse.Transform(e.GetPosition(this));
+                var delta = Point.Subtract(mousePosition, InitialMousePosition);
+                var translate = new TranslateTransform(delta.X, delta.Y);
+                Transformation.Matrix = translate.Value * Transformation.Matrix;
+
+                foreach (var child in ViewModel.Items)
+                {
+                    child.Transformation = Transformation;
+                }
             }
         }
     }

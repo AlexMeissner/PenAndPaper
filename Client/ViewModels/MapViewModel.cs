@@ -145,10 +145,7 @@ namespace Client.ViewModels
 
         public async Task UpdateTokens()
         {
-            Debug.WriteLine("Update Tokens");
-
             var response = await _tokenApi.GetAsync(Id);
-
 
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {

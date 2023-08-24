@@ -6,13 +6,15 @@ namespace Client.ViewModels
 {
     public interface IMapItem
     {
+        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex { get; }
     }
 
-    public class BackgroundMapItem : IMapItem
+    public class BackgroundMapItem : BaseViewModel, IMapItem
     {
+        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 0;
@@ -22,6 +24,7 @@ namespace Client.ViewModels
 
         public BackgroundMapItem(byte[] imageData)
         {
+            Transformation = new();
             Image = Converter.Convert(imageData);
             Width = (int)Image.Width;
             Height = (int)Image.Height;
@@ -30,8 +33,9 @@ namespace Client.ViewModels
         private static readonly ByteArrayToBitmapImageConverter Converter = new();
     }
 
-    public class GridMapItem : IMapItem
+    public class GridMapItem : BaseViewModel, IMapItem
     {
+        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 1;
@@ -43,6 +47,7 @@ namespace Client.ViewModels
 
         public GridMapItem(int size, int width, int height, int lineThickness, SolidColorBrush color)
         {
+            Transformation = new();
             Size = size;
             Width = width;
             Height = height;
@@ -51,15 +56,22 @@ namespace Client.ViewModels
         }
     }
 
-    public class LandmarkMapItem : IMapItem
+    public class LandmarkMapItem : BaseViewModel, IMapItem
     {
+        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 2;
+
+        public LandmarkMapItem()
+        {
+            Transformation = new();
+        }
     }
 
     public class TokenMapItem : BaseViewModel, IMapItem
     {
+        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 3;
@@ -70,6 +82,7 @@ namespace Client.ViewModels
 
         public TokenMapItem(int x, int y, int id, int userId, string name, byte[] imageData)
         {
+            Transformation = new();
             X = x;
             Y = y;
             Id = id;
