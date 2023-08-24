@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
              Loaded="OnLoaded"
              d:DataContext="{d:DesignInstance viewModels:CharacterListViewModel}"
@@ -15,7 +16,17 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="0" Margin="4"/>
+        <Grid Grid.Row="0" Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0" />
+            <Button Grid.Column="1" Width="22">
+                <fa:IconImage Icon="Plus" Margin="2"/>
+            </Button>
+        </Grid>
 
         <ListView Grid.Row="1" Margin="4" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=CharacterListControl, Path=ViewModel.Items}">
             <ListView.ItemTemplate>
