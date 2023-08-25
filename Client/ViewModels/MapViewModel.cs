@@ -6,7 +6,6 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +23,11 @@ namespace Client.ViewModels
         private readonly ITokenApi _tokenApi;
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
+
+        private readonly MatrixTransform _transformation = new();
+        private readonly float _zoomFactor = 1.1f;
+        private Point _initialMousePosition;
+        private IMapItem? _selectedMapItem = null;
 
         public int Id { get; private set; }
         public ObservableCollection<IMapItem> Items { get; private set; } = new();
@@ -163,13 +167,76 @@ namespace Client.ViewModels
             });
         }
 
-        public async Task MoveMapItem(IMapItem item, int x, int y)
+        public async Task UpdateSelectedItemPosition(Point position)
         {
-            if (item is TokenMapItem token)
+            if (_selectedMapItem is TokenMapItem token)
             {
-                var payload = new TokenUpdateDto(_sessionData.CampaignId, token.Id, x, y);
+                if (Grid is not null)
+                {
+                    position.X -= position.X % Grid.Size;
+                    position.Y -= position.Y % Grid.Size;
+                }
+
+                var payload = new TokenUpdateDto(_sessionData.CampaignId, token.Id, (int)position.X, (int)position.Y);
 
                 await _tokenApi.PutAsync(payload);
+
+                _selectedMapItem = null;
+            }
+        }
+
+        public void Zoom(int delta, double X, double Y)
+        {
+            var scaleFactor = (delta < 0) ? 1.0f / _zoomFactor : _zoomFactor;
+
+            var scaleMatrix = _transformation.Matrix;
+            scaleMatrix.ScaleAt(scaleFactor, scaleFactor, X, Y);
+            _transformation.Matrix = scaleMatrix;
+
+            foreach (var mapItems in Items)
+            {
+                mapItems.X = (int)(mapItems.X * scaleFactor);
+                mapItems.Y = (int)(mapItems.Y * scaleFactor);
+
+                mapItems.Transformation = _transformation;
+            }
+        }
+
+        public void SetSelectedItem(IMapItem mapItem)
+        {
+            _selectedMapItem = mapItem;
+        }
+
+        public void SetInitialMousePosition(Point position)
+        {
+            _initialMousePosition = _transformation.Inverse.Transform(position);
+        }
+
+        public void MoveMap(Point position)
+        {
+            var mousePosition = _transformation.Inverse.Transform(position);
+            var delta = Point.Subtract(mousePosition, _initialMousePosition);
+            var translate = new TranslateTransform(delta.X, delta.Y);
+            _transformation.Matrix = translate.Value * _transformation.Matrix;
+
+            foreach (var mapItem in Items)
+            {
+                mapItem.Transformation = _transformation;
+            }
+        }
+
+        public void MoveMapItem(Point position)
+        {
+            if (_selectedMapItem is TokenMapItem token)
+            {
+                if (Grid is not null)
+                {
+                    position.X -= position.X % Grid.Size;
+                    position.Y -= position.Y % Grid.Size;
+                }
+
+                token.X = (int)position.X;
+                token.Y = (int)position.Y;
             }
         }
 
