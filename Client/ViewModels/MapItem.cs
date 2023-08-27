@@ -1,9 +1,7 @@
 ﻿using Client.Converter;
-using System.Printing;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Client.ViewModels
 {
@@ -13,10 +11,10 @@ namespace Client.ViewModels
         public int Y { get; set; }
         public MatrixTransform Scaling { get; set; } = new();
 
-        public void Move(Vector offset)
+        public void Move(Point position)
         {
-            X += (int)offset.X;
-            Y += (int)offset.Y;
+            X = (int)(position.X );
+            Y = (int)(position.Y );
         }
 
         public void Reset()

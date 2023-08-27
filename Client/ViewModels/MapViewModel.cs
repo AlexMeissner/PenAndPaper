@@ -6,6 +6,7 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +25,8 @@ namespace Client.ViewModels
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
 
-        private Point _lastMousePosition;
+        private Point _initialMousePosition;
+        private Point _initialMapOffset;
         private IMapItem? _selectedMapItem = null;
 
         public int Id { get; private set; }
@@ -188,22 +190,26 @@ namespace Client.ViewModels
             _selectedMapItem = mapItem;
         }
 
-        public void SetLastMousePosition(Point position)
+        public void SetInitialMousePosition(Point position)
         {
-            _lastMousePosition = position;
+            _initialMousePosition = position;
+            _initialMapOffset.X = MapTransformation.X;
+            _initialMapOffset.Y = MapTransformation.Y;
         }
 
         public void MoveMap(Point position)
         {
-            var delta = Point.Subtract(position, _lastMousePosition);
-            MapTransformation.Move(delta);
-            SetLastMousePosition(position);
+            var delta = Point.Subtract(position, _initialMousePosition) / MapTransformation.Scaling.Matrix.M11;
+            var position2 = _initialMapOffset + delta;
+            MapTransformation.Move(position2);
         }
 
         public void MoveMapItem(Point position)
         {
             if (_selectedMapItem is TokenMapItem token)
             {
+                position = MapTransformation.Scaling.Inverse.Transform(position);
+
                 position.X -= MapTransformation.X;
                 position.Y -= MapTransformation.Y;
 

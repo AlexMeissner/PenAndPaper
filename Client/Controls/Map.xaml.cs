@@ -115,7 +115,7 @@ namespace Client.Controls
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(this);
-            ViewModel.SetLastMousePosition(mousePosition);
+            ViewModel.SetInitialMousePosition(mousePosition);
 
             var hitTestResult = VisualTreeHelper.HitTest(this, mousePosition);
 

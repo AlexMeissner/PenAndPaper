@@ -28,13 +28,12 @@
         <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}" RenderTransform="{Binding MapTransformation.Scaling}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Background="Transparent"  MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
+                    <Canvas Background="Transparent" MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="UIElement.RenderTransform" Value="{Binding Transformation}" />
                     <Setter Property="Canvas.Left">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MapItemTransformationConverter}">
