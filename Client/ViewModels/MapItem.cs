@@ -1,9 +1,30 @@
 ﻿using Client.Converter;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Client.ViewModels
 {
+    public class MapTransformation : BaseViewModel
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public float Zoom { get; set; }
+
+        public void Move(Vector offset)
+        {
+            X += (int)offset.X;
+            Y += (int)offset.Y;
+        }
+
+        public void Reset()
+        {
+            X = 0;
+            Y = 0;
+            Zoom = 1.0f;
+        }
+    }
+
     public interface IMapItem
     {
         public MatrixTransform Transformation { get; set; }

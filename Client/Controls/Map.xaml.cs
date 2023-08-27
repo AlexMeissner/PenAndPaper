@@ -100,6 +100,7 @@ namespace Client.Controls
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             var mousePosition = e.GetPosition(this);
+            ViewModel.SetLastMousePosition(mousePosition);
 
             var hitTestResult = VisualTreeHelper.HitTest(this, mousePosition);
 
@@ -108,16 +109,11 @@ namespace Client.Controls
             {
                 ViewModel.SetSelectedItem(mapItem);
             }
-            else if (e.ChangedButton == MouseButton.Right)
-            {
-                ViewModel.SetInitialMousePosition(mousePosition);
-            }
         }
 
         private async void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            var mousePosition = e.GetPosition(this);
-            await ViewModel.UpdateSelectedItemPosition(mousePosition);
+            await ViewModel.UpdateSelectedItemPosition();
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)

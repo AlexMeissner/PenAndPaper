@@ -35,8 +35,22 @@
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
                     <Setter Property="UIElement.RenderTransform" Value="{Binding Transformation}" />
-                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
-                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                    <Setter Property="Canvas.Left">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource MapItemTransformationConverter}">
+                                <Binding Path="X"/>
+                                <Binding Path="ViewModel.MapTransformation.X" ElementName="MapControl"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource MapItemTransformationConverter}">
+                                <Binding Path="Y"/>
+                                <Binding Path="ViewModel.MapTransformation.Y" ElementName="MapControl"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>

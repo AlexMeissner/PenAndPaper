@@ -6,6 +6,7 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +19,12 @@ namespace Client.ViewModels
     [TransistentService]
     public class MapViewModel : BaseViewModel
     {
+        private struct Offset
+        {
+            public int X;
+            public int Y;
+        }
+
         private readonly ISessionData _sessionData;
         private readonly IMapApi _mapApi;
         private readonly ITokenApi _tokenApi;
@@ -26,10 +33,11 @@ namespace Client.ViewModels
 
         private readonly MatrixTransform _transformation = new();
         private readonly float _zoomFactor = 1.1f;
-        private Point _initialMousePosition;
+        private Point _lastMousePosition;
         private IMapItem? _selectedMapItem = null;
 
         public int Id { get; private set; }
+        public MapTransformation MapTransformation { get; set; } = new();
         public ObservableCollection<IMapItem> Items { get; private set; } = new();
 
         public BackgroundMapItem? Background => (BackgroundMapItem?)Items.FirstOrDefault(x => x is BackgroundMapItem);
@@ -91,6 +99,8 @@ namespace Client.ViewModels
 
         private async void OnMapChanged(object? sender, EventArgs e)
         {
+            MapTransformation.Reset();
+
             await UpdateMap();
             await UpdateTokens();
         }
@@ -136,8 +146,6 @@ namespace Client.ViewModels
                                 var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
                                 Items.Add(map);
                             }
-
-                            //ZoomableCanvas.Reset();
                         });
                     });
                 },
@@ -167,17 +175,11 @@ namespace Client.ViewModels
             });
         }
 
-        public async Task UpdateSelectedItemPosition(Point position)
+        public async Task UpdateSelectedItemPosition()
         {
             if (_selectedMapItem is TokenMapItem token)
             {
-                if (Grid is not null)
-                {
-                    position.X -= position.X % Grid.Size;
-                    position.Y -= position.Y % Grid.Size;
-                }
-
-                var payload = new TokenUpdateDto(_sessionData.CampaignId, token.Id, (int)position.X, (int)position.Y);
+                var payload = new TokenUpdateDto(_sessionData.CampaignId, token.Id, token.X, token.Y);
 
                 await _tokenApi.PutAsync(payload);
 
@@ -207,28 +209,26 @@ namespace Client.ViewModels
             _selectedMapItem = mapItem;
         }
 
-        public void SetInitialMousePosition(Point position)
+        public void SetLastMousePosition(Point position)
         {
-            _initialMousePosition = _transformation.Inverse.Transform(position);
+            _lastMousePosition = _transformation.Inverse.Transform(position);
         }
 
         public void MoveMap(Point position)
         {
             var mousePosition = _transformation.Inverse.Transform(position);
-            var delta = Point.Subtract(mousePosition, _initialMousePosition);
-            var translate = new TranslateTransform(delta.X, delta.Y);
-            _transformation.Matrix = translate.Value * _transformation.Matrix;
-
-            foreach (var mapItem in Items)
-            {
-                mapItem.Transformation = _transformation;
-            }
+            var delta = Point.Subtract(mousePosition, _lastMousePosition);
+            MapTransformation.Move(delta);
+            SetLastMousePosition(position);
         }
 
         public void MoveMapItem(Point position)
         {
             if (_selectedMapItem is TokenMapItem token)
             {
+                position.X -= MapTransformation.X;
+                position.Y -= MapTransformation.Y;
+
                 if (Grid is not null)
                 {
                     position.X -= position.X % Grid.Size;
