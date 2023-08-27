@@ -25,10 +25,10 @@
             <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}">
+        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}" RenderTransform="{Binding MapTransformation.Scaling}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Background="Transparent" ClipToBounds="True" MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
+                    <Canvas Background="Transparent"  MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 

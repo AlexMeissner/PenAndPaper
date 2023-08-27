@@ -6,7 +6,6 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,20 +18,12 @@ namespace Client.ViewModels
     [TransistentService]
     public class MapViewModel : BaseViewModel
     {
-        private struct Offset
-        {
-            public int X;
-            public int Y;
-        }
-
         private readonly ISessionData _sessionData;
         private readonly IMapApi _mapApi;
         private readonly ITokenApi _tokenApi;
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
 
-        private readonly MatrixTransform _transformation = new();
-        private readonly float _zoomFactor = 1.1f;
         private Point _lastMousePosition;
         private IMapItem? _selectedMapItem = null;
 
@@ -187,21 +178,9 @@ namespace Client.ViewModels
             }
         }
 
-        public void Zoom(int delta, double X, double Y)
+        public void Zoom(Point position, int delta)
         {
-            var scaleFactor = (delta < 0) ? 1.0f / _zoomFactor : _zoomFactor;
-
-            var scaleMatrix = _transformation.Matrix;
-            scaleMatrix.ScaleAt(scaleFactor, scaleFactor, X, Y);
-            _transformation.Matrix = scaleMatrix;
-
-            foreach (var mapItems in Items)
-            {
-                mapItems.X = (int)(mapItems.X * scaleFactor);
-                mapItems.Y = (int)(mapItems.Y * scaleFactor);
-
-                mapItems.Transformation = _transformation;
-            }
+            MapTransformation.Zoom(position, delta);
         }
 
         public void SetSelectedItem(IMapItem mapItem)
@@ -211,13 +190,12 @@ namespace Client.ViewModels
 
         public void SetLastMousePosition(Point position)
         {
-            _lastMousePosition = _transformation.Inverse.Transform(position);
+            _lastMousePosition = position;
         }
 
         public void MoveMap(Point position)
         {
-            var mousePosition = _transformation.Inverse.Transform(position);
-            var delta = Point.Subtract(mousePosition, _lastMousePosition);
+            var delta = Point.Subtract(position, _lastMousePosition);
             MapTransformation.Move(delta);
             SetLastMousePosition(position);
         }

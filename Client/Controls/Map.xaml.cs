@@ -91,10 +91,25 @@ namespace Client.Controls
             }
         }
 
+        private double zoomScale = 1.0;
+        private Point zoomCenter;
+
         private void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            //// Determine the zoom direction (in or out)
+            //double zoomFactor = e.Delta > 0 ? 1.1 : 0.9;
+            //
+            //// Store the zoom center point
+            //zoomCenter = e.GetPosition(this);
+            //
+            //// Update the zoom scale
+            //zoomScale *= zoomFactor;
+            //
+            //// Apply the scale transform to the ItemsControl's render transform
+            //test.RenderTransform = new ScaleTransform(zoomScale, zoomScale, zoomCenter.X, zoomCenter.Y);
+
             var mousePostion = e.GetPosition(this);
-            ViewModel.Zoom(e.Delta, mousePostion.X, mousePostion.Y);
+            ViewModel.Zoom(mousePostion, e.Delta);
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)

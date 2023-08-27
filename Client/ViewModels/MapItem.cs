@@ -1,7 +1,9 @@
 ﻿using Client.Converter;
+using System.Printing;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Client.ViewModels
 {
@@ -9,7 +11,7 @@ namespace Client.ViewModels
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public float Zoom { get; set; }
+        public MatrixTransform Scaling { get; set; } = new();
 
         public void Move(Vector offset)
         {
@@ -21,13 +23,22 @@ namespace Client.ViewModels
         {
             X = 0;
             Y = 0;
-            Zoom = 1.0f;
+            Application.Current.Dispatcher.Invoke(() => Scaling.Matrix = Matrix.Identity);
+        }
+
+        public void Zoom(Point position, int delta)
+        {
+            const float _zoomFactor = 1.1f;
+            var factor = (delta < 0) ? 1.0f / _zoomFactor : _zoomFactor;
+
+            var matrix = Scaling.Matrix;
+            matrix.ScaleAt(factor, factor, position.X, position.Y);
+            Scaling.Matrix = matrix;
         }
     }
 
     public interface IMapItem
     {
-        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex { get; }
@@ -35,7 +46,6 @@ namespace Client.ViewModels
 
     public class BackgroundMapItem : BaseViewModel, IMapItem
     {
-        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 0;
@@ -45,7 +55,6 @@ namespace Client.ViewModels
 
         public BackgroundMapItem(byte[] imageData)
         {
-            Transformation = new();
             Image = Converter.Convert(imageData);
             Width = (int)Image.Width;
             Height = (int)Image.Height;
@@ -56,7 +65,6 @@ namespace Client.ViewModels
 
     public class GridMapItem : BaseViewModel, IMapItem
     {
-        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 1;
@@ -68,7 +76,6 @@ namespace Client.ViewModels
 
         public GridMapItem(int size, int width, int height, int lineThickness, SolidColorBrush color)
         {
-            Transformation = new();
             Size = size;
             Width = width;
             Height = height;
@@ -79,20 +86,13 @@ namespace Client.ViewModels
 
     public class LandmarkMapItem : BaseViewModel, IMapItem
     {
-        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 2;
-
-        public LandmarkMapItem()
-        {
-            Transformation = new();
-        }
     }
 
     public class TokenMapItem : BaseViewModel, IMapItem
     {
-        public MatrixTransform Transformation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int ZIndex => 3;
@@ -103,7 +103,6 @@ namespace Client.ViewModels
 
         public TokenMapItem(int x, int y, int id, int userId, string name, byte[] imageData)
         {
-            Transformation = new();
             X = x;
             Y = y;
             Id = id;
