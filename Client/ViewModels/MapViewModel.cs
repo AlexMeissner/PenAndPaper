@@ -6,7 +6,6 @@ using DataTransfer.Dice;
 using DataTransfer.Map;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -105,42 +104,46 @@ namespace Client.ViewModels
 
         public async Task UpdateMap()
         {
+            if (Background is not null)
+            {
+                Items.Remove(Background);
+            }
+            if (Grid is not null)
+            {
+                Items.Remove(Grid);
+            }
+
             var activeMapResponse = await _activeMapApi.GetAsync(_sessionData.CampaignId);
 
             activeMapResponse.Match(
                 async success =>
                 {
-                    var mapResponse = await _mapApi.GetAsync(success.MapId);
+                    Id = success.MapId;
 
-                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    if (Id != -1)
                     {
-                        mapResponse.Match(
-                        s =>
+                        var mapResponse = await _mapApi.GetAsync(Id);
+
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            if (Background is not null)
+                            mapResponse.Match(
+                            s =>
                             {
-                                Items.Remove(Background);
-                            }
-                            if (Grid is not null)
-                            {
-                                Items.Remove(Grid);
-                            }
+                                var background = new BackgroundMapItem(s.ImageData);
 
-                            Id = success.MapId;
+                                Items.Add(background);
 
-                            var background = new BackgroundMapItem(s.ImageData);
-
-                            Items.Add(background);
-
-                            if (s.Grid.IsActive)
-                            {
-                                const int lineThickness = 1; // ToDo
-                                SolidColorBrush color = new(Colors.Red); // ToDo
-                                var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
-                                Items.Add(map);
-                            }
+                                if (s.Grid.IsActive)
+                                {
+                                    const int lineThickness = 1; // ToDo
+                                    SolidColorBrush color = new(Colors.Red); // ToDo
+                                    var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
+                                    Items.Add(map);
+                                }
+                            },
+                            f => { });
                         });
-                    });
+                    }
                 },
                 failure =>
                 {
@@ -150,21 +153,22 @@ namespace Client.ViewModels
 
         public async Task UpdateTokens()
         {
+            var tokens = Items.Where(x => x is TokenMapItem).ToList();
+            Items.RemoveAll(tokens);
+
             var response = await _tokenApi.GetAsync(Id);
 
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 response.Match(success =>
                 {
-                    var tokens = Items.Where(x => x is TokenMapItem).ToList();
-                    Items.RemoveAll(tokens);
-
                     foreach (var item in success.Items)
                     {
                         var token = new TokenMapItem(item.X, item.Y, item.Id, item.UserId, item.Name, item.Image);
                         Items.Add(token);
                     }
-                });
+                },
+                failure => { });
             });
         }
 
