@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int campaignId)
+        public async Task<IActionResult> Get(int campaignId)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutAsync(ActiveMapDto payload)
+        public async Task<IActionResult> Put(ActiveMapDto payload)
         {
             try
             {

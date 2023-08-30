@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int mapId)
+        public async Task<IActionResult> Get(int mapId)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(TokenCreationDto payload)
+        public async Task<IActionResult> Post(TokenCreationDto payload)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace Server.Controllers
                 update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 await _dbContext.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetAsync), token.Id);
+                return CreatedAtAction(nameof(Get), token.Id);
             }
             catch (Exception exception)
             {
@@ -115,7 +115,7 @@ namespace Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutAsync(TokenUpdateDto payload)
+        public async Task<IActionResult> Put(TokenUpdateDto payload)
         {
             try
             {

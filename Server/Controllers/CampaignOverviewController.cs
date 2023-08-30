@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int userId)
+        public async Task<IActionResult> Get(int userId)
         {
             try
             {

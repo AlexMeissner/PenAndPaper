@@ -18,7 +18,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(SoundCreationDto payload)
+        public async Task<IActionResult> Post(SoundCreationDto payload)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Server.Controllers
                 await _dbContext.Sounds.AddAsync(sound);
                 await _dbContext.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetAsync), sound.Id);
+                return CreatedAtAction(nameof(Get), sound.Id);
             }
             catch (Exception exception)
             {

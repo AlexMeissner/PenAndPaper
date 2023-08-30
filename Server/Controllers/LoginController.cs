@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(UserCredentialsDto userCredentials)
+        public async Task<IActionResult> Login(UserCredentialsDto userCredentials)
         {
             try
             {

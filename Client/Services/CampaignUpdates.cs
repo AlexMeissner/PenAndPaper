@@ -1,6 +1,7 @@
 ﻿using Client.Services.API;
 using DataTransfer.Campaign;
 using System;
+using System.Diagnostics;
 using System.Timers;
 using static Client.Services.ServiceExtension;
 
@@ -61,9 +62,8 @@ namespace Client.Services
                     DiceRoll = RaiseEvent(DiceRolled, success.DiceRoll, DiceRoll);
                     AmbientSoundChange = RaiseEvent(AmbientSoundChanged, success.AmbientSoundChange, AmbientSoundChange);
                     SoundEffectChange = RaiseEvent(SoundEffectChanged, success.SoundEffectChange, SoundEffectChange);
-                });
-
-
+                },
+                failure => Debug.WriteLine(failure.ToString()));
             }
         }
 

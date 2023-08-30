@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int mapId)
+        public async Task<IActionResult> Get(int mapId)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(MapDto payload)
+        public async Task<IActionResult> Post(MapDto payload)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetAsync), map.Id);
+                return CreatedAtAction(nameof(Get), map.Id);
             }
             catch (Exception exception)
             {
@@ -69,7 +69,7 @@ namespace Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutAsync(MapDto payload)
+        public async Task<IActionResult> Put(MapDto payload)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace Server.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync(int mapId)
+        public async Task<IActionResult> Delete(int mapId)
         {
             try
             {

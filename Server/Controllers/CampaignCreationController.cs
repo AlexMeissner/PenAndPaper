@@ -18,7 +18,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int campaignId)
+        public async Task<IActionResult> Get(int campaignId)
         {
             try
             {
@@ -64,10 +64,8 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(CampaignCreationDto payload)
+        public async Task<IActionResult> Post(CampaignCreationDto payload)
         {
-            // TODO: Create entry in 'ActiveCampaignElements' initialize with '-1'
-
             try
             {
                 var dbCampaign = new DbCampaign() { Name = payload.CampaignName };
@@ -79,6 +77,14 @@ namespace Server.Controllers
                     UserId = payload.Gamemaster!.Id,
                     CampaignId = dbCampaign.Id,
                     IsGamemaster = true
+                });
+
+                _dbContext.ActiveCampaignElements.Add(new()
+                {
+                    CampaignId = dbCampaign.Id,
+                    MapId = -1,
+                    AmbientId = -1,
+                    EffectId = -1,
                 });
 
                 foreach (var user in payload.UsersInCampaign)
@@ -93,7 +99,7 @@ namespace Server.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetAsync), dbCampaign.Id);
+                return CreatedAtAction(nameof(Get), dbCampaign.Id);
             }
             catch (Exception exception)
             {
