@@ -13,15 +13,13 @@ namespace Client.Pages
     public partial class RegisterPage : Page
     {
         private readonly IPageNavigator _pageNavigator;
-        private readonly ISessionData _sessionData;
-        private readonly IAuthenticationApi _authenticationApi;
+        private readonly IUserApi _userApi;
 
-        public RegisterPage(IPageNavigator pageNavigator, ISessionData sessionData, IAuthenticationApi loginApi)
+        public RegisterPage(IPageNavigator pageNavigator, IUserApi userApi)
         {
             InitializeComponent();
             _pageNavigator = pageNavigator;
-            _sessionData = sessionData;
-            _authenticationApi = loginApi;
+            _userApi = userApi;
             BackgroundImage.ImageSource = RandomBackgroundImage.GetImageFromResource();
         }
 
@@ -39,15 +37,16 @@ namespace Client.Pages
                 PasswordBox.Password == PasswordBoxRepeat.Password)
             {
                 UserCredentialsDto userCredentials = new(Email: EmailBox.Text, Username: UsernameBox.Text, Password: Password.Encrypt(PasswordBox.Password));
-                var response = await _authenticationApi.RegisterAsync(userCredentials);
+                var response = await _userApi.RegisterAsync(userCredentials);
 
-                response.Match(
-                    success =>
-                    {
-                        _sessionData.UserId = success.UserId;
-                        _pageNavigator.OpenPage<CampaignSelectionPage>();
-                    },
-                    failure => MessageBoxUtility.Show(failure));
+                if (response.Succeded)
+                {
+                    _pageNavigator.OpenPage<LoginPage>();
+                }
+                else
+                {
+                    MessageBoxUtility.Show(response.StatusCode);
+                }
             }
         }
     }

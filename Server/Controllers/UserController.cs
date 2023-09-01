@@ -1,4 +1,5 @@
-﻿using DataTransfer.User;
+﻿using DataTransfer.Login;
+using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
@@ -25,6 +26,29 @@ namespace Server.Controllers
                 var payload = new UsersDto(user.Id, user.Username, user.Email);
 
                 return Ok(payload);
+            }
+            catch (Exception exception)
+            {
+                return this.InternalServerError(exception);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(UserCredentialsDto userCredentials)
+        {
+            try
+            {
+                var user = new DbUser()
+                {
+                    Email = userCredentials.Email,
+                    Username = userCredentials.Username,
+                    Password = userCredentials.Password
+                };
+
+                await _dbContext.Users.AddAsync(user);
+                await _dbContext.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(Get), user.Id);
             }
             catch (Exception exception)
             {

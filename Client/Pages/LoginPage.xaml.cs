@@ -15,14 +15,14 @@ namespace Client.Pages
     {
         private readonly IPageNavigator _pageNavigator;
         private readonly ISessionData _sessionData;
-        private readonly IAuthenticationApi _authenticationApi;
+        private readonly IUserApi _userApi;
 
-        public LoginPage(IPageNavigator pageNavigator, ISessionData sessionData, IAuthenticationApi loginApi)
+        public LoginPage(IPageNavigator pageNavigator, ISessionData sessionData, IUserApi userApi)
         {
             InitializeComponent();
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
-            _authenticationApi = loginApi;
+            _userApi = userApi;
             BackgroundImage.ImageSource = RandomBackgroundImage.GetImageFromResource();
         }
 
@@ -35,7 +35,7 @@ namespace Client.Pages
                     Username: string.Empty,
                     Password: Password.Encrypt(PasswordBox.Password));
 
-                var response = await _authenticationApi.LoginAsync(userCredentials);
+                var response = await _userApi.LoginAsync(userCredentials);
 
                 response.Match(
                     success =>
