@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Map;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Server.Controllers
     public class MapController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public MapController(SQLDatabase dbContext)
+        public MapController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -55,10 +59,9 @@ namespace Server.Controllers
 
                 await _dbContext.Maps.AddAsync(map);
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                update.MapCollectionChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.MapCollection);
 
                 return CreatedAtAction(nameof(Get), map.Id);
             }
@@ -80,10 +83,9 @@ namespace Server.Controllers
                 map.GridIsActive = payload.Grid.IsActive;
                 map.GridSize = payload.Grid.Size;
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                update.MapCollectionChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.MapCollection);
 
                 return Ok(map);
             }
@@ -100,12 +102,18 @@ namespace Server.Controllers
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == map.CampaignId);
-                update.MapCollectionChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                var activeElement = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.MapId == mapId);
 
                 _dbContext.Maps.Remove(map);
 
+                if (activeElement.MapId == mapId)
+                {
+                    activeElement.MapId = -1;
+                }
+
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(activeElement.CampaignId, UpdateEntity.MapCollection);
 
                 return Ok();
             }

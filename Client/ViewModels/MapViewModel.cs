@@ -44,7 +44,7 @@ namespace Client.ViewModels
         public ICommand RollD12Command { get; set; }
         public ICommand RollD20Command { get; set; }
 
-        public MapViewModel(ISessionData sessionData, IMapApi mapApi, ITokenApi tokenApi, IRollApi rollApi, IActiveMapApi activeMapApi, ICampaignUpdates campaignUpdates)
+        public MapViewModel(ISessionData sessionData, IMapApi mapApi, ITokenApi tokenApi, IRollApi rollApi, IActiveMapApi activeMapApi, IUpdateNotifier campaignUpdates)
         {
             _sessionData = sessionData;
             _mapApi = mapApi;

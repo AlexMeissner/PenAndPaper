@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Dice;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 using System.Text.Json;
 
 namespace Server.Controllers
@@ -11,10 +13,12 @@ namespace Server.Controllers
     public class RollController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public RollController(SQLDatabase dbContext)
+        public RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -58,12 +62,11 @@ namespace Server.Controllers
                 var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == payload.CampaignId);
                 diceRoll.Roll = JsonSerializer.Serialize(diceRollResult);
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                update.DiceRoll = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
                 // TODO: Fill default entry on campaign creation
 
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Dice);
 
                 return Ok(diceRoll);
             }

@@ -17,10 +17,13 @@ namespace Client
             _serviceProvider = services.BuildServiceProvider();
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var mainWindow = _serviceProvider.GetService<MainWindow>()!;
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
+
+            var updateNotifier = (UpdateNotifier)_serviceProvider.GetRequiredService<IUpdateNotifier>();
+            await updateNotifier.Connect();
 
             //var testWindow = new TestWindow();
             //testWindow.Show();

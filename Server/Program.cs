@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Server.Database;
 using Server.Middleware;
+using Server.Services;
 
 class ServerMain
 {
@@ -25,6 +26,8 @@ class ServerMain
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddSingleton<IUpdateNotifier, UpdateNotifier>();
+
         var app = builder.Build();
 
         // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
@@ -36,6 +39,8 @@ class ServerMain
 
         app.UseMiddleware<HttpLogger>();
 
+        app.UseWebSockets();
+
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
@@ -45,6 +50,3 @@ class ServerMain
         app.Run();
     }
 }
-
-//DungeonsAndDragons5e.DungeonsAndDragons5e rules = new();
-//var a = rules.ToString();

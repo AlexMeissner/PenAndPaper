@@ -18,7 +18,7 @@ namespace Client.Controls
 
         public MapViewModel ViewModel => (MapViewModel)DataContext;
 
-        public Map(IControlProvider controlProvider, IViewModelProvider viewModelProvider, ICampaignUpdates campaignUpdates)
+        public Map(IControlProvider controlProvider, IViewModelProvider viewModelProvider, IUpdateNotifier campaignUpdates)
         {
             DataContext = viewModelProvider.Get<MapViewModel>();
 

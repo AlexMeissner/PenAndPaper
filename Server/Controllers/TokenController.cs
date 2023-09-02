@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Map;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Server.Controllers
     public class TokenController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public TokenController(SQLDatabase dbContext)
+        public TokenController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -102,9 +106,9 @@ namespace Server.Controllers
                     TokenId = token.Id
                 });
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
 
                 return CreatedAtAction(nameof(Get), token.Id);
             }
@@ -129,10 +133,9 @@ namespace Server.Controllers
                 token.X = payload.X;
                 token.Y = payload.Y;
 
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                update.TokenChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
                 await _dbContext.SaveChangesAsync();
+
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
 
                 return Ok(token);
             }

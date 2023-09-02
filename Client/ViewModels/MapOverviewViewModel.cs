@@ -26,7 +26,7 @@ namespace Client.ViewModels
         public ICommand PlayCommand { get; set; }
 
 
-        public MapOverviewViewModel(IMapApi mapApi, IMapOverviewApi mapOverviewApi, IActiveMapApi activeMapApi, ISessionData sessionData, ICampaignUpdates campaignUpdates)
+        public MapOverviewViewModel(IMapApi mapApi, IMapOverviewApi mapOverviewApi, IActiveMapApi activeMapApi, ISessionData sessionData, IUpdateNotifier campaignUpdates)
         {
             _mapApi = mapApi;
             _mapOverviewApi = mapOverviewApi;

@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Sound;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Server.Controllers
     public class ActiveSoundController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public ActiveSoundController(SQLDatabase dbContext)
+        public ActiveSoundController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -39,19 +43,18 @@ namespace Server.Controllers
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
 
                 if (payload.AmbientId is int ambientId && activeCampaignElements.AmbientId != ambientId)
                 {
-                    update.AmbientSoundChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     activeCampaignElements.AmbientId = ambientId;
                     await _dbContext.SaveChangesAsync();
+                    await _updateNotifier.Send(payload.CampaignId, UpdateEntity.AmbientSound);
                 }
                 if (payload.EffectId is int effectId && activeCampaignElements.EffectId != effectId)
                 {
-                    update.SoundEffectChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     activeCampaignElements.EffectId = effectId;
                     await _dbContext.SaveChangesAsync();
+                    await _updateNotifier.Send(payload.CampaignId, UpdateEntity.SoundEffect);
                 }
 
                 return Ok(activeCampaignElements);

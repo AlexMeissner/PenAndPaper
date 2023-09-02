@@ -16,13 +16,15 @@ namespace Client.Pages
         private readonly IPageNavigator _pageNavigator;
         private readonly ISessionData _sessionData;
         private readonly ICampaignOverviewApi _campaignOverviewApi;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public CampaignSelectionPage(IPageNavigator pageNavigator, ISessionData sessionData, ICampaignOverviewApi campaignOverviewApi)
+        public CampaignSelectionPage(IPageNavigator pageNavigator, ISessionData sessionData, ICampaignOverviewApi campaignOverviewApi, IUpdateNotifier updateNotifier)
         {
             InitializeComponent();
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
             _campaignOverviewApi = campaignOverviewApi;
+            _updateNotifier = updateNotifier;
             BackgroundImage.ImageSource = RandomBackgroundImage.GetImageFromResource();
         }
 
@@ -40,11 +42,12 @@ namespace Client.Pages
                 failure => MessageBoxUtility.Show(failure));
         }
 
-        private void OnEnterCampaign(object sender, RoutedEventArgs e)
+        private async void OnEnterCampaign(object sender, RoutedEventArgs e)
         {
             if (CampaignListView.SelectedItem is CampaignOverviewItemDto selectedCampaign)
             {
                 _sessionData.CampaignId = selectedCampaign.Id;
+                await _updateNotifier.SetCampaignAsync(selectedCampaign.Id);
 
                 if (selectedCampaign.IsGamemaster)
                 {

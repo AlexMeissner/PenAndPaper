@@ -8,7 +8,6 @@ namespace Server.Database
         public DbSet<DbUser> Users { get; set; } = null!;
         public DbSet<DbCampaign> Campaigns { get; set; } = null!;
         public DbSet<DbDiceRoll> DiceRolls { get; set; } = null!;
-        public DbSet<DbCampaignUpdates> CampaignUpdates { get; set; } = null!;
         public DbSet<DbUserInCampaign> UsersInCampaign { get; set; } = null!;
         public DbSet<DbMap> Maps { get; set; } = null!;
         public DbSet<DbSound> Sounds { get; set; } = null!;

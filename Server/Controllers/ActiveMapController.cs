@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Map;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Server.Controllers
     public class ActiveMapController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public ActiveMapController(SQLDatabase dbContext)
+        public ActiveMapController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -31,7 +35,6 @@ namespace Server.Controllers
             {
                 return this.InternalServerError(exception);
             }
-
         }
 
         [HttpPut]
@@ -40,13 +43,12 @@ namespace Server.Controllers
             try
             {
                 var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                var update = await _dbContext.CampaignUpdates.FirstAsync(x => x.CampaignId == payload.CampaignId);
 
                 if (activeCampaignElements.MapId != payload.MapId)
                 {
-                    update.MapChange = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     activeCampaignElements.MapId = payload.MapId;
                     await _dbContext.SaveChangesAsync();
+                    await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Map);
                 }
 
                 return Ok(activeCampaignElements);
