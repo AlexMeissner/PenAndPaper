@@ -19,10 +19,9 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task Get()
         {
             WebSocket? webSocket = null;
-            IActionResult? result = null;
 
             try
             {
@@ -31,7 +30,6 @@ namespace Server.Controllers
                     webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
                     _updateNotifier.Add(webSocket);
                     await SocketLifeCircle(webSocket);
-                    result = Ok();
                 }
             }
             finally
@@ -41,10 +39,6 @@ namespace Server.Controllers
                     _updateNotifier.Remove(webSocket);
                 }
             }
-
-            result ??= StatusCode((int)HttpStatusCode.BadRequest);
-
-            return result;
         }
 
         private async Task SocketLifeCircle(WebSocket webSocket)

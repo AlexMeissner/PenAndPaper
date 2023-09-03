@@ -40,6 +40,12 @@ namespace Client.Services
             _endPointProvider = endPointProvider;
         }
 
+        public async Task Close()
+        {
+            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "WebSocket connection closed.", CancellationToken.None);
+            _webSocket.Dispose();
+        }
+
         public async Task SetCampaignAsync(int campaignId)
         {
             if (_webSocket.State == WebSocketState.Open)
@@ -58,9 +64,6 @@ namespace Client.Services
                 await _webSocket.ConnectAsync(uri, CancellationToken.None);
 
                 await ReceiveMessageAsync(_webSocket);
-
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "WebSocket connection closed.", CancellationToken.None);
-                _webSocket.Dispose();
             }
             catch (Exception exception)
             {

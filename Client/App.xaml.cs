@@ -28,5 +28,11 @@ namespace Client
             //var testWindow = new TestWindow();
             //testWindow.Show();
         }
+
+        private async void OnShutdown(object sender, ExitEventArgs e)
+        {
+            var updateNotifier = (UpdateNotifier)_serviceProvider.GetRequiredService<IUpdateNotifier>();
+            await updateNotifier.Close();
+        }
     }
 }
