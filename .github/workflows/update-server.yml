@@ -34,4 +34,4 @@ jobs:
         run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u alexmeissner --password-stdin
 
       - name: Push Docker image
-        run: docker push $DockerImageName
+        run: docker push alexmeissner/pen_and_paper_server:latest
