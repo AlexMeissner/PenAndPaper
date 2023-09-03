@@ -19,19 +19,15 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
-      - name: Restore Dependencies
-        run: dotnet restore Server/Server.csproj
-
-      - name: Build Project
-        run: dotnet build Server/Server.csproj --configuration Release --no-restore
-
       - name: Build Docker image
         run: |
-          docker build -f Server/Dockerfile -t pen_and_paper_server:latest .
-          docker images
+          docker build -t pen_and_paper_server .
+        working-directory: ./Server
 
       - name: Log in to Docker Hub
-        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u alexmeissner --password-stdin
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Docker image
-        run: docker push alexmeissner/pen_and_paper_server:latest
+        run: |
+          docker tag pen_and_paper_server ${{ secrets.DOCKERHUB_USERNAME }}/pen_and_paper_server:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pen_and_paper_server:latest
