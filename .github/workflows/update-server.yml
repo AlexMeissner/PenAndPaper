@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $DockerImageName -f Server/Dockerfile
+          docker build -f Server/Dockerfile -t $DockerImageName .
           docker images
 
       - name: Log in to Docker Hub
