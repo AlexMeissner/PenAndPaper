@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Server/Dockerfile -t $DockerImageName .
+          docker build -f Server/Dockerfile -t pen_and_paper_server:latest .
           docker images
 
       - name: Log in to Docker Hub
