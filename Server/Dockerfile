@@ -5,10 +5,10 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Restore dependencies
-RUN dotnet restore ./Server/Server.csproj
+RUN dotnet restore ./Server.csproj
 
 # Build the application
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish ./Server.csproj -c Release -o /app/publish
 
 # Use the official ASP.NET Core runtime image as the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
