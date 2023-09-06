@@ -9,16 +9,11 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-COPY . ./
-
 # Copy project file from local folder to docker container
-#COPY Server.csproj ./
+COPY . ./
 
 # Restore dependencies
 RUN dotnet restore ./Server/Server.csproj
-
-# Copy source code from local folder to docker container
-#COPY . ./
 
 # Build the application
 RUN dotnet publish ./Server/Server.csproj -c Release -o /app/publish
