@@ -9,17 +9,19 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-# Copy project file from local folder to docker container
-COPY Server.csproj ./
-
-# Restore dependencies
-RUN dotnet restore ./Server.csproj
-
-# Copy source code from local folder to docker container
 COPY . ./
 
+# Copy project file from local folder to docker container
+#COPY Server.csproj ./
+
+# Restore dependencies
+RUN dotnet restore ./Server/Server.csproj
+
+# Copy source code from local folder to docker container
+#COPY . ./
+
 # Build the application
-RUN dotnet publish ./Server.csproj -c Release -o /app/publish
+RUN dotnet publish ./Server/Server.csproj -c Release -o /app/publish
 
 # USE PUBLISHED PROJECT DATA TO BUILD DOCKER IMAGE INCLUDING ONLY THE REQUIRED FILES
 # Use the official ASP.NET Core runtime image as the runtime image
