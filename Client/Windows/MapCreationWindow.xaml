@@ -16,51 +16,36 @@
             <RowDefinition Height="120"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <TabControl BorderThickness="0">
-            <TabItem Header="Bild hochladen">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="300"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Row="0" Grid.Column="0" Margin="4" Content="Durchsuchen" Click="OnFromFile"/>
-                    <Border Grid.Row="1" Grid.Column="0" Margin="4" BorderBrush="Black" BorderThickness="1">
-                        <Canvas>
-                            <Canvas.Background>
-                                <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
-                            </Canvas.Background>
-                            <Rectangle Width="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding ViewModel.GridIsActive, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <Rectangle.Fill>
-                                    <DrawingBrush TileMode="Tile" Viewport="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
-                                        <DrawingBrush.Drawing>
-                                            <GeometryDrawing>
-                                                <GeometryDrawing.Geometry>
-                                                    <RectangleGeometry Rect="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}"/>
-                                                </GeometryDrawing.Geometry>
-                                                <GeometryDrawing.Pen>
-                                                    <Pen Brush="#88000000" Thickness="1"/>
-                                                </GeometryDrawing.Pen>
-                                            </GeometryDrawing>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Canvas>
-                    </Border>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Tokens" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <ListView Grid.Row="1" Grid.Column="1">
-                        <ListViewItem Content="Hans"/>
-                        <ListViewItem Content="Peter"/>
-                        <ListViewItem Content="Jürgen"/>
-                    </ListView>
-                </Grid>
-            </TabItem>
-        </TabControl>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Margin="4" Content="Durchsuchen" Click="OnFromFile"/>
+            <Border Grid.Row="1" Grid.Column="0" Margin="4" BorderBrush="Black" BorderThickness="1">
+                <Canvas>
+                    <Canvas.Background>
+                        <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
+                    </Canvas.Background>
+                    <Rectangle Width="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding ViewModel.GridIsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Rectangle.Fill>
+                            <DrawingBrush TileMode="Tile" Viewport="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
+                                <DrawingBrush.Drawing>
+                                    <GeometryDrawing>
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="{Binding ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}"/>
+                                        </GeometryDrawing.Geometry>
+                                        <GeometryDrawing.Pen>
+                                            <Pen Brush="#88000000" Thickness="1"/>
+                                        </GeometryDrawing.Pen>
+                                    </GeometryDrawing>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Canvas>
+            </Border>
+        </Grid>
         <Grid Grid.Row="1" Margin="4,4,4,4">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

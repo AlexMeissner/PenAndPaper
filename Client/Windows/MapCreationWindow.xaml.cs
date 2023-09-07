@@ -10,17 +10,17 @@ namespace Client.Windows
 {
     public partial class MapCreationWindow : Window
     {
-        public MapCreationViewModel ViewModel => (MapCreationViewModel)DataContext;
+        public MapCreationViewModel ViewModel { get; init; }
 
         public MapCreationWindow()
         {
-            DataContext = new MapCreationViewModel();
+            ViewModel = new MapCreationViewModel();
             InitializeComponent();
         }
 
         public MapCreationWindow(MapDto mapCreation)
         {
-            DataContext = new MapCreationViewModel()
+            ViewModel = new MapCreationViewModel()
             {
                 Id = mapCreation.Id,
                 CampaignId = mapCreation.CampaignId,
