@@ -39,11 +39,6 @@ namespace Client.ViewModels
             PlayCommand = new AsyncCommand<MapOverviewItemDto>(OnPlay);
         }
 
-        public async Task<HttpResponse> CreateMap(MapDto payload)
-        {
-            return await _mapApi.PostAsync(payload with { CampaignId = _sessionData.CampaignId });
-        }
-
         public async Task<HttpResponse<MapDto>> GetMap(MapOverviewItemDto item)
         {
             return await _mapApi.GetAsync(item.MapId);

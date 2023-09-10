@@ -25,8 +25,7 @@
                 <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Close">
                     <fa:IconImage Icon="X" Foreground="{DynamicResource Theme_Color_Font_2}"/>
                 </Button>
-            </StackPanel>
-            
+            </StackPanel>            
         </Grid>
     </Border>
 </local:CustomWindow>

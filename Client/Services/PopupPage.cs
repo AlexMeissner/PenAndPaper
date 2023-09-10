@@ -1,65 +1,95 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Client.Commands;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
-    public interface IPopupPage
+    public interface IPopupPage : INotifyPropertyChanged
     {
-        Page? Content { get; }
-        Visibility Visibility { get; }
-
-        public void Open<T>() where T : Page;
-        void Close();
+        public string Title { get; }
+        public Page? Content { get; }
+        public Visibility Visibility { get; }
+        public ICommand CloseCommand { get; }
+        public void Open<T>(string title) where T : Page;
     }
 
     [SingletonService]
-    public class PopupPage : IPopupPage, INotifyPropertyChanged
+    public class PopupPage : IPopupPage
     {
-        public Visibility Visibility { get; private set; }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         private readonly IServiceProvider _serviceProvider;
 
-        public PopupPage(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
+        private string _title = string.Empty;
         private Page? _content;
+        private Visibility _visibility = Visibility.Collapsed;
+
+        public string Title
+        {
+            get => _title;
+
+            private set
+            {
+                _title = value;
+                OnPropertyChanged(nameof(Title));
+            }
+        }
 
         public Page? Content
         {
             get => _content;
-            set
+
+            private set
             {
                 _content = value;
                 OnPropertyChanged(nameof(Content));
             }
         }
 
-        public void Close()
+        public Visibility Visibility
         {
-            Visibility = Visibility.Collapsed;
-            _content = null;
+            get => _visibility;
+            private set
+            {
+                _visibility = value;
+                OnPropertyChanged(nameof(Visibility));
+            }
         }
 
-        public void Open<T>() where T : Page
+        public ICommand CloseCommand { get; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public PopupPage(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+            CloseCommand = new RelayCommand(Close);
+        }
+
+        public void Open<T>(string title) where T : Page
         {
             if (Content?.GetType() != typeof(T))
             {
                 var oldPage = Content;
+
+                Title = title;
                 Content = _serviceProvider.GetRequiredService<T>();
+                Visibility = Visibility.Visible;
 
                 if (oldPage is IDisposable disposable)
                 {
                     disposable.Dispose();
                 }
             }
+        }
+
+        private void Close()
+        {
+            Visibility = Visibility.Collapsed;
+            Content = null;
         }
 
         private void OnPropertyChanged(string propertyName)

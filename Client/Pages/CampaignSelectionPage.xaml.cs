@@ -51,7 +51,7 @@ namespace Client.Pages
 
                 if (selectedCampaign.IsGamemaster)
                 {
-                    _pageNavigator.OpenPage<CampaignGamemasterViewPage>();
+                    _pageNavigator.OpenPage<GamemasterView>();
                 }
                 else
                 {

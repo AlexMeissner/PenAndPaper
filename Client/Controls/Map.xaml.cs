@@ -14,15 +14,11 @@ namespace Client.Controls
     [TransistentService]
     public partial class Map : UserControl
     {
-        private readonly IControlProvider _controlProvider;
-
         public MapViewModel ViewModel => (MapViewModel)DataContext;
 
         public Map(IControlProvider controlProvider, IViewModelProvider viewModelProvider, IUpdateNotifier campaignUpdates)
         {
             DataContext = viewModelProvider.Get<MapViewModel>();
-
-            _controlProvider = controlProvider;
 
             InitializeComponent();
 
@@ -48,8 +44,8 @@ namespace Client.Controls
                     {
                         var diceRoller = (DiceRoller)DiceRollerPresenter.Content;
                         await diceRoller.ViewModel.Show(success);
-                        //await Dispatcher.InvokeAsync(new Action(async () => await ((DiceRoller)DiceRollerPresenter.Content).ViewModel.Show(success)));
-                    });
+                    },
+                    failure => { });
             });
         }
 
@@ -67,19 +63,7 @@ namespace Client.Controls
 
         private void OnOpenSettings(object sender, RoutedEventArgs e)
         {
-            OpenPopupWindow("Einstellungen", _controlProvider.Get<SettingsControl>());
-        }
-
-        private void OnClosePopupWindow(object sender, RoutedEventArgs e)
-        {
-            PopupWindow.Visibility = Visibility.Collapsed;
-        }
-
-        private void OpenPopupWindow(string title, UserControl control)
-        {
-            PopupWindowTitle.Text = title;
-            PopupWindowContentPresenter.Content = control;
-            PopupWindow.Visibility = Visibility.Visible;
+            //PopupPage.Open<SettingsControl>();
         }
 
         private async void OnDrop(object sender, DragEventArgs e)

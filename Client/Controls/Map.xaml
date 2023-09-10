@@ -102,7 +102,6 @@
             <ContentPresenter Name="DiceRollerPresenter" HorizontalAlignment="Center" Visibility="Visible"/>
         </StackPanel>
 
-
         <!--
         <Expander HorizontalAlignment="Right" Header="Encounter Builder">
             <Grid>
@@ -219,23 +218,5 @@
             </Grid>
         </Expander>
         -->
-
-        <!-- Popup Window -->
-        <Border Grid.Column="1" Grid.Row="1" Panel.ZIndex="2" Name="PopupWindow" BorderBrush="Black" BorderThickness="1" Visibility="Collapsed">
-            <Grid Style="{DynamicResource TransparentGrid}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0">
-                    <TextBlock Name="PopupWindowTitle" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="20"/>
-                    <Button HorizontalAlignment="Right" Margin="1" Click="OnClosePopupWindow">
-                        <fa:IconImage Icon="Xmark"/>
-                    </Button>
-                </Grid>
-                <ContentPresenter Grid.Row="1" Name="PopupWindowContentPresenter"/>
-            </Grid>
-        </Border>
     </Grid>
 </UserControl>

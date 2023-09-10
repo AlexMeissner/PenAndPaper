@@ -1,7 +1,6 @@
-﻿using Client.Services;
+﻿using Client.Pages;
+using Client.Services;
 using Client.ViewModels;
-using Client.Windows;
-using DataTransfer.Map;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,11 +11,14 @@ namespace Client.Controls
     [TransistentService]
     public partial class MapOverview : UserControl
     {
+        private readonly IPopupPage _popupPage;
+
         public MapOverviewViewModel ViewModel => (MapOverviewViewModel)DataContext;
 
-        public MapOverview(IViewModelProvider viewModelProvider)
+        public MapOverview(IViewModelProvider viewModelProvider, IPopupPage popupPage)
         {
             DataContext = viewModelProvider.Get<MapOverviewViewModel>();
+            _popupPage = popupPage;
 
             InitializeComponent();
         }
@@ -31,26 +33,14 @@ namespace Client.Controls
             CollectionViewSource.GetDefaultView(OverviewItemsControl.ItemsSource).Refresh();
         }
 
-        private async void OnCreateMap(object sender, RoutedEventArgs e)
+        private void OnCreateMap(object sender, RoutedEventArgs e)
         {
-            MapCreationWindow mapCreationWindow = new();
-
-            if (mapCreationWindow.ShowDialog() == true)
-            {
-                var payload = new MapDto(
-                    Id: mapCreationWindow.ViewModel.Id,
-                    CampaignId: mapCreationWindow.ViewModel.CampaignId,
-                    Name: mapCreationWindow.ViewModel.Name,
-                    ImageData: mapCreationWindow.ViewModel.ImageData,
-                    Grid: new GridDto(mapCreationWindow.ViewModel.GridSize, mapCreationWindow.ViewModel.GridIsActive));
-
-                await ViewModel.CreateMap(payload);
-            }
-
+            _popupPage.Open<MapCreation>("Kartenerstellung");
         }
 
         private async void OnEdit(object sender, RoutedEventArgs e)
         {
+            /*
             var button = (Button)sender;
             var item = (MapOverviewItemDto)button.DataContext;
 
@@ -77,6 +67,7 @@ namespace Client.Controls
                 {
                     MessageBoxUtility.Show(failure);
                 });
+            */
         }
     }
 }
