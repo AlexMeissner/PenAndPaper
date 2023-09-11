@@ -38,11 +38,11 @@ namespace Client.ViewModels
         public async Task Create()
         {
             var payload = new MapDto(
-                    Id: Id,
-                    CampaignId: CampaignId,
-                    Name: Name,
-                    ImageData: ImageData,
-                    Grid: new GridDto(GridSize, GridIsActive));
+                Id: Id,
+                CampaignId: CampaignId,
+                Name: Name,
+                ImageData: ImageData,
+                Grid: new GridDto(GridSize, GridIsActive));
 
             if (_isEdit)
             {
