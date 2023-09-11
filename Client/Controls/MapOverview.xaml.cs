@@ -1,6 +1,7 @@
 ﻿using Client.Pages;
 using Client.Services;
 using Client.ViewModels;
+using DataTransfer.Map;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -40,34 +41,18 @@ namespace Client.Controls
 
         private async void OnEdit(object sender, RoutedEventArgs e)
         {
-            /*
             var button = (Button)sender;
             var item = (MapOverviewItemDto)button.DataContext;
 
             var response = await ViewModel.GetMap(item);
 
             response.Match(
-                async success =>
+                success =>
                 {
-                    var mapCreationWindow = new MapCreationWindow(success);
-
-                    if (mapCreationWindow.ShowDialog() == true)
-                    {
-                        var payload = new MapDto(
-                            Id: mapCreationWindow.ViewModel.Id,
-                            CampaignId: mapCreationWindow.ViewModel.CampaignId,
-                            Name: mapCreationWindow.ViewModel.Name,
-                            ImageData: mapCreationWindow.ViewModel.ImageData,
-                            Grid: new GridDto(mapCreationWindow.ViewModel.GridSize, mapCreationWindow.ViewModel.GridIsActive));
-
-                        await ViewModel.UpdateMap(payload);
-                    }
+                    var page = _popupPage.Open<MapCreation>("Kartenerstellung");
+                    page.ViewModel.Load(success);
                 },
-                failure =>
-                {
-                    MessageBoxUtility.Show(failure);
-                });
-            */
+                failure => { });
         }
     }
 }

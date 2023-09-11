@@ -15,7 +15,7 @@ namespace Client.Services
         public Page? Content { get; }
         public Visibility Visibility { get; }
         public ICommand CloseCommand { get; }
-        public void Open<T>(string title) where T : Page;
+        public T Open<T>(string title) where T : Page;
     }
 
     [SingletonService]
@@ -69,7 +69,7 @@ namespace Client.Services
             CloseCommand = new RelayCommand(Close);
         }
 
-        public void Open<T>(string title) where T : Page
+        public T Open<T>(string title) where T : Page
         {
             if (Content?.GetType() != typeof(T))
             {
@@ -83,7 +83,11 @@ namespace Client.Services
                 {
                     disposable.Dispose();
                 }
+
+                return (T)Content;
             }
+
+            throw new ArgumentException("No Page of type {name} found", nameof(T));
         }
 
         private void Close()

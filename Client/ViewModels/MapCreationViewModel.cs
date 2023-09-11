@@ -12,6 +12,8 @@ namespace Client.ViewModels
     [TransistentService]
     public class MapCreationViewModel : BaseViewModel
     {
+        private bool _isEdit = false;
+
         private readonly IMapApi _mapApi;
         private readonly ISessionData _sessionData;
         private readonly IPopupPage _popupPage;
@@ -36,16 +38,35 @@ namespace Client.ViewModels
         public async Task Create()
         {
             var payload = new MapDto(
-                Id: Id,
-                CampaignId: CampaignId,
-                Name: Name,
-                ImageData: ImageData,
-                Grid: new GridDto(GridSize, GridIsActive));
+                    Id: Id,
+                    CampaignId: CampaignId,
+                    Name: Name,
+                    ImageData: ImageData,
+                    Grid: new GridDto(GridSize, GridIsActive));
 
-            // ToDo: is _sessionData.CampaignId required?
-            await _mapApi.PostAsync(payload with { CampaignId = _sessionData.CampaignId });
+            if (_isEdit)
+            {
+                await _mapApi.PutAsync(payload);
+            }
+            else
+            {
+                // ToDo: is _sessionData.CampaignId required?
+                await _mapApi.PostAsync(payload with { CampaignId = _sessionData.CampaignId });
+            }
 
             _popupPage.CloseCommand.Execute(null);
+        }
+
+        public void Load(MapDto map)
+        {
+            Id = map.Id;
+            CampaignId = map.CampaignId;
+            Name = map.Name;
+            ImageData = map.ImageData;
+            GridSize = map.Grid.Size;
+            GridIsActive = map.Grid.IsActive;
+
+            _isEdit = true;
         }
     }
 }
