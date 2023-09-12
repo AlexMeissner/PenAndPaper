@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2" FontSize="20" Text="{Binding ElementName=MapOverviewControl, Path=ViewModel.Filter}" TextChanged="OnTextChanged"/>
+            <TextBox Grid.Column="0" Margin="2" FontSize="20" Text="{Binding ElementName=MapOverviewControl, Path=ViewModel.Filter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnTextChanged"/>
             <Button Grid.Column="1" Margin="2" Content="Neue Karte" Click="OnCreateMap"/>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">

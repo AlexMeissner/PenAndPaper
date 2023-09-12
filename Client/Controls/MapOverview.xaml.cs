@@ -22,6 +22,9 @@ namespace Client.Controls
             _popupPage = popupPage;
 
             InitializeComponent();
+
+            var collectionView = (CollectionView)CollectionViewSource.GetDefaultView(OverviewItemsControl.ItemsSource);
+            collectionView.Filter = ViewModel.OnFilter;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
