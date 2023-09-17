@@ -2,6 +2,7 @@
 {
     public enum UpdateEntity
     {
+        Character,
         Map,
         MapCollection,
         Token,

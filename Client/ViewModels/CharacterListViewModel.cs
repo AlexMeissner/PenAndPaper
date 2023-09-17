@@ -3,6 +3,7 @@ using Client.Pages;
 using Client.Services;
 using Client.Services.API;
 using DataTransfer.Character;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -20,19 +21,26 @@ namespace Client.ViewModels
         public ICommand OpenCharacterCreationCommand { get; }
         public ObservableCollection<CharacterOverviewItem> Items { get; init; } = new();
 
-        public CharacterListViewModel(ICharacterApi characterApi, ISessionData sessionData, IPopupPage popupPage)
+        public CharacterListViewModel(ICharacterApi characterApi, ISessionData sessionData, IPopupPage popupPage, IUpdateNotifier campaignUpdates)
         {
             _characterApi = characterApi;
             _sessionData = sessionData;
             _popupPage = popupPage;
 
             OpenCharacterCreationCommand = new RelayCommand(OpenCharacterCreation);
+
+            campaignUpdates.CharacterChanged += OnCharacterChanged;
         }
 
         public async Task Load()
         {
             var response = await _characterApi.GetOverviewAsync(_sessionData.CampaignId);
             response.Match(characterList => Items.ReplaceWith(characterList.Items));
+        }
+
+        private async void OnCharacterChanged(object? sender, EventArgs e)
+        {
+            await Load();
         }
 
         private void OpenCharacterCreation()

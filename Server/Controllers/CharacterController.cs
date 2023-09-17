@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Character;
+using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server.Controllers
 {
@@ -10,10 +12,12 @@ namespace Server.Controllers
     public class CharacterController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly IUpdateNotifier _updateNotifier;
 
-        public CharacterController(SQLDatabase dbContext)
+        public CharacterController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
         {
             _dbContext = dbContext;
+            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]
@@ -65,7 +69,6 @@ namespace Server.Controllers
                     Charisma = payload.Charisma,
                     Image = payload.Image,
                 };
-
                 await _dbContext.Characters.AddAsync(character);
                 await _dbContext.SaveChangesAsync();
 
@@ -78,6 +81,7 @@ namespace Server.Controllers
                 await _dbContext.CharactersInCampaign.AddAsync(characterInCampaign);
                 await _dbContext.SaveChangesAsync();
 
+                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Character);
 
                 return CreatedAtAction(nameof(Get), character.Id);
             }

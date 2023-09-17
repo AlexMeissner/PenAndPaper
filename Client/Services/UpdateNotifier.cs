@@ -18,6 +18,7 @@ namespace Client.Services
         event EventHandler DiceRolled;
         event EventHandler AmbientSoundChanged;
         event EventHandler SoundEffectChanged;
+        event EventHandler CharacterChanged;
 
         Task SetCampaignAsync(int campaignId);
     }
@@ -31,6 +32,7 @@ namespace Client.Services
         public event EventHandler? DiceRolled;
         public event EventHandler? AmbientSoundChanged;
         public event EventHandler? SoundEffectChanged;
+        public event EventHandler? CharacterChanged;
 
         private readonly ClientWebSocket _webSocket = new();
         private readonly IEndPointProvider _endPointProvider;
@@ -111,6 +113,9 @@ namespace Client.Services
                     break;
                 case UpdateEntity.SoundEffect:
                     SoundEffectChanged?.Invoke(this, EventArgs.Empty);
+                    break;
+                case UpdateEntity.Character:
+                    CharacterChanged?.Invoke(this, EventArgs.Empty);
                     break;
             }
         }
