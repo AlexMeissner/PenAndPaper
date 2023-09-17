@@ -1,4 +1,5 @@
-﻿using Client.ViewModels;
+﻿using Client.Services;
+using Client.ViewModels;
 using System.Windows.Controls;
 using static Client.Services.ServiceExtension;
 
@@ -7,11 +8,11 @@ namespace Client.Pages
     [TransistentService]
     public partial class CharacterCreation : Page
     {
-        public CharacterCreationViewModel ViewModel => (CharacterCreationViewModel)DataContext;
+        public CharacterCreationViewModel ViewModel { get; }
 
-        public CharacterCreation()
+        public CharacterCreation(IViewModelProvider viewModelProvider)
         {
-            DataContext = new CharacterCreationViewModel();
+            ViewModel = viewModelProvider.Get<CharacterCreationViewModel>();
             InitializeComponent();
         }
     }

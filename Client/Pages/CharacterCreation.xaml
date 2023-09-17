@@ -140,6 +140,12 @@
         </TabItem>
         <TabItem Header="Eigenschaften">
             <StackPanel Width="400" VerticalAlignment="Center">
+                <Button Width="150" Height="150" Margin="0,0,0,50" BorderThickness="2" BorderBrush="Black" Background="Transparent" Command="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.ImageCommand}">
+                    <Grid>
+                        <Image Panel.ZIndex="2" Source="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Image}" Stretch="UniformToFill"/>
+                        <TextBlock Text="Charakterbild" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Button>
                 <TextBlock Text="Name"/>
                 <TextBox Margin="0,0,0,20" Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Name}"/>
                 <TextBlock Text="Stärke"/>

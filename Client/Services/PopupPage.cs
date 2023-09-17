@@ -15,6 +15,7 @@ namespace Client.Services
         public Page? Content { get; }
         public Visibility Visibility { get; }
         public ICommand CloseCommand { get; }
+        public void Close();
         public T Open<T>(string title) where T : Page;
     }
 
@@ -90,7 +91,7 @@ namespace Client.Services
             throw new ArgumentException("No Page of type {name} found", nameof(T));
         }
 
-        private void Close()
+        public void Close()
         {
             Visibility = Visibility.Collapsed;
             Content = null;

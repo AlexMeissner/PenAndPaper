@@ -54,7 +54,7 @@ namespace Client.ViewModels
                 await _mapApi.PostAsync(payload with { CampaignId = _sessionData.CampaignId });
             }
 
-            _popupPage.CloseCommand.Execute(null);
+            _popupPage.Close();
         }
 
         public void Load(MapDto map)

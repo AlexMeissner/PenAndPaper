@@ -1,15 +1,24 @@
 ﻿using Client.Commands;
+using Client.Converter;
+using Client.Services;
+using Client.Services.API;
+using DataTransfer.Character;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using static Client.Services.ServiceExtension;
 
 namespace Client.ViewModels
 {
     public class ClassPreview
     {
+        public Class Class { get; }
         public BitmapImage Icon { get; set; }
         public BitmapImage Artwork { get; set; }
         public string Name { get; set; }
@@ -20,6 +29,7 @@ namespace Client.ViewModels
         public string WeaponProficiencies { get; set; }
 
         public ClassPreview(
+            Class dndClass,
             string name,
             string resourceName,
             string description,
@@ -28,6 +38,7 @@ namespace Client.ViewModels
             string armorProficiencies,
             string weaponProficiencies)
         {
+            Class = dndClass;
             Icon = LoadIcon(resourceName);
             Artwork = LoadArtwork(resourceName);
             Name = name;
@@ -73,12 +84,14 @@ namespace Client.ViewModels
 
     public class RacePreview
     {
+        public Race Race { get; }
         public BitmapImage Artwork { get; set; }
         public string Name { get; set; }
         public ObservableCollection<string> Traits { get; set; }
 
-        public RacePreview(string name, string resourceName, IList<string> traits)
+        public RacePreview(Race race, string name, string resourceName, IList<string> traits)
         {
+            Race = race;
             Artwork = LoadArtwork(resourceName);
             Name = name;
             Traits = new(traits);
@@ -114,23 +127,50 @@ namespace Client.ViewModels
         }
     }
 
-    public class CharacterDetails
+    public class CharacterDetails : BaseViewModel
     {
         public string Name { get; set; } = string.Empty;
+        public BitmapImage? Image { get; set; }
         public int Strength { get; set; }
         public int Dexterity { get; set; }
         public int Constitution { get; set; }
         public int Intelligence { get; set; }
         public int Wisdom { get; set; }
         public int Charisma { get; set; }
+
+        public ICommand ImageCommand { get; }
+
+        public CharacterDetails()
+        {
+            ImageCommand = new RelayCommand(LoadImage);
+        }
+
+        private void LoadImage()
+        {
+            var fileDialog = new OpenFileDialog()
+            {
+                Filter = "Bilder (*.png;*.jpeg)|*.png;*.jpeg"
+            };
+
+            if (fileDialog.ShowDialog() == true)
+            {
+                Image = new BitmapImage(new Uri(fileDialog.FileName));
+            }
+        }
     }
 
+    [TransistentService]
     public class CharacterCreationViewModel : BaseViewModel
     {
+        private readonly ICharacterApi _characterApi;
+        private readonly ISessionData _sessionData;
+        private readonly IPopupPage _popupPage;
+
         public ClassPreview? SelectedClass { get; set; }
         public ObservableCollection<ClassPreview> Classes { get; set; } = new()
         {
-            new("Barbar",
+            new(Class.Barbarian,
+                "Barbar",
                 "barbarian",
                 "Ein wilder Krieger, der in einen Kampfrausch verfallen kann",
                 "Stärke",
@@ -138,7 +178,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen, mittelschwere Rüstungen, Schilde",
                 "einfache Waffen, Kriegswaffen"),
 
-            new("Barde",
+            new(Class.Bard,
+                "Barde",
                 "bard",
                 "Ein inspirierender Zauberer, dessen Kraft in seiner Musik wiederhallt",
                 "Charisma",
@@ -146,7 +187,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen",
                 "einfache Waffen, Handarmbrüste, Langschwerter, Rapiere, Kurzschwerter"),
 
-            new("Kleriker",
+            new(Class.Cleric,
+                "Kleriker",
                 "cleric",
                 "Ein priesterlicher Champion, der göttliche Magie im Dienste einer höheren Macht einsetzt",
                 "Weisheit",
@@ -154,7 +196,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen, mittelschwere Rüstungen, Schilde",
                 "einfache Waffen"),
 
-            new("Druide",
+            new(Class.Druid,
+                "Druide",
                 "druid",
                 "Ein Priester des alten Glaubens, der die Kräfte der Natur nutzt und Tierformen annimmt",
                 "Weisheit",
@@ -162,7 +205,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen, mittelschwere Rüstungen, Schilde",
                 "Knüppel, Dolche, Wurfpfeile, Wurfspeere, Streitkolben, Kampfstäbe, Krummsäbel, Sichel, Schleuder, Speere"),
 
-            new("Kämpfer",
+            new(Class.Fighter,
+                "Kämpfer",
                 "fighter",
                 "Ein Meister des Kampfes, geübt im Umgang mit einer Vielzahl von Waffen und Rüstungen",
                 "Stärke oder Geschicklichkeit",
@@ -170,7 +214,8 @@ namespace Client.ViewModels
                 "alle Rüstungen, Schilde",
                 "einfache Waffen, Kriegswaffen"),
 
-            new("Mönch",
+            new(Class.Monk,
+                "Mönch",
                 "monk",
                 "Ein Meister der Kampfkünste, der die Kraft des Körpers nutzt, um körperliche und spirituelle Perfektion zu erreichen",
                 "Geschicklichkeit & Weisheit",
@@ -178,7 +223,8 @@ namespace Client.ViewModels
                 "keine",
                 "einfache Waffen, Kurzschwerter"),
 
-            new("Paladin",
+            new(Class.Paladin,
+                "Paladin",
                 "paladin",
                 "Ein heiliger Krieger, der an einen heiligen Eid gebunden ist",
                 "Stärke & Charisma",
@@ -186,7 +232,8 @@ namespace Client.ViewModels
                 "alle Rüstungen, Schilde",
                 "einfache Waffen, Kriegswaffen"),
 
-            new("Waldläufer",
+            new(Class.Ranger,
+                "Waldläufer",
                 "ranger",
                 "Ein Krieger, der Bedrohungen am Rande der Zivilisation bekämpft",
                 "Geschicklichkeit & Weisheit",
@@ -194,7 +241,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen, mittelschwere Rüstungen, Schilde",
                 "einfache Waffen, Kriegswaffen"),
 
-            new("Schurke",
+            new(Class.Rogue,
+                "Schurke",
                 "rogue",
                 "Ein Schurke, der mithilfe von Heimlichkeit und List Hindernisse und Feinde überwindet",
                 "Geschicklichkeit",
@@ -202,7 +250,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen",
                 "einfache Waffen, Handarmbrüste, Langschwerter, Rapiere, Kurzschwerter"),
 
-            new("Zauberer",
+            new(Class.Sorcerer,
+                "Zauberer",
                 "sorcerer",
                 "Ein Zauberer, der die innewohnende Magie einer Gabe oder Blutlinie nutzt",
                 "Charisma",
@@ -210,7 +259,8 @@ namespace Client.ViewModels
                 "keine",
                 "Dolche, Wurfpfeile, Schleudern, Kampfstäbe, leichte Armbrüste"),
 
-            new("Hexenmeister",
+            new(Class.Warlock,
+                "Hexenmeister",
                 "warlock",
                 "Ein Träger von Magie, der aus einem Geschäft mit einem außerplanaren Wesen resultiert",
                 "Charisma",
@@ -218,7 +268,8 @@ namespace Client.ViewModels
                 "leichte Rüstungen",
                 "einfache Waffen"),
 
-            new("Magier",
+            new(Class.Wizard,
+                "Magier",
                 "wizard",
                 "Ein gelehrter Magieanwender, der in der Lage ist, die Strukturen der Realität zu manipulieren",
                 "Intelligenz",
@@ -230,32 +281,69 @@ namespace Client.ViewModels
         public RacePreview? SelectedRace { get; set; }
         public ObservableCollection<RacePreview> Races { get; set; } = new()
         {
-            new("Elf (Waldelfen)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Weisheit", "Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Elfische Waffenvertrautheit", "Flinkheit", "Deckmantel der Wildnis" }),
-            new("Elf (Drow)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Charisma", "Überlegene Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Empfindlichkeit gegenüber Sonnenlicht", "Drow Magie", "Drow Waffenvertrautheit" }),
-            new("Halblinge", "halfling", new[]{ "+2 Geschicklichkeit", "Halblingsglück", "Tapferkeit", "Halblingsgewandheit", "+1 Charisma & Angeborene Verstohlenheit oder +1 Konstitution & Unempfindlichkeit" }),
-            new("Menschen", "human", new[]{ "+1 alle Attribute", "Zusätzliche Sprache" }),
-            new("Zwerge (Gebirgszwerg)", "dwarf", new[]{ "+2 Konstitution", "+2 Stärke", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Rüstungsvertrautheit", "Handwerkliches Geschick", "Steingespür" }),
-            new("Zwerge (Hügelzwerge)", "dwarf", new[]{ "+2 Konstitution", "+1 Weisheit", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Zähigkeit", "Handwerkliches Geschick", "Steingespür" }),
-            new("Drachenblütige", "dragonborn", new[]{ "+2 Stärke", "+1 Charisma", "Drakonische Abstammung", "Odemwaffe", "Schadensresistenz" }),
-            new("Gnome (Felsgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Konstitution", "Dunkelsicht", "Gnomische Gerissenheit", "Artefaktkunde", "Tüftler" }),
-            new("Gnome (Waldgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Geschicklichkeit", "Dunkelsicht", "Gnomische Gerissenheit", "Geborene Illusionisten", "Tierflüsterer" }),
-            new("Halbelfen", "halfElf", new[]{ "+2 Charisma", "+1 beliebiges Attribut (x2)", "Dunkelsicht", "Feenblut", "Vielseitigkeit" }),
-            new("Halborks", "halfOrc", new[]{ "+2 Stärke", "+1 Konstitution", "Dunkelsicht", "Bedrohlich", "Durchhaltevermögen", "Wilde Angriffe" }),
-            new("Tieflinge", "tiefling", new[]{ "+2 Charisma", "+1 Intelligenz", "Dunkelsicht", "Höllische Resistenz", "Infernalisches Erbe" })
+            new(Race.Elf, "Elf (Waldelfen)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Weisheit", "Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Elfische Waffenvertrautheit", "Flinkheit", "Deckmantel der Wildnis" }),
+            new(Race.Elf, "Elf (Drow)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Charisma", "Überlegene Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Empfindlichkeit gegenüber Sonnenlicht", "Drow Magie", "Drow Waffenvertrautheit" }),
+            new(Race.Halfling, "Halblinge", "halfling", new[]{ "+2 Geschicklichkeit", "Halblingsglück", "Tapferkeit", "Halblingsgewandheit", "+1 Charisma & Angeborene Verstohlenheit oder +1 Konstitution & Unempfindlichkeit" }),
+            new(Race.Human, "Menschen", "human", new[]{ "+1 alle Attribute", "Zusätzliche Sprache" }),
+            new(Race.Dwarf, "Zwerge (Gebirgszwerg)", "dwarf", new[]{ "+2 Konstitution", "+2 Stärke", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Rüstungsvertrautheit", "Handwerkliches Geschick", "Steingespür" }),
+            new(Race.Dwarf, "Zwerge (Hügelzwerge)", "dwarf", new[]{ "+2 Konstitution", "+1 Weisheit", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Zähigkeit", "Handwerkliches Geschick", "Steingespür" }),
+            new(Race.Dragonborn, "Drachenblütige", "dragonborn", new[]{ "+2 Stärke", "+1 Charisma", "Drakonische Abstammung", "Odemwaffe", "Schadensresistenz" }),
+            new(Race.Gnome, "Gnome (Felsgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Konstitution", "Dunkelsicht", "Gnomische Gerissenheit", "Artefaktkunde", "Tüftler" }),
+            new(Race.Gnome, "Gnome (Waldgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Geschicklichkeit", "Dunkelsicht", "Gnomische Gerissenheit", "Geborene Illusionisten", "Tierflüsterer" }),
+            new(Race.HalfElf, "Halbelfen", "halfElf", new[]{ "+2 Charisma", "+1 beliebiges Attribut (x2)", "Dunkelsicht", "Feenblut", "Vielseitigkeit" }),
+            new(Race.HalfOrc, "Halborks", "halfOrc", new[]{ "+2 Stärke", "+1 Konstitution", "Dunkelsicht", "Bedrohlich", "Durchhaltevermögen", "Wilde Angriffe" }),
+            new(Race.Tiefling, "Tieflinge", "tiefling", new[]{ "+2 Charisma", "+1 Intelligenz", "Dunkelsicht", "Höllische Resistenz", "Infernalisches Erbe" })
         };
 
         public CharacterDetails Details { get; set; } = new();
 
         public ICommand CreateCommand { get; set; }
 
-        public CharacterCreationViewModel()
+        public CharacterCreationViewModel(ICharacterApi characterApi, ISessionData sessionData, IPopupPage popupPage)
         {
-            CreateCommand = new RelayCommand(CreateCharacter);
+            _characterApi = characterApi;
+            _sessionData = sessionData;
+            _popupPage = popupPage;
+            CreateCommand = new AsyncCommand(CreateCharacter);
         }
 
-        private void CreateCharacter()
+        private async Task CreateCharacter()
         {
+            if (SelectedClass is null)
+            {
+                System.Windows.MessageBox.Show("Es wurde keine Klasse ausgewählt", "Eingabe unvollständig", MessageBoxButton.OK);
+                return;
+            }
+            if (SelectedRace is null)
+            {
+                MessageBox.Show("Es wurde keine Rasse ausgewählt", "Eingabe unvollständig", MessageBoxButton.OK);
+                return;
+            }
+            if (Details.Name.Length == 0 || Details.Image is null)
+            {
+                MessageBox.Show("Die Charactereigenschaften sind unvollständig", "Eingabe unvollständig", MessageBoxButton.OK);
+                return;
+            }
 
+            var imageData = new ByteArrayToBitmapImageConverter().ConvertBack(Details.Image);
+
+            var payload = new CharacterCreationDto(
+                CampaignId: _sessionData.CampaignId,
+                UserId: _sessionData.UserId,
+                Name: Details.Name,
+                Class: SelectedClass.Class,
+                Race: SelectedRace.Race,
+                Image: imageData,
+                Strength: Details.Strength,
+                Dexterity: Details.Dexterity,
+                Constitution: Details.Constitution,
+                Intelligence: Details.Intelligence,
+                Wisdom: Details.Wisdom,
+                Charisma: Details.Charisma);
+
+            await _characterApi.PostAsync(payload);
+
+            _popupPage.Close();
         }
     }
 }

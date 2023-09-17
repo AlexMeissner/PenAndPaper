@@ -25,7 +25,9 @@ namespace Client.Controls
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && sender is ListView listView)
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                sender is ListView listView &&
+                listView.SelectedItem is not null)
             {
                 DragDrop.DoDragDrop(this, listView.SelectedItem, DragDropEffects.Copy);
             }
