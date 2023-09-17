@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Client.Commands;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace Client.ViewModels
@@ -68,8 +71,63 @@ namespace Client.ViewModels
         }
     }
 
+    public class RacePreview
+    {
+        public BitmapImage Artwork { get; set; }
+        public string Name { get; set; }
+        public ObservableCollection<string> Traits { get; set; }
+
+        public RacePreview(string name, string resourceName, IList<string> traits)
+        {
+            Artwork = LoadArtwork(resourceName);
+            Name = name;
+            Traits = new(traits);
+        }
+
+        // ToDo: Duplicate
+        private static BitmapImage LoadArtwork(string name)
+        {
+            return LoadResource($"Client.Resources.Images.Artworks.{name}.png");
+        }
+
+        // ToDo: Duplicate
+        private static BitmapImage LoadResource(string path)
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            using var resourceStream = assembly.GetManifestResourceStream(path);
+
+            if (resourceStream != null)
+            {
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = resourceStream;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+                return bitmapImage;
+            }
+            else
+            {
+                throw new Exception($"Resource {path} not found.");
+            }
+        }
+    }
+
+    public class CharacterDetails
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Strength { get; set; }
+        public int Dexterity { get; set; }
+        public int Constitution { get; set; }
+        public int Intelligence { get; set; }
+        public int Wisdom { get; set; }
+        public int Charisma { get; set; }
+    }
+
     public class CharacterCreationViewModel : BaseViewModel
     {
+        public ClassPreview? SelectedClass { get; set; }
         public ObservableCollection<ClassPreview> Classes { get; set; } = new()
         {
             new("Barbar",
@@ -168,5 +226,36 @@ namespace Client.ViewModels
                 "keine",
                 "Dolche, Wurfpfeile, Schleudern, Kampfstäbe, leichte Armbrüste"),
         };
+
+        public RacePreview? SelectedRace { get; set; }
+        public ObservableCollection<RacePreview> Races { get; set; } = new()
+        {
+            new("Elf (Waldelfen)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Weisheit", "Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Elfische Waffenvertrautheit", "Flinkheit", "Deckmantel der Wildnis" }),
+            new("Elf (Drow)", "elf", new[]{ "+2 Geschicklichkeit", "+1 Charisma", "Überlegene Dunkelsicht", "Geschärfte Sinne", "Feenblut", "Trance", "Empfindlichkeit gegenüber Sonnenlicht", "Drow Magie", "Drow Waffenvertrautheit" }),
+            new("Halblinge", "halfling", new[]{ "+2 Geschicklichkeit", "Halblingsglück", "Tapferkeit", "Halblingsgewandheit", "+1 Charisma & Angeborene Verstohlenheit oder +1 Konstitution & Unempfindlichkeit" }),
+            new("Menschen", "human", new[]{ "+1 alle Attribute", "Zusätzliche Sprache" }),
+            new("Zwerge (Gebirgszwerg)", "dwarf", new[]{ "+2 Konstitution", "+2 Stärke", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Rüstungsvertrautheit", "Handwerkliches Geschick", "Steingespür" }),
+            new("Zwerge (Hügelzwerge)", "dwarf", new[]{ "+2 Konstitution", "+1 Weisheit", "Dunkelsicht", "Zwergische Unverwüstlichkeit", "Zwergisches Kampftraining", "Zwergische Zähigkeit", "Handwerkliches Geschick", "Steingespür" }),
+            new("Drachenblütige", "dragonborn", new[]{ "+2 Stärke", "+1 Charisma", "Drakonische Abstammung", "Odemwaffe", "Schadensresistenz" }),
+            new("Gnome (Felsgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Konstitution", "Dunkelsicht", "Gnomische Gerissenheit", "Artefaktkunde", "Tüftler" }),
+            new("Gnome (Waldgnome)", "gnome", new[]{ "+2 Intelligenz", "+1 Geschicklichkeit", "Dunkelsicht", "Gnomische Gerissenheit", "Geborene Illusionisten", "Tierflüsterer" }),
+            new("Halbelfen", "halfElf", new[]{ "+2 Charisma", "+1 beliebiges Attribut (x2)", "Dunkelsicht", "Feenblut", "Vielseitigkeit" }),
+            new("Halborks", "halfOrc", new[]{ "+2 Stärke", "+1 Konstitution", "Dunkelsicht", "Bedrohlich", "Durchhaltevermögen", "Wilde Angriffe" }),
+            new("Tieflinge", "tiefling", new[]{ "+2 Charisma", "+1 Intelligenz", "Dunkelsicht", "Höllische Resistenz", "Infernalisches Erbe" })
+        };
+
+        public CharacterDetails Details { get; set; } = new();
+
+        public ICommand CreateCommand { get; set; }
+
+        public CharacterCreationViewModel()
+        {
+            CreateCommand = new RelayCommand(CreateCharacter);
+        }
+
+        private void CreateCharacter()
+        {
+
+        }
     }
 }

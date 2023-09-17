@@ -11,94 +11,151 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CharacterCreation">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <ListBox Background="#222" Grid.Row="1" ItemsSource="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Classes}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="2"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Width="300" Height="400" BorderThickness="1" BorderBrush="OrangeRed">
-                        <Border.Background>
-                            <ImageBrush ImageSource="{Binding Artwork}" Stretch="Fill"/>
-                        </Border.Background>
-                        <Grid Background="#55000000" Width="300" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Image Width="50" Height="50" Source="{Binding Icon}"/>
-                                <TextBlock Grid.Column="1" Margin="10,0,0,0" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Text="{Binding Name}"/>
-                            </Grid>
-
-                            <TextBlock Grid.Row="1" Margin="5" TextWrapping="WrapWithOverflow" FontStyle="Italic" Text="{Binding Description}"/>                            
-
-                            <Grid Grid.Row="2" Margin="5">
+    <TabControl>
+        <TabItem Header="Klasse">
+            <ListBox Background="#222" SelectedItem="{Binding ElementName=CharacterCreationPage, Path=ViewModel.SelectedClass}" ItemsSource="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Classes}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,5,0,5" Width="340" Height="360" BorderThickness="1" BorderBrush="OrangeRed">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding Artwork}" Stretch="Fill"/>
+                            </Border.Background>
+                            <Grid Background="#55000000" Width="300" Height="300" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" FontWeight="Bold" Text="Trefferwürfel:"/>
-                                <TextBlock Grid.Row="1" Text="{Binding HitDice}" TextWrapping="WrapWithOverflow"/>
-                            </Grid>
 
-                            <Grid Grid.Row="3" Margin="5">
+                                <Grid Grid.Row="0" Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Width="50" Height="50" Source="{Binding Icon}"/>
+                                    <TextBlock Grid.Column="1" Margin="10,0,0,0" FontWeight="Bold" FontSize="20" VerticalAlignment="Center" Text="{Binding Name}"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="1" Margin="5" TextWrapping="WrapWithOverflow" FontStyle="Italic" Text="{Binding Description}"/>
+
+                                <Grid Grid.Row="2" Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" FontWeight="Bold" Text="Trefferwürfel:"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding HitDice}" TextWrapping="WrapWithOverflow"/>
+                                </Grid>
+
+                                <Grid Grid.Row="3" Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" FontWeight="Bold" Text="Primäres Attribut:"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding PrimaryAbility}" TextWrapping="WrapWithOverflow"/>
+                                </Grid>
+
+                                <Grid Grid.Row="4" Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" FontWeight="Bold" Text="Waffen-Übungsbonus:"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding WeaponProficiencies}" TextWrapping="WrapWithOverflow"/>
+                                </Grid>
+
+                                <Grid Grid.Row="5" Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" FontWeight="Bold" Text="Rüstung-Übungsbonus:"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding ArmorProficiencies}" TextWrapping="WrapWithOverflow"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </TabItem>
+        <TabItem Header="Rasse">
+            <ListBox Background="#222" SelectedItem="{Binding ElementName=CharacterCreationPage, Path=ViewModel.SelectedRace}" ItemsSource="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Races}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,5,0,5" Width="340" Height="360" BorderThickness="1" BorderBrush="OrangeRed">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding Artwork}" Stretch="Fill"/>
+                            </Border.Background>
+                            <Grid Background="#55000000" Width="300" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" FontWeight="Bold" Text="Primäres Attribut:"/>
-                                <TextBlock Grid.Row="1" Text="{Binding PrimaryAbility}" TextWrapping="WrapWithOverflow"/>
-                            </Grid>
-
-                            <Grid Grid.Row="4" Margin="5">
-                                <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" FontWeight="Bold" Text="Waffen-Übungsbonus:"/>
-                                <TextBlock Grid.Row="1" Text="{Binding WeaponProficiencies}" TextWrapping="WrapWithOverflow"/>
+                                <TextBlock Grid.Row="0" Margin="5" FontWeight="Bold" FontSize="20" Text="{Binding Name}"/>
+                                <ItemsControl Grid.Row="1" Margin="5" ItemsSource="{Binding Traits}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="•" Margin="0,0,5,0"/>
+                                                <TextBlock Text="{Binding .}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
-
-                            <Grid Grid.Row="5" Margin="5">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" FontWeight="Bold" Text="Rüstung-Übungsbonus:"/>
-                                <TextBlock Grid.Row="1" Text="{Binding ArmorProficiencies}" TextWrapping="WrapWithOverflow"/>
-                            </Grid>
-                        </Grid>
-                    </Border>                    
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </TabItem>
+        <TabItem Header="Eigenschaften">
+            <StackPanel Width="400" VerticalAlignment="Center">
+                <TextBlock Text="Name"/>
+                <TextBox Margin="0,0,0,20" Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Name}"/>
+                <TextBlock Text="Stärke"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Strength}"/>
+                <TextBlock Text="Geschicklichkeit"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Dexterity}"/>
+                <TextBlock Text="Konstitution"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Constitution}"/>
+                <TextBlock Text="Intelligenz"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Intelligence}"/>
+                <TextBlock Text="Weisheit"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Wisdom}"/>
+                <TextBlock Text="Charisma"/>
+                <TextBox Text="{Binding ElementName=CharacterCreationPage, Path=ViewModel.Details.Charisma}"/>
+                <Button Margin="0,50,0,0" Height="50" Content="Erstellen" Command="{Binding ElementName=CharacterCreationPage, Path=ViewModel.CreateCommand}"/>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </Page>

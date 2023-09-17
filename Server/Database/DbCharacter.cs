@@ -1,35 +1,7 @@
-﻿namespace Server.Database
+﻿using DataTransfer.Character;
+
+namespace Server.Database
 {
-    public enum Class
-    {
-        // Always add new elements at the end
-        Barbarian,
-        Bard,
-        Druid,
-        Warlock,
-        Fighter,
-        Cleric,
-        Sorcerer,
-        Monk,
-        Paladin,
-        Rogue,
-        Ranger,
-        Wizard,
-    }
-
-    public enum Race
-    {
-        // Always add new elements at the end
-        Halfling,
-        Human,
-        Dwarf,
-        Dragonborn,
-        Gnome,
-        HalfElf,
-        HalfOrc,
-        Tiefling,
-    }
-
     public class DbCharacter
     {
         public int Id { get; set; }
