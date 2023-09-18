@@ -102,18 +102,16 @@ namespace Server.Controllers
             {
                 var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
 
-                var activeElement = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.MapId == mapId);
-
                 _dbContext.Maps.Remove(map);
 
-                if (activeElement.MapId == mapId)
+                if (await _dbContext.ActiveCampaignElements.FirstOrDefaultAsync(x => x.MapId == mapId) is DbActiveCampaignElements activeElement)
                 {
                     activeElement.MapId = -1;
                 }
 
                 await _dbContext.SaveChangesAsync();
 
-                await _updateNotifier.Send(activeElement.CampaignId, UpdateEntity.MapCollection);
+                await _updateNotifier.Send(map.CampaignId, UpdateEntity.MapCollection);
 
                 return Ok();
             }
