@@ -1,8 +1,10 @@
 ﻿using DataTransfer.Campaign;
+using DataTransfer.Dice;
 using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using System.Text.Json;
 
 namespace Server.Controllers
 {
@@ -79,12 +81,18 @@ namespace Server.Controllers
                     IsGamemaster = true
                 });
 
-                _dbContext.ActiveCampaignElements.Add(new()
+                await _dbContext.ActiveCampaignElements.AddAsync(new()
                 {
                     CampaignId = dbCampaign.Id,
                     MapId = -1,
                     AmbientId = -1,
                     EffectId = -1,
+                });
+
+                await _dbContext.DiceRolls.AddAsync(new()
+                {
+                    CampaignId = dbCampaign.Id,
+                    Roll = JsonSerializer.Serialize(new DiceRollResultDto(string.Empty, Array.Empty<bool>()))
                 });
 
                 foreach (var user in payload.UsersInCampaign)

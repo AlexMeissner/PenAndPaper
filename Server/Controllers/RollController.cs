@@ -62,8 +62,6 @@ namespace Server.Controllers
                 var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == payload.CampaignId);
                 diceRoll.Roll = JsonSerializer.Serialize(diceRollResult);
 
-                // TODO: Fill default entry on campaign creation
-
                 await _dbContext.SaveChangesAsync();
 
                 await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Dice);
