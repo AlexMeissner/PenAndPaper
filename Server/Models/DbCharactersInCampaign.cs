@@ -1,4 +1,4 @@
-﻿namespace Server.Database
+﻿namespace Server.Models
 {
     public class DbCharactersInCampaign
     {

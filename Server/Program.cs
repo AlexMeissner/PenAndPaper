@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Server.Database;
+using Server.Models;
 using Server.Middleware;
 using Server.Services;
 
