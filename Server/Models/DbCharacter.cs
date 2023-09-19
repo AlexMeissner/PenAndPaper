@@ -5,7 +5,7 @@ namespace Server.Models
     public class DbCharacter
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
         public Race Race { get; set; }
         public Class Class { get; set; }
         public int ExperiencePoints { get; set; }
@@ -15,6 +15,6 @@ namespace Server.Models
         public int Intelligence { get; set; }
         public int Wisdom { get; set; }
         public int Charisma { get; set; }
-        public byte[] Image { get; set; }
+        public byte[] Image { get; set; } = default!;
     }
 }
