@@ -1,6 +1,5 @@
 ﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
-using Server.Services;
 using Server.Services.BusinessLogic;
 
 namespace Server.Controllers
@@ -10,12 +9,10 @@ namespace Server.Controllers
     public class ActiveMapController : ControllerBase
     {
         private readonly ICampaign _campaign;
-        private readonly IUpdateNotifier _updateNotifier;
 
-        public ActiveMapController(ICampaign campaign, IUpdateNotifier updateNotifier)
+        public ActiveMapController(ICampaign campaign)
         {
             _campaign = campaign;
-            _updateNotifier = updateNotifier;
         }
 
         [HttpGet]

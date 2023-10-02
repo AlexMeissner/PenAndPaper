@@ -68,13 +68,12 @@ namespace Client.ViewModels
             {
                 PlaylistIndex = (PlaylistIndex + 1) % Playlist.Count;
 
-                var payload = new ActiveSoundDto(
+                var payload = new ActiveAmbientSoundDto(
                     CampaignId: _sessionData.CampaignId,
-                    AmbientId: Playlist[PlaylistIndex].Id,
-                    EffectId: null
+                    AmbientId: Playlist[PlaylistIndex].Id
                 );
 
-                await _activeSoundApi.PutAsync(payload);
+                await _activeSoundApi.PutAmbientSoundAsync(payload);
             }
         }
 
@@ -82,35 +81,32 @@ namespace Client.ViewModels
         {
             Playlist.Clear();
 
-            var payload = new ActiveSoundDto(
+            var payload = new ActiveAmbientSoundDto(
                 CampaignId: _sessionData.CampaignId,
-                AmbientId: sound.Id,
-                EffectId: null
+                AmbientId: sound.Id
             );
 
-            await _activeSoundApi.PutAsync(payload);
+            await _activeSoundApi.PutAmbientSoundAsync(payload);
         }
 
         private async Task OnPlayEffect(SoundOverviewItemDto sound)
         {
-            var payload = new ActiveSoundDto(
+            var payload = new ActiveSoundEffectDto(
                 CampaignId: _sessionData.CampaignId,
-                AmbientId: null,
                 EffectId: sound.Id
             );
 
-            await _activeSoundApi.PutAsync(payload);
+            await _activeSoundApi.PutSoundEffectAsync(payload);
         }
 
         private async Task OnStopAmbient()
         {
-            var payload = new ActiveSoundDto(
+            var payload = new ActiveAmbientSoundDto(
                 CampaignId: _sessionData.CampaignId,
-                AmbientId: -1,
-                EffectId: null
+                AmbientId: -1
             );
 
-            await _activeSoundApi.PutAsync(payload);
+            await _activeSoundApi.PutAmbientSoundAsync(payload);
         }
 
         public async Task LoadOverview()
@@ -181,14 +177,13 @@ namespace Client.ViewModels
             var random = new Random();
             Playlist = filteredAmbientSounds.Select(x => new { key = random.Next(), x }).OrderBy(y => y.key).Select(z => z.x).ToList();
 
-            var payload = new ActiveSoundDto(
+            var payload = new ActiveAmbientSoundDto(
 
                 CampaignId: _sessionData.CampaignId,
-                AmbientId: Playlist[PlaylistIndex].Id,
-                EffectId: null
+                AmbientId: Playlist[PlaylistIndex].Id
             );
 
-            await _activeSoundApi.PutAsync(payload);
+            await _activeSoundApi.PutAmbientSoundAsync(payload);
         }
     }
 }

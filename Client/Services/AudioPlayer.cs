@@ -103,20 +103,18 @@ namespace Client.Services
 
         private async void OnAmbientSoundChanged(object? sender, EventArgs e)
         {
-            var activeSoundResponse = await _activeSoundApi.GetAsync(_sessionData.CampaignId);
+            var activeSoundResponse = await _activeSoundApi.GetAmbientSoundAsync(_sessionData.CampaignId);
 
             activeSoundResponse.Match(
                 async success =>
                 {
-                    var id = success.AmbientId;
-
-                    if (id is null || id == -1)
+                    if (success.AmbientId == -1)
                     {
                         Stop();
                         return;
                     }
 
-                    var soundResponse = await _soundApi.GetAsync((int)id);
+                    var soundResponse = await _soundApi.GetAsync(success.AmbientId);
 
                     soundResponse.Match(
                         async s =>
@@ -126,7 +124,7 @@ namespace Client.Services
                             if (!_cache.Contains(CacheType.AmbientSound, filename) ||
                                 Checksum.CreateHash(await _cache.GetData(CacheType.AmbientSound, filename)) != s.Checksum)
                             {
-                                var soundDataResponse = await _soundApi.GetDataAsync((int)id);
+                                var soundDataResponse = await _soundApi.GetDataAsync(success.AmbientId);
                                 soundDataResponse.Match(async x => await _cache.Add(CacheType.AmbientSound, filename, x.Data));
                             }
 
@@ -139,16 +137,14 @@ namespace Client.Services
 
         private async void OnSoundEffectChanged(object? sender, EventArgs e)
         {
-            var response = await _activeSoundApi.GetAsync(_sessionData.CampaignId);
+            var response = await _activeSoundApi.GetSoundEffectAsync(_sessionData.CampaignId);
 
             response.Match(
                 success =>
                 {
-                    var id = success.EffectId;
-
-                    if (id is int effectId && effectId != -1)
+                    if (success.EffectId != -1)
                     {
-                        Play(effectId);
+                        Play(success.EffectId);
                     }
                 },
                 failure => { });

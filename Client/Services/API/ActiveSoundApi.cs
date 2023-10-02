@@ -6,28 +6,42 @@ namespace Client.Services.API
 {
     public interface IActiveSoundApi
     {
-        public Task<HttpResponse<ActiveSoundDto>> GetAsync(int campaignId);
-        public Task<HttpResponse> PutAsync(ActiveSoundDto payload);
+        public Task<HttpResponse<ActiveAmbientSoundDto>> GetAmbientSoundAsync(int campaignId);
+        public Task<HttpResponse<ActiveSoundEffectDto>> GetSoundEffectAsync(int campaignId);
+        public Task<HttpResponse> PutAmbientSoundAsync(ActiveAmbientSoundDto payload);
+        public Task<HttpResponse> PutSoundEffectAsync(ActiveSoundEffectDto payload);
     }
 
     [TransistentService]
     public class ActiveSoundApi : IActiveSoundApi
     {
-        private readonly HttpRequest _request;
+        private readonly HttpRequest _ambientRequest;
+        private readonly HttpRequest _effectRequest;
 
         public ActiveSoundApi(IEndPointProvider endPointProvider)
         {
-            _request = new(endPointProvider.BaseURL + "ActiveSound");
+            _ambientRequest = new(endPointProvider.BaseURL + "ActiveAmbientSound");
+            _effectRequest = new(endPointProvider.BaseURL + "ActiveSoundEffect");
         }
 
-        public Task<HttpResponse<ActiveSoundDto>> GetAsync(int campaignId)
+        public Task<HttpResponse<ActiveAmbientSoundDto>> GetAmbientSoundAsync(int campaignId)
         {
-            return _request.GetAsync<ActiveSoundDto>($"campaignId={campaignId}");
+            return _ambientRequest.GetAsync<ActiveAmbientSoundDto>($"campaignId={campaignId}");
         }
 
-        public Task<HttpResponse> PutAsync(ActiveSoundDto payload)
+        public Task<HttpResponse<ActiveSoundEffectDto>> GetSoundEffectAsync(int campaignId)
         {
-            return _request.PutAsync(payload);
+            return _effectRequest.GetAsync<ActiveSoundEffectDto>($"campaignId={campaignId}");
+        }
+
+        public Task<HttpResponse> PutAmbientSoundAsync(ActiveAmbientSoundDto payload)
+        {
+            return _ambientRequest.PutAsync(payload);
+        }
+
+        public Task<HttpResponse> PutSoundEffectAsync(ActiveSoundEffectDto payload)
+        {
+            return _effectRequest.PutAsync(payload);
         }
     }
 }

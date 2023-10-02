@@ -31,10 +31,12 @@ class ServerMain
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         builder.Services.AddScoped<ICampaign, Campaign>();
+        builder.Services.AddScoped<ISound, Sound>();
 
         var app = builder.Build();
 
         // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
+        // https://localhost:7099/swagger/index.html
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
