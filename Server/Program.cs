@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Server.Models;
 using Server.Middleware;
+using Server.Models;
 using Server.Services;
+using Server.Services.BusinessLogic;
 
 class ServerMain
 {
@@ -27,6 +28,9 @@ class ServerMain
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddSingleton<IUpdateNotifier, UpdateNotifier>();
+
+        builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        builder.Services.AddScoped<ICampaign, Campaign>();
 
         var app = builder.Build();
 

@@ -1,9 +1,7 @@
 ﻿using DataTransfer.Map;
-using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Server.Models;
 using Server.Services;
+using Server.Services.BusinessLogic;
 
 namespace Server.Controllers
 {
@@ -11,12 +9,12 @@ namespace Server.Controllers
     [Route("[controller]")]
     public class ActiveMapController : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
+        private readonly ICampaign _campaign;
         private readonly IUpdateNotifier _updateNotifier;
 
-        public ActiveMapController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
+        public ActiveMapController(ICampaign campaign, IUpdateNotifier updateNotifier)
         {
-            _dbContext = dbContext;
+            _campaign = campaign;
             _updateNotifier = updateNotifier;
         }
 
@@ -25,11 +23,14 @@ namespace Server.Controllers
         {
             try
             {
-                var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == campaignId);
+                var activeMap = await _campaign.GetActiveCampaignElements(campaignId);
 
-                var payload = new ActiveMapDto(activeCampaignElements.CampaignId, activeCampaignElements.MapId);
+                if (activeMap is null)
+                {
+                    return NotFound(campaignId);
+                }
 
-                return Ok(payload);
+                return Ok(activeMap);
             }
             catch (Exception exception)
             {
@@ -42,16 +43,19 @@ namespace Server.Controllers
         {
             try
             {
-                var activeCampaignElements = await _dbContext.ActiveCampaignElements.FirstAsync(x => x.CampaignId == payload.CampaignId);
+                var updated = await _campaign.UpdateActiveCampaignElements(payload);
 
-                if (activeCampaignElements.MapId != payload.MapId)
+                if (updated is null)
                 {
-                    activeCampaignElements.MapId = payload.MapId;
-                    await _dbContext.SaveChangesAsync();
-                    await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Map);
+                    return NotFound(payload);
                 }
 
-                return Ok(activeCampaignElements);
+                if (updated is false)
+                {
+                    return this.NotModified(payload);
+                }
+
+                return Ok(payload);
             }
             catch (Exception exception)
             {
