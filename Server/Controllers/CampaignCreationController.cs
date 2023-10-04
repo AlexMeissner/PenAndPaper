@@ -1,10 +1,7 @@
 ﻿using DataTransfer.Campaign;
-using DataTransfer.Dice;
-using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Server.Models;
-using System.Text.Json;
+using Server.Services.BusinessLogic;
 
 namespace Server.Controllers
 {
@@ -13,51 +10,27 @@ namespace Server.Controllers
     public class CampaignCreationController : ControllerBase
     {
         private readonly SQLDatabase _dbContext;
+        private readonly ICampaign _campaign;
 
-        public CampaignCreationController(SQLDatabase dbContext)
+        public CampaignCreationController(SQLDatabase dbContext, ICampaign campaign)
         {
             _dbContext = dbContext;
+            _campaign = campaign;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(int campaignId)
+        public async Task<IActionResult> Get(int campaignId, int userId)
         {
             try
             {
-                CampaignCreationDto payload;
+                var creationData = await _campaign.GetCreationDataAsync(campaignId, userId);
 
-                var users = _dbContext.Users.Select(x => new UsersDto(x.Id, x.Username, x.Email));
-
-                if (campaignId == -1) // New campaign
+                if (creationData is null)
                 {
-                    payload = new CampaignCreationDto(
-                        CampaignId: campaignId,
-                        CampaignName: string.Empty,
-                        Gamemaster: null,
-                        UsersNotInCampaign: await users.ToListAsync().ConfigureAwait(false),
-                        UsersInCampaign: new List<UsersDto>());
-                }
-                else // Existing campaign
-                {
-                    var dbCampaign = await _dbContext.Campaigns.FirstAsync(x => x.Id == campaignId).ConfigureAwait(false);
-                    var dbUserInCampaign = _dbContext.UsersInCampaign.Where(x => x.CampaignId == campaignId);
-
-                    var gamemasterId = (await dbUserInCampaign.FirstAsync(x => x.IsGamemaster)).UserId;
-                    var gamemaster = await _dbContext.Users.FirstAsync(x => x.Id == gamemasterId);
-
-                    var usersInCampaign = _dbContext.Users.Where(x => dbUserInCampaign.Any(y => x.Id == y.UserId));
-                    var usersNotInCampaign = _dbContext.Users.Where(x => !usersInCampaign.Any(y => x.Id == y.Id));
-
-                    payload = new CampaignCreationDto(
-                        CampaignId: campaignId,
-                        CampaignName: dbCampaign.Name,
-                        Gamemaster: new UsersDto(gamemaster.Id, gamemaster.Username, gamemaster.Email),
-                        UsersNotInCampaign: await usersInCampaign.Select(x => new UsersDto(x.Id, x.Username, x.Email)).ToListAsync(),
-                        UsersInCampaign: await usersNotInCampaign.Select(x => new UsersDto(x.Id, x.Username, x.Email)).ToListAsync()
-                    );
+                    return NotFound(campaignId);
                 }
 
-                return Ok(payload);
+                return Ok(creationData);
             }
             catch (Exception exception)
             {
@@ -70,44 +43,8 @@ namespace Server.Controllers
         {
             try
             {
-                var dbCampaign = new DbCampaign() { Name = payload.CampaignName };
-                await _dbContext.Campaigns.AddAsync(dbCampaign);
-                await _dbContext.SaveChangesAsync();
-
-                await _dbContext.UsersInCampaign.AddAsync(new()
-                {
-                    UserId = payload.Gamemaster!.Id,
-                    CampaignId = dbCampaign.Id,
-                    IsGamemaster = true
-                });
-
-                await _dbContext.ActiveCampaignElements.AddAsync(new()
-                {
-                    CampaignId = dbCampaign.Id,
-                    MapId = -1,
-                    AmbientId = -1,
-                    EffectId = -1,
-                });
-
-                await _dbContext.DiceRolls.AddAsync(new()
-                {
-                    CampaignId = dbCampaign.Id,
-                    Roll = JsonSerializer.Serialize(new DiceRollResultDto(string.Empty, Array.Empty<bool>()))
-                });
-
-                foreach (var user in payload.UsersInCampaign)
-                {
-                    await _dbContext.UsersInCampaign.AddAsync(new()
-                    {
-                        UserId = user.Id,
-                        CampaignId = dbCampaign.Id,
-                        IsGamemaster = false
-                    });
-                }
-
-                await _dbContext.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(Get), dbCampaign.Id);
+                var campaignId = await _campaign.Create(payload);
+                return CreatedAtAction(nameof(Get), campaignId);
             }
             catch (Exception exception)
             {

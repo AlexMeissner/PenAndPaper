@@ -6,7 +6,7 @@ namespace Client.Services.API
 {
     public interface ICampaignCreationApi
     {
-        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int CampaignId);
+        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int campaignId, int userId);
         public Task<HttpResponse> PostAsync(CampaignCreationDto payload);
     }
 
@@ -20,9 +20,9 @@ namespace Client.Services.API
             _request = new(endPointProvider.BaseURL + "CampaignCreation");
         }
 
-        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int CampaignId)
+        public Task<HttpResponse<CampaignCreationDto>> GetAsync(int campaignId, int userId)
         {
-            return _request.GetAsync<CampaignCreationDto>($"campaignId={CampaignId}");
+            return _request.GetAsync<CampaignCreationDto>($"campaignId={campaignId}&userId={userId}");
         }
 
         public Task<HttpResponse> PostAsync(CampaignCreationDto payload)

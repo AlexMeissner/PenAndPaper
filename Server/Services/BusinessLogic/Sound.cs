@@ -62,7 +62,7 @@ namespace Server.Services.BusinessLogic
             }
 
             activeCampaignElements.AmbientId = sound.AmbientId;
-            await _activeElementsRepository.Update(activeCampaignElements);
+            await _activeElementsRepository.UpdateAsync(activeCampaignElements);
 
             await _updateNotifier.Send(sound.CampaignId, UpdateEntity.AmbientSound);
 
@@ -84,7 +84,7 @@ namespace Server.Services.BusinessLogic
             }
 
             activeCampaignElements.EffectId = sound.EffectId;
-            await _activeElementsRepository.Update(activeCampaignElements);
+            await _activeElementsRepository.UpdateAsync(activeCampaignElements);
 
             await _updateNotifier.Send(sound.CampaignId, UpdateEntity.SoundEffect);
 

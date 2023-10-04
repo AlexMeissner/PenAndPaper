@@ -87,7 +87,7 @@ namespace Client.Pages
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var response = await _campaignCreationApi.GetAsync(_campaignId);
+            var response = await _campaignCreationApi.GetAsync(_campaignId, _sessionData.UserId);
 
             response.Match(
                 async success =>
