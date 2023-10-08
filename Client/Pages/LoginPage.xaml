@@ -3,6 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:attachedProperties="clr-namespace:Client.AttachedProperties"
+      xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Loaded="OnLoaded"
@@ -12,30 +14,74 @@
             <ImageBrush x:Name="BackgroundImage" d:ImageSource="/Client;component/Resource/splash1.jpg" Stretch="UniformToFill"/>
         </Grid.Background>
 
-        <Border Width="250" Height="145" Background="{DynamicResource Theme_Color_Dominant_1_Transparent}" CornerRadius="4" Padding="4 0 4 5">
+        <Grid VerticalAlignment="Center">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="25"/>
                     <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" FontWeight="Bold" FontSize="20" Text="Email"/>
-                <TextBox Grid.Row="1" FontWeight="Bold" FontSize="15" Name="EmailBox"/>
-                <TextBlock Grid.Row="2" FontWeight="Bold" FontSize="20" Text="Passwort"/>
-                <PasswordBox Grid.Row="3" Name="PasswordBox" FontSize="15" KeyDown="OnKeyDown"/>
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Border Grid.Row="1" Width="350" Style="{StaticResource TransparentBackground}">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
 
-                    <Button Grid.Column="0" Margin="0 5 1 0" Content="Einloggen" Click="OnLogin"/>
-                    <Button Grid.Column="1" Margin="1 5 0 0" Content="Registrieren" Click="OnRegister"/>
-                </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Style="{StaticResource LoginIcons}">
+                                <fa:IconImage Icon="Envelope" Style="{StaticResource LoginIconImage}"/>
+                            </Border>
+                            <TextBox Grid.Column="1" Name="EmailBox" attachedProperties:PlaceholderProperty.PlaceholderText="Email" Style="{StaticResource Login}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Style="{StaticResource LoginIcons}">
+                                <fa:IconImage Grid.Column="0" Icon="Lock" Style="{StaticResource LoginIconImage}"/>
+                            </Border>
+                            <PasswordBox Grid.Column="1" Name="PasswordBox" KeyDown="OnKeyDown" attachedProperties:PlaceholderProperty.PlaceholderText="Passwort" Style="{StaticResource LoginPassword}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                <Hyperlink Click="OnRegister" Style="{StaticResource LoginHyperlink}">Registrieren</Hyperlink>
+                            </TextBlock>
+                        </Grid>
+
+                        <Button Grid.Row="5" Content="Einloggen" Click="OnLogin" Style="{StaticResource SecondaryEmpty}"/>
+                    </Grid>
+                </Border>
             </Grid>
-        </Border>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Width="80" Style="{StaticResource LoginUserIcon}">
+                    <fa:IconImage Width="40" Icon="User" Style="{StaticResource LoginUserImage}"/>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

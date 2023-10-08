@@ -24,9 +24,6 @@ namespace Client
 
             var updateNotifier = (UpdateNotifier)_serviceProvider.GetRequiredService<IUpdateNotifier>();
             await updateNotifier.Connect();
-
-            //var testWindow = new TestWindow();
-            //testWindow.Show();
         }
 
         private async void OnShutdown(object sender, ExitEventArgs e)

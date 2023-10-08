@@ -1,11 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="Theme_Color_Dominant_1" Color="#222222"/>
-    <SolidColorBrush x:Key="Theme_Color_Dominant_1_Transparent" Color="#FA222222"/>
-    <SolidColorBrush x:Key="Theme_Color_Dominant_2" Color="#444444"/>
+    <SolidColorBrush x:Key="Theme_Color_Background_1" Color="#222222"/>
+    <SolidColorBrush x:Key="Theme_Color_Background_2" Color="#444444"/>
+    <SolidColorBrush x:Key="Theme_Color_Background_Transparent" Color="#F4222222"/>
 
-    <SolidColorBrush x:Key="Theme_Color_Secondary_1" Color="#0062FF"/>
-    <SolidColorBrush x:Key="Theme_Color_Secondary_2" Color="#7EA3DE"/>
+    <SolidColorBrush x:Key="Theme_Color_Primary_1" Color="#5AA1C2"/>
+    <SolidColorBrush x:Key="Theme_Color_Primary_2" Color="#76D4FF"/>
+    <SolidColorBrush x:Key="Theme_Color_Primary_3" Color="#3C6C82"/>
+
+    <SolidColorBrush x:Key="Theme_Color_Secondary_1" Color="#35A69B"/>
+    <SolidColorBrush x:Key="Theme_Color_Secondary_2" Color="#51FFEE"/>
+
+    <SolidColorBrush x:Key="Theme_Color_Warning_1" Color="#DE8200"/>
+    <SolidColorBrush x:Key="Theme_Color_Warning_2" Color="#FF9500"/>
+
+    <SolidColorBrush x:Key="Theme_Color_Danger_1" Color="#B84C4B"/>
+    <SolidColorBrush x:Key="Theme_Color_Danger_2" Color="#F56564"/>
+
+    <SolidColorBrush x:Key="Theme_Color_Disabled" Color="#2C2C2C"/>
 
     <SolidColorBrush x:Key="Theme_Color_Font_1" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Theme_Color_Font_2" Color="#CCCCCC"/>

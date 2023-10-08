@@ -1,0 +1,39 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:attachedProperties="clr-namespace:Client.AttachedProperties">
+
+    <Style x:Key="BaseTextBox" TargetType="TextBox">
+    </Style>
+
+    <Style x:Key="Login" TargetType="TextBox" BasedOn="{StaticResource BaseTextBox}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_1}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource Theme_Color_Font_2}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Primary_3}"/>
+        <Setter Property="BorderThickness" Value="0,2,2,2"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="attachedProperties:PlaceholderProperty.PlaceholderText" Value=""/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border CornerRadius="0,5,5,0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <TextBlock x:Name="PlaceholderText" Text="{TemplateBinding attachedProperties:PlaceholderProperty.PlaceholderText}" Foreground="{DynamicResource Theme_Color_Font_2}" Margin="5,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

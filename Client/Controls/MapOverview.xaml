@@ -34,12 +34,12 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="200" Height="200" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" BorderThickness="2" Padding="5" Margin="5">
+                        <Border Width="200" Height="200" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Primary_2}" BorderThickness="2" Padding="5" Margin="5">
                             <Border.Background>
                                 <ImageBrush ImageSource="{Binding ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="UniformToFill"/>
                             </Border.Background>
                             <Grid>
-                                <Border Background="#222" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <Border Background="#222" CornerRadius="4" BorderBrush="{DynamicResource Theme_Color_Primary_2}" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Center">
                                     <TextBlock Margin="2" FontSize="20" Foreground="White" Text="{Binding Name}"/>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">

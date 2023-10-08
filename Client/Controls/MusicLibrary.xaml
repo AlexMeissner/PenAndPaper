@@ -65,7 +65,7 @@
         </Grid>
 
         <ScrollViewer Grid.Row="2" Grid.Column="0" Margin="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Name="AmbientControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientSounds}">
+            <ItemsControl Name="AmbientControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientSounds}">
                 <ItemsControl.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -128,7 +128,7 @@
         </Grid>
 
         <ScrollViewer Grid.Row="2" Grid.Column="1" Margin="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Name="EffectsControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Dominant_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.Effects}">
+            <ItemsControl Name="EffectsControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.Effects}">
                 <ItemsControl.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>

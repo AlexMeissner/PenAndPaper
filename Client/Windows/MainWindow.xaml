@@ -11,21 +11,21 @@
     Title="Dungeons and Dragons" 
     Height="800" 
     Width="1200"
-    Background="{DynamicResource Theme_Color_Dominant_1}"
+    Background="{DynamicResource Theme_Color_Background_1}"
     WindowStartupLocation="CenterScreen">
 
-    <Border BorderThickness="2" BorderBrush="{DynamicResource Theme_Color_Dominant_1}">
+    <Border BorderThickness="2" BorderBrush="{DynamicResource Theme_Color_Background_1}">
         <Grid Name="MainGrid">
             <Grid Panel.ZIndex="1" Height="20" Width="200" VerticalAlignment="Top" Background="Orange" MouseLeftButtonDown="Drag"/>
             <Frame Content="{Binding PageNavigator.CurrentPage}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Maximize">
-                    <fa:IconImage Icon="Square" Foreground="{DynamicResource Theme_Color_Font_2}"/>
+                <Button Width="15" Height="15" Margin="4" Click="Maximize" Style="{StaticResource WindowState}">
+                    <fa:IconImage Icon="Square" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                 </Button>
-                <Button Width="15" Height="15" Margin="4" Style="{StaticResource TransparentButton}" Click="Close">
-                    <fa:IconImage Icon="X" Foreground="{DynamicResource Theme_Color_Font_2}"/>
+                <Button Width="15" Height="15" Margin="4" Click="Close" Style="{StaticResource WindowState}">
+                    <fa:IconImage Icon="X" Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                 </Button>
-            </StackPanel>            
+            </StackPanel>
         </Grid>
     </Border>
 </local:CustomWindow>
