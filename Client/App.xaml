@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="Resources/Styles/HyperlinkStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/IconImageStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/PasswordBoxStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ScrollbarStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlockStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>

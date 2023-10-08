@@ -25,7 +25,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" Grid.Column="1" Background="#AA000000" CornerRadius="4" Padding="4 4 4 4">
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource TransparentBackground}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -83,8 +83,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Margin="2" Content="Beitreten" Click="OnEnterCampaign"/>
-                    <Button Grid.Column="1" Margin="2" Content="Erstellen" Click="OnCreateCampaign"/>
+                    <Button Grid.Column="0" Margin="2" Content="Beitreten" Click="OnEnterCampaign" Style="{DynamicResource PrimaryEmpty}"/>
+                    <Button Grid.Column="1" Margin="2" Content="Erstellen" Click="OnCreateCampaign" Style="{DynamicResource SecondaryEmpty}"/>
                 </Grid>
             </Grid>
         </Border>
