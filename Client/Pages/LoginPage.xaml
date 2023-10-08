@@ -51,7 +51,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Column="0" Style="{StaticResource LoginIcons}">
-                                <fa:IconImage Grid.Column="0" Icon="Lock" Style="{StaticResource LoginIconImage}"/>
+                                <fa:IconImage Icon="Lock" Style="{StaticResource LoginIconImage}"/>
                             </Border>
                             <PasswordBox Grid.Column="1" Name="PasswordBox" KeyDown="OnKeyDown" attachedProperties:PlaceholderProperty.PlaceholderText="Passwort" Style="{StaticResource LoginPassword}"/>
                         </Grid>
