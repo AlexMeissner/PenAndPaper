@@ -33,7 +33,7 @@
                     <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
 
-                <ListView Grid.Row="0" Name="CampaignListView" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding CampaignItems}">
+                <ListView Grid.Row="0" Name="CampaignListView" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding CampaignItems}" Style="{StaticResource CampaignSelectionListView}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Height="80" MouseDown="OnMouseDown" Background="Transparent">

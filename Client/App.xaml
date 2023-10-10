@@ -6,14 +6,16 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- CAN NOT BE OREDERED ALPHABETICALLY BECAUSE STYLES USED BY OTHER STYLES MUST BE ADDED BEFORE -->
                 <ResourceDictionary Source="Resources/Colors.xaml"/>
                 <ResourceDictionary Source="Resources/Converters.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/BorderStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/HyperlinkStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/IconImageStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/PasswordBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ScrollbarStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ListViewStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/PasswordBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlockStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>

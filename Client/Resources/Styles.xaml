@@ -8,21 +8,6 @@
         <Setter Property="Background" Value="{DynamicResource Theme_Color_Primary_2}"/>
     </Style>
 
-    <Style TargetType="ListView" x:Key="DefaultListView">
-    </Style>
-
-    <Style TargetType="ListView" BasedOn="{StaticResource DefaultListView}">
-        <Setter Property="Background" Value="{DynamicResource Theme_Color_Primary_1}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-
-    <Style TargetType="ListViewItem" x:Key="DefaultListViewItem">
-    </Style>
-
-    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItem}">
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-    </Style>
-
     <Style TargetType="TabControl" x:Key="DefaultTabControl">
         <Setter Property="Background" Value="{DynamicResource Theme_Color_Primary_1}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Primary_2}"/>
