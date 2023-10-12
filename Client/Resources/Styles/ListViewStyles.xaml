@@ -6,7 +6,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListView">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                    <Border CornerRadius="5" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
                         <ScrollViewer x:Name="ScrollViewer">
                             <ScrollViewer.Resources>
                                 <Style TargetType="ScrollBar" BasedOn="{StaticResource DefaultScrollbar}"/>
@@ -20,7 +20,15 @@
     </Style>
 
     <Style x:Key="CampaignSelectionListView" TargetType="ListView" BasedOn="{StaticResource BaseListView}">
-        <Setter Property="Background" Value="{DynamicResource Theme_Color_Primary_1}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="CampaignCreationListView" TargetType="ListView" BasedOn="{StaticResource BaseListView}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="2"/>    
+        <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Primary_3}"/>
     </Style>
 
     <Style x:Key="BaseListViewItem" TargetType="ListViewItem">
