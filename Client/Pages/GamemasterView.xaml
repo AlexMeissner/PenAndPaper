@@ -24,13 +24,13 @@
                     <ColumnDefinition Width="600"/>
                 </Grid.ColumnDefinitions>
 
-                <TabControl Grid.Column="0">
+                <TabControl Grid.Column="0" Style="{StaticResource DefaultTabControl}">
                     <TabItem Header="Aktive Karte">
                         <ContentPresenter Name="MapPresenter"/>
                     </TabItem>
                 </TabControl>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-                <TabControl Grid.Column="2">
+                <GridSplitter Grid.Column="1" Style="{StaticResource DefaultGridSplitter}"/>
+                <TabControl Grid.Column="2" Style="{StaticResource DefaultTabControl}">
                     <TabItem Header="Script">
                         <ContentPresenter Name="ScriptPresenter"/>
                     </TabItem>
@@ -42,7 +42,7 @@
                     </TabItem>
                 </TabControl>
             </Grid>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch"/>
+            <GridSplitter Grid.Row="1" Style="{StaticResource DefaultGridSplitter}"/>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -50,24 +50,25 @@
                     <ColumnDefinition Width="600"/>
                 </Grid.ColumnDefinitions>
 
-                <TabControl Grid.Column="0">
+                <TabControl Grid.Column="0" Style="{StaticResource DefaultTabControl}">
                     <TabItem Header="Karten Übersicht">
                         <ContentPresenter Name="MapOverviewPresenter"/>
                     </TabItem>
                 </TabControl>
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+                <GridSplitter Grid.Column="1" Style="{StaticResource DefaultGridSplitter}"/>
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="35"/>
                     </Grid.RowDefinitions>
 
-                    <TabControl Grid.Row="0">
+                    <TabControl Grid.Row="0" Style="{StaticResource DefaultTabControl}">
                         <TabItem Header="Sound">
                             <ContentPresenter Name="SoundPresenter"/>
                         </TabItem>
                     </TabControl>
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -75,10 +76,10 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Margin="2" Content="Regelbuch"/>
-                        <Button Grid.Column="1" Margin="2" Content="NPC Creator"/>
-                        <Button Grid.Column="2" Margin="2" Content="Item Creator"/>
-                        <Button Grid.Column="3" Margin="2" Content="Verlassen" Click="OnExit"/>
+                        <Button Grid.Column="0" Margin="2" Content="Regelbuch" Style="{StaticResource PrimaryEmpty}"/>
+                        <Button Grid.Column="1" Margin="2" Content="NPC Creator" Style="{StaticResource PrimaryEmpty}"/>
+                        <Button Grid.Column="2" Margin="2" Content="Item Creator" Style="{StaticResource PrimaryEmpty}"/>
+                        <Button Grid.Column="3" Margin="2" Content="Verlassen" Click="OnExit" Style="{StaticResource DangerFilled}"/>
                     </Grid>
                 </Grid>
             </Grid>

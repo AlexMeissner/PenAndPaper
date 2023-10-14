@@ -75,7 +75,21 @@
         <Setter Property="Background" Value="{DynamicResource Theme_Color_Danger_1}"/>
         <Setter Property="Tag" Value="{DynamicResource Theme_Color_Danger_2}"/>
     </Style>
-    
+
+    <Style x:Key="SuccessEmpty" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Success_1}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Success_1}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Tag" Value="{DynamicResource Theme_Color_Success_2}"/>
+    </Style>
+
+    <Style x:Key="SuccessFilled" TargetType="Button" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Success_1}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_1}"/>
+        <Setter Property="Background" Value="{DynamicResource Theme_Color_Success_1}"/>
+        <Setter Property="Tag" Value="{DynamicResource Theme_Color_Success_2}"/>
+    </Style>
+
     <Style x:Key="DisabledEmpty" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Disabled}"/>
         <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Disabled}"/>

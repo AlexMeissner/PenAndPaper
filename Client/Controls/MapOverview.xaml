@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:attachedProperties="clr-namespace:Client.AttachedProperties"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
              d:DataContext="{d:DesignInstance viewModels:MapOverviewViewModel}"
@@ -19,11 +20,11 @@
         <Grid Grid.Row="0" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2" FontSize="20" Text="{Binding ElementName=MapOverviewControl, Path=ViewModel.Filter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnTextChanged"/>
-            <Button Grid.Column="1" Margin="2" Content="Neue Karte" Click="OnCreateMap"/>
+            <TextBox Grid.Column="0" FontSize="20" attachedProperties:PlaceholderProperty.PlaceholderText="Kartenname" Text="{Binding ElementName=MapOverviewControl, Path=ViewModel.Filter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnTextChanged" Style="{StaticResource DefaultTextBox}"/>
+            <Button Grid.Column="1" Margin="5,0,0,0" Content="Neue Karte" Click="OnCreateMap" Style="{StaticResource SecondaryFilled}"/>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl Name="OverviewItemsControl" ItemsSource="{Binding ElementName=MapOverviewControl, Path=ViewModel.Items}">
@@ -43,14 +44,14 @@
                                     <TextBlock Margin="2" FontSize="20" Foreground="White" Text="{Binding Name}"/>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayCommand}" CommandParameter="{Binding}">
-                                        <fa:IconImage Foreground="Green" Icon="Play" Margin="2"/>
+                                    <Button Width="30" Height="30" Margin="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayCommand}" CommandParameter="{Binding}" Style="{StaticResource SuccessFilled}">
+                                        <fa:IconImage Icon="Play" Style="{StaticResource DefaultImage}"/>
                                     </Button>
-                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-1,0,-1,0" Click="OnEdit">
-                                        <fa:IconImage Foreground="LightGray" Icon="PencilAlt" Margin="2"/>
+                                    <Button Width="30" Height="30" Margin="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="OnEdit" Style="{StaticResource SecondaryFilled}">
+                                        <fa:IconImage Icon="PencilAlt" Style="{StaticResource DefaultImage}"/>
                                     </Button>
-                                    <Button Width="30" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Left" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.DeleteCommand}" CommandParameter="{Binding}">
-                                        <fa:IconImage Foreground="Red" Icon="TrashAlt" Margin="2"/>
+                                    <Button Width="30" Height="30" Margin="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.DeleteCommand}" CommandParameter="{Binding}" Style="{StaticResource DangerFilled}">
+                                        <fa:IconImage Icon="TrashAlt" Style="{StaticResource DefaultImage}"/>
                                     </Button>
                                 </StackPanel>
                             </Grid>
