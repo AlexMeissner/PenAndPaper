@@ -86,6 +86,9 @@ namespace Client.ViewModels
                 Colors[i].Color = _defaultColor;
             }
 
+            const int totalRevealTime = 3000;
+            int revealDelay = totalRevealTime / diceRollResult.Succeeded.Count;
+
             for (int index = 0; index < diceRollResult.Succeeded.Count; ++index)
             {
                 successes = diceRollResult.Succeeded[index] ? successes + 1 : successes;
@@ -111,7 +114,7 @@ namespace Client.ViewModels
 
                 Colors[index].Color = diceRollResult.Succeeded[index] ? _successColor : _failColor;
                 RolledNumber = successes.ToString();
-                await Task.Delay(200);
+                await Task.Delay(revealDelay);
             }
 
             const int timeToHide = 10000;
