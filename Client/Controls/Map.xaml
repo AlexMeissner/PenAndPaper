@@ -14,18 +14,7 @@
              Drop="OnDrop"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="100"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-        </Grid.RowDefinitions>
-
-        <ItemsControl Grid.ColumnSpan="3" Grid.RowSpan="3" ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}" RenderTransform="{Binding MapTransformation.Scaling}">
+        <ItemsControl ItemsSource="{Binding ElementName=MapControl, Path=ViewModel.Items}" RenderTransform="{Binding MapTransformation.Scaling}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Background="Transparent" MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseUp="OnMouseUp" MouseMove="OnMouseMove"/>
@@ -76,7 +65,7 @@
             </ItemsControl.Resources>
         </ItemsControl>
 
-        <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center">
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
                 <Button Width="50" Margin="2" Visibility="Collapsed">
                     <fa:IconImage Icon="UserAlt" ToolTip="Charakter"/>
@@ -101,122 +90,5 @@
             </StackPanel>
             <ContentPresenter Name="DiceRollerPresenter" HorizontalAlignment="Center" Visibility="Visible"/>
         </StackPanel>
-
-        <!--
-        <Expander HorizontalAlignment="Right" Header="Encounter Builder">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="250"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackPanel Grid.Column="2">
-                    <TextBlock Margin="0 0 0 5" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Text="ZUSAMMENFASSUNG"/>
-                    <Border BorderThickness="0 2 0 2" BorderBrush="Gray">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" FontWeight="Bold" Text="EINFACH:"/>
-                                <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" FontWeight="Bold" Text="MITTEL:"/>
-                                <TextBlock Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" FontWeight="Bold" Text="SCHWER:"/>
-                                <TextBlock Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" FontWeight="Bold" Text="TÖTLICH:"/>
-                                <TextBlock Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" FontWeight="Bold" Text="TÄGLICHES BUDGET:"/>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <Expander Header="Gruppe">
-
-                    </Expander>
-                    <Expander Header="Gegner" IsExpanded="True">
-                        <ItemsControl>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Height="60" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="2">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="30"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <Border Grid.Column="0" Margin="5" BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
-                                                <Border.Background>
-                                                    <ImageBrush Stretch="UniformToFill"/>
-                                                </Border.Background>
-                                            </Border>
-
-                                            <Grid Grid.Column="1">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="*"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="40"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" FontWeight="Bold"/>
-                                                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                                <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                            </Grid>
-
-                                            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1 0 0 0">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                    </Grid.RowDefinitions>
-
-                                                    <Button Grid.Row="0" Background="Transparent" FontWeight="Bold" Content="+" BorderThickness="0">
-                                                        <Button.Resources>
-                                                            <Style TargetType="Border">
-                                                                <Setter Property="CornerRadius" Value="0 4 0 0"/>
-                                                            </Style>
-                                                        </Button.Resources>
-                                                    </Button>
-                                                    <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 1">
-                                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
-                                                    </Border>
-                                                    <Button Grid.Row="2" Background="Transparent" FontWeight="Bold" Content="-" BorderThickness="0">
-                                                        <Button.Resources>
-                                                            <Style TargetType="Border">
-                                                                <Setter Property="CornerRadius" Value="0 0 4 0"/>
-                                                            </Style>
-                                                        </Button.Resources>
-                                                    </Button>
-                                                </Grid>
-                                            </Border>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Expander>
-                    <Button Grid.Row="2" Height="40" Background="CornflowerBlue" FontWeight="Bold" Content="ERSTELLEN" BorderThickness="0">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="4"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-                </StackPanel>
-            </Grid>
-        </Expander>
-        -->
     </Grid>
 </UserControl>

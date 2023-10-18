@@ -7,28 +7,25 @@
         mc:Ignorable="d"
         Background="#222"
         Title="TestWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
 
-        <Button Grid.Row="0" Grid.Column="0" Margin="2" Content="Primary" Style="{StaticResource PrimaryEmpty}"/>
-        <Button Grid.Row="0" Grid.Column="1" Margin="2" Content="Primary" Style="{StaticResource PrimaryFilled}"/>
-        <Button Grid.Row="1" Grid.Column="0" Margin="2" Content="Secondary" Style="{StaticResource SecondaryEmpty}"/>
-        <Button Grid.Row="1" Grid.Column="1" Margin="2" Content="Secondary" Style="{StaticResource SecondaryFilled}"/>
-        <Button Grid.Row="2" Grid.Column="0" Margin="2" Content="Warning" Style="{StaticResource WarningEmpty}"/>
-        <Button Grid.Row="2" Grid.Column="1" Margin="2" Content="Warning" Style="{StaticResource WarningFilled}"/>
-        <Button Grid.Row="3" Grid.Column="0" Margin="2" Content="Danger" Style="{StaticResource DangerEmpty}"/>
-        <Button Grid.Row="3" Grid.Column="1" Margin="2" Content="Danger" Style="{StaticResource DangerFilled}"/>
-        <Button Grid.Row="4" Grid.Column="0" Margin="2" Content="Disabled" Style="{StaticResource DisabledEmpty}"/>
-        <Button Grid.Row="5" Grid.Column="1" Margin="2" Content="Disabled" Style="{StaticResource DisabledFilled}"/>
+    <Grid>
+        <Menu>
+            <MenuItem Header="Dice">
+                <MenuItem.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </MenuItem.ItemsPanel>
+
+                <MenuItem Width="50">
+                    <MenuItem.Header>
+                        <TextBlock Text="W4"/>
+                    </MenuItem.Header>                    
+                </MenuItem>
+                <MenuItem Header="_SUBMENU2"/>
+                <MenuItem Header="_SUBMENU3"/>
+            </MenuItem>
+        </Menu>
     </Grid>
+    
 </Window>

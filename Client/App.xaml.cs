@@ -22,6 +22,9 @@ namespace Client
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
 
+            var testWindow = new TestWindow();
+            testWindow.Show();
+
             var updateNotifier = (UpdateNotifier)_serviceProvider.GetRequiredService<IUpdateNotifier>();
             await updateNotifier.Connect();
         }
