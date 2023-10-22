@@ -61,11 +61,6 @@ namespace Client.Controls
             ViewModel.DiceVisibility = Visibility.Collapsed;
         }
 
-        private void OnOpenSettings(object sender, RoutedEventArgs e)
-        {
-            //PopupPage.Open<SettingsControl>();
-        }
-
         private async void OnDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetData(typeof(CharacterOverviewItem)) is CharacterOverviewItem character)

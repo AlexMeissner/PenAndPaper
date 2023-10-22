@@ -26,7 +26,7 @@ namespace Client.Pages
             SoundPresenter.Content = controlProvider.Get<MusicLibrary>();
             PlayerPresenter.Content = controlProvider.Get<CharacterList>();
             NPCPresenter.Content = controlProvider.Get<MonsterControl>();
-            ScriptPresenter.Content = controlProvider.Get<Script>();  
+            ScriptPresenter.Content = controlProvider.Get<Script>();
         }
 
         private void OnExit(object sender, RoutedEventArgs e)
@@ -40,6 +40,11 @@ namespace Client.Pages
             {
                 e.Cancel = true;
             }
+        }
+
+        private void OnOpenSettings(object sender, RoutedEventArgs e)
+        {
+            PopupPage.Open<SettingsView>("Einstellungen");
         }
     }
 }

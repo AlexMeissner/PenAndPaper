@@ -4,10 +4,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:dto="clr-namespace:DataTransfer.Campaign;assembly=DataTransfer"
+      xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance Type=dto:CampaignOverviewDto}"
       Loaded="OnLoaded"
+      Name="CampaignSelectionPg"
       Title="CampaignSelection">
     <Grid>
         <Grid.Background>
@@ -89,5 +91,9 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <Button Grid.Row="2" Grid.Column="2" Width="50" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10" Command="{Binding ElementName=CampaignSelectionPg, Path=ViewModel.OpenAdminViewCommand}" Style="{StaticResource DangerFilled}">
+            <fa:IconImage Icon="UserSecret" Style="{StaticResource DefaultImage}"/>
+        </Button>
     </Grid>
 </Page>

@@ -1,6 +1,7 @@
 ﻿using Client.Helper;
 using Client.Services;
 using Client.Services.API;
+using Client.ViewModels;
 using Client.Windows;
 using DataTransfer.Campaign;
 using System.Windows;
@@ -18,9 +19,14 @@ namespace Client.Pages
         private readonly ICampaignOverviewApi _campaignOverviewApi;
         private readonly IUpdateNotifier _updateNotifier;
 
-        public CampaignSelectionPage(IPageNavigator pageNavigator, ISessionData sessionData, ICampaignOverviewApi campaignOverviewApi, IUpdateNotifier updateNotifier)
+        public CampaignSelectionViewModel ViewModel { get; }
+
+        public CampaignSelectionPage(CampaignSelectionViewModel viewModel, IPageNavigator pageNavigator, ISessionData sessionData, ICampaignOverviewApi campaignOverviewApi, IUpdateNotifier updateNotifier)
         {
+            ViewModel = viewModel;
+
             InitializeComponent();
+
             _pageNavigator = pageNavigator;
             _sessionData = sessionData;
             _campaignOverviewApi = campaignOverviewApi;

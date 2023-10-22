@@ -56,8 +56,6 @@
                     <Border BorderThickness="1" BorderBrush="Orange" Width="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}" Height="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}">
                         <Grid>
                             <Image Stretch="UniformToFill" Source="{Binding Image}"/>
-                            <TextBlock Text="{Binding X}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                            <TextBlock Text="{Binding Y}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
                             <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                         </Grid>
                     </Border>
@@ -72,9 +70,6 @@
                 </Button>
                 <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice">
                     <fa:IconImage Icon="DiceD20" ToolTip="Würfeln"/>
-                </Button>
-                <Button Width="50" Margin="2" Click="OnOpenSettings">
-                    <fa:IconImage Icon="Gear" ToolTip="Einstellungen"/>
                 </Button>
                 <Button Width="50" Margin="2" Visibility="Collapsed">
                     <fa:IconImage Icon="BookOpen" ToolTip="Lexikon"/>

@@ -100,7 +100,7 @@
     <Style x:Key="DisabledFilled" TargetType="Button" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Disabled}"/>
         <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_1}"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="{DynamicResource Theme_Color_Disabled}"/>
         <Setter Property="Tag" Value="{DynamicResource Theme_Color_Disabled}"/>
     </Style>
 
