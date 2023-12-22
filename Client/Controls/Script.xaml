@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:extensions="clr-namespace:Client.Extensions"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
+             xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
              d:DataContext="{d:DesignInstance viewModels:ScriptViewModel}"
              Name="ScriptControl"
              mc:Ignorable="d" 
@@ -17,7 +18,7 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
 
-            <WebBrowser Grid.Row="0" Margin="2" extensions:WebBrowserExtension.Body="{Binding ElementName=ScriptControl, Path=ViewModel.Script, Converter={StaticResource TextToMarkdownConverter}}"/>
+            <mdxaml:MarkdownScrollViewer Grid.Row="0" Margin="2" xml:space="preserve" Markdown="{Binding ElementName=ScriptControl, Path=ViewModel.Script}"/>
             <Button Grid.Row="1" Margin="2" Content="Bearbeiten" Command="{Binding ElementName=ScriptControl, Path=ViewModel.EditCommand}"/>
         </Grid>
         <Grid Visibility="{Binding ElementName=ScriptControl, Path=ViewModel.EditVisibility}">

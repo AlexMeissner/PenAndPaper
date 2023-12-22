@@ -6,6 +6,5 @@
     <converter:ByteArrayToBitmapImageWidthConverter x:Key="ByteArrayToBitmapImageWidthConverter"/>
     <converter:ByteArrayToBitmapImageHeightConverter x:Key="ByteArrayToBitmapImageHeightConverter"/>
     <converter:GridToRectConverter x:Key="GridToRectConverter"/>
-    <converter:TextToMarkdownConverter x:Key="TextToMarkdownConverter"/>
     <converter:MapItemTransformationConverter x:Key="MapItemTransformationConverter"/>
 </ResourceDictionary>
