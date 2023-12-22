@@ -8,5 +8,6 @@
         public byte[] ImageData { get; set; } = default!;
         public bool GridIsActive { get; set; }
         public int GridSize { get; set; }
+        public string Script { get; set; } = default!;
     }
 }

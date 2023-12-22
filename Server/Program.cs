@@ -31,6 +31,7 @@ class ServerMain
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         builder.Services.AddScoped<ICampaign, Campaign>();
+        builder.Services.AddScoped<IScript, Script>();
         builder.Services.AddScoped<ISound, Sound>();
 
         var app = builder.Build();

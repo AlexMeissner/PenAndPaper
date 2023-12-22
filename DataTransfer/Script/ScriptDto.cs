@@ -1,4 +1,4 @@
 ﻿namespace DataTransfer.Script
 {
-    public record ScriptDto(string Markdown);
+    public record ScriptDto(int MapId, string Text);
 }

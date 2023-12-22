@@ -55,6 +55,7 @@ namespace Server.Controllers
                     ImageData = payload.ImageData,
                     GridIsActive = payload.Grid.IsActive,
                     GridSize = payload.Grid.Size,
+                    Script = string.Empty,
                 };
 
                 await _dbContext.Maps.AddAsync(map);

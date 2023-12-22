@@ -22,9 +22,9 @@ namespace Client.Services.API
             _request = new(endPointProvider.BaseURL + "Map");
         }
 
-        public Task<HttpResponse<MapDto>> GetAsync(int MapId)
+        public Task<HttpResponse<MapDto>> GetAsync(int mapId)
         {
-            return _request.GetAsync<MapDto>($"mapId={MapId}");
+            return _request.GetAsync<MapDto>($"mapId={mapId}");
         }
 
         public Task<HttpResponse> PostAsync(MapDto payload)
@@ -37,9 +37,9 @@ namespace Client.Services.API
             return _request.PutAsync(payload);
         }
 
-        public Task<HttpResponse> DeleteAsync(int MapId)
+        public Task<HttpResponse> DeleteAsync(int mapId)
         {
-            return _request.DeleteAsync($"mapId={MapId}");
+            return _request.DeleteAsync($"mapId={mapId}");
         }
     }
 }
