@@ -4,7 +4,7 @@ using static Client.Services.ServiceExtension;
 
 namespace Client.Services.API
 {
-    interface IScriptApi
+    public interface IScriptApi
     {
         Task<HttpResponse<ScriptDto>> Get(int mapId);
         Task<HttpResponse> Update(ScriptDto payload);

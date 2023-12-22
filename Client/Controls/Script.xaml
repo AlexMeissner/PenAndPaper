@@ -8,6 +8,7 @@
              d:DataContext="{d:DesignInstance viewModels:ScriptViewModel}"
              Name="ScriptControl"
              mc:Ignorable="d" 
+             Loaded="OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid Visibility="{Binding ElementName=ScriptControl, Path=ViewModel.RenderVisibility}">
@@ -16,7 +17,7 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
 
-            <WebBrowser Grid.Row="0" Margin="2" extensions:WebBrowserExtension.Body="{Binding ElementName=ScriptControl, Path=ViewModel.Markdown, Converter={StaticResource TextToMarkdownConverter}}"/>
+            <WebBrowser Grid.Row="0" Margin="2" extensions:WebBrowserExtension.Body="{Binding ElementName=ScriptControl, Path=ViewModel.Script, Converter={StaticResource TextToMarkdownConverter}}"/>
             <Button Grid.Row="1" Margin="2" Content="Bearbeiten" Command="{Binding ElementName=ScriptControl, Path=ViewModel.EditCommand}"/>
         </Grid>
         <Grid Visibility="{Binding ElementName=ScriptControl, Path=ViewModel.EditVisibility}">
@@ -25,7 +26,7 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
 
-            <TextBox Grid.Row="0" Margin="2" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Text="{Binding ElementName=ScriptControl, Path=ViewModel.Markdown}"/>
+            <TextBox Grid.Row="0" Margin="2" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Text="{Binding ElementName=ScriptControl, Path=ViewModel.Script}"/>
             <Grid Grid.Row="1" DockPanel.Dock="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
