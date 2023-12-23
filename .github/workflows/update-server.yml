@@ -17,7 +17,7 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Build Docker image
         run: docker build -t pen_and_paper_server .
