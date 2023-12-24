@@ -11,5 +11,5 @@
     <Canvas Width="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualWidth}" 
             Height="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualHeight}" 
             Name="GridCanvas" 
-            Background="Transparent" />
+            Background="Transparent"/>
 </UserControl>

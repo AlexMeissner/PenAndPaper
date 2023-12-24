@@ -12,10 +12,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Panel" Property="Background" Value="{DynamicResource Theme_Color_Background_3}" />
+                            <Setter TargetName="Panel" Property="Background" Value="{DynamicResource Theme_Color_Background_3}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="False">
-                            <Setter TargetName="Panel" Property="Background" Value="{DynamicResource Theme_Color_Background_2}" />
+                            <Setter TargetName="Panel" Property="Background" Value="{DynamicResource Theme_Color_Background_2}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
