@@ -1,0 +1,1 @@
+* TokenCreationDto has monsterId and characterId & there is a TokenType enum. The enum should be part of the DTO instead.

@@ -45,16 +45,22 @@ namespace Server.Controllers
                         name = character.Name;
                         image = character.Image;
                     }
-                    else // token is controlled by game master
+                    else if (token.MonsterId is int monsterId)
                     {
                         var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
                         var campaign = await _dbContext.Campaigns.FirstAsync(x => x.Id == map.CampaignId);
                         var gamemasterInCampaign = await _dbContext.UsersInCampaign.FirstAsync(x => x.CampaignId == campaign.Id && x.IsGamemaster);
                         var gamemaster = await _dbContext.Users.FirstAsync(x => x.Id == gamemasterInCampaign.UserId);
 
+                        var monster = await _dbContext.Monsters.FirstAsync(x => x.Id == monsterId);
+
                         userId = gamemaster.Id;
-                        name = "ToDo";
-                        image = Array.Empty<byte>();
+                        name = monster.Name;
+                        image = monster.Image;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException("This needs refactoring");
                     }
 
                     items.Add(new(

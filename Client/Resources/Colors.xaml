@@ -25,4 +25,6 @@
 
     <SolidColorBrush x:Key="Theme_Color_Font_1" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Theme_Color_Font_2" Color="#CCCCCC"/>
+    
+    <SolidColorBrush x:Key="Theme_Color_Transparent" Color="Transparent"/>
 </ResourceDictionary>

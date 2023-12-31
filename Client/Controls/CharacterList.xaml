@@ -28,7 +28,7 @@
             </Button>
         </Grid>
 
-        <ListView Grid.Row="1" Margin="4" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=CharacterListControl, Path=ViewModel.Items}">
+        <ListView Grid.Row="1" Margin="4" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=CharacterListControl, Path=ViewModel.Items}" Style="{StaticResource BaseListView}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="100">

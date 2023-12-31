@@ -25,7 +25,7 @@ namespace Client.Pages
             MapOverviewPresenter.Content = controlProvider.Get<MapOverview>();
             SoundPresenter.Content = controlProvider.Get<MusicLibrary>();
             PlayerPresenter.Content = controlProvider.Get<CharacterList>();
-            NPCPresenter.Content = controlProvider.Get<MonsterControl>();
+            MonsterListPresenter.Content = controlProvider.Get<MonsterControl>();
             ScriptPresenter.Content = controlProvider.Get<Script>();
         }
 

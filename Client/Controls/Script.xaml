@@ -18,7 +18,7 @@
                 <RowDefinition Height="35"/>
             </Grid.RowDefinitions>
 
-            <mdxaml:MarkdownScrollViewer Grid.Row="0" Margin="2" xml:space="preserve" MarkdownStyleName="SasabuneStandard" Markdown="{Binding ElementName=ScriptControl, Path=ViewModel.Script}" Style="{StaticResource DefaultMarkdownScrollViewer}"/>            
+            <mdxaml:MarkdownScrollViewer Grid.Row="0" Margin="2" xml:space="preserve" MarkdownStyleName="SasabuneStandard" Markdown="{Binding ElementName=ScriptControl, Path=ViewModel.Script}" Style="{StaticResource DefaultMarkdownScrollViewer}"/>
             <Button Grid.Row="1" Margin="2" Content="Bearbeiten" Command="{Binding ElementName=ScriptControl, Path=ViewModel.EditCommand}" Style="{DynamicResource PrimaryFilled}"/>
         </Grid>
         <Grid Visibility="{Binding ElementName=ScriptControl, Path=ViewModel.EditVisibility}">

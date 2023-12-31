@@ -15,6 +15,12 @@ using static Client.Services.ServiceExtension;
 
 namespace Client.ViewModels
 {
+    public enum TokenType
+    {
+        Character,
+        Monster
+    }
+
     [TransistentService]
     public class MapViewModel : BaseViewModel
     {
@@ -63,7 +69,7 @@ namespace Client.ViewModels
             RollD20Command = new AsyncCommand(OnRollD20);
         }
 
-        public Task CreateToken(Point position, int characterId)
+        public Task CreateToken(TokenType type, Point position, int id)
         {
             if (Grid is not null)
             {
@@ -71,12 +77,14 @@ namespace Client.ViewModels
                 position.Y -= position.Y % Grid.Size;
             }
 
-            var payload = new TokenCreationDto(
+            int? characterId = (type == TokenType.Character) ? id : null;
+            int? monsterId = (type == TokenType.Monster) ? id : null;
 
+            var payload = new TokenCreationDto(
                 CampaignId: _sessionData.CampaignId,
                 MapId: Id,
                 CharacterId: characterId,
-                MonsterId: null,
+                MonsterId: monsterId,
                 X: (int)position.X,
                 Y: (int)position.Y
             );

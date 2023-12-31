@@ -18,6 +18,10 @@
     <Style x:Key="LoginIconImage" TargetType="fa:IconImage" BasedOn="{StaticResource BaseIconImage}">
         <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Font_1}"/>
         <Setter Property="Margin" Value="2"/>
-    </Style>    
+    </Style>
+
+    <Style x:Key="PrimaryImage" TargetType="fa:IconImage" BasedOn="{StaticResource BaseIconImage}">
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Primary_1}"/>
+    </Style>
 
 </ResourceDictionary>

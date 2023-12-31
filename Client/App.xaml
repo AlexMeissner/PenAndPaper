@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="Resources/Styles/TabControlsStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlockStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TooltipStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/MarkdownScrollViewerStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

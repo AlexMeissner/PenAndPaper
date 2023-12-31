@@ -38,7 +38,7 @@
                         <ContentPresenter Name="PlayerPresenter"/>
                     </TabItem>
                     <TabItem Header="Monster">
-                        <ContentPresenter Name="NPCPresenter"/>
+                        <ContentPresenter Name="MonsterListPresenter"/>
                     </TabItem>
                 </TabControl>
             </Grid>

@@ -3,10 +3,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:attachedProperties="clr-namespace:Client.AttachedProperties"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
              xmlns:local="clr-namespace:Client.Controls"
              mc:Ignorable="d" 
+             Loaded="OnLoaded"
+             Name="MonsterList"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0" FontSize="20" attachedProperties:PlaceholderProperty.PlaceholderText="Monstername" Text="{Binding ElementName=MonsterList, Path=ViewModel.Filter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnTextChanged" Style="{StaticResource SingleLineTextBox}"/>
+
+        <ScrollViewer Grid.Row="1" Margin="0,4,0,0" VerticalScrollBarVisibility="Auto">
+            <ListView Name="MonstersItemsControl" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=MonsterList, Path=ViewModel.Monsters}" Style="{StaticResource BaseListView}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource ListViewItemBorder}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="20"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Source="{Binding Image}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" Text="{Binding Name}" Style="{StaticResource BoldTextBlock}"/>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Size}" Style="{StaticResource ItalicTextBlock}"/>
+                                    <TextBlock Text="{Binding Type}" Margin="10,0,0,0" Style="{StaticResource ItalicTextBlock}"/>
+                                    <TextBlock Text="{Binding Alignment}" Margin="10,0,0,0" Style="{StaticResource ItalicTextBlock}"/>
+                                </StackPanel>
+                                <fa:IconImage Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Icon="Diamond" Style="{StaticResource PrimaryImage}"/>
+                                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Text="{Binding ChallangeRating}" Style="{StaticResource CenteredTextBlock}"/>
+                            </Grid>
+
+                            <Border.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}"/>
+                                    <mdxaml:MarkdownScrollViewer xml:space="preserve" MarkdownStyleName="SasabuneStandard" Markdown="{Binding Actions}" Style="{StaticResource DefaultMarkdownScrollViewer}"/>
+                                </StackPanel>
+                            </Border.ToolTip>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
     </Grid>
 </UserControl>

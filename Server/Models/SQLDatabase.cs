@@ -2,7 +2,7 @@
 
 namespace Server.Models
 {
-    public class SQLDatabase : DbContext
+    public class SQLDatabase(DbContextOptions<SQLDatabase> options) : DbContext(options)
     {
         public DbSet<DbActiveCampaignElements> ActiveCampaignElements { get; set; } = null!;
         public DbSet<DbUser> Users { get; set; } = null!;
@@ -10,14 +10,11 @@ namespace Server.Models
         public DbSet<DbDiceRoll> DiceRolls { get; set; } = null!;
         public DbSet<DbUserInCampaign> UsersInCampaign { get; set; } = null!;
         public DbSet<DbMap> Maps { get; set; } = null!;
+        public DbSet<DbMonster> Monsters { get; set; } = null!;
         public DbSet<DbSound> Sounds { get; set; } = null!;
         public DbSet<DbCharacter> Characters { get; set; } = null!;
         public DbSet<DbCharactersInCampaign> CharactersInCampaign { get; set; } = null!;
         public DbSet<DbToken> Tokens { get; set; } = null!;
         public DbSet<DbTokensOnMap> TokensOnMap { get; set; } = null!;
-
-        public SQLDatabase(DbContextOptions<SQLDatabase> options) : base(options)
-        {
-        }
     }
 }

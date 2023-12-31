@@ -33,6 +33,7 @@ class ServerMain
         builder.Services.AddScoped<ICampaign, Campaign>();
         builder.Services.AddScoped<IScript, Script>();
         builder.Services.AddScoped<ISound, Sound>();
+        builder.Services.AddScoped<IMonster, Monster>();
 
         var app = builder.Build();
 

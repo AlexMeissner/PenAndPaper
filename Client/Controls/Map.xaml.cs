@@ -63,10 +63,15 @@ namespace Client.Controls
 
         private async void OnDrop(object sender, DragEventArgs e)
         {
+            var position = e.GetPosition(this);
+
             if (e.Data.GetData(typeof(CharacterOverviewItem)) is CharacterOverviewItem character)
             {
-                var position = e.GetPosition(this);
-                await ViewModel.CreateToken(position, character.CharacterId);
+                await ViewModel.CreateToken(TokenType.Character, position, character.CharacterId);
+            }
+            else if (e.Data.GetData(typeof(BaseMonsterData)) is BaseMonsterData monster)
+            {
+                await ViewModel.CreateToken(TokenType.Monster, position, monster.Id);
             }
         }
 
