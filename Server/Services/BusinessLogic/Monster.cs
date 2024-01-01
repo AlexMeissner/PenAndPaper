@@ -62,7 +62,6 @@ namespace Server.Services.BusinessLogic
                 Languages = payload.Languages,
                 ChallangeRating = payload.ChallangeRating,
                 Experience = payload.Experience,
-                Traits = payload.Traits,
                 Actions = payload.Actions,
                 Image = payload.Image
             };
@@ -128,7 +127,6 @@ namespace Server.Services.BusinessLogic
                 monster.Languages,
                 monster.ChallangeRating,
                 monster.Experience,
-                monster.Traits,
                 monster.Actions,
                 monster.Image);
         }
@@ -182,7 +180,6 @@ namespace Server.Services.BusinessLogic
                 x.Languages,
                 x.ChallangeRating,
                 x.Experience,
-                x.Traits,
                 x.Actions,
                 x.Image));
 

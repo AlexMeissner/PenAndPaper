@@ -4,6 +4,7 @@ using DataTransfer.Monster;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using static Client.Services.ServiceExtension;
 
@@ -57,9 +58,19 @@ namespace Client.ViewModels
         public string Languages { get; init; }
         public double ChallangeRating { get; init; }
         public int Experience { get; init; }
-        public string Traits { get; init; }
         public string Actions { get; init; }
         public BitmapImage Image { get; init; }
+        public Visibility DamageResistancesVisibility => string.IsNullOrEmpty(DamageResistances) ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility DamageImmunitiesVisibility => string.IsNullOrEmpty(DamageImmunities) ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ConditionImmunitiesVisibility => string.IsNullOrEmpty(ConditionImmunities) ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ImmunitiesVisibility =>
+            DamageResistancesVisibility == Visibility.Visible ||
+            DamageImmunitiesVisibility == Visibility.Visible ||
+            ConditionImmunitiesVisibility == Visibility.Visible ?
+            Visibility.Visible : Visibility.Collapsed;
+        public Visibility SensesVisibility => string.IsNullOrEmpty(Senses) ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility LanguagesVisibility => string.IsNullOrEmpty(Languages) ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ActionsVisibility => string.IsNullOrEmpty(Actions) ? Visibility.Collapsed : Visibility.Visible;
 
         public BaseMonsterData(MonsterDto monster)
         {
@@ -109,7 +120,6 @@ namespace Client.ViewModels
             Languages = monster.Languages;
             ChallangeRating = monster.ChallangeRating;
             Experience = monster.Experience;
-            Traits = monster.Traits;
             Actions = monster.Actions;
 
             var converter = new ByteArrayToBitmapImageConverter();

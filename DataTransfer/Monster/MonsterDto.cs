@@ -47,7 +47,6 @@
         string Languages,
         double ChallangeRating,
         int Experience,
-        string Traits,
         string Actions,
         byte[] Image);
 

@@ -19,6 +19,12 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <Style x:Key="CenteredBoldTextBlock" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
     <Style x:Key="Header" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlock}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontWeight" Value="Bold"/>

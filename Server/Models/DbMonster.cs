@@ -50,7 +50,6 @@ namespace Server.Models
         public string Languages { get; set; } = default!;
         public double ChallangeRating { get; set; }
         public int Experience { get; set; }
-        public string Traits { get; set; } = default!;
         public string Actions { get; set; } = default!;
         public byte[] Image { get; set; } = default!;
     }

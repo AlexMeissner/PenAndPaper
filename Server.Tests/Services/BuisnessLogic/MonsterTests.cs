@@ -25,7 +25,7 @@ namespace Server.Tests.Services.BuisnessLogic
              number, text, size, text, text, number, number, text, text, number, number, number, number,
              number, number, number, number, number, number, number, number, number, number, number, number,
              number, number, number, number, number, number, number, number, number, number, number, number,
-             number, number, text, text, text, text, text, fractal, number, text, text, image);
+             number, number, text, text, text, text, text, fractal, number, text, image);
 
             // Act
             var result = await service.Create(model);
@@ -127,7 +127,6 @@ namespace Server.Tests.Services.BuisnessLogic
                 dbMonster.Languages,
                 dbMonster.ChallangeRating,
                 dbMonster.Experience,
-                dbMonster.Traits,
                 dbMonster.Actions,
                 dbMonster.Image);
         }
