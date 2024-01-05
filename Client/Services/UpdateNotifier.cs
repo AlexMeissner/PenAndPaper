@@ -1,5 +1,6 @@
 ﻿using DataTransfer.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
@@ -20,11 +21,12 @@ namespace Client.Services
         event EventHandler SoundEffectChanged;
         event EventHandler CharacterChanged;
 
+        List<Delegate> GetSubscribers();
         Task SetCampaignAsync(int campaignId);
     }
 
     [SingletonService]
-    public class UpdateNotifier : IUpdateNotifier
+    public class UpdateNotifier(IEndPointProvider endPointProvider) : IUpdateNotifier
     {
         public event EventHandler? MapChanged;
         public event EventHandler? MapCollectionChanged;
@@ -35,12 +37,6 @@ namespace Client.Services
         public event EventHandler? CharacterChanged;
 
         private readonly ClientWebSocket _webSocket = new();
-        private readonly IEndPointProvider _endPointProvider;
-
-        public UpdateNotifier(IEndPointProvider endPointProvider)
-        {
-            _endPointProvider = endPointProvider;
-        }
 
         public async Task Close()
         {
@@ -48,21 +44,11 @@ namespace Client.Services
             _webSocket.Dispose();
         }
 
-        public async Task SetCampaignAsync(int campaignId)
-        {
-            if (_webSocket.State == WebSocketState.Open)
-            {
-                var message = JsonSerializer.Serialize(campaignId);
-                var buffer = Encoding.UTF8.GetBytes(message);
-                await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-        }
-
         public async Task Connect()
         {
             try
             {
-                var uri = new Uri(_endPointProvider.WebSocketBaseURL + "WebSocket");
+                var uri = new Uri(endPointProvider.WebSocketBaseURL + "WebSocket");
                 await _webSocket.ConnectAsync(uri, CancellationToken.None);
 
                 await ReceiveMessageAsync(_webSocket);
@@ -73,22 +59,40 @@ namespace Client.Services
             }
         }
 
-        private async Task ReceiveMessageAsync(ClientWebSocket webSocket)
+        public List<Delegate> GetSubscribers()
         {
-            while (_webSocket.State == WebSocketState.Open)
+            var eventHandlers = new List<Delegate?>([
+                MapChanged,
+                MapCollectionChanged,
+                TokenChanged,
+                DiceRolled,
+                AmbientSoundChanged,
+                SoundEffectChanged,
+                CharacterChanged]);
+
+            var subscriber = new List<Delegate>();
+
+            foreach (var eventHandler in eventHandlers)
             {
-                byte[] buffer = new byte[sizeof(int)];
-                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-                if (result.MessageType == WebSocketMessageType.Text)
+                if (eventHandler is not null)
                 {
-                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                    if (JsonSerializer.Deserialize<UpdateEntity>(message) is UpdateEntity entity)
+                    foreach (Delegate handler in eventHandler.GetInvocationList())
                     {
-                        InvokeEvent(entity);
+                        subscriber.Add(handler);
                     }
                 }
+            }
+
+            return subscriber;
+        }
+
+        public async Task SetCampaignAsync(int campaignId)
+        {
+            if (_webSocket.State == WebSocketState.Open)
+            {
+                var message = JsonSerializer.Serialize(campaignId);
+                var buffer = Encoding.UTF8.GetBytes(message);
+                await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
 
@@ -117,6 +121,25 @@ namespace Client.Services
                 case UpdateEntity.Character:
                     CharacterChanged?.Invoke(this, EventArgs.Empty);
                     break;
+            }
+        }
+
+        private async Task ReceiveMessageAsync(ClientWebSocket webSocket)
+        {
+            while (_webSocket.State == WebSocketState.Open)
+            {
+                byte[] buffer = new byte[sizeof(int)];
+                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                    if (JsonSerializer.Deserialize<UpdateEntity>(message) is UpdateEntity entity)
+                    {
+                        InvokeEvent(entity);
+                    }
+                }
             }
         }
     }
