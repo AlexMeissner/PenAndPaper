@@ -6,6 +6,7 @@
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:viewModels="clr-namespace:Client.ViewModels"
              Loaded="OnLoaded"
+             Unloaded="OnUnloaded"
              d:DataContext="{d:DesignInstance viewModels:CharacterListViewModel}"
              Name="CharacterListControl"
              mc:Ignorable="d" 

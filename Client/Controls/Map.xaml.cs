@@ -33,6 +33,11 @@ namespace Client.Controls
             await ViewModel.UpdateTokens();
         }
 
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UnsubscribeEventHandlers();
+        }
+
         private async void OnDiceRolled(object? sender, EventArgs e)
         {
             await Dispatcher.Invoke(async () =>

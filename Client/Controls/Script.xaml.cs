@@ -21,5 +21,10 @@ namespace Client.Controls
         {
             await ViewModel.OnLoaded();
         }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UnsubscribeEventHandlers();
+        }
     }
 }

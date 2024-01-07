@@ -23,6 +23,11 @@ namespace Client.Controls
             await ViewModel.Load();
         }
 
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UnsubscribeEventHandlers();
+        }
+
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed &&

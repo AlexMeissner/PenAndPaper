@@ -26,18 +26,26 @@ namespace Client.ViewModels
         private readonly IActiveMapApi _activeMapApi;
         private readonly ISessionData _sessionData;
         private readonly IScriptApi _scriptApi;
+        private readonly IUpdateNotifier _updateNotifier;
+
 
         public ScriptViewModel(IScriptApi scriptApi, IActiveMapApi activeMapApi, ISessionData sessionData, IUpdateNotifier updateNotifier)
         {
             _activeMapApi = activeMapApi;
             _sessionData = sessionData;
             _scriptApi = scriptApi;
+            _updateNotifier = updateNotifier;
 
             CancelCommand = new RelayCommand(OnCancel);
             EditCommand = new RelayCommand(OnEdit);
             SaveCommand = new AsyncCommand(OnSave);
 
-            updateNotifier.MapChanged += OnMapChanged;
+            _updateNotifier.MapChanged += OnMapChanged;
+        }
+
+        public void UnsubscribeEventHandlers()
+        {
+            _updateNotifier.MapChanged -= OnMapChanged;
         }
 
         public void OnEdit()

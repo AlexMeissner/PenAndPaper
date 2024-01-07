@@ -17,6 +17,7 @@ namespace Client.ViewModels
         private readonly IMapOverviewApi _mapOverviewApi;
         private readonly IActiveMapApi _activeMapApi;
         private readonly ISessionData _sessionData;
+        private readonly IUpdateNotifier _updateNotifier;
 
         public string Filter { get; set; } = string.Empty;
 
@@ -26,17 +27,23 @@ namespace Client.ViewModels
         public ICommand PlayCommand { get; set; }
 
 
-        public MapOverviewViewModel(IMapApi mapApi, IMapOverviewApi mapOverviewApi, IActiveMapApi activeMapApi, ISessionData sessionData, IUpdateNotifier campaignUpdates)
+        public MapOverviewViewModel(IMapApi mapApi, IMapOverviewApi mapOverviewApi, IActiveMapApi activeMapApi, ISessionData sessionData, IUpdateNotifier updateNotifier)
         {
             _mapApi = mapApi;
             _mapOverviewApi = mapOverviewApi;
             _activeMapApi = activeMapApi;
             _sessionData = sessionData;
+            _updateNotifier = updateNotifier;
 
-            campaignUpdates.MapCollectionChanged += OnMapCollectionChanged;
+            _updateNotifier.MapCollectionChanged += OnMapCollectionChanged;
 
             DeleteCommand = new AsyncCommand<MapOverviewItemDto>(OnDelete);
             PlayCommand = new AsyncCommand<MapOverviewItemDto>(OnPlay);
+        }
+
+        public void UnsubscribeEventHandlers()
+        {
+            _updateNotifier.MapCollectionChanged -= OnMapCollectionChanged;
         }
 
         public async Task<HttpResponse<MapDto>> GetMap(MapOverviewItemDto item)

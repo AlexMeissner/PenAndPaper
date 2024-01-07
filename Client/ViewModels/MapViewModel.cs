@@ -29,6 +29,7 @@ namespace Client.ViewModels
         private readonly ITokenApi _tokenApi;
         private readonly IRollApi _rollApi;
         private readonly IActiveMapApi _activeMapApi;
+        private readonly IUpdateNotifier _updateNotifier;
 
         private Point _initialMousePosition;
         private Point _initialMapOffset;
@@ -50,16 +51,17 @@ namespace Client.ViewModels
         public ICommand RollD12Command { get; set; }
         public ICommand RollD20Command { get; set; }
 
-        public MapViewModel(ISessionData sessionData, IMapApi mapApi, ITokenApi tokenApi, IRollApi rollApi, IActiveMapApi activeMapApi, IUpdateNotifier campaignUpdates)
+        public MapViewModel(ISessionData sessionData, IMapApi mapApi, ITokenApi tokenApi, IRollApi rollApi, IActiveMapApi activeMapApi, IUpdateNotifier updateNotifier)
         {
             _sessionData = sessionData;
             _mapApi = mapApi;
             _tokenApi = tokenApi;
             _rollApi = rollApi;
             _activeMapApi = activeMapApi;
+            _updateNotifier = updateNotifier;
 
-            campaignUpdates.MapChanged += OnMapChanged;
-            campaignUpdates.TokenChanged += OnTokenChanged;
+            _updateNotifier.MapChanged += OnMapChanged;
+            _updateNotifier.TokenChanged += OnTokenChanged;
 
             RollD4Command = new AsyncCommand(OnRollD4);
             RollD6Command = new AsyncCommand(OnRollD6);
@@ -67,6 +69,12 @@ namespace Client.ViewModels
             RollD10Command = new AsyncCommand(OnRollD10);
             RollD12Command = new AsyncCommand(OnRollD12);
             RollD20Command = new AsyncCommand(OnRollD20);
+        }
+
+        public void UnsubscribeEventHandlers()
+        {
+            _updateNotifier.MapChanged -= OnMapChanged;
+            _updateNotifier.TokenChanged -= OnTokenChanged;
         }
 
         public Task CreateToken(TokenType type, Point position, int id)

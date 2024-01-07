@@ -32,6 +32,11 @@ namespace Client.Controls
             await ViewModel.Update();
         }
 
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.UnsubscribeEventHandlers();
+        }
+
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             CollectionViewSource.GetDefaultView(OverviewItemsControl.ItemsSource).Refresh();

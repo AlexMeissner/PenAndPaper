@@ -24,4 +24,12 @@
         <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Primary_1}"/>
     </Style>
 
+    <Style x:Key="DangerImage" TargetType="fa:IconImage" BasedOn="{StaticResource BaseIconImage}">
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Danger_1}"/>
+    </Style>
+
+    <Style x:Key="SuccessImage" TargetType="fa:IconImage" BasedOn="{StaticResource BaseIconImage}">
+        <Setter Property="Foreground" Value="{DynamicResource Theme_Color_Success_1}"/>
+    </Style>
+
 </ResourceDictionary>

@@ -9,6 +9,7 @@
              d:DataContext="{d:DesignInstance viewModels:MapViewModel}"
              Name="MapControl"
              Loaded="OnLoaded"
+             Unloaded="OnUnloaded"
              mc:Ignorable="d"
              AllowDrop="True"
              Drop="OnDrop"

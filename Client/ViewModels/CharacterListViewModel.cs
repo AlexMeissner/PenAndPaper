@@ -17,25 +17,32 @@ namespace Client.ViewModels
         private readonly ICharacterApi _characterApi;
         private readonly ISessionData _sessionData;
         private readonly IPopupPage _popupPage;
+        private readonly IUpdateNotifier _updateNotifier;
 
         public ICommand OpenCharacterCreationCommand { get; }
-        public ObservableCollection<CharacterOverviewItem> Items { get; init; } = new();
+        public ObservableCollection<CharacterOverviewItem> Items { get; init; } = [];
 
-        public CharacterListViewModel(ICharacterApi characterApi, ISessionData sessionData, IPopupPage popupPage, IUpdateNotifier campaignUpdates)
+        public CharacterListViewModel(ICharacterApi characterApi, ISessionData sessionData, IPopupPage popupPage, IUpdateNotifier updateNotifier)
         {
             _characterApi = characterApi;
             _sessionData = sessionData;
             _popupPage = popupPage;
+            _updateNotifier = updateNotifier;
 
             OpenCharacterCreationCommand = new RelayCommand(OpenCharacterCreation);
-
-            campaignUpdates.CharacterChanged += OnCharacterChanged;
         }
 
         public async Task Load()
         {
             var response = await _characterApi.GetOverviewAsync(_sessionData.CampaignId);
             response.Match(characterList => Items.ReplaceWith(characterList.Items));
+
+            _updateNotifier.CharacterChanged += OnCharacterChanged;
+        }
+
+        public void UnsubscribeEventHandlers()
+        {
+            _updateNotifier.CharacterChanged -= OnCharacterChanged;
         }
 
         private async void OnCharacterChanged(object? sender, EventArgs e)

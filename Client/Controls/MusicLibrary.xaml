@@ -21,7 +21,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Ambient" FontWeight="Bold" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Ambient" Style="{StaticResource CenteredBoldTextBlock}"/>
         
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -31,46 +31,20 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="2" Command="{Binding ElementName=MusicLibraryControl, Path=ViewModel.PlayPlaylistCommand}">
-                <Button.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-                <fa:IconImage Icon="Play"/>
+            <Button Grid.Column="0" Margin="2" Command="{Binding ElementName=MusicLibraryControl, Path=ViewModel.PlayPlaylistCommand}" Style="{StaticResource PrimaryEmpty}">
+                <fa:IconImage Icon="Play" Margin="4" Style="{StaticResource SuccessImage}"/>
             </Button>
-            <Button Grid.Column="1" Margin="2" Command="{Binding ElementName=MusicLibraryControl, Path=ViewModel.StopPlaylistCommand}">
-                <Button.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-                <fa:IconImage Icon="Stop"/>
+            <Button Grid.Column="1" Margin="2" Command="{Binding ElementName=MusicLibraryControl, Path=ViewModel.StopPlaylistCommand}" Style="{StaticResource PrimaryEmpty}">
+                <fa:IconImage Icon="Stop" Margin="4" Style="{StaticResource DangerImage}"/>
             </Button>
-            <TextBox Grid.Column="2" Margin="2" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientFilter, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" TextChanged="OnAmbientFilterChanged">
-                <TextBox.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>
-            <Button Grid.Column="3" Margin="2" Click="OnAddAmbientSound">
-                <Button.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-                <fa:IconImage Icon="PlusCircle"/>
+            <TextBox Grid.Column="2" Margin="2" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientFilter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnAmbientFilterChanged" Style="{StaticResource SingleLineTextBox}"/>
+            <Button Grid.Column="3" Margin="2" Click="OnAddAmbientSound" Style="{StaticResource PrimaryEmpty}">
+                <fa:IconImage Icon="Plus" Margin="4" Style="{StaticResource SuccessImage}"/>
             </Button>
         </Grid>
 
-        <ScrollViewer Grid.Row="2" Grid.Column="0" Margin="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Name="AmbientControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientSounds}">
-                <ItemsControl.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </ItemsControl.Resources>
+        <ScrollViewer Grid.Row="2" Grid.Column="0" Margin="2" Style="{StaticResource DefaultScrollViewer}">
+            <ItemsControl Name="AmbientControl" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.AmbientSounds}" Style="{StaticResource BaseItemsControl}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="1">
@@ -79,8 +53,8 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Margin="1" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayPlaylistCommand}" CommandParameter="{Binding}">
-                                <fa:IconImage Icon="PlayCircle"/>
+                            <Button Grid.Column="0" Height="25" Margin="2" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayPlaylistCommand}" CommandParameter="{Binding}" Style="{StaticResource SecondaryEmpty}">
+                                <fa:IconImage Icon="Play" Margin="4" Style="{StaticResource DefaultImage}"/>
                             </Button>
                             <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" Text="{Binding Name}"/>
 
@@ -102,7 +76,7 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="Effekte" FontWeight="Bold" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="Effekte" Style="{StaticResource CenteredBoldTextBlock}"/>
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
@@ -110,30 +84,14 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.EffectsFilter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnEffectsFilterChanged">
-                <TextBox.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>
-            <Button Grid.Column="1" Margin="2" Click="OnAddSoundEffect">
-                <Button.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-                <fa:IconImage Icon="PlusCircle"/>
+            <TextBox Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding ElementName=MusicLibraryControl, Path=ViewModel.EffectsFilter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnEffectsFilterChanged" Style="{StaticResource SingleLineTextBox}"/>
+            <Button Grid.Column="1" Margin="2" Click="OnAddSoundEffect" Style="{StaticResource PrimaryEmpty}">
+                <fa:IconImage Icon="Plus" Margin="4" Style="{StaticResource SuccessImage}"/>
             </Button>
         </Grid>
 
-        <ScrollViewer Grid.Row="2" Grid.Column="1" Margin="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl Name="EffectsControl" BorderThickness="1" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.Effects}">
-                <ItemsControl.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </ItemsControl.Resources>
+        <ScrollViewer Grid.Row="2" Grid.Column="1" Margin="2" Style="{StaticResource DefaultScrollViewer}">
+            <ItemsControl Name="EffectsControl" BorderBrush="{DynamicResource Theme_Color_Primary_2}" ItemsSource="{Binding ElementName=MusicLibraryControl, Path=ViewModel.Effects}" Style="{StaticResource BaseItemsControl}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="1">
@@ -142,10 +100,10 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Margin="1" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayEffectCommand}" CommandParameter="{Binding}">
-                                <fa:IconImage Icon="PlayCircle"/>
+                            <Button Grid.Column="0" Height="25" Margin="2" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayEffectCommand}" CommandParameter="{Binding}" Style="{StaticResource SecondaryEmpty}">
+                                <fa:IconImage Icon="Play" Margin="4" Style="{StaticResource DefaultImage}"/>
                             </Button>
-                            <TextBlock Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" Text="{Binding Name}"/>
+                            <TextBlock Grid.Column="2" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" Text="{Binding Name}" Style="{StaticResource BaseTextBlock}"/>
 
                             <Grid.ToolTip>
                                 <StackPanel>
