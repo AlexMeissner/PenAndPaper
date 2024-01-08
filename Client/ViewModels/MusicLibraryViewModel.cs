@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media.Effects;
 using static Client.Services.ServiceExtension;
 
 namespace Client.ViewModels
@@ -18,8 +17,8 @@ namespace Client.ViewModels
     [TransistentService]
     public class MusicLibraryViewModel : BaseViewModel
     {
-        public ObservableCollection<SoundOverviewItemDto> AmbientSounds { get; set; } = new();
-        public ObservableCollection<SoundOverviewItemDto> Effects { get; set; } = new();
+        public ObservableCollection<SoundOverviewItemDto> AmbientSounds { get; set; } = [];
+        public ObservableCollection<SoundOverviewItemDto> Effects { get; set; } = [];
 
         public string AmbientFilter { get; set; } = string.Empty;
         public string EffectsFilter { get; set; } = string.Empty;
@@ -35,7 +34,7 @@ namespace Client.ViewModels
         private readonly IAudioPlayer _audioPlayer;
 
         private int PlaylistIndex = 0;
-        private IList<SoundOverviewItemDto> Playlist = new List<SoundOverviewItemDto>();
+        private List<SoundOverviewItemDto> Playlist = [];
 
         public MusicLibraryViewModel(ISessionData sessionData, ISoundApi soundApi, IAudioPlayer audioPlayer, IActiveSoundApi activeSoundApi)
         {
@@ -142,12 +141,12 @@ namespace Client.ViewModels
             if (item is SoundOverviewItemDto soundOverviewItem)
             {
                 if (string.IsNullOrEmpty(AmbientFilter) ||
-                    soundOverviewItem.Tags.Any(x => x.ToUpper().Contains(AmbientFilter.ToUpper())))
+                    soundOverviewItem.Tags.Any(x => x.Contains(AmbientFilter, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     return true;
                 }
 
-                return soundOverviewItem.Name.ToUpper().Contains(AmbientFilter.ToUpper());
+                return soundOverviewItem.Name.Contains(AmbientFilter, StringComparison.CurrentCultureIgnoreCase);
             }
 
             return false;
@@ -158,12 +157,12 @@ namespace Client.ViewModels
             if (item is SoundOverviewItemDto soundOverviewItem)
             {
                 if (string.IsNullOrEmpty(EffectsFilter) ||
-                    soundOverviewItem.Tags.Any(x => x.ToUpper().Contains(EffectsFilter.ToUpper())))
+                    soundOverviewItem.Tags.Any(x => x.Contains(EffectsFilter, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     return true;
                 }
 
-                return soundOverviewItem.Name.ToUpper().Contains(EffectsFilter.ToUpper());
+                return soundOverviewItem.Name.Contains(EffectsFilter, StringComparison.CurrentCultureIgnoreCase);
             }
 
             return false;

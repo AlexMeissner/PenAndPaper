@@ -108,9 +108,10 @@ namespace Client.Services
             activeSoundResponse.Match(
                 async success =>
                 {
+                    Stop();
+
                     if (success.AmbientId == -1)
                     {
-                        Stop();
                         return;
                     }
 

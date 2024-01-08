@@ -53,7 +53,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0" Height="25" Margin="2" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayPlaylistCommand}" CommandParameter="{Binding}" Style="{StaticResource SecondaryEmpty}">
+                            <Button Grid.Column="0" Height="25" Margin="2" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.PlayAmbientCommand}" CommandParameter="{Binding}" Style="{StaticResource SecondaryEmpty}">
                                 <fa:IconImage Icon="Play" Margin="4" Style="{StaticResource DefaultImage}"/>
                             </Button>
                             <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="14" Text="{Binding Name}"/>

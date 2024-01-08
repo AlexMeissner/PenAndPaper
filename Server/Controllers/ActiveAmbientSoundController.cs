@@ -38,26 +38,14 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(ActiveAmbientSoundDto payload)
         {
-            try
+            var updated = await _sound.PlayAmbient(payload);
+
+            if (updated is false)
             {
-                var updated = await _sound.PlayAmbient(payload);
-
-                if (updated is null)
-                {
-                    return NotFound(payload);
-                }
-
-                if (updated is false)
-                {
-                    return this.NotModified(payload);
-                }
-
-                return Ok(payload);
+                return NotFound(payload);
             }
-            catch (Exception exception)
-            {
-                return this.InternalServerError(exception);
-            }
+
+            return Ok(payload);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Server.Services.BusinessLogic
     {
         Task<ActiveAmbientSoundDto?> GetActiveAmbientSound(int campaignId);
         Task<ActiveSoundEffectDto?> GetActiveSoundEffect(int campaignId);
-        Task<bool?> PlayAmbient(ActiveAmbientSoundDto sound);
+        Task<bool> PlayAmbient(ActiveAmbientSoundDto sound);
         Task<bool> PlayEffect(ActiveSoundEffectDto sound);
     }
 
@@ -47,16 +47,11 @@ namespace Server.Services.BusinessLogic
             return new ActiveSoundEffectDto(activeCampaignElements.CampaignId, activeCampaignElements.EffectId);
         }
 
-        public async Task<bool?> PlayAmbient(ActiveAmbientSoundDto sound)
+        public async Task<bool> PlayAmbient(ActiveAmbientSoundDto sound)
         {
             var activeCampaignElements = await _activeElementsRepository.FirstAsync(x => x.CampaignId == sound.CampaignId);
 
             if (activeCampaignElements is null)
-            {
-                return null;
-            }
-
-            if (activeCampaignElements.AmbientId == sound.AmbientId)
             {
                 return false;
             }
