@@ -11,11 +11,13 @@ namespace Client.Pages
     public partial class GamemasterView : Page
     {
         private readonly IPageNavigator _pageNavigator;
+        private readonly IAudioPlayer _audioPlayer;
 
         public IPopupPage PopupPage { get; }
 
-        public GamemasterView(IControlProvider controlProvider, IPageNavigator pageNavigator, IPopupPage popupPage)
+        public GamemasterView(IControlProvider controlProvider, IPageNavigator pageNavigator, IPopupPage popupPage, IAudioPlayer audioPlayer)
         {
+            _audioPlayer = audioPlayer;
             _pageNavigator = pageNavigator;
             PopupPage = popupPage;
 
@@ -31,6 +33,7 @@ namespace Client.Pages
 
         private void OnExit(object sender, RoutedEventArgs e)
         {
+            _audioPlayer.Stop();
             _pageNavigator.OpenPage<CampaignSelectionPage>();
         }
 

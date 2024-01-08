@@ -9,6 +9,7 @@ namespace Client.Services
     public interface IAudioPlayer
     {
         void Play(int id);
+        void Stop();
 
         event EventHandler Finished;
         event EventHandler Stopped;
@@ -81,7 +82,7 @@ namespace Client.Services
             WaveOut.Play();
         }
 
-        private void Stop()
+        public void Stop()
         {
             WaveOut?.Stop();
         }
