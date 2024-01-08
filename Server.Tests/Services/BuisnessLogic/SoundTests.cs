@@ -177,7 +177,7 @@ namespace Server.Tests.Services.BuisnessLogic
         }
 
         [TestMethod]
-        public async Task PlayEffect_ActiveCampaignElementsNotFound_ReturnsNull()
+        public async Task PlayEffect_ActiveCampaignElementsNotFound_ReturnsFalse()
         {
             // Arrange
             var repository = Substitute.For<IRepository<DbActiveCampaignElements>>();
@@ -187,33 +187,6 @@ namespace Server.Tests.Services.BuisnessLogic
             int campaignId = 1;
             int effectId = 1;
             repository.FirstAsync(Arg.Any<Expression<Func<DbActiveCampaignElements, bool>>>()).Returns(Task.FromResult<DbActiveCampaignElements?>(null));
-
-            var dataTransferObject = new ActiveSoundEffectDto(campaignId, effectId);
-
-            // Act
-            var result = await sound.PlayEffect(dataTransferObject);
-
-            // Assert
-            Assert.IsNull(result);
-        }
-
-        [TestMethod]
-        [DataRow(1, -1)]
-        [DataRow(3, 4)]
-        [DataRow(int.MaxValue, int.MaxValue)]
-        public async Task PlayEffect_ActiveCampaignElementsFound_ReturnsFalse(int campaignId, int effectId)
-        {
-            // Arrange
-            var repository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var updateNotifier = Substitute.For<IUpdateNotifier>();
-            var sound = new Sound(repository, updateNotifier);
-
-            var activeCampaignElements = new DbActiveCampaignElements
-            {
-                CampaignId = campaignId,
-                EffectId = effectId
-            };
-            repository.FirstAsync(Arg.Any<Expression<Func<DbActiveCampaignElements, bool>>>()).Returns(activeCampaignElements);
 
             var dataTransferObject = new ActiveSoundEffectDto(campaignId, effectId);
 
