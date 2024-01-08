@@ -9,15 +9,8 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WebSocketController : ControllerBase
+    public class WebSocketController(IUpdateNotifier updateNotifier, ILogger<WebSocketController> logger) : ControllerBase
     {
-        private readonly IUpdateNotifier _updateNotifier;
-
-        public WebSocketController(IUpdateNotifier updateNotifier)
-        {
-            _updateNotifier = updateNotifier;
-        }
-
         [HttpGet]
         public async Task Get()
         {
@@ -28,7 +21,10 @@ namespace Server.Controllers
                 if (HttpContext.WebSockets.IsWebSocketRequest)
                 {
                     webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                    _updateNotifier.Add(webSocket);
+                    updateNotifier.Add(webSocket);
+
+                    logger.LogInformation("Websocket created ({ip})", HttpContext.Connection.RemoteIpAddress);
+
                     await SocketLifeCircle(webSocket);
                 }
             }
@@ -36,7 +32,8 @@ namespace Server.Controllers
             {
                 if (webSocket is not null)
                 {
-                    _updateNotifier.Remove(webSocket);
+                    updateNotifier.Remove(webSocket);
+                    logger.LogInformation("Websocket closed ({ip})", HttpContext.Connection.RemoteIpAddress);
                 }
             }
         }
@@ -56,7 +53,7 @@ namespace Server.Controllers
 
                     if (JsonSerializer.Deserialize<int>(message) is int campaignId)
                     {
-                        _updateNotifier.SetCampaignId(webSocket, campaignId);
+                        updateNotifier.SetCampaignId(webSocket, campaignId);
                     }
                 }
 
