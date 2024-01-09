@@ -20,9 +20,9 @@ class ServerMain
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger);
 
-        string DbPath = @"W:\\Code\\PenAndPaper\\Database.db"; // TODO
+        var dbPath = GetDatabasePath("Database.db");
 
-        builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={DbPath}"));
+        builder.Services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={dbPath}"));
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -56,5 +56,25 @@ class ServerMain
         app.MapControllers();
 
         app.Run();
+    }
+
+    private static string GetDatabasePath(string databaseName)
+    {
+        var basePath = AppDomain.CurrentDomain.BaseDirectory;
+        var databasePath = Path.Combine(basePath, databaseName);
+
+        if (File.Exists(databasePath))
+        {
+            return databasePath;
+        }
+
+        databasePath = Path.Combine(basePath, "..", "..", "..", "..", databaseName);
+
+        if (File.Exists(databasePath))
+        {
+            return databasePath;
+        }
+
+        throw new FileNotFoundException("Database file not found.");
     }
 }
