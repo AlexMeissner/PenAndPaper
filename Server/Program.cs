@@ -7,13 +7,14 @@ class ServerMain
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.CreateLogger();
+        builder.Configuration.AddJsonFile("appsettings.json");
 
-        builder.Services.AddDatabase();
+        builder.Services.AddDatabase(builder.Configuration);
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingletonServices();
-        builder.Services.AddScropedServices();
+        builder.Services.AddScopedServices();
 
         var app = builder.Build();
 

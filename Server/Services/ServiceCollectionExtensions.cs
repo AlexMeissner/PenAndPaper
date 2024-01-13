@@ -6,7 +6,7 @@ namespace Server.Services
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddScropedServices(this IServiceCollection services)
+        public static IServiceCollection AddScopedServices(this IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ICampaign, Campaign>();
@@ -24,12 +24,15 @@ namespace Server.Services
             return services;
         }
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services)
+        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfigurationManager configurationManager)
         {
+#if DEBUG
             var dbPath = GetDatabasePath("Database.db");
-
             services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source={dbPath}"));
-
+#else
+            var connectionString = configurationManager.GetConnectionString("Database");
+            services.AddDbContext<SQLDatabase>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+#endif
             return services;
         }
 
