@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Server.Middleware;
 using Server.Models;
 using Server.Services;
@@ -11,14 +10,7 @@ class ServerMain
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(builder.Configuration)
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .CreateLogger();
-
-        builder.Logging.ClearProviders();
-        builder.Logging.AddSerilog(logger);
+        builder.CreateLogger();
 
         var dbPath = GetDatabasePath("Database.db");
 
@@ -39,11 +31,10 @@ class ServerMain
 
         // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
         // https://localhost:7099/swagger/index.html
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+#if DEBUG
+        app.UseSwagger();
+        app.UseSwaggerUI();
+#endif
 
         app.UseMiddleware<HttpLogger>();
 
@@ -55,7 +46,26 @@ class ServerMain
 
         app.MapControllers();
 
+        MigrateDatabase(app);
+
         app.Run();
+    }
+
+    private static void MigrateDatabase(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            var dbContext = services.GetRequiredService<SQLDatabase>();
+            dbContext.Database.Migrate();
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<ServerMain>>();
+            logger.LogError(ex, "An error occurred applying migrations.");
+        }
     }
 
     private static string GetDatabasePath(string databaseName)
