@@ -27,4 +27,4 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Define the entry point for your application
-CMD ["./Server.dll"]
+ENTRYPOINT ["dotnet", "Server.dll"]
