@@ -5,8 +5,11 @@
 ## Download
 ``sudo docker pull mysql``
 
-## Start
+## Create
 ``sudo docker run -d --name MysqlDatabase -e MYSQL_ROOT_PASSWORD=Wurst007 -p 3306:3306 mysql``
+
+## Start
+``sudo docker start MysqlDatabase``
 
 # Pen and Paper Docker Image
 ## Download
@@ -16,7 +19,13 @@
 
 ``sudo docker pull alexmeissner/pen_and_paper_server``
 
-## Start
+## Create
 **sudo should not be used here**
 
 ``sudo docker run -d --name PenAndPaperServer -p 80:80 -p 443:443 alexmeissner/pen_and_paper_server``
+
+## Start
+``sudo docker start PenAndPaperServer``
+
+# Container Output
+``sudo docker logs <containername>``
