@@ -6,19 +6,12 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ScriptController : ControllerBase
+    public class ScriptController(IScriptManager scriptManager) : ControllerBase
     {
-        private readonly IScript _script;
-
-        public ScriptController(IScript script)
-        {
-            _script = script;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int mapId)
         {
-            var script = await _script.Get(mapId);
+            var script = await scriptManager.Get(mapId);
 
             if (script is null)
             {
@@ -31,7 +24,7 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(ScriptDto payload)
         {
-            var updated = await _script.Update(payload);
+            var updated = await scriptManager.Update(payload);
 
             if (updated is null)
             {

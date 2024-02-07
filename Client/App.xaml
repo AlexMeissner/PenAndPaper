@@ -11,11 +11,15 @@
                 <ResourceDictionary Source="Resources/Converters.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/BorderStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/CheckboxStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/GridStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GridSplitterStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/HyperlinkStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/IconImageStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ItemsControlStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ScrollbarStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/SliderStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ListBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListViewStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/PasswordBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TabControlsStyles.xaml"/>

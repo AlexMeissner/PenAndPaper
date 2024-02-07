@@ -10,68 +10,57 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RollController : ControllerBase
+    public class RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-        private readonly IUpdateNotifier _updateNotifier;
-
-        public RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
-        {
-            _dbContext = dbContext;
-            _updateNotifier = updateNotifier;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
         {
-            try
-            {
-                var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == campaignId);
-                var payload = JsonSerializer.Deserialize<DiceRollResultDto>(diceRoll.Roll)!;
+            var campaign = await dbContext.Campaigns.FindAsync(campaignId);
 
-                return Ok(payload);
-            }
-            catch (Exception exception)
+            if (campaign is null)
             {
-                return this.InternalServerError(exception);
+                return NotFound(campaignId);
             }
+
+            var payload = JsonSerializer.Deserialize<DiceRollResultDto>(campaign.Roll)!;
+
+            return Ok(payload);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(RollDiceDto payload)
         {
-            try
+            var campaign = await dbContext.Campaigns.FindAsync(payload.CampaignId);
+
+            if (campaign is null)
             {
-                var random = new Random();
-                int max = DiceToInt(payload.Dice);
-                int roll = random.Next(1, max + 1);
-
-                var player = await _dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
-
-                var successes = new List<bool>();
-
-                for (int i = 1; i <= max; ++i)
-                {
-                    bool success = i <= roll;
-                    successes.Add(success);
-                }
-
-                var successesRandomOrder = successes.OrderBy(x => random.Next()).ToList();
-                var diceRollResult = new DiceRollResultDto(player.Username, successesRandomOrder);
-
-                var diceRoll = await _dbContext.DiceRolls.FirstAsync(x => x.CampaignId == payload.CampaignId);
-                diceRoll.Roll = JsonSerializer.Serialize(diceRollResult);
-
-                await _dbContext.SaveChangesAsync();
-
-                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Dice);
-
-                return Ok(diceRoll);
+                return NotFound();
             }
-            catch (Exception exception)
+
+            var random = new Random();
+            int max = DiceToInt(payload.Dice);
+            int roll = random.Next(1, max + 1);
+
+            var player = await dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
+
+            var successes = new List<bool>();
+
+            for (int i = 1; i <= max; ++i)
             {
-                return this.InternalServerError(exception);
+                bool success = i <= roll;
+                successes.Add(success);
             }
+
+            var successesRandomOrder = successes.OrderBy(x => random.Next()).ToList();
+            var diceRollResult = new DiceRollResultDto(player.Username, successesRandomOrder);
+
+            campaign.Roll = JsonSerializer.Serialize(diceRollResult);
+
+            await dbContext.SaveChangesAsync();
+
+            await updateNotifier.Send(payload.CampaignId, UpdateEntity.Dice);
+
+            return Ok(campaign);
         }
 
         private static int DiceToInt(Dice dice) => dice switch

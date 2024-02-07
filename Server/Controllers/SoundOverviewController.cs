@@ -6,21 +6,14 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SoundOverviewController : ControllerBase
+    public class SoundOverviewController(SQLDatabase dbContext) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-
-        public SoundOverviewController(SQLDatabase dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
             try
             {
-                var sounds = _dbContext.Sounds.Select(x => new { x.Id, x.Name, x.Type, x.Tags });
+                var sounds = dbContext.Sounds.Select(x => new { x.Id, x.Name, x.Type, x.Tags });
 
                 var items = new List<SoundOverviewItemDto>();
 

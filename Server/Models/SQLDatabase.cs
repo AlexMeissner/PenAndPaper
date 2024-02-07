@@ -4,17 +4,22 @@ namespace Server.Models
 {
     public class SQLDatabase(DbContextOptions<SQLDatabase> options) : DbContext(options)
     {
-        public DbSet<DbActiveCampaignElements> ActiveCampaignElements { get; set; } = null!;
-        public DbSet<DbUser> Users { get; set; } = null!;
-        public DbSet<DbCampaign> Campaigns { get; set; } = null!;
-        public DbSet<DbDiceRoll> DiceRolls { get; set; } = null!;
-        public DbSet<DbUserInCampaign> UsersInCampaign { get; set; } = null!;
-        public DbSet<DbMap> Maps { get; set; } = null!;
-        public DbSet<DbMonster> Monsters { get; set; } = null!;
-        public DbSet<DbSound> Sounds { get; set; } = null!;
-        public DbSet<DbCharacter> Characters { get; set; } = null!;
-        public DbSet<DbCharactersInCampaign> CharactersInCampaign { get; set; } = null!;
-        public DbSet<DbToken> Tokens { get; set; } = null!;
-        public DbSet<DbTokensOnMap> TokensOnMap { get; set; } = null!;
+        public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<Map> Maps { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Sound> Sounds { get; set; }
+        public DbSet<Character> Characters { get; set; }
+        public DbSet<Monster> Monsters { get; set; }
+        public DbSet<Token> Tokens { get; set; }
+        public DbSet<CharacterToken> CharacterTokens { get; set; }
+        public DbSet<MonsterToken> MonsterTokens { get; set; }
+        public DbSet<Note> Notes { get; set; }
+        public DbSet<CharacterNote> CharacterNotes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Token>().UseTptMappingStrategy();
+            modelBuilder.Entity<Note>().UseTptMappingStrategy();
+        }
     }
 }

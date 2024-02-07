@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Server.Models;
 using System.Linq.Expressions;
 
@@ -6,64 +7,53 @@ namespace Server.Services
 {
     public interface IRepository<T> where T : class
     {
-        Task AddAsync(T entity);
-        Task<T?> FirstAsync(Expression<Func<T, bool>> predicate);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
-        Task RemoveAsync(T entity);
+        Task<T?> FirstOrDefaultAsync();
+        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> ToListAsync();
+        Task<T?> FindAsync(int id);
+        IQueryable<T> Include(string navigationPropertyPath);
+        IIncludableQueryable<T, TProperty> Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath);
         IQueryable<TResult> Select<TResult>(Expression<Func<T, TResult>> selector);
-        Task UpdateAsync(T entity);
         IQueryable<T> Where(Expression<Func<T, bool>> predicate);
     }
 
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T>(SQLDatabase context) : IRepository<T> where T : class
     {
-        private readonly DbContext _context;
-        private readonly DbSet<T> _set;
+        private readonly DbSet<T> _set = context.Set<T>();
 
-        public Repository(SQLDatabase context)
+        public async Task<T?> FirstOrDefaultAsync()
         {
-            _context = context;
-            _set = context.Set<T>();
+            return await _set.FirstOrDefaultAsync();
         }
 
-        public async Task AddAsync(T entity)
-        {
-            await _set.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<T?> FirstAsync(Expression<Func<T, bool>> predicate)
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
             return await _set.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> ToListAsync()
         {
             return await _set.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> FindAsync(int id)
         {
             return await _set.FindAsync(id);
         }
 
-        public async Task RemoveAsync(T entity)
+        public IQueryable<T> Include(string navigationPropertyPath)
         {
-            _set.Remove(entity);
-            await _context.SaveChangesAsync();
+            return _set.Include(navigationPropertyPath);
+        }
+
+        public IIncludableQueryable<T, TProperty> Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
+        {
+            return _set.Include(navigationPropertyPath);
         }
 
         public IQueryable<TResult> Select<TResult>(Expression<Func<T, TResult>> selector)
         {
             return _set.Select(selector);
-        }
-
-        public async Task UpdateAsync(T entity)
-        {
-            _set.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
         }
 
         public IQueryable<T> Where(Expression<Func<T, bool>> predicate)

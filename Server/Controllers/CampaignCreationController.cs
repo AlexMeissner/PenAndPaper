@@ -1,55 +1,31 @@
 ﻿using DataTransfer.Campaign;
 using Microsoft.AspNetCore.Mvc;
-using Server.Models;
 using Server.Services.BusinessLogic;
 
 namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CampaignCreationController : ControllerBase
+    public class CampaignCreationController(ICampaignManager campaignManager) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-        private readonly ICampaign _campaign;
-
-        public CampaignCreationController(SQLDatabase dbContext, ICampaign campaign)
-        {
-            _dbContext = dbContext;
-            _campaign = campaign;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId, int userId)
         {
-            try
-            {
-                var creationData = await _campaign.GetCreationDataAsync(campaignId, userId);
+            var creationData = await campaignManager.GetCreationDataAsync(campaignId, userId);
 
-                if (creationData is null)
-                {
-                    return NotFound(campaignId);
-                }
-
-                return Ok(creationData);
-            }
-            catch (Exception exception)
+            if (creationData is null)
             {
-                return this.InternalServerError(exception);
+                return NotFound(campaignId);
             }
+
+            return Ok(creationData);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(CampaignCreationDto payload)
         {
-            try
-            {
-                var campaignId = await _campaign.Create(payload);
-                return CreatedAtAction(nameof(Get), campaignId);
-            }
-            catch (Exception exception)
-            {
-                return this.InternalServerError(exception);
-            }
+            var campaignId = await campaignManager.Create(payload);
+            return CreatedAtAction(nameof(Get), campaignId);
         }
     }
 }

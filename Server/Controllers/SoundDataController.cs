@@ -21,7 +21,7 @@ namespace Server.Controllers
         {
             try
             {
-                if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is DbSound sound)
+                if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is Sound sound)
                 {
                     return Ok(new SoundDataDto(sound.Data));
                 }

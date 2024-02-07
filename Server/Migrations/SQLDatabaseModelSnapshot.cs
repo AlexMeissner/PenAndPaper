@@ -17,48 +17,62 @@ namespace Server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
 
-            modelBuilder.Entity("Server.Models.DbActiveCampaignElements", b =>
+            modelBuilder.Entity("CampaignUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("PlayerCampaignsId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AmbientId")
+                    b.Property<int>("PlayersId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CampaignId")
-                        .HasColumnType("INTEGER");
+                    b.HasKey("PlayerCampaignsId", "PlayersId");
 
-                    b.Property<int>("EffectId")
-                        .HasColumnType("INTEGER");
+                    b.HasIndex("PlayersId");
 
-                    b.Property<int>("MapId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActiveCampaignElements");
+                    b.ToTable("CampaignUser");
                 });
 
-            modelBuilder.Entity("Server.Models.DbCampaign", b =>
+            modelBuilder.Entity("Server.Models.Campaign", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ActiveAmbientId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ActiveEffectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GamemasterId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Roll")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ActiveAmbientId");
+
+                    b.HasIndex("ActiveEffectId");
+
+                    b.HasIndex("GamemasterId");
 
                     b.ToTable("Campaigns");
                 });
 
-            modelBuilder.Entity("Server.Models.DbCharacter", b =>
+            modelBuilder.Entity("Server.Models.Character", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CampaignId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Charisma")
@@ -93,56 +107,28 @@ namespace Server.Migrations
                     b.Property<int>("Strength")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Wisdom")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Characters");
                 });
 
-            modelBuilder.Entity("Server.Models.DbCharactersInCampaign", b =>
+            modelBuilder.Entity("Server.Models.Map", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CampaignId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CharactersInCampaign");
-                });
-
-            modelBuilder.Entity("Server.Models.DbDiceRoll", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CampaignId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Roll")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DiceRolls");
-                });
-
-            modelBuilder.Entity("Server.Models.DbMap", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("ActiveCampaignId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CampaignId")
@@ -168,10 +154,15 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ActiveCampaignId")
+                        .IsUnique();
+
+                    b.HasIndex("CampaignId");
+
                     b.ToTable("Maps");
                 });
 
-            modelBuilder.Entity("Server.Models.DbMonster", b =>
+            modelBuilder.Entity("Server.Models.Monster", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -335,7 +326,67 @@ namespace Server.Migrations
                     b.ToTable("Monsters");
                 });
 
-            modelBuilder.Entity("Server.Models.DbSound", b =>
+            modelBuilder.Entity("Server.Models.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notes");
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("Server.Models.Setting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiceCritFailSoundId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiceCritSuccessSoundId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiceFailSoundId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiceSuccessSoundId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiceCritFailSoundId")
+                        .IsUnique();
+
+                    b.HasIndex("DiceCritSuccessSoundId")
+                        .IsUnique();
+
+                    b.HasIndex("DiceFailSoundId")
+                        .IsUnique();
+
+                    b.HasIndex("DiceSuccessSoundId")
+                        .IsUnique();
+
+                    b.ToTable("Setting");
+                });
+
+            modelBuilder.Entity("Server.Models.Sound", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -361,16 +412,13 @@ namespace Server.Migrations
                     b.ToTable("Sounds");
                 });
 
-            modelBuilder.Entity("Server.Models.DbToken", b =>
+            modelBuilder.Entity("Server.Models.Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("MonsterId")
+                    b.Property<int>("MapId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("X")
@@ -381,27 +429,14 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MapId");
+
                     b.ToTable("Tokens");
+
+                    b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("Server.Models.DbTokensOnMap", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MapId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TokenId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TokensOnMap");
-                });
-
-            modelBuilder.Entity("Server.Models.DbUser", b =>
+            modelBuilder.Entity("Server.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -424,24 +459,264 @@ namespace Server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Server.Models.DbUserInCampaign", b =>
+            modelBuilder.Entity("Server.Models.CharacterNote", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.HasBaseType("Server.Models.Note");
+
+                    b.Property<int>("CharacterId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CampaignId")
+                    b.HasIndex("CharacterId");
+
+                    b.ToTable("CharacterNotes");
+                });
+
+            modelBuilder.Entity("Server.Models.CharacterToken", b =>
+                {
+                    b.HasBaseType("Server.Models.Token");
+
+                    b.Property<int>("CharacterId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsGamemaster")
+                    b.HasIndex("CharacterId");
+
+                    b.ToTable("CharacterTokens");
+                });
+
+            modelBuilder.Entity("Server.Models.MonsterToken", b =>
+                {
+                    b.HasBaseType("Server.Models.Token");
+
+                    b.Property<int>("MonsterId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.HasIndex("MonsterId");
 
-                    b.HasKey("Id");
+                    b.ToTable("MonsterTokens");
+                });
 
-                    b.ToTable("UsersInCampaign");
+            modelBuilder.Entity("CampaignUser", b =>
+                {
+                    b.HasOne("Server.Models.Campaign", null)
+                        .WithMany()
+                        .HasForeignKey("PlayerCampaignsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("PlayersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Server.Models.Campaign", b =>
+                {
+                    b.HasOne("Server.Models.Sound", "ActiveAmbient")
+                        .WithMany("AmbientInCampaigns")
+                        .HasForeignKey("ActiveAmbientId");
+
+                    b.HasOne("Server.Models.Sound", "ActiveEffect")
+                        .WithMany("EffectInCampaigns")
+                        .HasForeignKey("ActiveEffectId");
+
+                    b.HasOne("Server.Models.User", "Gamemaster")
+                        .WithMany("GamemasterCampaigns")
+                        .HasForeignKey("GamemasterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActiveAmbient");
+
+                    b.Navigation("ActiveEffect");
+
+                    b.Navigation("Gamemaster");
+                });
+
+            modelBuilder.Entity("Server.Models.Character", b =>
+                {
+                    b.HasOne("Server.Models.Campaign", "Campaign")
+                        .WithMany("Characters")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.User", "User")
+                        .WithMany("Characters")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campaign");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server.Models.Map", b =>
+                {
+                    b.HasOne("Server.Models.Campaign", "ActiveCampaign")
+                        .WithOne("ActiveMap")
+                        .HasForeignKey("Server.Models.Map", "ActiveCampaignId");
+
+                    b.HasOne("Server.Models.Campaign", "Campaign")
+                        .WithMany("Maps")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActiveCampaign");
+
+                    b.Navigation("Campaign");
+                });
+
+            modelBuilder.Entity("Server.Models.Note", b =>
+                {
+                    b.HasOne("Server.Models.User", "User")
+                        .WithMany("Notes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server.Models.Setting", b =>
+                {
+                    b.HasOne("Server.Models.Sound", "DiceCritFailSound")
+                        .WithOne("DiceCritFailSetting")
+                        .HasForeignKey("Server.Models.Setting", "DiceCritFailSoundId");
+
+                    b.HasOne("Server.Models.Sound", "DiceCritSuccessSound")
+                        .WithOne("DiceCritSuccessSetting")
+                        .HasForeignKey("Server.Models.Setting", "DiceCritSuccessSoundId");
+
+                    b.HasOne("Server.Models.Sound", "DiceFailSound")
+                        .WithOne("DiceFailSetting")
+                        .HasForeignKey("Server.Models.Setting", "DiceFailSoundId");
+
+                    b.HasOne("Server.Models.Sound", "DiceSuccessSound")
+                        .WithOne("DiceSuccessSetting")
+                        .HasForeignKey("Server.Models.Setting", "DiceSuccessSoundId");
+
+                    b.Navigation("DiceCritFailSound");
+
+                    b.Navigation("DiceCritSuccessSound");
+
+                    b.Navigation("DiceFailSound");
+
+                    b.Navigation("DiceSuccessSound");
+                });
+
+            modelBuilder.Entity("Server.Models.Token", b =>
+                {
+                    b.HasOne("Server.Models.Map", "Map")
+                        .WithMany("Tokens")
+                        .HasForeignKey("MapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Map");
+                });
+
+            modelBuilder.Entity("Server.Models.CharacterNote", b =>
+                {
+                    b.HasOne("Server.Models.Character", "Character")
+                        .WithMany("Notes")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Note", null)
+                        .WithOne()
+                        .HasForeignKey("Server.Models.CharacterNote", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("Server.Models.CharacterToken", b =>
+                {
+                    b.HasOne("Server.Models.Character", "Character")
+                        .WithMany("Tokens")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Token", null)
+                        .WithOne()
+                        .HasForeignKey("Server.Models.CharacterToken", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("Server.Models.MonsterToken", b =>
+                {
+                    b.HasOne("Server.Models.Token", null)
+                        .WithOne()
+                        .HasForeignKey("Server.Models.MonsterToken", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Models.Monster", "Monster")
+                        .WithMany("Tokens")
+                        .HasForeignKey("MonsterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Monster");
+                });
+
+            modelBuilder.Entity("Server.Models.Campaign", b =>
+                {
+                    b.Navigation("ActiveMap");
+
+                    b.Navigation("Characters");
+
+                    b.Navigation("Maps");
+                });
+
+            modelBuilder.Entity("Server.Models.Character", b =>
+                {
+                    b.Navigation("Notes");
+
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("Server.Models.Map", b =>
+                {
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("Server.Models.Monster", b =>
+                {
+                    b.Navigation("Tokens");
+                });
+
+            modelBuilder.Entity("Server.Models.Sound", b =>
+                {
+                    b.Navigation("AmbientInCampaigns");
+
+                    b.Navigation("DiceCritFailSetting");
+
+                    b.Navigation("DiceCritSuccessSetting");
+
+                    b.Navigation("DiceFailSetting");
+
+                    b.Navigation("DiceSuccessSetting");
+
+                    b.Navigation("EffectInCampaigns");
+                });
+
+            modelBuilder.Entity("Server.Models.User", b =>
+                {
+                    b.Navigation("Characters");
+
+                    b.Navigation("GamemasterCampaigns");
+
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

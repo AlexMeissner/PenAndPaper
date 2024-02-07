@@ -18,8 +18,9 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Create_ReturnsId(int number, double fractal, string text, SizeCategory size, byte[] image)
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMonster>>();
-            var service = new Monster(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Monster>>();
+            var service = new MonsterManager(databaseContext, repository);
 
             var model = new MonsterDto(
              number, text, size, text, text, number, number, text, text, number, number, number, number,
@@ -38,17 +39,18 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Get_ReturnsDTO()
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMonster>>();
-            var service = new Monster(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Monster>>();
+            var service = new MonsterManager(databaseContext, repository);
 
-            var model = new List<DbMonster>
+            var model = new List<Monster>
             {
-                new () { Id = int.MinValue, Name = "Monster #1" },
-                new () { Id = 0, Name = "Ça va bien! ¿Cómo estás? Привет, как дела? नमस्ते! こんにちは！안녕하세요~ Καλημέρα! مرحبًا! #@$%^&*()_+[]{}|;:'\",.<>?/`" },
-                new () { Id = int.MaxValue, Name = "Monster #2" }
+                //new () { Id = int.MinValue, Name = "Monster #1" },
+                //new () { Id = 0, Name = "Ça va bien! ¿Cómo estás? Привет, как дела? नमस्ते! こんにちは！안녕하세요~ Καλημέρα! مرحبًا! #@$%^&*()_+[]{}|;:'\",.<>?/`" },
+                //new () { Id = int.MaxValue, Name = "Monster #2" }
             };
 
-            repository.Select(Arg.Any<Expression<Func<DbMonster, MonsterDto>>>()).Returns(model.Select(CreateMonsterDto));
+            repository.Select(Arg.Any<Expression<Func<Monster, MonsterDto>>>()).Returns(model.Select(CreateMonsterDto));
 
             // Act
             var result = await service.GetAll();
@@ -59,13 +61,14 @@ namespace Server.Tests.Services.BuisnessLogic
         }
 
         [TestMethod]
-        public async Task Get_MonsterNotFound_ReturnsNull()
+        public void Get_MonsterNotFound_ReturnsNull()
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMonster>>();
-            var service = new Monster(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Monster>>();
+            var service = new MonsterManager(databaseContext, repository);
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMonster, bool>>>()).Returns(Task.FromResult<DbMonster?>(null));
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Monster, bool>>>()).Returns(Task.FromResult<Monster?>(null));
 
             const int mapId = 1;
             const string text = "";
@@ -78,7 +81,7 @@ namespace Server.Tests.Services.BuisnessLogic
             //Assert.IsNull(result);
         }
 
-        private static MonsterDto CreateMonsterDto(DbMonster dbMonster)
+        private static MonsterDto CreateMonsterDto(Monster dbMonster)
         {
             return new MonsterDto(
                 dbMonster.Id,

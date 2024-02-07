@@ -111,28 +111,26 @@ namespace Client.Services
                 {
                     Stop();
 
-                    if (success.AmbientId == -1)
+                    if (success.AmbientId is int ambientId)
                     {
-                        return;
-                    }
+                        var soundResponse = await _soundApi.GetAsync(ambientId);
 
-                    var soundResponse = await _soundApi.GetAsync(success.AmbientId);
-
-                    soundResponse.Match(
-                        async s =>
-                        {
-                            var filename = string.Format("{0}.{1}", s.Id, "mp3");
-
-                            if (!_cache.Contains(CacheType.AmbientSound, filename) ||
-                                Checksum.CreateHash(await _cache.GetData(CacheType.AmbientSound, filename)) != s.Checksum)
+                        soundResponse.Match(
+                            async s =>
                             {
-                                var soundDataResponse = await _soundApi.GetDataAsync(success.AmbientId);
-                                soundDataResponse.Match(async x => await _cache.Add(CacheType.AmbientSound, filename, x.Data));
-                            }
+                                var filename = string.Format("{0}.{1}", s.Id, "mp3");
 
-                            Play(_cache.GetPath(CacheType.AmbientSound, filename));
-                        },
-                        f => { });
+                                if (!_cache.Contains(CacheType.AmbientSound, filename) ||
+                                    Checksum.CreateHash(await _cache.GetData(CacheType.AmbientSound, filename)) != s.Checksum)
+                                {
+                                    var soundDataResponse = await _soundApi.GetDataAsync(ambientId);
+                                    soundDataResponse.Match(async x => await _cache.Add(CacheType.AmbientSound, filename, x.Data));
+                                }
+
+                                Play(_cache.GetPath(CacheType.AmbientSound, filename));
+                            },
+                            f => { });
+                    }
                 },
                 failure => { });
         }
@@ -144,9 +142,9 @@ namespace Client.Services
             response.Match(
                 success =>
                 {
-                    if (success.EffectId != -1)
+                    if (success.EffectId is int effectId)
                     {
-                        Play(success.EffectId);
+                        Play(effectId);
                     }
                 },
                 failure => { });

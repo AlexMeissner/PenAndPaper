@@ -9,146 +9,119 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TokenController : ControllerBase
+    public class TokenController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-        private readonly IUpdateNotifier _updateNotifier;
-
-        public TokenController(SQLDatabase dbContext, IUpdateNotifier updateNotifier)
-        {
-            _dbContext = dbContext;
-            _updateNotifier = updateNotifier;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int mapId)
         {
-            try
+            var map = await dbContext.Maps
+                .Include(m => m.Campaign)
+                .ThenInclude(c => c.Gamemaster)
+                .FirstOrDefaultAsync(m => m.Id == mapId);
+
+            if (map is null)
             {
-                var tokenIdsOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == mapId).Select(y => y.TokenId).ToListAsync();
-
-                var items = new List<TokenItem>();
-
-                foreach (var tokenId in tokenIdsOnMap)
-                {
-                    var token = await _dbContext.Tokens.FirstAsync(x => x.Id == tokenId);
-
-                    int userId;
-                    string name;
-                    byte[] image;
-
-                    if (token.CharacterId is int characterId)
-                    {
-                        var character = await _dbContext.Characters.FirstAsync(x => x.Id == characterId);
-                        var user = await _dbContext.Users.FirstAsync(x => x.Id == characterId);
-                        userId = user.Id;
-                        name = character.Name;
-                        image = character.Image;
-                    }
-                    else if (token.MonsterId is int monsterId)
-                    {
-                        var map = await _dbContext.Maps.FirstAsync(x => x.Id == mapId);
-                        var campaign = await _dbContext.Campaigns.FirstAsync(x => x.Id == map.CampaignId);
-                        var gamemasterInCampaign = await _dbContext.UsersInCampaign.FirstAsync(x => x.CampaignId == campaign.Id && x.IsGamemaster);
-                        var gamemaster = await _dbContext.Users.FirstAsync(x => x.Id == gamemasterInCampaign.UserId);
-
-                        var monster = await _dbContext.Monsters.FirstAsync(x => x.Id == monsterId);
-
-                        userId = gamemaster.Id;
-                        name = monster.Name;
-                        image = monster.Image;
-                    }
-                    else
-                    {
-                        throw new NotImplementedException("This needs refactoring");
-                    }
-
-                    items.Add(new(
-                        Id: token.Id,
-                        UserId: userId,
-                        X: token.X,
-                        Y: token.Y,
-                        Name: name,
-                        Image: image));
-                }
-
-                var payload = new TokensDto(items);
-
-                return Ok(payload);
+                return NotFound(mapId);
             }
-            catch (Exception exception)
-            {
-                return this.InternalServerError(exception);
-            }
+
+            var monsterTokenItems = await dbContext.MonsterTokens
+                .Include(t => t.Monster)
+                .Where(t => t.MapId == mapId)
+                .Select(t => new TokenItem(t.Id, map.Campaign.Gamemaster.Id, t.X, t.Y, t.Monster.Name, t.Monster.Image))
+                .ToListAsync();
+
+            var characterTokens = await dbContext.CharacterTokens
+                .Include(t => t.Character)
+                .ThenInclude(c => c.User)
+                .Where(t => t.MapId == mapId)
+                .Select(t => new TokenItem(t.Id, t.Character.User.Id, t.X, t.Y, t.Character.Name, t.Character.Image))
+                .ToListAsync();
+
+            var tokens = characterTokens.Concat(monsterTokenItems).ToList();
+
+            var payload = new TokensDto(tokens);
+
+            return Ok(payload);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(TokenCreationDto payload)
         {
-            try
+            // ToDo: Refactor: One endpoint for monster token and one for character token
+
+            var map = await dbContext.Maps.Include(m => m.Tokens).FirstAsync(m => m.Id == payload.MapId);
+
+            if (map is null)
             {
-                var tokensOnMap = await _dbContext.TokensOnMap.Where(x => x.MapId == payload.MapId).Select(y => y.TokenId).ToListAsync();
-
-                if (await _dbContext.Tokens.AnyAsync(x => tokensOnMap.Contains(x.Id) && x.CharacterId != null && x.CharacterId == payload.CharacterId))
-                {
-                    return Conflict();
-                }
-
-                var token = new DbToken()
-                {
-                    X = payload.X,
-                    Y = payload.Y,
-                    CharacterId = payload.CharacterId,
-                    MonsterId = payload.MonsterId
-                };
-
-                await _dbContext.Tokens.AddAsync(token);
-                await _dbContext.SaveChangesAsync();
-
-
-                await _dbContext.TokensOnMap.AddAsync(new()
-                {
-                    MapId = payload.MapId,
-                    TokenId = token.Id
-                });
-
-                await _dbContext.SaveChangesAsync();
-
-                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
-
-                return CreatedAtAction(nameof(Get), token.Id);
+                return NotFound(payload.MapId);
             }
-            catch (Exception exception)
+
+            var alreadyContainsCharacter = await dbContext.CharacterTokens
+                .Include(t => t.Character)
+                .AnyAsync(t => t.MapId == payload.MapId && payload.CharacterId != null && t.Character.Id == payload.CharacterId);
+
+            if (alreadyContainsCharacter)
             {
-                return this.InternalServerError(exception);
+                return Conflict(payload.CharacterId);
             }
+
+            var token = await CreateToken(payload);
+
+            map.Tokens.Add(token);
+
+            await dbContext.SaveChangesAsync();
+
+            await updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
+
+            return CreatedAtAction(nameof(Get), token.Id);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(TokenUpdateDto payload)
         {
-            try
-            {
-                var token = await _dbContext.Tokens.FirstOrDefaultAsync(x => x.Id == payload.Id);
+            var token = await dbContext.Tokens.FindAsync(payload.Id);
 
-                if (token is null)
+            if (token is null)
+            {
+                return NotFound(payload.Id);
+            }
+
+            token.X = payload.X;
+            token.Y = payload.Y;
+
+            await dbContext.SaveChangesAsync();
+
+            await updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
+
+            return Ok(token);
+        }
+
+        private async Task<Token> CreateToken(TokenCreationDto creationInfo)
+        {
+            if (creationInfo.CharacterId is not null)
+            {
+                var character = await dbContext.Characters.FindAsync(creationInfo.CharacterId) ?? throw new NullReferenceException();
+
+                return new CharacterToken()
                 {
-                    return NotFound(payload.Id);
-                }
-
-                token.X = payload.X;
-                token.Y = payload.Y;
-
-                await _dbContext.SaveChangesAsync();
-
-                await _updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
-
-                return Ok(token);
+                    X = creationInfo.X,
+                    Y = creationInfo.Y,
+                    Character = character,
+                };
             }
-            catch (Exception exception)
+            else if (creationInfo.MonsterId is not null)
             {
-                return this.InternalServerError(exception);
+                var monster = await dbContext.Monsters.FindAsync(creationInfo.MonsterId) ?? throw new NullReferenceException();
+
+                return new MonsterToken()
+                {
+                    X = creationInfo.X,
+                    Y = creationInfo.Y,
+                    Monster = monster,
+                };
             }
+
+            throw new NotImplementedException("Unknown token type");
         }
     }
 }

@@ -21,23 +21,21 @@ namespace Server.Tests.Services.BuisnessLogic
             var gamemaster = new UsersDto(5, "Admin", "a.b@c.de");
             var playersInCampaign = new Collection<UsersDto>()
             {
-                new UsersDto(1, "Peter Pen", "a.b@c.com"),
-                new UsersDto(2, "Captain Hook", "a.b@c.net")
+                new (1, "Peter Pen", "a.b@c.com"),
+                new (2, "Captain Hook", "a.b@c.net")
             };
             var playersNotInCampaign = new Collection<UsersDto>()
             {
-                new UsersDto(3, "Jürgen von der Rippe", "j.l@c.de"),
-                new UsersDto(4, "Jack Sparrow", "j.s@blackpearl.pirat")
+                new(3, "Jürgen von der Rippe", "j.l@c.de"),
+                new (4, "Jack Sparrow", "j.s@blackpearl.pirat")
             };
 
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             var creationData = new CampaignCreationDto(newCampaignId, campaignName, gamemaster, playersNotInCampaign, playersInCampaign);
 
@@ -55,16 +53,14 @@ namespace Server.Tests.Services.BuisnessLogic
             int campaignId = -1;
             int userId = 2;
 
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            users.FirstAsync(Arg.Any<Expression<Func<DbUser, bool>>>()).Returns(Task.FromResult<DbUser?>(null));
+            users.FirstOrDefaultAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(Task.FromResult<User?>(null));
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             // Act            
             var result = await campaign.GetCreationDataAsync(campaignId, userId);
@@ -79,7 +75,7 @@ namespace Server.Tests.Services.BuisnessLogic
             // Arrange
             int campaignId = -1;
             int userId = 2;
-            var dbUser = new DbUser()
+            var dbUser = new User()
             {
                 Id = userId,
                 Email = "a.b@c.de",
@@ -87,16 +83,14 @@ namespace Server.Tests.Services.BuisnessLogic
                 Password = "!§$%&/()=?`´'+~*#-_.:,;<>|@^°"
             };
 
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            users.FirstAsync(Arg.Any<Expression<Func<DbUser, bool>>>()).Returns(dbUser);
+            users.FirstOrDefaultAsync(Arg.Any<Expression<Func<User, bool>>>()).Returns(dbUser);
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             // Act
             var result = await campaign.GetCreationDataAsync(campaignId, userId);
@@ -117,17 +111,15 @@ namespace Server.Tests.Services.BuisnessLogic
         // ToDo: campaignId != -1
 
         [TestMethod]
-        public async Task GetCreationDataAsync()
+        public void GetCreationDataAsync()
         {
             // Arrange
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             // Act
 
@@ -135,17 +127,15 @@ namespace Server.Tests.Services.BuisnessLogic
         }
 
         [TestMethod]
-        public async Task GetActiveCampaignElements()
+        public void GetActiveCampaignElements()
         {
             // Arrange
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             // Act
 
@@ -153,17 +143,15 @@ namespace Server.Tests.Services.BuisnessLogic
         }
 
         [TestMethod]
-        public async Task UpdateActiveCampaignElements()
+        public void UpdateActiveCampaignElements()
         {
             // Arrange
-            var activeElementsRepository = Substitute.For<IRepository<DbActiveCampaignElements>>();
-            var campaignRepository = Substitute.For<IRepository<DbCampaign>>();
-            var users = Substitute.For<IRepository<DbUser>>();
-            var campaignUsersRepository = Substitute.For<IRepository<DbUserInCampaign>>();
-            var rollsRepository = Substitute.For<IRepository<DbDiceRoll>>();
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var campaignRepository = Substitute.For<IRepository<Campaign>>();
+            var users = Substitute.For<IRepository<User>>();
             var updateNotifier = Substitute.For<IUpdateNotifier>();
 
-            var campaign = new Campaign(activeElementsRepository, campaignRepository, users, campaignUsersRepository, rollsRepository, updateNotifier);
+            var campaign = new CampaignManager(databaseContext, campaignRepository, users, updateNotifier);
 
             // Act
 

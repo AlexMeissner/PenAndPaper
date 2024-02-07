@@ -5,6 +5,12 @@
         
     </Style>
 
+    <Style x:Key="PrimaryBorder" TargetType="Border" BasedOn="{StaticResource BaseBorder}">
+        <Setter Property="BorderBrush" Value="{DynamicResource Theme_Color_Primary_1}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+
     <Style x:Key="TransparentBackground" TargetType="Border" BasedOn="{StaticResource BaseBorder}">
         <Setter Property="Background" Value="{DynamicResource Theme_Color_Background_Transparent}"/>
         <Setter Property="CornerRadius" Value="5"/>

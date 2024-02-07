@@ -35,9 +35,9 @@ namespace Client.ViewModels
         private Point _initialMapOffset;
         private IMapItem? _selectedMapItem = null;
 
-        public int Id { get; private set; }
+        public int? Id { get; private set; }
         public MapTransformation MapTransformation { get; set; } = new();
-        public ObservableCollection<IMapItem> Items { get; private set; } = new();
+        public ObservableCollection<IMapItem> Items { get; private set; } = [];
 
         public BackgroundMapItem? Background => (BackgroundMapItem?)Items.FirstOrDefault(x => x is BackgroundMapItem);
         public GridMapItem? Grid => (GridMapItem?)Items.FirstOrDefault(x => x is GridMapItem);
@@ -79,25 +79,30 @@ namespace Client.ViewModels
 
         public Task CreateToken(TokenType type, Point position, int id)
         {
-            if (Grid is not null)
+            if (Id is int mapId)
             {
-                position.X -= position.X % Grid.Size;
-                position.Y -= position.Y % Grid.Size;
+                if (Grid is not null)
+                {
+                    position.X -= position.X % Grid.Size;
+                    position.Y -= position.Y % Grid.Size;
+                }
+
+                int? characterId = (type == TokenType.Character) ? id : null;
+                int? monsterId = (type == TokenType.Monster) ? id : null;
+
+                var payload = new TokenCreationDto(
+                    CampaignId: _sessionData.CampaignId,
+                    MapId: mapId,
+                    CharacterId: characterId,
+                    MonsterId: monsterId,
+                    X: (int)position.X,
+                    Y: (int)position.Y
+                );
+
+                return _tokenApi.PostAsync(payload);
             }
 
-            int? characterId = (type == TokenType.Character) ? id : null;
-            int? monsterId = (type == TokenType.Monster) ? id : null;
-
-            var payload = new TokenCreationDto(
-                CampaignId: _sessionData.CampaignId,
-                MapId: Id,
-                CharacterId: characterId,
-                MonsterId: monsterId,
-                X: (int)position.X,
-                Y: (int)position.Y
-            );
-
-            return _tokenApi.PostAsync(payload);
+            return Task.CompletedTask;
         }
 
         public Task<HttpResponse<DiceRollResultDto>> GetDiceRoll()
@@ -136,9 +141,9 @@ namespace Client.ViewModels
                 {
                     Id = success.MapId;
 
-                    if (Id != -1)
+                    if (Id is int mapId)
                     {
-                        var mapResponse = await _mapApi.GetAsync(Id);
+                        var mapResponse = await _mapApi.GetAsync(mapId);
 
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
@@ -172,20 +177,23 @@ namespace Client.ViewModels
             var tokens = Items.Where(x => x is TokenMapItem).ToList();
             Items.RemoveAll(tokens);
 
-            var response = await _tokenApi.GetAsync(Id);
-
-            await Application.Current.Dispatcher.InvokeAsync(() =>
+            if (Id is int mapId)
             {
-                response.Match(success =>
+                var response = await _tokenApi.GetAsync(mapId);
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    foreach (var item in success.Items)
+                    response.Match(success =>
                     {
-                        var token = new TokenMapItem(item.X, item.Y, item.Id, item.UserId, item.Name, item.Image);
-                        Items.Add(token);
-                    }
-                },
-                failure => { });
-            });
+                        foreach (var item in success.Items)
+                        {
+                            var token = new TokenMapItem(item.X, item.Y, item.Id, item.UserId, item.Name, item.Image);
+                            Items.Add(token);
+                        }
+                    },
+                    failure => { });
+                });
+            }
         }
 
         public async Task UpdateSelectedItemPosition()

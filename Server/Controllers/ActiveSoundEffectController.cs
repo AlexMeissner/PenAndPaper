@@ -6,28 +6,21 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ActiveSoundEffectController : ControllerBase
+    public class ActiveSoundEffectController(ISoundManager soundManager) : ControllerBase
     {
-        private readonly ISound _sound;
-
-        public ActiveSoundEffectController(ISound sound)
-        {
-            _sound = sound;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
         {
             try
             {
-                var sound = await _sound.GetActiveSoundEffect(campaignId);
+                var soundEffect = await soundManager.GetActiveSoundEffect(campaignId);
 
-                if (sound is null)
+                if (soundEffect is null)
                 {
                     return NotFound(campaignId);
                 }
 
-                return Ok(sound);
+                return Ok(soundEffect);
             }
             catch (Exception exception)
             {
@@ -38,7 +31,7 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(ActiveSoundEffectDto payload)
         {
-            var updated = await _sound.PlayEffect(payload);
+            var updated = await soundManager.PlayEffect(payload);
 
             if (updated is false)
             {

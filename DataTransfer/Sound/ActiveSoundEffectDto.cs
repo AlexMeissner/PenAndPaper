@@ -1,4 +1,4 @@
 ﻿namespace DataTransfer.Sound
 {
-    public record ActiveSoundEffectDto(int CampaignId, int EffectId);
+    public record ActiveSoundEffectDto(int CampaignId, int? EffectId);
 }

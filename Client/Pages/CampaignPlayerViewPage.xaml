@@ -4,11 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:controls="clr-namespace:Client.Controls"
+      xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CampaignPlayerViewPage">
     <Grid>
         <ContentPresenter Name="MapPresenter"/>
-        <Button Margin="5" Padding="5" Content="Verlassen" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="OnExit"/>
+        <Button Width="40" Height="40" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="OnExit" Style="{StaticResource DangerEmpty}">
+            <fa:IconImage Icon="SignOutAlt" Style="{StaticResource DangerImage}"/>
+        </Button>
     </Grid>
 </Page>

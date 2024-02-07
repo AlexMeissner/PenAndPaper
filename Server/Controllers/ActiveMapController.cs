@@ -6,21 +6,14 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ActiveMapController : ControllerBase
+    public class ActiveMapController(ICampaignManager campaignManager) : ControllerBase
     {
-        private readonly ICampaign _campaign;
-
-        public ActiveMapController(ICampaign campaign)
-        {
-            _campaign = campaign;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
         {
             try
             {
-                var activeMap = await _campaign.GetActiveCampaignElements(campaignId);
+                var activeMap = await campaignManager.GetActiveCampaignElements(campaignId);
 
                 if (activeMap is null)
                 {
@@ -40,7 +33,7 @@ namespace Server.Controllers
         {
             try
             {
-                var updated = await _campaign.UpdateActiveCampaignElements(payload);
+                var updated = await campaignManager.UpdateActiveCampaignElements(payload);
 
                 if (updated is null)
                 {

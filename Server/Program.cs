@@ -31,6 +31,7 @@ class ServerMain
         app.UseAuthorization();
         app.MapControllers();
         app.MigrateDatabase();
+        app.UpdateRulesInDatabase();
         app.Run();
     }
 }

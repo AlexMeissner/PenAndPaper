@@ -7,33 +7,21 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class LoginController : ControllerBase
+    public class LoginController(SQLDatabase dbContext) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-
-        public LoginController(SQLDatabase dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         [HttpPost]
         public async Task<IActionResult> Login(UserCredentialsDto userCredentials)
         {
-            try
-            {
-                var entry = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == userCredentials.Email && x.Password == userCredentials.Password);
+            var entry = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == userCredentials.Email && x.Password == userCredentials.Password);
 
-                if (entry is null)
-                {
-                    return Unauthorized();
-                }
-
-                return Ok(new LoginDto(entry.Id));
-            }
-            catch (Exception exception)
+            if (entry is null)
             {
-                return this.InternalServerError(exception);
+                return Unauthorized();
             }
+
+            var response = new LoginDto(entry.Id);
+
+            return Ok(response);
         }
     }
 }

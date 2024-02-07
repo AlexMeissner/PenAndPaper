@@ -23,9 +23,9 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0"/>
-            <Button Grid.Column="1" Width="22" Command="{Binding ElementName=CharacterListControl, Path=ViewModel.OpenCharacterCreationCommand}">
-                <fa:IconImage Icon="Plus" Margin="2"/>
+            <TextBox Grid.Column="0" Margin="0,0,4,0" Style="{StaticResource SingleLineTextBox}"/>
+            <Button Grid.Column="1" Width="22" Command="{Binding ElementName=CharacterListControl, Path=ViewModel.OpenCharacterCreationCommand}" Style="{StaticResource SuccessEmpty}">
+                <fa:IconImage Icon="Plus" Margin="2" Style="{StaticResource SuccessImage}"/>
             </Button>
         </Grid>
 

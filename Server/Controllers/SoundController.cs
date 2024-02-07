@@ -22,7 +22,7 @@ namespace Server.Controllers
         {
             try
             {
-                if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is DbSound sound)
+                if (await _dbContext.Sounds.FirstOrDefaultAsync(x => x.Id == id) is Sound sound)
                 {
                     return Ok(new SoundDto(sound.Id, Checksum.CreateHash(sound.Data)));
                 }
@@ -40,7 +40,7 @@ namespace Server.Controllers
         {
             try
             {
-                var sound = new DbSound()
+                var sound = new Sound()
                 {
                     Name = payload.Name,
                     Type = payload.Type,

@@ -1,4 +1,4 @@
 ﻿namespace DataTransfer.Map
 {
-    public record ActiveMapDto(int CampaignId, int MapId);
+    public record ActiveMapDto(int CampaignId, int? MapId);
 }

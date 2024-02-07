@@ -72,14 +72,10 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
-                        <Button Grid.Column="0" Margin="2" Content="Regelbuch" Style="{StaticResource PrimaryEmpty}"/>
-                        <Button Grid.Column="1" Margin="2" Content="NPC Creator" Style="{StaticResource PrimaryEmpty}"/>
-                        <Button Grid.Column="2" Margin="2" Content="Einstellungen" Click="OnOpenSettings" Style="{StaticResource PrimaryEmpty}"/>
-                        <Button Grid.Column="3" Margin="2" Content="Verlassen" Click="OnExit" Style="{StaticResource DangerFilled}"/>
+                        
+                        <Button Grid.Column="0" Margin="2" Content="Einstellungen" Click="OnOpenSettings" Style="{StaticResource PrimaryEmpty}"/>
+                        <Button Grid.Column="1" Margin="2" Content="Verlassen" Click="OnExit" Style="{StaticResource DangerFilled}"/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -106,9 +102,9 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-                        <TextBlock Text="{Binding ElementName=GamemasterViewPage, Path=PopupPage.Title}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="20"/>
-                        <Button HorizontalAlignment="Right" Margin="1" Command="{Binding ElementName=GamemasterViewPage, Path=PopupPage.CloseCommand}">
-                            <fa:IconImage Icon="Xmark"/>
+                        <TextBlock Text="{Binding ElementName=GamemasterViewPage, Path=PopupPage.Title}" FontSize="20" Style="{StaticResource CenteredBoldTextBlock}"/>
+                        <Button HorizontalAlignment="Right" Margin="1" Command="{Binding ElementName=GamemasterViewPage, Path=PopupPage.CloseCommand}" Style="{StaticResource DangerEmpty}">
+                            <fa:IconImage Icon="Xmark" Style="{StaticResource DangerImage}"/>
                         </Button>
                     </Grid>
                     <Frame Grid.Row="1" Content="{Binding ElementName=GamemasterViewPage, Path=PopupPage.Content}" Navigating="OnNavigating" NavigationUIVisibility="Hidden"/>

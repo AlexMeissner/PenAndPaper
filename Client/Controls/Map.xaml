@@ -66,23 +66,17 @@
 
         <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal">
-                <Button Width="50" Margin="2" Visibility="Collapsed">
-                    <fa:IconImage Icon="UserAlt" ToolTip="Charakter"/>
-                </Button>
-                <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice">
-                    <fa:IconImage Icon="DiceD20" ToolTip="Würfeln"/>
-                </Button>
-                <Button Width="50" Margin="2" Visibility="Collapsed">
-                    <fa:IconImage Icon="BookOpen" ToolTip="Lexikon"/>
+                <Button Width="50" Margin="2" MouseEnter="OnShowDice" MouseLeave="OnHideDice" Style="{StaticResource PrimaryFilled}">
+                    <fa:IconImage Icon="DiceD20" ToolTip="Würfeln" Style="{StaticResource DefaultImage}"/>
                 </Button>
             </StackPanel>
             <StackPanel Height="50" HorizontalAlignment="Center" Orientation="Horizontal" Visibility="{Binding ElementName=MapControl, Path=ViewModel.DiceVisibility}">
-                <Button Width="50" FontSize="25" Margin="2" Content="D4" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD4Command}"/>
-                <Button Width="50" FontSize="25" Margin="2" Content="D6" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD6Command}"/>
-                <Button Width="50" FontSize="25" Margin="2" Content="D8" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD8Command}"/>
-                <Button Width="50" FontSize="25" Margin="2" Content="D10" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD10Command}"/>
-                <Button Width="50" FontSize="25" Margin="2" Content="D12" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD12Command}"/>
-                <Button Width="50" FontSize="25" Margin="2" Content="D20" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD20Command}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D4" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD4Command}" Style="{StaticResource SecondaryFilled}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D6" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD6Command}" Style="{StaticResource SecondaryFilled}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D8" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD8Command}" Style="{StaticResource SecondaryFilled}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D10" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD10Command}" Style="{StaticResource SecondaryFilled}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D12" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD12Command}" Style="{StaticResource SecondaryFilled}"/>
+                <Button Width="50" FontSize="25" Margin="2" Content="D20" Command="{Binding ElementName=MapControl, Path=ViewModel.RollD20Command}" Style="{StaticResource SecondaryFilled}"/>
             </StackPanel>
             <ContentPresenter Name="DiceRollerPresenter" HorizontalAlignment="Center" Visibility="Visible"/>
         </StackPanel>

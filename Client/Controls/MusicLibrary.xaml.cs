@@ -41,26 +41,5 @@ namespace Client.Controls
         {
             CollectionViewSource.GetDefaultView(EffectsControl.ItemsSource).Refresh();
         }
-
-        private async void OnAddAmbientSound(object sender, RoutedEventArgs e)
-        {
-            await OnAddSound(SoundType.Ambient);
-        }
-
-        private async void OnAddSoundEffect(object sender, RoutedEventArgs e)
-        {
-            await OnAddSound(SoundType.Effect);
-        }
-
-        private async Task OnAddSound(SoundType type)
-        {
-            var window = new SoundCreationWindow(type);
-
-            if (window.ShowDialog() is true)
-            {
-                var payload = new SoundCreationDto(window.ViewModel.Name, window.ViewModel.Type, window.ViewModel.Tags, window.ViewModel.Data);
-                await ViewModel.AddSound(payload);
-            }
-        }
     }
 }

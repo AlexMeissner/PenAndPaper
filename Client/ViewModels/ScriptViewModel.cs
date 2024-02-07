@@ -72,9 +72,11 @@ namespace Client.ViewModels
             EditVisibility = Visibility.Collapsed;
             RenderVisibility = Visibility.Visible;
 
-            var mapId = await GetMapId();
-            var payload = new ScriptDto(mapId, Script);
-            await _scriptApi.Update(payload);
+            if (await GetMapId() is int mapId)
+            {
+                var payload = new ScriptDto(mapId, Script);
+                await _scriptApi.Update(payload);
+            }
         }
 
         private async void OnMapChanged(object? sender, EventArgs e)
@@ -82,11 +84,11 @@ namespace Client.ViewModels
             await UpdateScript();
         }
 
-        private async Task<int> GetMapId()
+        private async Task<int?> GetMapId()
         {
             var activeMapResponse = await _activeMapApi.GetAsync(_sessionData.CampaignId);
 
-            var mapId = 0;
+            int? mapId = null;
 
             activeMapResponse.Match(
                 success => mapId = success.MapId,
@@ -97,12 +99,14 @@ namespace Client.ViewModels
 
         private async Task UpdateScript()
         {
-            var mapId = await GetMapId();
-            var script = await _scriptApi.Get(mapId);
+            if (await GetMapId() is int mapId)
+            {
+                var script = await _scriptApi.Get(mapId);
 
-            script.Match(
-                s => Script = s.Text,
-                f => throw new Exception("Could not retreive script."));
+                script.Match(
+                    s => Script = s.Text,
+                    f => throw new Exception("Could not retreive script."));
+            }
         }
     }
 }

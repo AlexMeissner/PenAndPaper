@@ -102,7 +102,7 @@ namespace Client.ViewModels
         {
             var payload = new ActiveAmbientSoundDto(
                 CampaignId: _sessionData.CampaignId,
-                AmbientId: -1
+                AmbientId: null
             );
 
             await _activeSoundApi.PutAmbientSoundAsync(payload);

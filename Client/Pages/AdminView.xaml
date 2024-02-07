@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Client.Pages"
+      xmlns:viewModel="clr-namespace:Client.ViewModels"
       xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -13,18 +13,142 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="2">
+        <TabControl Grid.Row="0" Margin="4" Style="{StaticResource DefaultTabControl}">
+            <TabItem Header="Sound erstellen">
+                <Grid Width="500">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="4" Text="Name" Style="{StaticResource BoldTextBlock}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="4" FontSize="15" Text="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.Name}" Style="{StaticResource SingleLineTextBox}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" Text="Typ" Style="{StaticResource BoldTextBlock}"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="4" SelectedItem="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.Type}" ItemsSource="{Binding Source={x:Static viewModel:SoundCreationViewModel.SoundTypeValues}, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="4" Text="Datei" Style="{StaticResource BoldTextBlock}"/>
+                    <Button Grid.Row="2" Grid.Column="1" Margin="4" Content="Auswählen" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.SelectFileCommand}" Style="{StaticResource PrimaryEmpty}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="4" Text="Tags" Style="{StaticResource BoldTextBlock}"/>
+                    <TextBox Grid.Row="4" Grid.Column="0" Margin="4" Text="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.Tag}" Style="{StaticResource SingleLineTextBox}"/>
+                    <Button Grid.Row="4" Grid.Column="1" Margin="4" Content="Hinzufügen" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.AddTagCommand}" Style="{StaticResource PrimaryEmpty}"/>
+                    <ScrollViewer Grid.Row="5" Grid.ColumnSpan="2" Margin="4" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.Tags}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="1" Style="{StaticResource PrimaryBorder}">
+                                        <Grid Height="30">
+                                            <TextBlock Text="{Binding .}" Margin="4,0,0,0" FontSize="20" VerticalAlignment="Center"/>
+                                            <Button HorizontalAlignment="Right" Margin="4" Style="{StaticResource DangerFilled}">
+                                                <Button.Resources>
+                                                    <Style TargetType="{x:Type Border}">
+                                                        <Setter Property="CornerRadius" Value="5"/>
+                                                    </Style>
+                                                </Button.Resources>
+                                                <fa:IconImage Icon="TrashAlt" Style="{StaticResource DefaultImage}"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Button Grid.Row="6" Grid.ColumnSpan="2" Margin="4" Content="Hinzufügen" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.SoundCreation.AddSoundCommand}" Style="{StaticResource SuccessFilled}"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Würfeln">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="1" Grid.Row="1" Text="Erfolgreicher Wurf" Style="{StaticResource CenteredBoldTextBlock}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="1" Margin="0,0,2,0" SelectedItem="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.SuccessSound}" ItemsSource="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.Sounds}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="3" Grid.Row="1" Style="{StaticResource PrimaryEmpty}" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.PlaySuccessCommand}">
+                        <fa:IconImage Margin="2" Icon="Play" Style="{StaticResource SuccessImage}"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Text="Fehlgeschlagener Wurf" Style="{StaticResource CenteredBoldTextBlock}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="3" Margin="0,0,2,0" SelectedItem="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.FailSound}" ItemsSource="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.Sounds}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="3" Grid.Row="3" Style="{StaticResource PrimaryEmpty}" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.PlayFailCommand}">
+                        <fa:IconImage Margin="2" Icon="Play" Style="{StaticResource SuccessImage}"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Grid.Row="5" Text="Kritischer Erfolg" Style="{StaticResource CenteredBoldTextBlock}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="5" Margin="0,0,2,0" SelectedItem="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.CritSuccessSound}" ItemsSource="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.Sounds}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="3" Grid.Row="5" Style="{StaticResource PrimaryEmpty}" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.PlayCritSuccessCommand}">
+                        <fa:IconImage Margin="2" Icon="Play" Style="{StaticResource SuccessImage}"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Grid.Row="7" Text="Kritischer Fehlschlag" Style="{StaticResource CenteredBoldTextBlock}"/>
+                    <ComboBox Grid.Column="2" Grid.Row="7" Margin="0,0,2,0" SelectedItem="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.CritFailSound}" ItemsSource="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.Sounds}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="3" Grid.Row="7" Style="{StaticResource PrimaryEmpty}" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.PlayCritFailCommand}">
+                        <fa:IconImage Margin="2" Icon="Play" Style="{StaticResource SuccessImage}"/>
+                    </Button>
+
+                    <Button Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" Content="Speichern" Style="{StaticResource SuccessFilled}" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.DiceOptions.SaveCommand}"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="4" Content="Abbrechen" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.CancelCommand}" Style="{StaticResource WarningEmpty}"/>
-            <Button Grid.Column="1" Margin="4" Content="Speichern" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.SaveCommand}" Style="{StaticResource SuccessEmpty}"/>
+            <Button Grid.Column="1" Margin="4" Content="Zurück" Command="{Binding ElementName=AdminViewPage, Path=ViewModel.CloseCommand}" Style="{StaticResource SecondaryEmpty}"/>
         </Grid>
     </Grid>
 </Page>

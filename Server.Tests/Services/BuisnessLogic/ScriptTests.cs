@@ -14,10 +14,11 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Get_MapNotFound_ReturnsNull()
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMap>>();
-            var script = new Script(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Map>>();
+            var script = new ScriptManager(databaseContext, repository);
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMap, bool>>>()).Returns(Task.FromResult<DbMap?>(null));
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Map, bool>>>()).Returns(Task.FromResult<Map?>(null));
 
             // Act
             const int campaignId = 1;
@@ -35,15 +36,18 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Get_MapFound_ReturnsDTO(string text)
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMap>>();
-            var script = new Script(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Map>>();
+            var script = new ScriptManager(databaseContext, repository);
 
-            var map = new DbMap()
+            var map = new Map()
             {
-                Script = text
+                Script = text,
+                Name = string.Empty,
+                ImageData = []
             };
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMap, bool>>>()).Returns(map);
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Map, bool>>>()).Returns(map);
 
             // Act
             const int campaignId = 1;
@@ -58,10 +62,11 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Update_MapNotFound_ReturnsNull()
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMap>>();
-            var script = new Script(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Map>>();
+            var script = new ScriptManager(databaseContext, repository);
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMap, bool>>>()).Returns(Task.FromResult<DbMap?>(null));
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Map, bool>>>()).Returns(Task.FromResult<Map?>(null));
 
             const int mapId = 1;
             const string text = "";
@@ -82,15 +87,18 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Update_MapFound_TextIsSame_ReturnsFalse(string text)
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMap>>();
-            var script = new Script(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Map>>();
+            var script = new ScriptManager(databaseContext, repository);
 
-            var map = new DbMap()
+            var map = new Map()
             {
-                Script = text
+                Script = text,
+                Name = string.Empty,
+                ImageData = []
             };
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMap, bool>>>()).Returns(map);
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Map, bool>>>()).Returns(map);
 
             const int mapId = 1;
             var payload = new ScriptDto(mapId, text);
@@ -110,15 +118,18 @@ namespace Server.Tests.Services.BuisnessLogic
         public async Task Update_MapFound_TextIsDifferentSame_ReturnsTrue(string textBefore, string textAfter)
         {
             // Arrange
-            var repository = Substitute.For<IRepository<DbMap>>();
-            var script = new Script(repository);
+            var databaseContext = Substitute.For<IDatabaseContext>();
+            var repository = Substitute.For<IRepository<Map>>();
+            var script = new ScriptManager(databaseContext, repository);
 
-            var map = new DbMap()
+            var map = new Map()
             {
-                Script = textBefore
+                Script = textBefore,
+                Name = string.Empty,
+                ImageData = []
             };
 
-            repository.FirstAsync(Arg.Any<Expression<Func<DbMap, bool>>>()).Returns(map);
+            repository.FirstOrDefaultAsync(Arg.Any<Expression<Func<Map, bool>>>()).Returns(map);
 
             const int mapId = 1;
             var payload = new ScriptDto(mapId, textAfter);

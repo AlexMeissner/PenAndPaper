@@ -1,4 +1,5 @@
 ﻿using Client.Services;
+using Client.Services.API;
 using DataTransfer.Dice;
 using System;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace Client.ViewModels
         private int RunningRolls = 0;
 
         private readonly IAudioPlayer _audioPlayer;
+        private readonly ISettingsApi _settingsApi;
 
         private static readonly Color _defaultColor = (Color)ColorConverter.ConvertFromString("White");
         private static readonly Color _successColor = (Color)ColorConverter.ConvertFromString("Green");
@@ -31,9 +33,10 @@ namespace Client.ViewModels
         public Visibility D20Visibility { get; private set; } = Visibility.Collapsed;
         public SolidColorBrush[] Colors { get; private set; } = new SolidColorBrush[20];
 
-        public DiceRollerViewModel(IAudioPlayer audioPlayer)
+        public DiceRollerViewModel(IAudioPlayer audioPlayer, ISettingsApi settingsApi)
         {
             _audioPlayer = audioPlayer;
+            _settingsApi = settingsApi;
 
             for (int index = 0; index < 20; ++index)
             {
@@ -44,6 +47,23 @@ namespace Client.ViewModels
         public async Task Show(DiceRollResultDto diceRollResult)
         {
             Interlocked.Increment(ref RunningRolls);
+
+            var settings = await _settingsApi.GetAsync();
+
+            int? successSoundId = null;
+            int? failSoundId = null;
+            int? critSuccessSoundId = null;
+            int? critFailSoundId = null;
+
+            settings.Match(
+                success =>
+                {
+                    successSoundId = success.DiceSuccessSoundId;
+                    failSoundId = success.DiceFailSoundId;
+                    critSuccessSoundId = success.DiceCritSuccessSoundId;
+                    critFailSoundId = success.DiceCritFailSoundId;
+                },
+                failure => { });
 
             int successes = 0;
             Name = diceRollResult.Name;
@@ -95,20 +115,28 @@ namespace Client.ViewModels
 
                 if (index == diceRollResult.Succeeded.Count - 1 && (successes == 1 || successes == diceRollResult.Succeeded.Count))
                 {
-                    const int rollMinId = 11;
-                    const int rollMaxId = 12;
-                    int soundId = successes == 1 ? rollMinId : rollMaxId;
-                    _audioPlayer.Play(soundId);
+                    int? critSoundId = successes == 1 ? critFailSoundId : critSuccessSoundId;
+
+                    if (critSoundId is int soundId)
+                    {
+                        _audioPlayer.Play(soundId);
+                    }
                 }
                 else
                 {
                     if (diceRollResult.Succeeded[index])
                     {
-                        _audioPlayer.Play(9);
+                        if (successSoundId is int soundId)
+                        {
+                            _audioPlayer.Play(soundId);
+                        }
                     }
                     else
                     {
-                        _audioPlayer.Play(10);
+                        if (failSoundId is int soundId)
+                        {
+                            _audioPlayer.Play(soundId);
+                        }
                     }
                 }
 

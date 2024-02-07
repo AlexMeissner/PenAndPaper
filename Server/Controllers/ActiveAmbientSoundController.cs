@@ -6,21 +6,14 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ActiveAmbientSoundController : ControllerBase
+    public class ActiveAmbientSoundController(ISoundManager soundManager) : ControllerBase
     {
-        private readonly ISound _sound;
-
-        public ActiveAmbientSoundController(ISound sound)
-        {
-            _sound = sound;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
         {
             try
             {
-                var sound = await _sound.GetActiveAmbientSound(campaignId);
+                var sound = await soundManager.GetActiveAmbientSound(campaignId);
 
                 if (sound is null)
                 {
@@ -38,7 +31,7 @@ namespace Server.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(ActiveAmbientSoundDto payload)
         {
-            var updated = await _sound.PlayAmbient(payload);
+            var updated = await soundManager.PlayAmbient(payload);
 
             if (updated is false)
             {

@@ -8,52 +8,37 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(SQLDatabase dbContext) : ControllerBase
     {
-        private readonly SQLDatabase _dbContext;
-
-        public UserController(SQLDatabase dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get(int userId)
         {
-            try
-            {
-                var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
-                var payload = new UsersDto(user.Id, user.Username, user.Email);
+            var user = await dbContext.Users.FindAsync(userId);
 
-                return Ok(payload);
-            }
-            catch (Exception exception)
+            if (user is null)
             {
-                return this.InternalServerError(exception);
+                return NotFound(userId);
             }
+
+            var payload = new UsersDto(user.Id, user.Username, user.Email);
+
+            return Ok(payload);
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(UserCredentialsDto userCredentials)
         {
-            try
+            var user = new User()
             {
-                var user = new DbUser()
-                {
-                    Email = userCredentials.Email,
-                    Username = userCredentials.Username,
-                    Password = userCredentials.Password
-                };
+                Email = userCredentials.Email,
+                Username = userCredentials.Username,
+                Password = userCredentials.Password
+            };
 
-                await _dbContext.Users.AddAsync(user);
-                await _dbContext.SaveChangesAsync();
+            await dbContext.Users.AddAsync(user);
+            await dbContext.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(Get), user.Id);
-            }
-            catch (Exception exception)
-            {
-                return this.InternalServerError(exception);
-            }
+            return CreatedAtAction(nameof(Get), user.Id);
         }
     }
 }
