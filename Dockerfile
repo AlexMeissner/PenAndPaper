@@ -15,7 +15,7 @@ COPY . ./
 RUN dotnet restore ./Server/Server.csproj
 
 # Build the application
-RUN dotnet publish ./Server/Server.csproj -c Release -o /app/publish --self-contained true /p:PublishTrimmed=true
+RUN dotnet publish ./Server/Server.csproj -c Release -o /app/publish
 
 # USE PUBLISHED PROJECT DATA TO BUILD DOCKER IMAGE INCLUDING ONLY THE REQUIRED FILES
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
