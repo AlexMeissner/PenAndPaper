@@ -608,3 +608,6 @@ obj/
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,visualstudio,visualstudiocode
+
+*.db-shm
+*.db-wal

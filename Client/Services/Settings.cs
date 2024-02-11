@@ -1,29 +1,99 @@
-﻿using static Client.Services.ServiceExtension;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
-    public enum Theme
-    {
-        Light,
-        Dark,
-    }
-
-    public class AudioSettings
-    {
-        public float AmbientVolume { get; set; } = 1.0f;
-        public float EffectsVolume { get; set; } = 1.0f;
-    }
-
     public interface ISettings
     {
-        Theme Theme { get; set; }
-        AudioSettings Audio { get; set; }
+        event EventHandler<float> AmbientVolumeChanged;
+        event EventHandler<float> EffectVolumeChanged;
+
+        string APIHost { get; set; }
+        string WebsocketHost { get; set; }
+
+        float AmbientVolume { get; set; }
+        float EffectVolume { get; set; }
     }
 
     [SingletonService]
-    public class Settings : ISettings
+    public class Settings(IConfiguration configuration) : ISettings
     {
-        public Theme Theme { get; set; }
-        public AudioSettings Audio { get; set; } = new();
+        public event EventHandler<float>? AmbientVolumeChanged;
+        public event EventHandler<float>? EffectVolumeChanged;
+
+        public string APIHost
+        {
+            get
+            {
+                var host = configuration["Host"];
+
+                return host is null
+                    ? throw new ArgumentNullException("Host property not found in appsettings.json.")
+                    : string.Format("https://{0}/", host);
+            }
+            set
+            {
+                configuration["Host"] = value;
+            }
+        }
+
+        public string WebsocketHost
+        {
+            get
+            {
+                var host = configuration["Host"];
+
+                return host is null
+                    ? throw new ArgumentNullException("Host property not found in appsettings.json.")
+                    : string.Format("wss://{0}/", host);
+            }
+            set
+            {
+                configuration["Host"] = value;
+            }
+        }
+
+        public float AmbientVolume
+        {
+            get
+            {
+                var property = configuration["Sound:AmbientVolume"]
+                    ?? throw new ArgumentNullException("'Sound:AmbientVolume' property not found in appsettings.json.");
+
+                if (float.TryParse(property, out float volume))
+                {
+                    return volume;
+                }
+
+                throw new FormatException("'Sound:AmbientVolume' property in appsettings.json is not of type float.");
+            }
+            set
+            {
+                configuration["Sound:AmbientVolume"] = value.ToString();
+                AmbientVolumeChanged?.Invoke(this, value);
+            }
+        }
+
+        public float EffectVolume
+        {
+            get
+            {
+                var property = configuration["Sound:EffectVolume"]
+                    ?? throw new ArgumentNullException("'Sound:EffectVolume' property not found in appsettings.json.");
+
+                if (float.TryParse(property, out float volume))
+                {
+                    return volume;
+                }
+
+                throw new FormatException("'Sound:EffectVolume' property in appsettings.json is not of type float.");
+            }
+            set
+            {
+                configuration["Sound:EffectVolume"] = value.ToString();
+                EffectVolumeChanged?.Invoke(this, value);
+            }
+        }
     }
 }

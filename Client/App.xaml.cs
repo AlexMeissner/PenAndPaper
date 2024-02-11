@@ -14,7 +14,8 @@ namespace Client
         public App()
         {
             var services = new ServiceCollection();
-            services.RegisterServices();
+            services.RegisterConfigurations();
+            services.RegisterServicesFromAttributes();
             _serviceProvider = services.BuildServiceProvider();
         }
 

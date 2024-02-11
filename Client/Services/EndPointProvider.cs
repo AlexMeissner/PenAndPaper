@@ -9,9 +9,10 @@ namespace Client.Services
     }
 
     [TransistentService]
-    public class EndPointProvider : IEndPointProvider
+    public class EndPointProvider(ISettings settings) : IEndPointProvider
     {
-        public string BaseURL => "https://localhost:7099/";
-        public string WebSocketBaseURL => "wss://localhost:7099/";
+        public string BaseURL => settings.APIHost;
+        public string WebSocketBaseURL => settings.WebsocketHost;
     }
 }
+// ToDo: Do I need this class? Or should I just use ISettings?

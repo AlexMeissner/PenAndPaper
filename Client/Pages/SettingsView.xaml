@@ -23,8 +23,8 @@
                     <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Ambient-Lautstärke"/>
-                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.Audio.AmbientVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
-                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.Audio.AmbientVolume}" IsReadOnly="True"/>
+                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
+                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" IsReadOnly="True"/>
             </Grid>
             <Grid Margin="0,5,0,0">
                 <Grid.ColumnDefinitions>
@@ -33,9 +33,9 @@
                     <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Effekt-Lautstärke"/>
-                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.Audio.EffectsVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
-                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.Audio.EffectsVolume}" IsReadOnly="True"/>
+                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
+                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" IsReadOnly="True"/>
             </Grid>
         </StackPanel>
-    </Border>    
+    </Border>
 </Page>

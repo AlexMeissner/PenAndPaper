@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Client.Services
@@ -15,7 +17,19 @@ namespace Client.Services
         [AttributeUsage(AttributeTargets.Class)]
         public class TransistentServiceAttribute : Attribute { }
 
-        public static IServiceCollection RegisterServices(this IServiceCollection servicesCollection)
+        public static IServiceCollection RegisterConfigurations(this IServiceCollection servicesCollection)
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            servicesCollection.AddSingleton(configuration);
+
+            return servicesCollection;
+        }
+
+        public static IServiceCollection RegisterServicesFromAttributes(this IServiceCollection servicesCollection)
         {
             Type scopedServiceType = typeof(ScopedServiceAttribute);
             Type singletonServiceType = typeof(SingletonServiceAttribute);
