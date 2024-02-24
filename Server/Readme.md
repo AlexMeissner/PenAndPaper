@@ -22,7 +22,7 @@
 ## Create
 **sudo should not be used here**
 
-``sudo docker run -d --name PenAndPaperServer -p 80:80 -p 443:443 alexmeissner/pen_and_paper_server``
+``sudo docker run -d --name PenAndPaperServer -p 7099:7099 -p 443:443 alexmeissner/pen_and_paper_server``
 
 ## Start
 ``sudo docker start PenAndPaperServer``
