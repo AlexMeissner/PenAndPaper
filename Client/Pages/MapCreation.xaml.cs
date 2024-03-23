@@ -29,7 +29,7 @@ namespace Client.Pages
         {
             OpenFileDialog fileDialog = new()
             {
-                Filter = "Bilder (*.png;*.jpeg)|*.png;*.jpeg"
+                Filter = "Bilder (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
             };
 
             if (fileDialog.ShowDialog() == true)
