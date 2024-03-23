@@ -2,8 +2,8 @@
 using Client.Services;
 using Client.Services.API;
 using DataTransfer.Map;
-using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using static Client.Services.ServiceExtension;
 
@@ -12,7 +12,9 @@ namespace Client.ViewModels
     [TransistentService]
     public class MapCreationViewModel : BaseViewModel
     {
-        private bool _isEdit = false;
+        private bool isEdit = false;
+        private Point initialMapOffset;
+        private Point initialMousePosition;
 
         private readonly IMapApi _mapApi;
         private readonly ISessionData _sessionData;
@@ -21,9 +23,10 @@ namespace Client.ViewModels
         public int Id { get; set; }
         public int CampaignId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public byte[] ImageData { get; set; } = Array.Empty<byte>();
+        public byte[] ImageData { get; set; } = [];
         public int GridSize { get; set; } = 100;
         public bool GridIsActive { get; set; } = false;
+        public MapTransformation MapTransformation { get; set; } = new();
 
         public ICommand CreateCommand { get; set; }
 
@@ -44,7 +47,7 @@ namespace Client.ViewModels
                 ImageData: ImageData,
                 Grid: new GridDto(GridSize, GridIsActive));
 
-            if (_isEdit)
+            if (isEdit)
             {
                 await _mapApi.PutAsync(payload);
             }
@@ -66,7 +69,26 @@ namespace Client.ViewModels
             GridSize = map.Grid.Size;
             GridIsActive = map.Grid.IsActive;
 
-            _isEdit = true;
+            isEdit = true;
+        }
+
+        public void Zoom(Point position, int delta)
+        {
+            MapTransformation.Zoom(position, delta);
+        }
+
+        public void SetInitialMousePosition(Point position)
+        {
+            initialMousePosition = position;
+            initialMapOffset.X = MapTransformation.X;
+            initialMapOffset.Y = MapTransformation.Y;
+        }
+
+        public void MoveMap(Point position)
+        {
+            var delta = Point.Subtract(position, initialMousePosition) / MapTransformation.Scaling.Matrix.M11;
+            var offsetPosition = initialMapOffset + delta;
+            MapTransformation.Move(offsetPosition);
         }
     }
 }

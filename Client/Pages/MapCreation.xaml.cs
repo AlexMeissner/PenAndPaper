@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using static Client.Services.ServiceExtension;
 
@@ -23,6 +24,28 @@ namespace Client.Pages
             ViewModel = viewModelProvider.Get<MapCreationViewModel>();
 
             InitializeComponent();
+        }
+
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var mousePostion = e.GetPosition(this);
+            ViewModel.Zoom(mousePostion, e.Delta);
+        }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var mousePosition = e.GetPosition(this);
+            ViewModel.SetInitialMousePosition(mousePosition);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var mousePosition = e.GetPosition(this);
+
+            if (e.RightButton == MouseButtonState.Pressed)
+            {
+                ViewModel.MoveMap(mousePosition);
+            }
         }
 
         private void OnOpenFile(object sender, RoutedEventArgs e)

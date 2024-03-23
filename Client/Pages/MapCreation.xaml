@@ -20,12 +20,14 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Grid.Column="0" Margin="4" Content="Durchsuchen" Click="OnOpenFile" Style="{StaticResource PrimaryFilled}"/>
-            <Border Grid.Row="1" Grid.Column="0" Margin="4" BorderBrush="{DynamicResource Theme_Color_Background_3}" BorderThickness="1">
-                <Canvas ClipToBounds="True">
-                    <Canvas.Background>
-                        <ImageBrush AlignmentX="Left" AlignmentY="Top" ImageSource="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}" Stretch="None"/>
-                    </Canvas.Background>
-                    <Rectangle Width="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding ElementName=MapCreationPage, Path=ViewModel.GridIsActive, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Grid.Row="1" Grid.Column="0" Margin="4" ClipToBounds="True" BorderBrush="{DynamicResource Theme_Color_Background_3}" BorderThickness="1">
+                <Canvas RenderTransform="{Binding ElementName=MapCreationPage, Path=ViewModel.MapTransformation.Scaling}" MouseWheel="OnMouseWheel" MouseDown="OnMouseDown" MouseMove="OnMouseMove">
+                    <Image Source="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageConverter}}"
+                           Canvas.Left="{Binding ElementName=MapCreationPage, Path=ViewModel.MapTransformation.X}"
+                           Canvas.Top="{Binding ElementName=MapCreationPage, Path=ViewModel.MapTransformation.Y}"/>
+                    <Rectangle Width="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageWidthConverter}}" Height="{Binding ElementName=MapCreationPage, Path=ViewModel.ImageData, Converter={StaticResource ByteArrayToBitmapImageHeightConverter}}" Visibility="{Binding ElementName=MapCreationPage, Path=ViewModel.GridIsActive, Converter={StaticResource BoolToVisibilityConverter}}"
+                               Canvas.Left="{Binding ElementName=MapCreationPage, Path=ViewModel.MapTransformation.X}"
+                               Canvas.Top="{Binding ElementName=MapCreationPage, Path=ViewModel.MapTransformation.Y}">
                         <Rectangle.Fill>
                             <DrawingBrush TileMode="Tile" Viewport="{Binding ElementName=MapCreationPage, Path=ViewModel.GridSize, Converter={StaticResource GridToRectConverter}}" ViewportUnits="Absolute">
                                 <DrawingBrush.Drawing>
