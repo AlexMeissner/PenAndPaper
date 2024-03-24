@@ -2,6 +2,7 @@
 using DataTransfer;
 using NAudio.Wave;
 using System;
+using System.Diagnostics;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
@@ -44,6 +45,11 @@ namespace Client.Services
         {
             var soundResponse = await _soundApi.GetAsync(id);
 
+            // ToDo:
+            // 'waveProvider' and 'waveOut' are not disposed
+            // code duplicate 'play'
+            // this is a quick fix: there is an IO exception if a sound is played for the first time
+            // the sound is downloaded and stored to a file while 'Mp3FileReader' already tries to access it
             soundResponse.Match(
                 async success =>
                 {
@@ -58,13 +64,25 @@ namespace Client.Services
                             async s =>
                             {
                                 await _cache.Add(CacheType.SoundEffect, filename, s.Data);
+                                var filepath = _cache.GetPath(CacheType.SoundEffect, filename);
+                                var waveProvider = new Mp3FileReader(filepath);
+                                var waveOut = new WaveOut();
+                                waveOut.Init(waveProvider);
+                                waveOut.Play();
+                            },
+                            failure =>
+                            {
+                                Debug.WriteLine($"Failed to cache sound ({failure})");
                             });
                     }
-
-                    var waveProvider = new Mp3FileReader(_cache.GetPath(CacheType.SoundEffect, filename));
-                    var waveOut = new WaveOut();
-                    waveOut.Init(waveProvider);
-                    waveOut.Play();
+                    else
+                    {
+                        var filepath = _cache.GetPath(CacheType.SoundEffect, filename);
+                        var waveProvider = new Mp3FileReader(filepath);
+                        var waveOut = new WaveOut();
+                        waveOut.Init(waveProvider);
+                        waveOut.Play();
+                    }
                 });
         }
 

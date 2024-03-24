@@ -16,30 +16,21 @@ namespace Client.Services.API
         }
     }
 
-    public readonly struct HttpResponse<TValue>
+    public readonly struct HttpResponse<TValue>(HttpStatusCode statusCode, TValue? value)
     {
-        private readonly HttpStatusCode _statusCode;
-        private readonly TValue? _value;
+        private bool IsError => statusCode >= HttpStatusCode.BadRequest;
 
-        private bool IsError => _statusCode >= HttpStatusCode.BadRequest;
-
-        public HttpResponse(HttpStatusCode statusCode, TValue? value)
-        {
-            _statusCode = statusCode;
-            _value = value;
-        }
-
-        public void Match(Action<TValue> success) => success(_value!);
+        public void Match(Action<TValue> success) => success(value!);
 
         public void Match(Action<TValue> success, Action<HttpStatusCode> failure)
         {
             if (IsError)
             {
-                failure(_statusCode);
+                failure(statusCode);
             }
             else
             {
-                success(_value!);
+                success(value!);
             }
         }
     }

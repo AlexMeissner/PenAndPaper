@@ -106,6 +106,7 @@ namespace Client.ViewModels
             SaveCommand = new AsyncCommand(Save);
 
             // ToDo: Code Small -> Async Code made sync because CTOR
+            // https://www.youtube.com/watch?v=lQu-eBIIh-w 19:45 use Factory
             var getOverviewTask = _soundApi.GetOverviewAsync();
             getOverviewTask.Wait();
             getOverviewTask.Result.Match(

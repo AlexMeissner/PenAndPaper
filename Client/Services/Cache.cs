@@ -32,7 +32,7 @@ namespace Client.Services
             }
         }
 
-        public Task Add(CacheType type, string filename, byte[] data)
+        public async Task Add(CacheType type, string filename, byte[] data)
         {
             var filepath = GetPath(type, filename);
             var directory = Path.GetDirectoryName(filepath)!;
@@ -42,7 +42,7 @@ namespace Client.Services
                 Directory.CreateDirectory(directory);
             }
 
-            return File.WriteAllBytesAsync(filepath, data);
+            await File.WriteAllBytesAsync(filepath, data);
         }
 
         public bool Contains(CacheType type, string filename)
@@ -50,9 +50,9 @@ namespace Client.Services
             return File.Exists(GetPath(type, filename));
         }
 
-        public Task<byte[]> GetData(CacheType type, string filename)
+        public async Task<byte[]> GetData(CacheType type, string filename)
         {
-            return File.ReadAllBytesAsync(GetPath(type, filename));
+            return await File.ReadAllBytesAsync(GetPath(type, filename));
         }
 
         public string GetPath(CacheType type, string filename)
