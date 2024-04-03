@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Expose the port that your API will run on as well as WebSocket port
 EXPOSE 7099
-EXPOSE 443
 
 # Copy project file from local folder to docker container
 COPY . ./
