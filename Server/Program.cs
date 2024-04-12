@@ -7,7 +7,7 @@ class ServerMain
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.CreateLogger();
-        builder.Configuration.AddJsonFile("appsettings.json");
+        // builder.Configuration.AddJsonFile("appsettings.json"); // It seems like this is done automatically
 
         builder.Services.AddDatabase(builder.Configuration);
         builder.Services.AddControllers();

@@ -19,9 +19,15 @@ namespace Client.Services
 
         public static IServiceCollection RegisterConfigurations(this IServiceCollection servicesCollection)
         {
+#if DEBUG
+            var configurationFile = "appsettings.Development.json";
+#else
+            var configurationFile = "appsettings.json";
+#endif
+
             IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(configurationFile, optional: true, reloadOnChange: true)
                 .Build();
 
             servicesCollection.AddSingleton(configuration);
