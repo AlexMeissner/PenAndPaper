@@ -20,14 +20,23 @@ class ServerMain
 
         // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
         // https://localhost:7099/swagger/index.html
-#if DEBUG
-        app.UseSwagger();
-        app.UseSwaggerUI();
-#endif
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseHttpsRedirection();
+        }
+        else
+        {
+            builder.Services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = 307;
+                options.HttpsPort = 7099;
+            });
+        }
 
         app.UseMiddleware<HttpLogger>();
         app.UseWebSockets();
-        app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
         app.MigrateDatabase();
