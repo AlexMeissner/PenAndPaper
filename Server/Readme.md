@@ -18,7 +18,7 @@
 ``docker pull alexmeissner/pen_and_paper_server``
 
 ## Create
-``docker run -d --name PenAndPaperServer --network caddy-net -p 7099:80 alexmeissner/pen_and_paper_server``
+``docker run -d --name PenAndPaperServer --network caddy-net -p 7099:8080 alexmeissner/pen_and_paper_server``
 
 ## Start
 ``docker start PenAndPaperServer``

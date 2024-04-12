@@ -23,7 +23,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Expose the port that your API will run on
-EXPOSE 80
+EXPOSE 8080
 
 # Define the entry point for your application
 ENTRYPOINT ["dotnet", "Server.dll"]
