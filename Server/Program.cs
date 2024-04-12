@@ -15,6 +15,11 @@ class ServerMain
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingletonServices();
         builder.Services.AddScopedServices();
+        builder.Services.AddHttpsRedirection(options =>
+        {
+            options.RedirectStatusCode = 307;
+            options.HttpsPort = 7099;
+        });
 
         var app = builder.Build();
 
@@ -24,17 +29,9 @@ class ServerMain
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-            app.UseHttpsRedirection();
-        }
-        else
-        {
-            builder.Services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = 307;
-                options.HttpsPort = 7099;
-            });
         }
 
+        app.UseHttpsRedirection();
         app.UseMiddleware<HttpLogger>();
         app.UseWebSockets();
         app.UseAuthorization();
