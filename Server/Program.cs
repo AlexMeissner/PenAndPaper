@@ -27,7 +27,6 @@ class ServerMain
             app.UseHttpsRedirection();
         }
 
-        app.UseHttpsRedirection();
         app.UseMiddleware<HttpLogger>();
         app.UseWebSockets();
         app.UseAuthorization();
