@@ -14,9 +14,11 @@ namespace Client.Controls
     [TransistentService]
     public partial class Map : UserControl
     {
+        private readonly IUpdateNotifier _updateNotifier;
+
         public MapViewModel ViewModel => (MapViewModel)DataContext;
 
-        public Map(IControlProvider controlProvider, IViewModelProvider viewModelProvider, IUpdateNotifier campaignUpdates)
+        public Map(IControlProvider controlProvider, IViewModelProvider viewModelProvider, IUpdateNotifier updateNotifier)
         {
             DataContext = viewModelProvider.Get<MapViewModel>();
 
@@ -24,7 +26,8 @@ namespace Client.Controls
 
             DiceRollerPresenter.Content = controlProvider.Get<DiceRoller>();
 
-            campaignUpdates.DiceRolled += OnDiceRolled;
+            _updateNotifier = updateNotifier;
+            _updateNotifier.DiceRolled += OnDiceRolled;
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -36,6 +39,7 @@ namespace Client.Controls
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             ViewModel.UnsubscribeEventHandlers();
+            _updateNotifier.DiceRolled -= OnDiceRolled;
         }
 
         private async void OnDiceRolled(object? sender, EventArgs e)
