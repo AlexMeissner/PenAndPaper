@@ -39,8 +39,6 @@ namespace Client.ViewModels
             CancelCommand = new RelayCommand(OnCancel);
             EditCommand = new RelayCommand(OnEdit);
             SaveCommand = new AsyncCommand(OnSave);
-
-            _updateNotifier.MapChanged += OnMapChanged;
         }
 
         public void UnsubscribeEventHandlers()
@@ -64,6 +62,7 @@ namespace Client.ViewModels
 
         public async Task OnLoaded()
         {
+            _updateNotifier.MapChanged += OnMapChanged;
             await UpdateScript();
         }
 
