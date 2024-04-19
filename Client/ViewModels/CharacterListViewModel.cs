@@ -19,6 +19,7 @@ namespace Client.ViewModels
         private readonly IPopupPage _popupPage;
         private readonly IUpdateNotifier _updateNotifier;
 
+        public string Filter { get; set; } = string.Empty;
         public ICommand OpenCharacterCreationCommand { get; }
         public ObservableCollection<CharacterOverviewItem> Items { get; init; } = [];
 
@@ -38,6 +39,21 @@ namespace Client.ViewModels
             response.Match(characterList => Items.ReplaceWith(characterList.Items));
 
             _updateNotifier.CharacterChanged += OnCharacterChanged;
+        }
+
+        public bool OnFilter(object item)
+        {
+            if (string.IsNullOrEmpty(Filter))
+            {
+                return true;
+            }
+
+            if (item is CharacterOverviewItem character)
+            {
+                return character.CharacterName.Contains(Filter, StringComparison.CurrentCultureIgnoreCase);
+            }
+
+            return false;
         }
 
         public void UnsubscribeEventHandlers()

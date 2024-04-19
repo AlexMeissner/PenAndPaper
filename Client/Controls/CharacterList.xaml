@@ -4,10 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:viewModels="clr-namespace:Client.ViewModels"
+             xmlns:attachedProperties="clr-namespace:Client.AttachedProperties"
              Loaded="OnLoaded"
              Unloaded="OnUnloaded"
-             d:DataContext="{d:DesignInstance viewModels:CharacterListViewModel}"
              Name="CharacterListControl"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -23,138 +22,140 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Margin="0,0,4,0" Style="{StaticResource SingleLineTextBox}"/>
+            <TextBox Grid.Column="0" Margin="0,0,4,0" attachedProperties:PlaceholderProperty.PlaceholderText="Charaktername" Text="{Binding ElementName=CharacterListControl, Path=ViewModel.Filter, UpdateSourceTrigger=PropertyChanged}" TextChanged="OnTextChanged" Style="{StaticResource SingleLineTextBox}"/>
             <Button Grid.Column="1" Width="22" Command="{Binding ElementName=CharacterListControl, Path=ViewModel.OpenCharacterCreationCommand}" Style="{StaticResource SuccessEmpty}">
                 <fa:IconImage Icon="Plus" Margin="2" Style="{StaticResource SuccessImage}"/>
             </Button>
         </Grid>
 
-        <ListView Grid.Row="1" Margin="4" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=CharacterListControl, Path=ViewModel.Items}" Style="{StaticResource BaseListView}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Height="100">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Row="1" Margin="4" VerticalScrollBarVisibility="Auto">
+            <ListView Name="CharacterListView" MouseMove="OnMouseMove" ItemsSource="{Binding ElementName=CharacterListControl, Path=ViewModel.Items}" Style="{StaticResource BaseListView}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="100">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
-                            <Grid>
-                                <Image Stretch="UniformToFill" Source="{Binding Image, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
-                                <Border Width="20" Height="20" Margin="2" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource Theme_Color_Primary_1}" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
-                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Level}"/>
-                                </Border>
-                                <ProgressBar Height="5" Value="{Binding Health}" Maximum="{Binding MaxHealth}" VerticalAlignment="Bottom"/>
-                            </Grid>
-                        </Border>
-                        <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="3*"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
+                                <Grid>
+                                    <Image Stretch="UniformToFill" Source="{Binding Image, Converter={StaticResource ByteArrayToBitmapImageConverter}}"/>
+                                    <Border Width="20" Height="20" Margin="2" VerticalAlignment="Top" HorizontalAlignment="Left" Background="{DynamicResource Theme_Color_Primary_1}" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Level}"/>
+                                    </Border>
+                                    <ProgressBar Height="5" Value="{Binding Health}" Maximum="{Binding MaxHealth}" VerticalAlignment="Bottom"/>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
+                                <Grid>
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="3*"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
-                                    <Border Grid.Column="0" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
-                                    <Border Grid.Column="1" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
-                                    <Border Grid.Column="2" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Spieler" FontWeight="Bold"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding PlayerName}"/>
+                                        <Border Grid.Column="0" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
+                                        <Border Grid.Column="1" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
+                                        <Border Grid.Column="2" Grid.RowSpan="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0"/>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Name" FontWeight="Bold"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CharacterName}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Spieler" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding PlayerName}"/>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Volk" FontWeight="Bold"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Race}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Name" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CharacterName}"/>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Klasse" FontWeight="Bold"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Class}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Volk" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Race}"/>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Klasse" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Class}"/>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Strength}"/>
+                                        </Border>
+                                        <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Dexterity}"/>
+                                        </Border>
+                                        <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Constitution}"/>
+                                        </Border>
+                                        <Border Grid.Column="3" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Intelligence}"/>
+                                        </Border>
+                                        <Border Grid.Column="4" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Wisdom}"/>
+                                        </Border>
+                                        <Border Grid.Column="5" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,0,0">
+                                            <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Charisma}"/>
+                                        </Border>
+                                    </Grid>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="STR"/>
+                                        </Border>
+                                        <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="GES"/>
+                                        </Border>
+                                        <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="KON"/>
+                                        </Border>
+                                        <Border Grid.Column="3" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="INT"/>
+                                        </Border>
+                                        <Border Grid.Column="4" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="WEI"/>
+                                        </Border>
+                                        <Border Grid.Column="5" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,0,0">
+                                            <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="CHA"/>
+                                        </Border>
+                                    </Grid>
                                 </Grid>
-
-                                <Grid Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Strength}"/>
-                                    </Border>
-                                    <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Dexterity}"/>
-                                    </Border>
-                                    <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Constitution}"/>
-                                    </Border>
-                                    <Border Grid.Column="3" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Intelligence}"/>
-                                    </Border>
-                                    <Border Grid.Column="4" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,1,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Wisdom}"/>
-                                    </Border>
-                                    <Border Grid.Column="5" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,1,0,0">
-                                        <TextBlock FontSize="15" HorizontalAlignment="Center" Text="{Binding Charisma}"/>
-                                    </Border>
+                            </Border>
+                            <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
+                                <Grid>
+                                    <TextBlock Text="Passive" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding PassivePerception}" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Wahrnehmung" Margin="0,0,0,10" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
                                 </Grid>
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border Grid.Column="0" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="STR"/>
-                                    </Border>
-                                    <Border Grid.Column="1" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="GES"/>
-                                    </Border>
-                                    <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="KON"/>
-                                    </Border>
-                                    <Border Grid.Column="3" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="INT"/>
-                                    </Border>
-                                    <Border Grid.Column="4" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,1,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="WEI"/>
-                                    </Border>
-                                    <Border Grid.Column="5" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="0,0,0,0">
-                                        <TextBlock FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" Text="CHA"/>
-                                    </Border>
-                                </Grid>
-                            </Grid>
-                        </Border>
-                        <Border Grid.Column="2" BorderBrush="{DynamicResource Theme_Color_Secondary_1}" BorderThickness="1">
-                            <Grid>
-                                <TextBlock Text="Passive" Margin="0,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding PassivePerception}" FontSize="40" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Wahrnehmung" Margin="0,0,0,10" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </ScrollViewer>
     </Grid>
 </UserControl>
