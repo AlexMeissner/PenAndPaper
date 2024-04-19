@@ -1,7 +1,6 @@
 ﻿using DataTransfer.Dice;
 using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Server.Models;
 using Server.Services;
 using System.Text.Json;
@@ -41,7 +40,13 @@ namespace Server.Controllers
             int max = DiceToInt(payload.Dice);
             int roll = random.Next(1, max + 1);
 
-            var player = await dbContext.Users.FirstAsync(x => x.Id == payload.PlayerId);
+            // ToDo: This causes exceptions
+            var player = await dbContext.Users.FindAsync(payload.PlayerId);
+
+            if (player is null)
+            {
+                return BadRequest();
+            }
 
             var successes = new List<bool>();
 

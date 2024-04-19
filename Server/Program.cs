@@ -8,7 +8,6 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-
 try
 {
     var builder = WebApplication.CreateBuilder(args);

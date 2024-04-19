@@ -18,7 +18,7 @@ namespace Client.Services.API
 
         public Task<HttpResponse<SettingsDto>> GetAsync()
         {
-            return _request.GetAsync<SettingsDto>();
+            return _request.GetAsync<SettingsDto>("id=1");
         }
 
         public Task<HttpResponse> PostAsync(SettingsDto settings)

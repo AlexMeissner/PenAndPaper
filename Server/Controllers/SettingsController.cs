@@ -10,9 +10,9 @@ namespace Server.Controllers
     public class SettingsController(IDatabaseContext dbContext, IRepository<Setting> settingRepository) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(int id)
         {
-            var setting = await settingRepository.FirstOrDefaultAsync();
+            var setting = await settingRepository.FindAsync(id);
 
             if (setting is null)
             {
