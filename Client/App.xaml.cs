@@ -14,7 +14,6 @@ namespace Client
         public App()
         {
             var services = new ServiceCollection();
-            services.RegisterConfigurations();
             services.RegisterServicesFromAttributes();
             _serviceProvider = services.BuildServiceProvider();
         }
@@ -43,6 +42,10 @@ namespace Client
         {
             var updateNotifier = (UpdateNotifier)_serviceProvider.GetRequiredService<IUpdateNotifier>();
             await updateNotifier.Close();
+
+            Client.Properties.Settings.Default.Save();
         }
+
+
     }
 }

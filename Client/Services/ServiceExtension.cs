@@ -17,24 +17,6 @@ namespace Client.Services
         [AttributeUsage(AttributeTargets.Class)]
         public class TransistentServiceAttribute : Attribute { }
 
-        public static IServiceCollection RegisterConfigurations(this IServiceCollection servicesCollection)
-        {
-#if DEBUG
-            var configurationFile = "appsettings.Development.json";
-#else
-            var configurationFile = "appsettings.json";
-#endif
-
-            IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(configurationFile, optional: true, reloadOnChange: true)
-                .Build();
-
-            servicesCollection.AddSingleton(configuration);
-
-            return servicesCollection;
-        }
-
         public static IServiceCollection RegisterServicesFromAttributes(this IServiceCollection servicesCollection)
         {
             Type scopedServiceType = typeof(ScopedServiceAttribute);
