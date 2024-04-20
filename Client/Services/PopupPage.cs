@@ -19,7 +19,7 @@ namespace Client.Services
         public T Open<T>(string title) where T : Page;
     }
 
-    [SingletonService]
+    [TransistentService]
     public class PopupPage : IPopupPage
     {
         private readonly IServiceProvider _serviceProvider;
@@ -72,6 +72,8 @@ namespace Client.Services
 
         public T Open<T>(string title) where T : Page
         {
+            Close();
+
             if (Content?.GetType() != typeof(T))
             {
                 var oldPage = Content;

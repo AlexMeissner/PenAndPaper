@@ -26,19 +26,22 @@ namespace Client.Services
         private Mp3FileReader? WaveProvider;
 
         private readonly ICache _cache;
+        private readonly ISettings _settings;
         private readonly ISessionData _sessionData;
         private readonly ISoundApi _soundApi;
         private readonly IActiveSoundApi _activeSoundApi;
 
-        public AudioPlayer(IUpdateNotifier campaignUpdates, ICache cache, ISessionData sessionData, ISoundApi soundApi, IActiveSoundApi activeSoundApi)
+        public AudioPlayer(IUpdateNotifier campaignUpdates, ISettings settings, ICache cache, ISessionData sessionData, ISoundApi soundApi, IActiveSoundApi activeSoundApi)
         {
             _cache = cache;
+            _settings = settings;
             _sessionData = sessionData;
             _soundApi = soundApi;
             _activeSoundApi = activeSoundApi;
 
             campaignUpdates.AmbientSoundChanged += OnAmbientSoundChanged;
             campaignUpdates.SoundEffectChanged += OnSoundEffectChanged;
+            settings.AmbientVolumeChanged += OnAmbientVolumeChanged;
         }
 
         public async void Play(int id)
@@ -68,6 +71,7 @@ namespace Client.Services
                                 var waveProvider = new Mp3FileReader(filepath);
                                 var waveOut = new WaveOut();
                                 waveOut.Init(waveProvider);
+                                waveOut.Volume = _settings.EffectVolume;
                                 waveOut.Play();
                             },
                             failure =>
@@ -81,6 +85,7 @@ namespace Client.Services
                         var waveProvider = new Mp3FileReader(filepath);
                         var waveOut = new WaveOut();
                         waveOut.Init(waveProvider);
+                        waveOut.Volume = _settings.EffectVolume;
                         waveOut.Play();
                     }
                 });
@@ -97,12 +102,21 @@ namespace Client.Services
             WaveOut = new WaveOut();
             WaveOut.Init(WaveProvider);
             WaveOut.PlaybackStopped += OnPlaybackStopped;
+            WaveOut.Volume = _settings.AmbientVolume;
             WaveOut.Play();
         }
 
         public void Stop()
         {
             WaveOut?.Stop();
+        }
+
+        private void OnAmbientVolumeChanged(object? sender, float e)
+        {
+            if (WaveOut is not null)
+            {
+                WaveOut.Volume = e;
+            }
         }
 
         private void OnPlaybackStopped(object? sender, StoppedEventArgs e)

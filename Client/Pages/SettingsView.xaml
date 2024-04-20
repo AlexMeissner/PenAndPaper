@@ -13,8 +13,8 @@
     <Border Style="{StaticResource TransparentBackground}">
         <StackPanel Margin="5">
             <StackPanel Orientation="Horizontal">
-                <fa:IconImage Height="25" Icon="VolumeHigh"/>
-                <TextBlock Text="Audio" FontWeight="Bold" FontSize="15" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <fa:IconImage Height="25" Icon="VolumeHigh" Style="{StaticResource PrimaryImage}"/>
+                <TextBlock Text="Audio" Margin="10,0,0,0" Style="{StaticResource HeaderCentered}"/>
             </StackPanel>
             <Grid Margin="0,5,0,0">
                 <Grid.ColumnDefinitions>
@@ -22,9 +22,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Ambient-Lautstärke"/>
-                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
-                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" IsReadOnly="True"/>
+                <TextBlock Grid.Column="0" Text="Ambient-Lautstärke" Style="{StaticResource BaseTextBlock}"/>
+                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1" Style="{StaticResource DefaultSlider}"/>
+                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.AmbientVolume}" IsReadOnly="True" Style="{StaticResource SingleLineTextBox}"/>
             </Grid>
             <Grid Margin="0,5,0,0">
                 <Grid.ColumnDefinitions>
@@ -32,9 +32,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Effekt-Lautstärke"/>
-                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1"/>
-                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" IsReadOnly="True"/>
+                <TextBlock Grid.Column="0" Text="Effekt-Lautstärke" Style="{StaticResource BaseTextBlock}"/>
+                <Slider Grid.Column="1" Value="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" Margin="5,0,5,0" Minimum="0" Maximum="1" Style="{StaticResource DefaultSlider}"/>
+                <TextBox Grid.Column="2" Text="{Binding ElementName=SettingsPage, Path=Settings.EffectVolume}" IsReadOnly="True" Style="{StaticResource SingleLineTextBox}"/>
             </Grid>
         </StackPanel>
     </Border>
