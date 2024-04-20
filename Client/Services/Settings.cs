@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
-    public interface ISettings
+    public interface ISettings : INotifyPropertyChanged
     {
         event EventHandler<float> AmbientVolumeChanged;
         event EventHandler<float> EffectVolumeChanged;
@@ -20,6 +21,7 @@ namespace Client.Services
     {
         public event EventHandler<float>? AmbientVolumeChanged;
         public event EventHandler<float>? EffectVolumeChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public string APIHost => string.Format("https://{0}/", Host);
 
@@ -35,6 +37,7 @@ namespace Client.Services
             {
                 Properties.Settings.Default.AmbientSoundVolume = value;
                 Properties.Settings.Default.Save();
+                OnPropertyChanged(nameof(AmbientVolume));
                 AmbientVolumeChanged?.Invoke(this, value);
             }
         }
@@ -49,6 +52,7 @@ namespace Client.Services
             {
                 Properties.Settings.Default.SoundEffectVolume = value;
                 Properties.Settings.Default.Save();
+                OnPropertyChanged(nameof(EffectVolume));
                 EffectVolumeChanged?.Invoke(this, value);
             }
         }
@@ -63,6 +67,11 @@ namespace Client.Services
                 return Properties.Settings.Default.Host;
 #endif
             }
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
