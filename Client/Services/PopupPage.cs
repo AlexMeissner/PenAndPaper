@@ -19,7 +19,7 @@ namespace Client.Services
         public T Open<T>(string title) where T : Page;
     }
 
-    [TransistentService]
+    [SingletonService]
     public class PopupPage : IPopupPage
     {
         private readonly IServiceProvider _serviceProvider;

@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -154,7 +155,22 @@ namespace Client.ViewModels
 
             if (fileDialog.ShowDialog() == true)
             {
-                Image = new BitmapImage(new Uri(fileDialog.FileName));
+                var uri = new Uri(fileDialog.FileName);
+
+                var originalImage = new BitmapImage(uri);
+                var minDimension = Math.Min(originalImage.Width, originalImage.Height);
+
+                const double maxDimension = 100.0;
+                var scalingFactor = minDimension / maxDimension;
+
+                var scaledImage = new BitmapImage();
+                scaledImage.BeginInit();
+                scaledImage.UriSource = uri;
+                scaledImage.DecodePixelWidth = (int)(originalImage.Width / scalingFactor);
+                scaledImage.DecodePixelHeight = (int)(originalImage.Height / scalingFactor);
+                scaledImage.EndInit();
+
+                Image = scaledImage;
             }
         }
     }
@@ -311,7 +327,7 @@ namespace Client.ViewModels
         {
             if (SelectedClass is null)
             {
-                System.Windows.MessageBox.Show("Es wurde keine Klasse ausgewählt", "Eingabe unvollständig", MessageBoxButton.OK);
+                MessageBox.Show("Es wurde keine Klasse ausgewählt", "Eingabe unvollständig", MessageBoxButton.OK);
                 return;
             }
             if (SelectedRace is null)
