@@ -119,7 +119,7 @@ namespace Client.ViewModels
 
                     if (critSoundId is int soundId)
                     {
-                        _audioPlayer.Play(soundId);
+                        await _audioPlayer.Play(soundId);
                     }
                 }
                 else
@@ -128,14 +128,14 @@ namespace Client.ViewModels
                     {
                         if (successSoundId is int soundId)
                         {
-                            _audioPlayer.Play(soundId);
+                            await _audioPlayer.Play(soundId);
                         }
                     }
                     else
                     {
                         if (failSoundId is int soundId)
                         {
-                            _audioPlayer.Play(soundId);
+                            await _audioPlayer.Play(soundId);
                         }
                     }
                 }

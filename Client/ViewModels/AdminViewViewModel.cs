@@ -99,10 +99,10 @@ namespace Client.ViewModels
             _soundApi = soundApi;
             _settingsApi = settingsApi;
             _audioPlayer = audioPlayer;
-            PlaySuccessCommand = new RelayCommand(PlayPositive);
-            PlayFailCommand = new RelayCommand(PlayFail);
-            PlayCritSuccessCommand = new RelayCommand(PlayCritSuccess);
-            PlayCritFailCommand = new RelayCommand(PlayCritFail);
+            PlaySuccessCommand = new AsyncCommand(PlayPositive);
+            PlayFailCommand = new AsyncCommand(PlayFail);
+            PlayCritSuccessCommand = new AsyncCommand(PlayCritSuccess);
+            PlayCritFailCommand = new AsyncCommand(PlayCritFail);
             SaveCommand = new AsyncCommand(Save);
 
             // ToDo: Code Small -> Async Code made sync because CTOR
@@ -136,35 +136,35 @@ namespace Client.ViewModels
                 failure => { });
         }
 
-        private void PlayPositive()
+        private async Task PlayPositive()
         {
             if (SuccessSound is not null)
             {
-                _audioPlayer.Play(SuccessSound.Id);
+                await _audioPlayer.Play(SuccessSound.Id);
             }
         }
 
-        private void PlayFail()
+        private async Task PlayFail()
         {
             if (FailSound is not null)
             {
-                _audioPlayer.Play(FailSound.Id);
+                await _audioPlayer.Play(FailSound.Id);
             }
         }
 
-        private void PlayCritSuccess()
+        private async Task PlayCritSuccess()
         {
             if (CritSuccessSound is not null)
             {
-                _audioPlayer.Play(CritSuccessSound.Id);
+                await _audioPlayer.Play(CritSuccessSound.Id);
             }
         }
 
-        private void PlayCritFail()
+        private async Task PlayCritFail()
         {
             if (CritFailSound is not null)
             {
-                _audioPlayer.Play(CritFailSound.Id);
+                await _audioPlayer.Play(CritFailSound.Id);
             }
         }
 

@@ -3,17 +3,12 @@ using System.Net;
 
 namespace Client.Services.API
 {
-    public readonly struct HttpResponse
+    public readonly struct HttpResponse(HttpStatusCode statusCode)
     {
-        public HttpStatusCode StatusCode { get; init; }
+        public HttpStatusCode StatusCode { get; init; } = statusCode;
 
         public bool Failed => StatusCode >= HttpStatusCode.BadRequest;
         public bool Succeded => StatusCode < HttpStatusCode.BadRequest;
-
-        public HttpResponse(HttpStatusCode statusCode)
-        {
-            StatusCode = statusCode;
-        }
     }
 
     public readonly struct HttpResponse<TValue>(HttpStatusCode statusCode, TValue? value)
@@ -32,6 +27,16 @@ namespace Client.Services.API
             {
                 success(value!);
             }
+        }
+
+        public TResult Match<TResult>(Func<TValue, TResult> success, Func<HttpStatusCode, TResult> failure)
+        {
+            if (IsError)
+            {
+                return failure(statusCode);
+            }
+
+            return success(value!);
         }
     }
 }

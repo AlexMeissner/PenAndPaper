@@ -1,15 +1,17 @@
 ﻿using Client.Services.API;
 using DataTransfer;
+using DataTransfer.Sound;
 using NAudio.Wave;
 using System;
-using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Media.Effects;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
     public interface IAudioPlayer
     {
-        void Play(int id);
+        Task Play(int id);
         void Stop();
 
         event EventHandler Finished;
@@ -44,54 +46,23 @@ namespace Client.Services
             settings.AmbientVolumeChanged += OnAmbientVolumeChanged;
         }
 
-        public async void Play(int id)
+        public async Task Play(int id)
         {
-            var soundResponse = await _soundApi.GetAsync(id);
+            var soundFilename = await GetSound(id, CacheType.SoundEffect);
 
-            // ToDo:
-            // 'waveProvider' and 'waveOut' are not disposed
-            // code duplicate 'play'
-            // this is a quick fix: there is an IO exception if a sound is played for the first time
-            // the sound is downloaded and stored to a file while 'Mp3FileReader' already tries to access it
-            soundResponse.Match(
-                async success =>
-                {
-                    var filename = string.Format("{0}.{1}", success.Id, "mp3");
-
-                    if (!_cache.Contains(CacheType.SoundEffect, filename) ||
-                        Checksum.CreateHash(await _cache.GetData(CacheType.SoundEffect, filename)) != success.Checksum)
-                    {
-                        var soundDataResponse = await _soundApi.GetDataAsync(id);
-
-                        soundDataResponse.Match(
-                            async s =>
-                            {
-                                await _cache.Add(CacheType.SoundEffect, filename, s.Data);
-                                var filepath = _cache.GetPath(CacheType.SoundEffect, filename);
-                                var waveProvider = new Mp3FileReader(filepath);
-                                var waveOut = new WaveOut();
-                                waveOut.Init(waveProvider);
-                                waveOut.Volume = _settings.EffectVolume;
-                                waveOut.Play();
-                            },
-                            failure =>
-                            {
-                                Debug.WriteLine($"Failed to cache sound ({failure})");
-                            });
-                    }
-                    else
-                    {
-                        var filepath = _cache.GetPath(CacheType.SoundEffect, filename);
-                        var waveProvider = new Mp3FileReader(filepath);
-                        var waveOut = new WaveOut();
-                        waveOut.Init(waveProvider);
-                        waveOut.Volume = _settings.EffectVolume;
-                        waveOut.Play();
-                    }
-                });
+            if (soundFilename is string filename)
+            {
+                var filepath = _cache.GetPath(CacheType.SoundEffect, filename);
+                PlayEffect(filepath);
+            }
         }
 
-        private void Play(string filepath)
+        public void Stop()
+        {
+            WaveOut?.Stop();
+        }
+
+        private void PlayAmbient(string filepath)
         {
             if (WaveOut is not null)
             {
@@ -106,9 +77,15 @@ namespace Client.Services
             WaveOut.Play();
         }
 
-        public void Stop()
+        private void PlayEffect(string filepath)
         {
-            WaveOut?.Stop();
+            // ToDo: 'waveProvider' and 'waveOut' do not get disposed
+            // Fix: Register to 'PlaybackStopped' and dispose in there if possible
+            var waveProvider = new Mp3FileReader(filepath);
+            var waveOut = new WaveOut();
+            waveOut.Init(waveProvider);
+            waveOut.Volume = _settings.EffectVolume;
+            waveOut.Play();
         }
 
         private void OnAmbientVolumeChanged(object? sender, float e)
@@ -136,50 +113,91 @@ namespace Client.Services
 
         private async void OnAmbientSoundChanged(object? sender, EventArgs e)
         {
-            var activeSoundResponse = await _activeSoundApi.GetAmbientSoundAsync(_sessionData.CampaignId);
+            Stop();
 
-            activeSoundResponse.Match(
-                async success =>
-                {
-                    Stop();
+            var response = await _activeSoundApi.GetAmbientSoundAsync(_sessionData.CampaignId);
 
-                    if (success.AmbientId is int ambientId)
-                    {
-                        var soundResponse = await _soundApi.GetAsync(ambientId);
+            var ambientId = response.Match(
+                ambientSond => { return ambientSond.AmbientId; },
+                errorCode => { return null; });
 
-                        soundResponse.Match(
-                            async s =>
-                            {
-                                var filename = string.Format("{0}.{1}", s.Id, "mp3");
+            if (ambientId is null)
+            {
+                // ToDo: Log error
+                return;
+            }
 
-                                if (!_cache.Contains(CacheType.AmbientSound, filename) ||
-                                    Checksum.CreateHash(await _cache.GetData(CacheType.AmbientSound, filename)) != s.Checksum)
-                                {
-                                    var soundDataResponse = await _soundApi.GetDataAsync(ambientId);
-                                    soundDataResponse.Match(async x => await _cache.Add(CacheType.AmbientSound, filename, x.Data));
-                                }
+            var soundFilename = await GetSound((int)ambientId, CacheType.AmbientSound);
 
-                                Play(_cache.GetPath(CacheType.AmbientSound, filename));
-                            },
-                            f => { });
-                    }
-                },
-                failure => { });
+            if (soundFilename is string filename)
+            {
+                var filepath = _cache.GetPath(CacheType.AmbientSound, filename);
+                PlayAmbient(filepath);
+            }
         }
 
         private async void OnSoundEffectChanged(object? sender, EventArgs e)
         {
             var response = await _activeSoundApi.GetSoundEffectAsync(_sessionData.CampaignId);
 
-            response.Match(
-                success =>
+            var effectId = response.Match(
+                sound => { return sound.EffectId; },
+                failure => { return null; });
+
+            if (effectId is null)
+            {
+                // ToDo: Log error
+                return;
+            }
+
+            await Play((int)effectId);
+        }
+
+        private async Task<string?> GetSound(int id, CacheType cacheType)
+        {
+            var soundResponse = await _soundApi.GetAsync(id);
+
+            var sound = soundResponse.Match<SoundDto?>(
+                sound => { return sound; },
+                errorCode => { return null; });
+
+            if (sound is null)
+            {
+                // ToDo: Log error
+                return null;
+            }
+
+            var filename = string.Format("{0}.{1}", sound.Id, "mp3");
+            var downloadRequired = false;
+
+            if (_cache.Contains(cacheType, filename))
+            {
+                var soundData = await _cache.GetData(cacheType, filename);
+                downloadRequired = Checksum.CreateHash(soundData) != sound.Checksum;
+            }
+            else
+            {
+                downloadRequired = true;
+            }
+
+            if (downloadRequired)
+            {
+                var soundDataResponse = await _soundApi.GetDataAsync(id);
+
+                var soundData = soundDataResponse.Match<byte[]?>(
+                    sound => { return sound.Data; },
+                    errorCode => { return null; });
+
+                if (soundData is null)
                 {
-                    if (success.EffectId is int effectId)
-                    {
-                        Play(effectId);
-                    }
-                },
-                failure => { });
+                    // ToDo: Log error
+                    return null;
+                }
+
+                await _cache.Add(cacheType, filename, soundData);
+            }
+
+            return filename;
         }
     }
 }
