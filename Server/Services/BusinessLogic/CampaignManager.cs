@@ -14,6 +14,7 @@ namespace Server.Services.BusinessLogic
         Task<int> Create(CampaignCreationDto campaign);
         Task<CampaignCreationDto?> GetCreationDataAsync(int campaignId, int userId);
         Task<ActiveMapDto?> GetActiveCampaignElements(int campaignId);
+        Task<bool?> Update(CampaignCreationDto campaign);
         Task<bool?> UpdateActiveCampaignElements(ActiveMapDto activeMap);
     }
 
@@ -104,8 +105,10 @@ namespace Server.Services.BusinessLogic
                 }
 
                 var playersInCampaign = campaign.Players.Select(u => new UsersDto(u.Id, u.Username, u.Email)).ToList();
+                var playerIdsInCampaign = campaign.Players.Select(u => u.Id);
+
                 var usersNotInCampaign = await userRepository
-                    .Where(x => !playersInCampaign.Any(y => x.Id == y.Id) && x != campaign.Gamemaster)
+                    .Where(x => !playerIdsInCampaign.Contains(x.Id) && x != campaign.Gamemaster)
                     .Select(x => new UsersDto(x.Id, x.Username, x.Email))
                     .ToListAsync();
 
@@ -113,9 +116,39 @@ namespace Server.Services.BusinessLogic
                     CampaignId: campaignId,
                     CampaignName: campaign.Name,
                     Gamemaster: new UsersDto(campaign.Gamemaster.Id, campaign.Gamemaster.Username, campaign.Gamemaster.Email),
-                    UsersNotInCampaign: playersInCampaign,
-                    UsersInCampaign: usersNotInCampaign);
+                    UsersNotInCampaign: usersNotInCampaign,
+                    UsersInCampaign: playersInCampaign);
             }
+        }
+
+        public async Task<bool?> Update(CampaignCreationDto campaign)
+        {
+            var dbCampaign = await campaignRepository.Include(c => c.Players).FirstOrDefaultAsync(c => c.Id == campaign.CampaignId);
+
+            if (dbCampaign is null)
+            {
+                return null;
+            }
+
+            dbCampaign.Name = campaign.CampaignName;
+
+            dbCampaign.Players.Clear();
+
+            foreach (var user in campaign.UsersInCampaign)
+            {
+                var player = await userRepository.FindAsync(user.Id);
+
+                if (player is null)
+                {
+                    return false;
+                }
+
+                dbCampaign.Players.Add(player);
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool?> UpdateActiveCampaignElements(ActiveMapDto activeMap)

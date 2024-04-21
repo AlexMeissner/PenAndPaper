@@ -39,6 +39,18 @@ namespace Client.Pages
             _pageNavigator.OpenPage<CampaignCreationPage>();
         }
 
+        private void OnEditCampaign(object sender, RoutedEventArgs e)
+        {
+            _pageNavigator.OpenPage<CampaignCreationPage>();
+
+            if (_pageNavigator.CurrentPage is CampaignCreationPage page &&
+                e.Source is Button button &&
+                button.DataContext is CampaignOverviewItemDto campaign)
+            {
+                page.CampaignId = campaign.Id;
+            }
+        }
+
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             var response = await _campaignOverviewApi.GetAsync(_sessionData.UserId);

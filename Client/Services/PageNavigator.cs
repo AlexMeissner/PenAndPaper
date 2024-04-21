@@ -13,15 +13,8 @@ namespace Client.Services
     }
 
     [SingletonService]
-    public class PageNavigator : IPageNavigator
+    public class PageNavigator(IServiceProvider serviceProvider) : IPageNavigator
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public PageNavigator(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private Page? _currentPage;
@@ -46,7 +39,7 @@ namespace Client.Services
             if (CurrentPage?.GetType() != typeof(T))
             {
                 var oldPage = CurrentPage;
-                CurrentPage = _serviceProvider.GetRequiredService<T>();
+                CurrentPage = serviceProvider.GetRequiredService<T>();
 
                 if (oldPage is IDisposable disposable)
                 {

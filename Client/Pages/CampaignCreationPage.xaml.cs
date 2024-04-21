@@ -15,21 +15,17 @@ namespace Client.Pages
     [TransistentService]
     public partial class CampaignCreationPage : Page
     {
-        private readonly int _campaignId;
+        public int CampaignId { get; set; }
+
         private readonly IPageNavigator _pageNavigator;
         private readonly ICampaignCreationApi _campaignCreationApi;
         private readonly IUserApi _userApi;
         private readonly ISessionData _sessionData;
 
         public CampaignCreationPage(IPageNavigator pageNavigator, ICampaignCreationApi campaignCreationApi, IUserApi userApi, ISessionData sessionData)
-            : this(pageNavigator, campaignCreationApi, userApi, sessionData, -1)
-        {
-        }
-
-        public CampaignCreationPage(IPageNavigator pageNavigator, ICampaignCreationApi campaignCreationApi, IUserApi userApi, ISessionData sessionData, int campaignId)
         {
             InitializeComponent();
-            _campaignId = campaignId;
+            CampaignId = -1;
             _pageNavigator = pageNavigator;
             _campaignCreationApi = campaignCreationApi;
             _userApi = userApi;
@@ -73,21 +69,33 @@ namespace Client.Pages
 
         private async void OnSave(object sender, RoutedEventArgs e)
         {
-            var response = await _campaignCreationApi.PostAsync((DataContext as CampaignCreationDto)!);
+            if (DataContext is CampaignCreationDto campaign)
+            {
+                HttpResponse response;
 
-            if (response.Succeded)
-            {
-                _pageNavigator.OpenPage<CampaignSelectionPage>();
-            }
-            else
-            {
-                MessageBoxUtility.Show(response.StatusCode);
+                if (campaign.CampaignId == -1)
+                {
+                    response = await _campaignCreationApi.PostAsync(campaign);
+                }
+                else
+                {
+                    response = await _campaignCreationApi.PutAsync(campaign);
+                }
+
+                if (response.Succeded)
+                {
+                    _pageNavigator.OpenPage<CampaignSelectionPage>();
+                }
+                else
+                {
+                    MessageBoxUtility.Show(response.StatusCode);
+                }
             }
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var response = await _campaignCreationApi.GetAsync(_campaignId, _sessionData.UserId);
+            var response = await _campaignCreationApi.GetAsync(CampaignId, _sessionData.UserId);
 
             response.Match(
                 async success =>

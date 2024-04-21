@@ -8,17 +8,13 @@ namespace Client.Services.API
     {
         public Task<HttpResponse<CampaignCreationDto>> GetAsync(int campaignId, int userId);
         public Task<HttpResponse> PostAsync(CampaignCreationDto payload);
+        public Task<HttpResponse> PutAsync(CampaignCreationDto payload);
     }
 
     [TransistentService]
-    public class CampaignCreationApi : ICampaignCreationApi
+    public class CampaignCreationApi(IEndPointProvider endPointProvider) : ICampaignCreationApi
     {
-        private readonly HttpRequest _request;
-
-        public CampaignCreationApi(IEndPointProvider endPointProvider)
-        {
-            _request = new(endPointProvider.BaseURL + "CampaignCreation");
-        }
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "CampaignCreation");
 
         public Task<HttpResponse<CampaignCreationDto>> GetAsync(int campaignId, int userId)
         {
@@ -28,6 +24,11 @@ namespace Client.Services.API
         public Task<HttpResponse> PostAsync(CampaignCreationDto payload)
         {
             return _request.PostAsync(payload);
+        }
+
+        public Task<HttpResponse> PutAsync(CampaignCreationDto payload)
+        {
+            return _request.PutAsync(payload);
         }
     }
 }

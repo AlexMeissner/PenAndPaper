@@ -27,5 +27,22 @@ namespace Server.Controllers
             var campaignId = await campaignManager.Create(payload);
             return CreatedAtAction(nameof(Get), campaignId);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(CampaignCreationDto payload)
+        {
+            var updated = await campaignManager.Update(payload);
+
+            if (updated is null)
+            {
+                return NotFound(payload);
+            }
+            else if (updated is false)
+            {
+                return this.InternalServerError(payload);
+            }
+
+            return Ok(payload);
+        }
     }
 }
