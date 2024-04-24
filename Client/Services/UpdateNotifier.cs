@@ -11,11 +11,19 @@ using static Client.Services.ServiceExtension;
 
 namespace Client.Services
 {
+    public class TokenMovedEventArgs(int id, int x, int y) : EventArgs
+    {
+        public int Id => id;
+        public int X => x;
+        public int Y => y;
+    }
+
     public interface IUpdateNotifier
     {
         event EventHandler MapChanged;
         event EventHandler MapCollectionChanged;
-        event EventHandler TokenChanged;
+        event EventHandler TokenAdded;
+        event EventHandler<TokenMovedEventArgs> TokenMoved;
         event EventHandler DiceRolled;
         event EventHandler AmbientSoundChanged;
         event EventHandler SoundEffectChanged;
@@ -30,7 +38,8 @@ namespace Client.Services
     {
         public event EventHandler? MapChanged;
         public event EventHandler? MapCollectionChanged;
-        public event EventHandler? TokenChanged;
+        public event EventHandler? TokenAdded;
+        public event EventHandler<TokenMovedEventArgs>? TokenMoved;
         public event EventHandler? DiceRolled;
         public event EventHandler? AmbientSoundChanged;
         public event EventHandler? SoundEffectChanged;
@@ -64,7 +73,8 @@ namespace Client.Services
             var eventHandlers = new List<Delegate?>([
                 MapChanged,
                 MapCollectionChanged,
-                TokenChanged,
+                TokenAdded,
+                TokenMoved,
                 DiceRolled,
                 AmbientSoundChanged,
                 SoundEffectChanged,
@@ -106,8 +116,8 @@ namespace Client.Services
                 case UpdateEntity.MapCollection:
                     MapCollectionChanged?.Invoke(this, EventArgs.Empty);
                     break;
-                case UpdateEntity.Token:
-                    TokenChanged?.Invoke(this, EventArgs.Empty);
+                case UpdateEntity.TokenAdded:
+                    TokenAdded?.Invoke(this, EventArgs.Empty);
                     break;
                 case UpdateEntity.Dice:
                     DiceRolled?.Invoke(this, EventArgs.Empty);
@@ -128,16 +138,39 @@ namespace Client.Services
         {
             while (_webSocket.State == WebSocketState.Open)
             {
-                byte[] buffer = new byte[sizeof(int)];
+                const uint bufferSize = 64;
+                byte[] buffer = new byte[bufferSize];
                 WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    if (JsonSerializer.Deserialize<UpdateEntity>(message) is UpdateEntity entity)
+                    var update = JsonSerializer.Deserialize<WebSocketUpdate>(message);
+
+                    if (update is null)
                     {
-                        InvokeEvent(entity);
+                        continue;
+                    }
+
+                    if (update.Entity is JsonElement jsonElement)
+                    {
+                        switch (update.Type)
+                        {
+                            case nameof(TokenMovedDto):
+                                var token = JsonSerializer.Deserialize<TokenMovedDto>(jsonElement)!;
+                                TokenMoved?.Invoke(this, new TokenMovedEventArgs(token.Id, token.X, token.Y));
+                                break;
+
+                            case nameof(UpdateEntity):
+                                var updateEntity = JsonSerializer.Deserialize<UpdateEntity>(jsonElement);
+                                InvokeEvent(updateEntity);
+                                break;
+
+                            default:
+                                // ToDo: Log error
+                                break;
+                        }
                     }
                 }
             }

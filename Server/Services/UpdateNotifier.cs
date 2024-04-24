@@ -10,19 +10,13 @@ namespace Server.Services
     {
         bool Add(WebSocket webSocket);
         bool Remove(WebSocket webSocket);
-        Task Send(int campaignId, UpdateEntity entity);
+        Task Send(int campaignId, object entity);
         void SetCampaignId(WebSocket webSocket, int campaignId);
     }
 
-    public class UpdateNotifier : IUpdateNotifier
+    public class UpdateNotifier(ILogger<UpdateNotifier> logger) : IUpdateNotifier
     {
-        private readonly ILogger<UpdateNotifier> _logger;
         private readonly ConcurrentDictionary<WebSocket, int> _webSockets = new();
-
-        public UpdateNotifier(ILogger<UpdateNotifier> logger)
-        {
-            _logger = logger;
-        }
 
         public bool Add(WebSocket webSocket)
         {
@@ -34,11 +28,12 @@ namespace Server.Services
             return _webSockets.TryRemove(webSocket, out int _);
         }
 
-        public async Task Send(int campaignId, UpdateEntity entity)
+        public async Task Send(int campaignId, object entity)
         {
-            _logger.LogInformation("Sending update {entity} ...", entity);
+            logger.LogInformation("Sending update {entity} ...", entity);
 
-            var message = JsonSerializer.Serialize(entity);
+            var update = new WebSocketUpdate(entity);
+            var message = JsonSerializer.Serialize(update);
             byte[] buffer = Encoding.UTF8.GetBytes(message);
 
             var clientsInSameCampaign = _webSockets.Where(x => x.Value == campaignId).Select(y => y.Key);

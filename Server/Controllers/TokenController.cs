@@ -71,7 +71,7 @@ namespace Server.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            await updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
+            await updateNotifier.Send(payload.CampaignId, UpdateEntity.TokenAdded);
 
             return CreatedAtAction(nameof(Get), token.Id);
         }
@@ -91,7 +91,8 @@ namespace Server.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            await updateNotifier.Send(payload.CampaignId, UpdateEntity.Token);
+            var tokenUpdate = new TokenMovedDto(token.Id, token.X, token.Y);
+            await updateNotifier.Send(payload.CampaignId, tokenUpdate);
 
             return Ok(token);
         }

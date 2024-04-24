@@ -61,7 +61,8 @@ namespace Client.ViewModels
             _updateNotifier = updateNotifier;
 
             _updateNotifier.MapChanged += OnMapChanged;
-            _updateNotifier.TokenChanged += OnTokenChanged;
+            _updateNotifier.TokenAdded += OnTokenAdded;
+            _updateNotifier.TokenMoved += OnTokenMoved;
 
             RollD4Command = new AsyncCommand(OnRollD4);
             RollD6Command = new AsyncCommand(OnRollD6);
@@ -74,7 +75,7 @@ namespace Client.ViewModels
         public void UnsubscribeEventHandlers()
         {
             _updateNotifier.MapChanged -= OnMapChanged;
-            _updateNotifier.TokenChanged -= OnTokenChanged;
+            _updateNotifier.TokenAdded -= OnTokenAdded;
         }
 
         public Task CreateToken(TokenType type, Point position, int id)
@@ -118,9 +119,23 @@ namespace Client.ViewModels
             await UpdateTokens();
         }
 
-        private async void OnTokenChanged(object? sender, EventArgs e)
+        private async void OnTokenAdded(object? sender, EventArgs e)
         {
             await UpdateTokens();
+        }
+
+        private void OnTokenMoved(object? sender, TokenMovedEventArgs e)
+        {
+            var token = Items.FirstOrDefault(t => t is TokenMapItem item && item.Id == e.Id);
+
+            if (token is null)
+            {
+                // ToDo: Log error
+                return;
+            }
+
+            token.X = e.X;
+            token.Y = e.Y;
         }
 
         public async Task UpdateMap()

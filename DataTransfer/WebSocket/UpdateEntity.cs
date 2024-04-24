@@ -5,7 +5,7 @@
         Character,
         Map,
         MapCollection,
-        Token,
+        TokenAdded,
         Dice,
         AmbientSound,
         SoundEffect,
