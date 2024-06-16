@@ -14,4 +14,12 @@
     <Content Include="Components\Pages\CampaignSelection.razor.css" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Flurl.Http" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
+  </ItemGroup>
+
 </Project>

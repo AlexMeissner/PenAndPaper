@@ -13,3 +13,18 @@
     height: 100%;
     background-image: url('https://w.wallhaven.cc/full/6k/wallhaven-6k5x9w.jpg');
 }
+
+.btn-area {
+    display: flex;
+}
+
+.btn-enter {
+    width: 49%;
+    margin: 6px;
+}
+
+.btn-create {
+    width: 49%;
+    margin: 6px;
+    margin-left: auto;
+}
