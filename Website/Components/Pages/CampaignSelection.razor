@@ -10,7 +10,7 @@
         <div class="list-group">
             @foreach (var campaign in campaignItems)
             {
-                <div class="list-group-item list-group-item-action campaign-item-level-0">
+                <a href="campaign/@campaign.Id" class="list-group-item list-group-item-action campaign-item-level-0">
                     <div class="campaign-item-icon">
                         <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
                     </div>
@@ -36,14 +36,11 @@
                             </button>
                         </div>
                     }
-                </div>
+                </a>
             }
         </div>
 
-        <div class="btn-area">
-            <button type="button" class="btn btn-enter btn-outline-info">Betreten</button>
-            <button type="button" class="btn btn-create btn-outline-success">Erstellen</button>
-        </div>
+        <button type="button" class="btn btn-create btn-outline-success">Erstellen</button>
     </div>
 </div>
 
