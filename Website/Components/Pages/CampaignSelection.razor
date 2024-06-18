@@ -1,48 +1,43 @@
 ﻿@page "/"
 
+@using DataTransfer.Campaign
+@using Website.Services.API
+
+@inject ICampaignOverviewApi campaignOverviewApi
+
 <div class="background-image">
     <div class="centered-backdrop">
         <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">
-                <img width="200" height="200" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">Dungeons and Dragons #3</h5>
-                </div>
-                <p class="text-muted">Spielleiter</p>
-                <p class="text-muted">Spieler</p>
-            </a>
-            <div class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small class="text-muted">3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small class="text-muted">And some muted small print.</small>
-            </div>
-            <div class="list-group-item list-group-item-action campaign-item-level-0">
-                <div class="campaign-item-icon">
-                    <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
-                </div>
-                <div class="campaign-item-level-1">
-                    <div class="campaign-item-header">Campaign Name</div>
-                    <div class="campaign-item-level-2">
-                        <div class="campaign-item-sub-header">Spielleiter</div>
-                        <div class="campaign-item-player-name">Togelmombo</div>
+            @foreach (var campaign in campaignItems)
+            {
+                <div class="list-group-item list-group-item-action campaign-item-level-0">
+                    <div class="campaign-item-icon">
+                        <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
                     </div>
-                    <div class="campaign-item-level-2">
-                        <div class="campaign-item-sub-header">Spieler</div>
-                        <div class="campaign-item-player-name">Spieler #1</div>
-                        <div class="campaign-item-player-name">Spieler #2</div>
-                        <div class="campaign-item-player-name">Spieler #3</div>
-                        <div class="campaign-item-player-name">Spieler #4</div>
+                    <div class="campaign-item-level-1">
+                        <div class="campaign-item-header">@campaign.Name</div>
+                        <div class="campaign-item-level-2">
+                            <div class="campaign-item-sub-header">Spielleiter</div>
+                            <div class="campaign-item-player-name">@campaign.Gamemaster</div>
+                        </div>
+                        <div class="campaign-item-level-2">
+                            <div class="campaign-item-sub-header">Spieler</div>
+                            @foreach (var player in campaign.Characters)
+                            {
+                                <div class="campaign-item-player-name">@player</div>
+                            }
+                        </div>
                     </div>
+                    @if (campaign.IsGamemaster)
+                    {
+                        <div class="campaign-item-button">
+                            <button type="button" class="btn btn-primary btn-edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                    }
                 </div>
-                <div class="campaign-item-button">
-                    <button type="button" class="btn btn-primary btn-edit">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                </div>
-            </div>
+            }
         </div>
 
         <div class="btn-area">
@@ -53,5 +48,24 @@
 </div>
 
 @code {
+    private readonly int userId = 1;
 
+    private ICollection<CampaignOverviewItemDto> campaignItems = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await campaignOverviewApi.GetAsync(userId);
+
+        response.Match(
+            campaignOverview =>
+            {
+                campaignItems = campaignOverview.CampaignItems;
+            },
+            errorCode =>
+            {
+                // ToDo: Log + Toast
+                Console.WriteLine(errorCode);
+            }
+        );
+    }
 }

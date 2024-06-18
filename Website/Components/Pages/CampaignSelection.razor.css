@@ -43,6 +43,7 @@
 
 .campaign-item-level-1 {
     margin-left: 10px;
+    user-select: none;
 }
 
 .campaign-item-level-2 {
@@ -78,4 +79,10 @@
     font-size: 14px;
     font-style: italic;
     margin-left: 10px;
+}
+
+.list-group {
+    margin: 5px;
+    height: calc(100% - 60px);
+    overflow: auto;
 }
