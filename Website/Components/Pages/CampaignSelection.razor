@@ -1,9 +1,11 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 @using DataTransfer.Campaign
 @using Website.Services.API
 
 @inject ICampaignOverviewApi campaignOverviewApi
+@inject NavigationManager navigationManager
 
 <div class="background-image">
     <div class="centered-backdrop">
@@ -31,7 +33,7 @@
                     @if (campaign.IsGamemaster)
                     {
                         <div class="campaign-item-button">
-                            <button type="button" class="btn btn-primary btn-edit">
+                            <button type="button" class="btn btn-primary btn-edit" @onclick="() => OnEdit(campaign.Id)">
                                 <i class="bi bi-pencil"></i>
                             </button>
                         </div>
@@ -40,11 +42,12 @@
             }
         </div>
 
-        <button type="button" class="btn btn-create btn-outline-success">Erstellen</button>
+        <button type="button" class="btn btn-create btn-outline-success" @onclick="OnCreate">Erstellen</button>
     </div>
 </div>
 
 @code {
+    // ToDo: Get correct user id
     private readonly int userId = 1;
 
     private ICollection<CampaignOverviewItemDto> campaignItems = [];
@@ -64,5 +67,16 @@
                 Console.WriteLine(errorCode);
             }
         );
+    }
+
+    private void OnCreate()
+    {
+        navigationManager.NavigateTo("campaignCreation");
+    }
+
+    private void OnEdit(int campaignId)
+    {
+        // If campaignId is always the same value check https://www.telerik.com/blogs/how-to-pass-arguments-to-your-onclick-functions-blazor
+        navigationManager.NavigateTo($"campaignCreation/{campaignId}");
     }
 }

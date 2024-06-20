@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Tests", "Server.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterManager", "MonsterManager\MonsterManager.csproj", "{220F2542-1B57-4F16-B813-7AAA9444AF41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Website", "Website\Website.csproj", "{199802F7-162A-42E1-8DD0-A23E6C46782A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Website", "Website\Website.csproj", "{199802F7-162A-42E1-8DD0-A23E6C46782A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

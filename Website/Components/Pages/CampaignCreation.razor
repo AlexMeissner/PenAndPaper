@@ -1,0 +1,16 @@
+﻿@page "/campaignCreation"
+@page "/campaignCreation/{campaignId:int}"
+
+@if (CampaignId == null)
+{
+    <h3>Create new Campaign</h3>
+}
+else
+{
+    <h3>Modify Campaign @CampaignId</h3>
+}
+
+@code {
+    [Parameter]
+    public int? CampaignId { get; set; }
+}
