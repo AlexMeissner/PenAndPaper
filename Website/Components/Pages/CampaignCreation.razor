@@ -1,16 +1,155 @@
 ﻿@page "/campaignCreation"
 @page "/campaignCreation/{campaignId:int}"
+@rendermode InteractiveServer
 
-@if (CampaignId == null)
-{
-    <h3>Create new Campaign</h3>
-}
-else
-{
-    <h3>Modify Campaign @CampaignId</h3>
-}
+@using DataTransfer.Campaign;
+@using DataTransfer.User;
+@using Website.Services.API
+
+@inject ICampaignCreationApi campaignCreationApi
+@inject IUserApi userApi
+@inject NavigationManager navigationManager
+
+<div class="background-image">
+    <div class="centered-backdrop">
+        <div class="input-group top-panels">
+            <div class="input-group-prepend">
+                <i class="bi bi-person-circle input-group-text icons"></i>
+            </div>
+            <input type="text" class="form-control" @bind="campaignName" placeholder="Kampagnenname" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group top-panels">
+            <div class="input-group-prepend">
+                <i class="bi bi-compass input-group-text icons"></i>
+            </div>
+            <input type="text" class="form-control" @bind="gamemaster" readonly placeholder="Spielleiter" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="player-selection">
+            <div class="left-panel">
+                <h4 class="headings">Spielerliste</h4>
+                <ul class="list-group">
+                    @foreach (var user in usersNotInCampaign)
+                    {
+                        <button type="button" class="list-group-item" @onclick="() => OnAddPlayer(user)">@user.Username</button>
+                    }
+                </ul>
+            </div>
+            <div class="right-panel">
+                <h4 class="headings">Spieler in Kampagne</h4>
+                <ul class="list-group">
+                    @foreach (var user in usersInCampaign)
+                    {
+                        <button class="list-group-item" @onclick="() => OnRemovePlayer(user)">@user.Username</button>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="bottom-panel">
+            <button type="button" class="btn btn-outline-warning buttons" @onclick="OnCancel">Abbrechen</button>
+            <button type="button" class="btn btn-outline-success buttons" @onclick="OnOk">@buttonText</button>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]
     public int? CampaignId { get; set; }
+
+    private string buttonText => CampaignId is null ? "Erstellen" : "Aktualisieren";
+
+    // ToDo: Get correct user id
+    private int userId = 1;
+    private string campaignName = string.Empty;
+    private string gamemaster = string.Empty;
+    private List<UsersDto> usersNotInCampaign = [];
+    private List<UsersDto> usersInCampaign = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var campaignId = CampaignId ?? -1;
+
+        var response = await campaignCreationApi.GetAsync(campaignId, userId);
+
+        response.Match(
+            campaign =>
+            {
+                campaignName = campaign.CampaignName;
+                gamemaster = campaign.Gamemaster.Username;
+                usersInCampaign = campaign.UsersInCampaign.ToList();
+                usersNotInCampaign = campaign.UsersNotInCampaign.ToList();
+            },
+            errorCode =>
+            {
+                // ToDo: Log + Toast
+            }
+        );
+    }
+
+    private void OnAddPlayer(UsersDto user)
+    {
+        usersNotInCampaign.Remove(user);
+        usersInCampaign.Add(user);
+    }
+
+    private void OnRemovePlayer(UsersDto user)
+    {
+        usersInCampaign.Remove(user);
+        usersNotInCampaign.Add(user);
+    }
+
+    private void OnCancel()
+    {
+        navigationManager.NavigateTo("/");
+    }
+
+    private async Task OnOk()
+    {
+        var me = await userApi.GetAsync(userId);
+
+        var gamemaster = me.Match<UsersDto?>(
+            gamemaster =>
+            {
+                return gamemaster;
+
+            },
+            errorCode =>
+            {
+                return null;
+            });
+
+        if (gamemaster is null)
+        {
+            // ToDo: Error log + Toast
+            return;
+        }
+
+        var campaignId = CampaignId ?? -1;
+        var campaignCreation = new CampaignCreationDto(
+            campaignId,
+            campaignName,
+            gamemaster,
+            usersNotInCampaign,
+            usersInCampaign);
+
+        HttpResponse response;
+
+        if (CampaignId is null)
+        {
+            response = await campaignCreationApi.PostAsync(campaignCreation);
+        }
+        else
+        {
+            response = await campaignCreationApi.PutAsync(campaignCreation);
+        }
+
+        if (response.Succeded)
+        {
+            navigationManager.NavigateTo("/");
+        }
+        else
+        {
+            // ToDo: Toast and log
+        }
+    }
 }
+
