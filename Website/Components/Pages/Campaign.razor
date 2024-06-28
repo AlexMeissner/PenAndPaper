@@ -1,21 +1,63 @@
 ﻿@page "/campaign/{campaignId:int}"
 @rendermode InteractiveServer
 
-<h3>Campaign @CampaignId</h3>
+@using Website.Services
+@using Website.Services.API
 
-<p role="status">Current count: @currentCount</p>
+@inject IWebGl webGl
+@inject ICampaignOverviewApi campaignOverviewApi
+@inject NavigationManager navigationManager
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div>
+    <canvas id="renderCanvas" class="render-context" />
+</div>
 
+@if (isGamemaster)
+{
+    <h3>Gamemaster</h3>
+}
+else
+{
+    <h3>Player</h3>
+}
 
 @code {
     [Parameter]
     public int CampaignId { get; set; }
 
-    private int currentCount = 0;
+    // ToDo: Get correct user id
+    private int userId = 1;
+    private bool isGamemaster = false;
 
-    private void IncrementCount()
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        var response = await campaignOverviewApi.GetAsync(userId);
+
+        response.Match(
+            campaignOverview =>
+            {
+                // ToDo: Add a better endpoint for that request
+                var campaign = campaignOverview.CampaignItems.FirstOrDefault(c => c.Id == CampaignId);
+                isGamemaster = campaign is null ? false : campaign.IsGamemaster;
+            },
+            errorCode =>
+            {
+                // ToDo: Log + Toast
+                Console.WriteLine(errorCode);
+            }
+        );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // If the canvas is put inside a condition it is not available on first render
+            var succeeded = await webGl.Initialize();
+        }
+        else
+        {
+            await webGl.Render();
+        }
     }
 }

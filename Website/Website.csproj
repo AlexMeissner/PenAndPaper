@@ -7,21 +7,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\WebGl.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Components\Pages\Campaign.razor.css" />
     <None Remove="Components\Pages\CampaignCreation.razor.css" />
     <None Remove="Components\Pages\CampaignSelection.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Components\Pages\Campaign.razor.css" />
     <Content Include="Components\Pages\CampaignCreation.razor.css" />
     <Content Include="Components\Pages\CampaignSelection.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\WebGl.ts" />
   </ItemGroup>
 
 </Project>
