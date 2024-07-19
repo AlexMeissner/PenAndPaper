@@ -1,8 +1,8 @@
 ﻿@page "/campaign/{campaignId:int}"
 @rendermode InteractiveServer
 
-@using Website.Services
 @using Website.Services.API
+@using Website.Services.Graphics
 
 @inject IWebGl webGl
 @inject ICampaignOverviewApi campaignOverviewApi
@@ -57,7 +57,7 @@ else
         }
         else
         {
-            await webGl.Render();
+            await webGl.StartRenderLoop();
         }
     }
 }
