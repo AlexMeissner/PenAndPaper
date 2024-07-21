@@ -8,18 +8,45 @@
 @inject ICampaignOverviewApi campaignOverviewApi
 @inject NavigationManager navigationManager
 
-<div>
-    <canvas id="renderCanvas" class="render-context" />
-</div>
+<div class="master-panel">
+    <!--<canvas id="renderCanvas" class="render-context" />-->
+    <div class="left-panel">
+        <img src="https://cdn2.inkarnate.com/cdn-cgi/image/width=1800,height=1400/https://inkarnate-api-as-production.s3.amazonaws.com/wxabhd3ztw3qgg5da0k4gq9epzpt" />
+        <button class="btn btn-overlay btn-dice">
+            <i class="bi bi-dice-6"></i>
+        </button>
+        <button class="btn btn-overlay btn-map">
+            <i class="bi bi-map"></i>
+        </button>
+        <button class="btn btn-overlay btn-sound">
+            <i class="bi bi-music-note-beamed"></i>
+        </button>
+    </div>
+    <div class="right-panel">
+        <!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_tabs_close -->
+        <div class="tab">
+            <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">Skript</button>
+            <button class="@GetTabStyle(TabIndex.Chat)" @onclick="() => ActiveTab(TabIndex.Chat)">Chat</button>
+        </div>
 
-@if (isGamemaster)
-{
-    <h3>Gamemaster</h3>
-}
-else
-{
-    <h3>Player</h3>
-}
+        @switch (activeTabIndex)
+        {
+            case TabIndex.Script:
+                <div class="tabcontent">
+                    <h3>Script</h3>
+                    <p>This is a script.</p>
+                </div>
+                break;
+
+            case TabIndex.Chat:
+                <div class="tabcontent">
+                    <h3>Chat</h3>
+                    <p>I am a text message.</p>
+                </div>
+                break;
+        }
+    </div>
+</div>
 
 @code {
     [Parameter]
@@ -28,6 +55,23 @@ else
     // ToDo: Get correct user id
     private int userId = 1;
     private bool isGamemaster = false;
+    private TabIndex activeTabIndex = TabIndex.Script;
+
+    private enum TabIndex
+    {
+        Script,
+        Chat
+    }
+
+    private void ActiveTab(TabIndex tabIndex)
+    {
+        activeTabIndex = tabIndex;
+    }
+
+    private string GetTabStyle(TabIndex tabIndex)
+    {
+        return tabIndex == activeTabIndex ? "active" : string.Empty;
+    }
 
     protected override async Task OnInitializedAsync()
     {
