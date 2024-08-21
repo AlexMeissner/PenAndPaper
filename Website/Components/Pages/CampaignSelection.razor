@@ -9,38 +9,38 @@
 
 <div class="background-image">
     <div class="centered-backdrop">
-        <div class="list-group">
+        <ul class="list-group">
             @foreach (var campaign in campaignItems)
             {
-                <a href="campaign/@campaign.Id" class="list-group-item list-group-item-action campaign-item-level-0">
-                    <div class="campaign-item-icon">
-                        <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
-                    </div>
-                    <div class="campaign-item-level-1">
-                        <div class="campaign-item-header">@campaign.Name</div>
-                        <div class="campaign-item-level-2">
-                            <div class="campaign-item-sub-header">Spielleiter</div>
-                            <div class="campaign-item-player-name">@campaign.Gamemaster</div>
+                <li class="list-group-item list-group-item-action campaign-item-level-0">
+                    <a href="campaign/@campaign.Id" class="campaign-item-link campaign-item-level-0">
+                        <div class="campaign-item-icon">
+                            <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
                         </div>
-                        <div class="campaign-item-level-2">
-                            <div class="campaign-item-sub-header">Spieler</div>
-                            @foreach (var player in campaign.Characters)
-                            {
-                                <div class="campaign-item-player-name">@player</div>
-                            }
+                        <div class="campaign-item-level-1">
+                            <div class="campaign-item-header">@campaign.Name</div>
+                            <div class="campaign-item-level-2">
+                                <div class="campaign-item-sub-header">Spielleiter</div>
+                                <div class="campaign-item-player-name">@campaign.Gamemaster</div>
+                            </div>
+                            <div class="campaign-item-level-2">
+                                <div class="campaign-item-sub-header">Spieler</div>
+                                @foreach (var player in campaign.Characters)
+                                {
+                                    <div class="campaign-item-player-name">@player</div>
+                                }
+                            </div>
                         </div>
-                    </div>
+                    </a>
                     @if (campaign.IsGamemaster)
                     {
-                        <div class="campaign-item-button">
-                            <button type="button" class="btn btn-primary btn-edit" @onclick="() => OnEdit(campaign.Id)">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button" @onclick="() => OnEdit(campaign.Id)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
                     }
-                </a>
+                </li>
             }
-        </div>
+        </ul>
 
         <button type="button" class="btn btn-create btn-outline-success" @onclick="OnCreate">Erstellen</button>
     </div>

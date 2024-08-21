@@ -17,6 +17,7 @@
 
 .campaign-item-level-0 {
     display: flex;
+    width: 100%;
 }
 
 .campaign-item-level-1 {
@@ -26,6 +27,11 @@
 
 .campaign-item-level-2 {
     display: flex;
+}
+
+.campaign-item-link {
+    color: #ffffff;
+    text-decoration: none;
 }
 
 .campaign-item-icon {
@@ -63,7 +69,6 @@
 }
 
 .list-group-item {
-    color: #ffffff;
     background-color: transparent;
 }
 
