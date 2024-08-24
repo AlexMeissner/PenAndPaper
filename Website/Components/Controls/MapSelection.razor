@@ -69,9 +69,9 @@
         StateHasChanged();
     }
 
-    public void Show()
+    public void Toggle()
     {
-        display = "block";
+        display = display == "none" ? "block" : "none";
         StateHasChanged();
     }
 }
