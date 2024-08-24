@@ -1,6 +1,7 @@
 ﻿@page "/campaign/{campaignId:int}"
 @rendermode InteractiveServer
 
+@using Website.Components.Controls
 @using Website.Services.API
 @using Website.Services.Graphics
 
@@ -15,12 +16,13 @@
         <button class="btn btn-overlay btn-dice">
             <i class="bi bi-dice-6"></i>
         </button>
-        <button class="btn btn-overlay btn-map">
+        <button class="btn btn-overlay btn-map" @onclick="OpenMapSelection">
             <i class="bi bi-map"></i>
         </button>
         <button class="btn btn-overlay btn-sound">
             <i class="bi bi-music-note-beamed"></i>
         </button>
+        <MapSelection CampaignId="@CampaignId" @ref="mapSelection" />
     </div>
     <div class="right-panel">
         <!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_tabs_close -->
@@ -57,6 +59,8 @@
     private bool isGamemaster = false;
     private TabIndex activeTabIndex = TabIndex.Script;
 
+    private MapSelection mapSelection;
+
     private enum TabIndex
     {
         Script,
@@ -71,6 +75,11 @@
     private string GetTabStyle(TabIndex tabIndex)
     {
         return tabIndex == activeTabIndex ? "active" : string.Empty;
+    }
+
+    private void OpenMapSelection()
+    {
+        mapSelection.Show();
     }
 
     protected override async Task OnInitializedAsync()
