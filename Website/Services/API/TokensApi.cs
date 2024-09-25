@@ -11,9 +11,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class TokenApi(IEndPointProvider endPointProvider) : ITokenApi
+    public class TokenApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ITokenApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Token");
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Token", tokenProvider);
 
         public Task<HttpResponse<TokensDto>> GetAsync(int mapId)
         {

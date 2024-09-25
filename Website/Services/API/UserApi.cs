@@ -12,10 +12,10 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class UserApi(IEndPointProvider endPointProvider) : IUserApi
+    public class UserApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IUserApi
     {
-        private readonly HttpRequest _userRequest = new(endPointProvider.BaseURL + "User");
-        private readonly HttpRequest _loginRequest = new(endPointProvider.BaseURL + "Login");
+        private readonly HttpRequest _userRequest = new(endPointProvider.BaseURL + "User", tokenProvider);
+        private readonly HttpRequest _loginRequest = new(endPointProvider.BaseURL + "Login", tokenProvider);
 
         public Task<HttpResponse<UsersDto>> GetAsync(int userId)
         {

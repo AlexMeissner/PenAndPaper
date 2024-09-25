@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
+using Server.Extensions;
 using Server.Services;
 
 Log.Logger = new LoggerConfiguration()
@@ -28,6 +32,9 @@ try
     builder.Services.AddSingletonServices();
     builder.Services.AddScopedServices();
 
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle();
+    builder.Services.AddAuthorization();
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
@@ -42,6 +49,7 @@ try
     }
 
     app.UseWebSockets();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
     app.MigrateDatabase();

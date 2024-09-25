@@ -10,9 +10,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class ActiveMapApi(IEndPointProvider endPointProvider) : IActiveMapApi
+    public class ActiveMapApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IActiveMapApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "ActiveMap");
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "ActiveMap", tokenProvider);
 
         public Task<HttpResponse<ActiveMapDto>> GetAsync(int campaignId)
         {

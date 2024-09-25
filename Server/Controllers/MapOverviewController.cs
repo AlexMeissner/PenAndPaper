@@ -1,4 +1,5 @@
 ﻿using DataTransfer.Map;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
@@ -6,6 +7,7 @@ using Server.Models;
 namespace Server.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class MapOverviewController : ControllerBase
     {

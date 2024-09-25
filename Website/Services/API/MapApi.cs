@@ -17,9 +17,9 @@ namespace Website.Services.API
     {
         private readonly HttpRequest _request;
 
-        public MapApi(IEndPointProvider endPointProvider)
+        public MapApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider)
         {
-            _request = new(endPointProvider.BaseURL + "Map");
+            _request = new(endPointProvider.BaseURL + "Map", tokenProvider);
         }
 
         public Task<HttpResponse<MapDto>> GetAsync(int mapId)

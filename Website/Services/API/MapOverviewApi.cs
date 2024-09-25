@@ -14,9 +14,9 @@ namespace Website.Services.API
     {
         private readonly HttpRequest _request;
 
-        public MapOverviewApi(IEndPointProvider endPointProvider)
+        public MapOverviewApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider)
         {
-            _request = new(endPointProvider.BaseURL + "MapOverview");
+            _request = new(endPointProvider.BaseURL + "MapOverview", tokenProvider);
         }
 
         public Task<HttpResponse<MapOverviewDto>> GetAsync(int campaignId)

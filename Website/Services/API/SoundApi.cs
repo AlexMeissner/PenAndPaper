@@ -12,11 +12,11 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class SoundApi(IEndPointProvider endPointProvider) : ISoundApi
+    public class SoundApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ISoundApi
     {
-        private readonly HttpRequest _soundRequest = new(endPointProvider.BaseURL + "Sound");
-        private readonly HttpRequest _soundDataRequest = new(endPointProvider.BaseURL + "SoundData");
-        private readonly HttpRequest _soundOverviewRequest = new(endPointProvider.BaseURL + "SoundOverview");
+        private readonly HttpRequest _soundRequest = new(endPointProvider.BaseURL + "Sound", tokenProvider);
+        private readonly HttpRequest _soundDataRequest = new(endPointProvider.BaseURL + "SoundData", tokenProvider);
+        private readonly HttpRequest _soundOverviewRequest = new(endPointProvider.BaseURL + "SoundOverview", tokenProvider);
 
         public Task<HttpResponse<SoundDto>> GetAsync(int id)
         {
