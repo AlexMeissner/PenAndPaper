@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using Server.Extensions;
@@ -11,6 +9,8 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .CreateBootstrapLogger();
+
+AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
 try
 {
@@ -62,5 +62,19 @@ catch (Exception exception)
 }
 finally
 {
+    Log.CloseAndFlush();
+}
+
+static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+{
+    try
+    {
+        Log.Fatal((Exception)e.ExceptionObject, "Unhandled excpetion");
+    }
+    catch (Exception exception)
+    {
+        Log.Fatal(exception, "Could not retrieve information from unhandled excpetion");
+    }
+
     Log.CloseAndFlush();
 }
