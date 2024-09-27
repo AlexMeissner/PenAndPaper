@@ -27,6 +27,10 @@ namespace Server.Controllers
                     await SocketLifeCircle(webSocket);
                 }
             }
+            catch (Exception exception)
+            {
+                logger.LogError("Socket error: {excpetion}", exception);
+            }
             finally
             {
                 if (webSocket is not null)

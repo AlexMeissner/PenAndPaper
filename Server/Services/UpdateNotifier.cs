@@ -33,14 +33,22 @@ namespace Server.Services
             logger.LogInformation("Sending update {entity} ...", entity);
 
             var update = new WebSocketUpdate(entity);
+
             var message = JsonSerializer.Serialize(update);
-            byte[] buffer = Encoding.UTF8.GetBytes(message);
+            var buffer = Encoding.UTF8.GetBytes(message);
 
             var clientsInSameCampaign = _webSockets.Where(x => x.Value == campaignId).Select(y => y.Key);
 
             foreach (var socket in clientsInSameCampaign)
             {
-                await socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                try
+                {
+                    await socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogError("Failed to send data via Socket: {exception}", exception);
+                }
             }
         }
 
