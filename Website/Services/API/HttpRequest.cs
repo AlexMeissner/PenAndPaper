@@ -8,7 +8,7 @@ public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
 {
     public async Task<HttpResponse> GetAsync()
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().GetAsync().ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
@@ -16,14 +16,14 @@ public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
     public async Task<HttpResponse> GetAsync(string parameters)
     {
         string url = string.Format("{0}?{1}", endpoint, parameters);
-        IFlurlRequest request = await CreateRequest(url);
+        IFlurlRequest request = CreateRequest(url);
         var response = await request.AllowAnyHttpStatus().GetAsync().ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
 
     public async Task<HttpResponse<T>> GetAsync<T>()
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().GetAsync().ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
@@ -31,42 +31,42 @@ public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
     public async Task<HttpResponse<T>> GetAsync<T>(string parameters)
     {
         string url = string.Format("{0}?{1}", endpoint, parameters);
-        IFlurlRequest request = await CreateRequest(url);
+        IFlurlRequest request = CreateRequest(url);
         var response = await request.AllowAnyHttpStatus().GetAsync().ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
 
     public async Task<HttpResponse> PostAsync(object payload)
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().PostJsonAsync(payload).ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
 
     public async Task<HttpResponse<T>> PostAsync<T>(object payload)
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().PostJsonAsync(payload).ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
 
     public async Task<HttpResponse> PutAsync(object payload)
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().PutJsonAsync(payload).ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
 
     public async Task<HttpResponse<T>> PutAsync<T>(object payload)
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().PutJsonAsync(payload).ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
 
     public async Task<HttpResponse> DeleteAsync()
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().DeleteAsync().ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
@@ -74,14 +74,14 @@ public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
     public async Task<HttpResponse> DeleteAsync(string parameters)
     {
         string url = string.Format("{0}?{1}", endpoint, parameters);
-        IFlurlRequest request = await CreateRequest(url);
+        IFlurlRequest request = CreateRequest(url);
         var response = await request.AllowAnyHttpStatus().DeleteAsync().ConfigureAwait(false);
         return new HttpResponse(response.ResponseMessage.StatusCode);
     }
 
     public async Task<HttpResponse<T>> DeleteAsync<T>()
     {
-        IFlurlRequest request = await CreateRequest(endpoint);
+        IFlurlRequest request = CreateRequest(endpoint);
         var response = await request.AllowAnyHttpStatus().DeleteAsync().ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
@@ -89,14 +89,14 @@ public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
     public async Task<HttpResponse<T>> DeleteAsync<T>(string parameters)
     {
         string url = string.Format("{0}?{1}", endpoint, parameters);
-        IFlurlRequest request = await CreateRequest(url);
+        IFlurlRequest request = CreateRequest(url);
         var response = await request.AllowAnyHttpStatus().DeleteAsync().ConfigureAwait(false);
         return await ProcessResponseAsync<T>(response.ResponseMessage);
     }
 
-    private async Task<FlurlRequest> CreateRequest(string url)
+    private FlurlRequest CreateRequest(string url)
     {
-        var token = await tokenProvider.GetTokenAsync();
+        var token = tokenProvider.GetTokenAsync();
         return new FlurlRequest(url).WithOAuthBearerToken(token);
     }
 
