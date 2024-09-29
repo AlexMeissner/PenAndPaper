@@ -7,7 +7,6 @@ using Server.Models;
 namespace Server.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
     public class MapOverviewController : ControllerBase
     {
