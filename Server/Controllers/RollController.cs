@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Dice;
 using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Server.Hubs;
 using Server.Models;
 using Server.Services;
 using System.Text.Json;
@@ -10,7 +12,7 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
+    public class RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier, IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
@@ -64,6 +66,9 @@ namespace Server.Controllers
             await dbContext.SaveChangesAsync();
 
             await updateNotifier.Send(payload.CampaignId, UpdateEntity.Dice);
+
+            var eventArgs = new DiceRolledEventArgs(player.Username, successesRandomOrder);
+            await campaignUpdateHub.Clients.All.DiceRolled(eventArgs); // ToDo: Only send to clients in campaign
 
             return Ok(campaign);
         }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 using Serilog.Events;
 using Server.Extensions;
+using Server.Hubs;
 using Server.Services;
 
 Log.Logger = new LoggerConfiguration()
@@ -31,6 +32,7 @@ try
     builder.Services.AddSwaggerGen();
     builder.Services.AddSingletonServices();
     builder.Services.AddScopedServices();
+    builder.Services.AddSignalR();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle();
     builder.Services.AddAuthorization();
@@ -52,6 +54,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.MapHub<CampaignUpdateHub>("CampaignUpdates");
     app.MigrateDatabase();
     app.UpdateRulesInDatabase();
     app.Run();
