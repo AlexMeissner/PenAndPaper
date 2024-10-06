@@ -33,7 +33,7 @@ public interface IWebGl
 }
 
 // ToDo: Check if I need to clean up the webgl context and make this disposable
-[TransistentService]
+[ScopedService]
 public class WebGl(IJSRuntime jsRuntime) : IWebGl
 {
     private IJSObjectReference? gl;

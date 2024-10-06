@@ -10,9 +10,9 @@
 @inject NavigationManager navigationManager
 
 <div class="master-panel">
-    <!--<canvas id="renderCanvas" class="render-context" />-->
     <div class="left-panel">
-        <img src="https://cdn2.inkarnate.com/cdn-cgi/image/width=1800,height=1400/https://inkarnate-api-as-production.s3.amazonaws.com/wxabhd3ztw3qgg5da0k4gq9epzpt" />
+        <Map />
+        <!--<img src="https://cdn2.inkarnate.com/cdn-cgi/image/width=1800,height=1400/https://inkarnate-api-as-production.s3.amazonaws.com/wxabhd3ztw3qgg5da0k4gq9epzpt" />-->
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
             <i class="bi bi-dice-6"></i>
         </button>
@@ -107,18 +107,5 @@
                 Console.WriteLine(errorCode);
             }
         );
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // If the canvas is put inside a condition it is not available on first render
-            var succeeded = await webGl.Initialize();
-        }
-        else
-        {
-            await webGl.StartRenderLoop();
-        }
     }
 }

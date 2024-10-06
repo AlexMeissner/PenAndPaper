@@ -1,0 +1,17 @@
+﻿@using Website.Services.Graphics
+
+@inject RenderContext renderContext
+
+<canvas id="@CANVAS_ID" class="render-context" />
+
+@code {
+    private static readonly string CANVAS_ID = "renderCanvas";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await renderContext.Initialize(CANVAS_ID);
+        }
+    }
+}
