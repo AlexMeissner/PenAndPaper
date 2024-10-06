@@ -1,80 +1,14 @@
-﻿declare var DotNet: any;
-
-function attachShader(gl: WebGL2RenderingContext, program: WebGLProgram, shader: WebGLShader) {
-    gl.attachShader(program, shader);
-    gl.ARRAY_BUFFER;
-}
-
-function bindBuffer(gl: WebGL2RenderingContext, target: GLenum, buffer: WebGLBuffer) {
-    gl.bindBuffer(target, buffer);
-}
-
-function bindVertexArray(gl: WebGL2RenderingContext, vao: WebGLVertexArrayObject) {
-    gl.bindVertexArray(vao);
-}
-
-function bufferData(gl: WebGL2RenderingContext, target: GLenum, srcData: number[], usage: number) {
-    gl.bufferData(target, new Float32Array(srcData), usage);
-}
-
-function compileShader(gl: WebGL2RenderingContext, shader: WebGLShader) {
-    gl.compileShader(shader);
-}
-
-function createBuffer(gl: WebGL2RenderingContext) {
-    return gl.createBuffer();
-}
-
-function createProgram(gl: WebGL2RenderingContext) {
-    return gl.createProgram();
-}
-
-function createShader(gl: WebGL2RenderingContext, type: number) {
-    return gl.createShader(type);
-}
-
-function createVertexArray(gl: WebGL2RenderingContext) {
-    return gl.createVertexArray();
-}
-
-function deleteProgram(gl: WebGL2RenderingContext, program: WebGLProgram) {
-    gl.deleteProgram(program);
-}
-
+﻿
 function drawElements(gl: WebGL2RenderingContext, mode: number, count: number, type: number, offset: number) {
     gl.drawElements(mode, count, type, offset);
-}
-
-function enableVertexAttribArray(gl: WebGL2RenderingContext, index: number) {
-    gl.enableVertexAttribArray(index);
-}
-
-function getProgramParameter(gl: WebGL2RenderingContext, program: WebGLProgram, pname: number) {
-    return gl.getProgramParameter(program, pname);
 }
 
 function getUniformLocation(gl: WebGL2RenderingContext, program: WebGLProgram, name: string) {
     return gl.getUniformLocation(program, name);
 }
 
-function linkProgram(gl: WebGL2RenderingContext, program: WebGLProgram) {
-    gl.linkProgram(program);
-}
-
-function shaderSource(gl: WebGL2RenderingContext, shader: WebGLShader, source: string) {
-    gl.shaderSource(shader, source);
-}
-
 function uniform1f(gl: WebGL2RenderingContext, location: WebGLUniformLocation, x: number) {
     gl.uniform1f(location, x);
-}
-
-function useProgram(gl: WebGL2RenderingContext, program: WebGLProgram) {
-    gl.useProgram(program);
-}
-
-function vertexAttribPointer(gl: WebGL2RenderingContext, index: number, size: number, type: number, normalized: boolean, stride: number, offset: number) {
-    gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
 }
 
 class Camera {
@@ -83,26 +17,113 @@ class Camera {
 }
 
 class ShaderProgram {
+    gl: WebGL2RenderingContext;
     program: WebGLProgram;
 
     constructor(gl: WebGL2RenderingContext) {
+        this.gl = gl;
         this.program = gl.createProgram();
     }
 
-    destroy(gl: WebGL2RenderingContext): void {
-        gl.deleteProgram(this.program);
+    bind(): void {
+        this.gl.useProgram(this.program);
+    }
+
+    compile(vertexSource: string, fragmentSource: string): boolean {
+        const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+        this.gl.shaderSource(vertexShader, vertexSource);
+        this.gl.compileShader(vertexShader);
+        const vertexCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS) as GLboolean;
+        if (vertexCompileStatus == false) {
+            var compileLog = this.gl.getShaderInfoLog(vertexShader);
+            console.error(compileLog);
+            return false;
+        }
+
+        const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        this.gl.shaderSource(fragmentShader, fragmentSource);
+        this.gl.compileShader(fragmentShader);
+        const fragmentCompileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS) as GLboolean;
+        if (fragmentCompileStatus == false) {
+            var compileLog = this.gl.getShaderInfoLog(fragmentShader);
+            console.error(compileLog);
+            this.gl.deleteShader(vertexShader);
+            return false;
+        }
+
+        this.gl.attachShader(this.program, vertexShader);
+        this.gl.attachShader(this.program, fragmentShader);
+        this.gl.linkProgram(this.program);
+        const linkStatus = this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS);
+        if (linkStatus == false) {
+            var linkLog = this.gl.getProgramInfoLog(this.program);
+            console.error(linkLog);
+            this.gl.deleteShader(vertexShader);
+            this.gl.deleteShader(fragmentShader);
+            return false;
+        }
+
+        this.gl.deleteShader(vertexShader);
+        this.gl.deleteShader(fragmentShader);
+
+        return true;
+    }
+
+    destroy(): void {
+        this.gl.deleteProgram(this.program);
+    }
+
+    release(): void {
+        this.gl.useProgram(null);
     }
 }
 
 class Quad {
-    buffer: WebGLBuffer;
+    gl: WebGL2RenderingContext;
+    vertexArray: WebGLVertexArrayObject;
+    vertexBuffer: WebGLBuffer;
+    uvBuffer: WebGLBuffer;
+    indexBuffer: WebGLBuffer;
+    shaderProgram: ShaderProgram | null;
 
     constructor(gl: WebGL2RenderingContext) {
-        this.buffer = gl.createBuffer();
+        this.gl = gl;
+        this.vertexArray = gl.createVertexArray();
+        this.vertexBuffer = gl.createBuffer();
+        this.uvBuffer = gl.createBuffer();
+        this.indexBuffer = gl.createBuffer();
     }
 
-    destroy(gl: WebGL2RenderingContext): void {
-        gl.deleteBuffer(this.buffer);
+    destroy(): void {
+        this.gl.deleteVertexArray(this.vertexArray);
+        this.gl.deleteBuffer(this.vertexBuffer);
+        this.gl.deleteBuffer(this.uvBuffer);
+        this.gl.deleteBuffer(this.indexBuffer);
+    }
+
+    setShaderProgram(program: ShaderProgram): void {
+        this.shaderProgram = program;
+    }
+
+    setVertices(srcData: number[]): void {
+        this.gl.bindVertexArray(this.vertexArray);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(srcData), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+
+        const uvs = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0];
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(1);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+
+        const indices = [0, 1, 2, 0, 2, 3];
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
     }
 }
 
@@ -114,15 +135,21 @@ class TexturedQuad extends Quad {
         this.texture = gl.createTexture();
     }
 
-    destroy(gl: WebGL2RenderingContext): void {
-        gl.deleteTexture(this.texture);
-        super.destroy(gl);
+    destroy(): void {
+        this.gl.deleteTexture(this.texture);
+        super.destroy();
+    }
+
+    render(): void {
+        this.gl.bindVertexArray(this.vertexArray);
+
+        if (this.shaderProgram != null) {
+            this.shaderProgram.bind();
+        }
+
+        this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     }
 }
-
-//class Map extends TexturedQuad {
-//
-//}
 
 class Grid extends Quad {
     color: Float32Array;
@@ -147,7 +174,8 @@ class Token extends TexturedQuad {
 class RenderContext {
     canvas: HTMLCanvasElement | null;
     gl: WebGL2RenderingContext | null;
-    grid: Grid | null;
+    map: TexturedQuad | null;
+    grid: Grid | null; // ToDo: Combine Grid with map? gridsize? gridcolor? but same size as map! maybe grid inherits texturedtoken as map?
     tokens: Token[] = [];
 
     initialize(identifier: string): boolean {
@@ -177,22 +205,47 @@ class RenderContext {
         this.tokens.push(token);
     }
 
-    destroy(): void {
-        this.tokens.forEach(token => token.destroy(this.gl));
+    cleanup(): void {
+        this.tokens.forEach(token => token.destroy());
         this.tokens = [];
 
         if (this.grid != null) {
-            this.grid.destroy(this.gl);
+            this.grid.destroy();
             this.grid = null;
         }
+
+        if (this.map != null) {
+            this.map.destroy();
+            this.map = null;
+        }
+    }
+
+    createShaderProgram(): ShaderProgram {
+        return new ShaderProgram(this.gl);
+    }
+
+    createTexturedQuad(): TexturedQuad {
+        return new TexturedQuad(this.gl);
+    }
+
+    destroy(): void {
+        this.cleanup();
+        // ToDo: Clean up 'gl' context
     }
 
     render(timeStamp: DOMHighResTimeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+        if (this.map != null) {
+            this.map.render();
+        }
+
         window.requestAnimationFrame(this.render);
+    }
+
+    setMap(map: TexturedQuad) {
+        this.map = map;
     }
 }
 

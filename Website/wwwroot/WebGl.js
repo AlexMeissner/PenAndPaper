@@ -13,63 +13,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-function attachShader(gl, program, shader) {
-    gl.attachShader(program, shader);
-    gl.ARRAY_BUFFER;
-}
-function bindBuffer(gl, target, buffer) {
-    gl.bindBuffer(target, buffer);
-}
-function bindVertexArray(gl, vao) {
-    gl.bindVertexArray(vao);
-}
-function bufferData(gl, target, srcData, usage) {
-    gl.bufferData(target, new Float32Array(srcData), usage);
-}
-function compileShader(gl, shader) {
-    gl.compileShader(shader);
-}
-function createBuffer(gl) {
-    return gl.createBuffer();
-}
-function createProgram(gl) {
-    return gl.createProgram();
-}
-function createShader(gl, type) {
-    return gl.createShader(type);
-}
-function createVertexArray(gl) {
-    return gl.createVertexArray();
-}
-function deleteProgram(gl, program) {
-    gl.deleteProgram(program);
-}
 function drawElements(gl, mode, count, type, offset) {
     gl.drawElements(mode, count, type, offset);
-}
-function enableVertexAttribArray(gl, index) {
-    gl.enableVertexAttribArray(index);
-}
-function getProgramParameter(gl, program, pname) {
-    return gl.getProgramParameter(program, pname);
 }
 function getUniformLocation(gl, program, name) {
     return gl.getUniformLocation(program, name);
 }
-function linkProgram(gl, program) {
-    gl.linkProgram(program);
-}
-function shaderSource(gl, shader, source) {
-    gl.shaderSource(shader, source);
-}
 function uniform1f(gl, location, x) {
     gl.uniform1f(location, x);
-}
-function useProgram(gl, program) {
-    gl.useProgram(program);
-}
-function vertexAttribPointer(gl, index, size, type, normalized, stride, offset) {
-    gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
 }
 var Camera = /** @class */ (function () {
     function Camera() {
@@ -80,19 +31,88 @@ var Camera = /** @class */ (function () {
 }());
 var ShaderProgram = /** @class */ (function () {
     function ShaderProgram(gl) {
+        this.gl = gl;
         this.program = gl.createProgram();
     }
-    ShaderProgram.prototype.destroy = function (gl) {
-        gl.deleteProgram(this.program);
+    ShaderProgram.prototype.bind = function () {
+        this.gl.useProgram(this.program);
+    };
+    ShaderProgram.prototype.compile = function (vertexSource, fragmentSource) {
+        var vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+        this.gl.shaderSource(vertexShader, vertexSource);
+        this.gl.compileShader(vertexShader);
+        var vertexCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS);
+        if (vertexCompileStatus == false) {
+            var compileLog = this.gl.getShaderInfoLog(vertexShader);
+            console.error(compileLog);
+            return false;
+        }
+        var fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        this.gl.shaderSource(fragmentShader, fragmentSource);
+        this.gl.compileShader(fragmentShader);
+        var fragmentCompileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS);
+        if (fragmentCompileStatus == false) {
+            var compileLog = this.gl.getShaderInfoLog(fragmentShader);
+            console.error(compileLog);
+            this.gl.deleteShader(vertexShader);
+            return false;
+        }
+        this.gl.attachShader(this.program, vertexShader);
+        this.gl.attachShader(this.program, fragmentShader);
+        this.gl.linkProgram(this.program);
+        var linkStatus = this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS);
+        if (linkStatus == false) {
+            var linkLog = this.gl.getProgramInfoLog(this.program);
+            console.error(linkLog);
+            this.gl.deleteShader(vertexShader);
+            this.gl.deleteShader(fragmentShader);
+            return false;
+        }
+        this.gl.deleteShader(vertexShader);
+        this.gl.deleteShader(fragmentShader);
+        return true;
+    };
+    ShaderProgram.prototype.destroy = function () {
+        this.gl.deleteProgram(this.program);
+    };
+    ShaderProgram.prototype.release = function () {
+        this.gl.useProgram(null);
     };
     return ShaderProgram;
 }());
 var Quad = /** @class */ (function () {
     function Quad(gl) {
-        this.buffer = gl.createBuffer();
+        this.gl = gl;
+        this.vertexArray = gl.createVertexArray();
+        this.vertexBuffer = gl.createBuffer();
+        this.uvBuffer = gl.createBuffer();
+        this.indexBuffer = gl.createBuffer();
     }
-    Quad.prototype.destroy = function (gl) {
-        gl.deleteBuffer(this.buffer);
+    Quad.prototype.destroy = function () {
+        this.gl.deleteVertexArray(this.vertexArray);
+        this.gl.deleteBuffer(this.vertexBuffer);
+        this.gl.deleteBuffer(this.uvBuffer);
+        this.gl.deleteBuffer(this.indexBuffer);
+    };
+    Quad.prototype.setShaderProgram = function (program) {
+        this.shaderProgram = program;
+    };
+    Quad.prototype.setVertices = function (srcData) {
+        this.gl.bindVertexArray(this.vertexArray);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(srcData), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        var uvs = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0];
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(1);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        var indices = [0, 1, 2, 0, 2, 3];
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
     };
     return Quad;
 }());
@@ -103,15 +123,19 @@ var TexturedQuad = /** @class */ (function (_super) {
         _this.texture = gl.createTexture();
         return _this;
     }
-    TexturedQuad.prototype.destroy = function (gl) {
-        gl.deleteTexture(this.texture);
-        _super.prototype.destroy.call(this, gl);
+    TexturedQuad.prototype.destroy = function () {
+        this.gl.deleteTexture(this.texture);
+        _super.prototype.destroy.call(this);
+    };
+    TexturedQuad.prototype.render = function () {
+        this.gl.bindVertexArray(this.vertexArray);
+        if (this.shaderProgram != null) {
+            this.shaderProgram.bind();
+        }
+        this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     };
     return TexturedQuad;
 }(Quad));
-//class Map extends TexturedQuad {
-//
-//}
 var Grid = /** @class */ (function (_super) {
     __extends(Grid, _super);
     function Grid(gl, color, size) {
@@ -154,19 +178,38 @@ var RenderContext = /** @class */ (function () {
     RenderContext.prototype.addToken = function (token) {
         this.tokens.push(token);
     };
-    RenderContext.prototype.destroy = function () {
-        var _this = this;
-        this.tokens.forEach(function (token) { return token.destroy(_this.gl); });
+    RenderContext.prototype.cleanup = function () {
+        this.tokens.forEach(function (token) { return token.destroy(); });
         this.tokens = [];
         if (this.grid != null) {
-            this.grid.destroy(this.gl);
+            this.grid.destroy();
             this.grid = null;
         }
+        if (this.map != null) {
+            this.map.destroy();
+            this.map = null;
+        }
+    };
+    RenderContext.prototype.createShaderProgram = function () {
+        return new ShaderProgram(this.gl);
+    };
+    RenderContext.prototype.createTexturedQuad = function () {
+        return new TexturedQuad(this.gl);
+    };
+    RenderContext.prototype.destroy = function () {
+        this.cleanup();
+        // ToDo: Clean up 'gl' context
     };
     RenderContext.prototype.render = function (timeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        if (this.map != null) {
+            this.map.render();
+        }
         window.requestAnimationFrame(this.render);
+    };
+    RenderContext.prototype.setMap = function (map) {
+        this.map = map;
     };
     return RenderContext;
 }());

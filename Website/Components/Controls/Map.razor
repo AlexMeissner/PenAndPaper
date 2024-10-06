@@ -1,4 +1,5 @@
-﻿@using Website.Services.Graphics
+﻿@using Website.Services
+@using Website.Services.Graphics
 
 @inject RenderContext renderContext
 
@@ -12,6 +13,37 @@
         if (firstRender)
         {
             await renderContext.Initialize(CANVAS_ID);
+
+            await Test();
+        }
+    }
+
+    private async Task Test()
+    {
+        try
+        {
+            float[] vertices = [0.0f, 600.0f, 0.0f, 0.0f, 800.0f, 0.0f, 800.0f, 600.0f];
+            var quad = await renderContext.CreateTexturedQuad();
+            await quad.SetVertices(vertices);
+
+            var vertexSource = await ResourceReader.GetAsync("Map.vert");
+            var fragmentSource = await ResourceReader.GetAsync("Map.frag");
+
+            var shaderProgram = await renderContext.CreateShaderProgram();
+            var hasSucceeded = await shaderProgram.Compile(vertexSource, fragmentSource);
+
+            if (!hasSucceeded)
+            {
+                Console.WriteLine("Alarm!");
+            }
+
+            await quad.SetShaderProgram(shaderProgram);
+
+            await renderContext.SetMap(quad);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception.ToString());
         }
     }
 }
