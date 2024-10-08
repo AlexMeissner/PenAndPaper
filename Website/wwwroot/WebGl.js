@@ -134,6 +134,24 @@ var TexturedQuad = /** @class */ (function (_super) {
         }
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     };
+    TexturedQuad.prototype.setTexture = function (imageBase64) {
+        var image = new Image();
+        image.src = imageBase64;
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+        if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
+            this.gl.generateMipmap(this.gl.TEXTURE_2D);
+        }
+        else {
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+        }
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    };
+    TexturedQuad.prototype.isPowerOf2 = function (value) {
+        return (value & (value - 1)) === 0;
+    };
     return TexturedQuad;
 }(Quad));
 var Grid = /** @class */ (function (_super) {
