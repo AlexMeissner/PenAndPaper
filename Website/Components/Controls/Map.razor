@@ -5,6 +5,17 @@
 
 <canvas id="@CANVAS_ID" class="render-context" />
 
+<script>
+    const canvas = document.getElementById("renderCanvas");
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+
+    window.addEventListener("resize", () => {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    });
+</script>
+
 @code {
     private static readonly string CANVAS_ID = "renderCanvas";
 
@@ -22,7 +33,9 @@
     {
         try
         {
-            float[] vertices = [0.0f, 600.0f, 0.0f, 0.0f, 800.0f, 0.0f, 800.0f, 600.0f];
+            var width = 1.0f; // 800.0f
+            var height = 1.0f; // 600.0f
+            float[] vertices = [0.0f, height, 0.0f, 0.0f, width, 0.0f, width, height];
             var quad = await renderContext.CreateTexturedQuad();
             await quad.SetVertices(vertices);
 
