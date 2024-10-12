@@ -135,6 +135,7 @@ var TexturedQuad = /** @class */ (function (_super) {
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     };
     TexturedQuad.prototype.setTexture = function (imageBase64) {
+        console.log(imageBase64);
         var image = new Image();
         image.src = imageBase64;
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);

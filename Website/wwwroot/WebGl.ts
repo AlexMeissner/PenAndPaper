@@ -151,8 +151,10 @@ class TexturedQuad extends Quad {
     }
 
     setTexture(imageBase64: string): void {
+        console.log(imageBase64);
         const image = new Image();
         image.src = imageBase64;
+
 
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);

@@ -13,7 +13,8 @@ public class TexturedQuad(IJSObjectReference jsObjectReference)
 
     public async Task SetTexture(byte[] image)
     {
-        var imageBase64 = $"data:image/png;base64,{Convert.ToBase64String(image)}";
+        //var imageBase64 = $"data:image/png;base64,{Convert.ToBase64String(image)}";
+        var imageBase64 = Convert.ToBase64String(image);
         await jsObjectReference.InvokeVoidAsync("setTexture", imageBase64);
     }
 

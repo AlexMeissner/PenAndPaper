@@ -1,6 +1,9 @@
 ﻿@using Website.Services
+@using Website.Services.API
 @using Website.Services.Graphics
 
+@inject IMapApi mapApi
+@inject IActiveMapApi activeMapApi
 @inject RenderContext renderContext
 
 <canvas id="@CANVAS_ID" class="render-context" />
@@ -17,6 +20,9 @@
 </script>
 
 @code {
+    [Parameter]
+    public int CampaignId { get; set; }
+
     private static readonly string CANVAS_ID = "renderCanvas";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,6 +54,42 @@
             if (!hasSucceeded)
             {
                 Console.WriteLine("Alarm!");
+            }
+
+            var activeMapResult = await activeMapApi.GetAsync(CampaignId);
+            int? mapId = null;
+
+            activeMapResult.Match(
+                map =>
+                {
+                    mapId = map.MapId;
+                },
+                errorCode =>
+                {
+                    Console.WriteLine(errorCode);
+                }
+            );
+
+            if (mapId is int id)
+            {
+                var mapResult = await mapApi.GetAsync(id);
+
+                var image = mapResult.Match(
+                    map =>
+                    {
+                        return map.ImageData;
+                    },
+                    errorCode =>
+                    {
+                        Console.WriteLine(errorCode);
+                        return [];
+                    }
+                );
+
+                if (image.Length > 0)
+                {
+                    await quad.SetTexture(image);
+                }
             }
 
             await quad.SetShaderProgram(shaderProgram);
