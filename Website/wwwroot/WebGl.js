@@ -135,20 +135,22 @@ var TexturedQuad = /** @class */ (function (_super) {
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     };
     TexturedQuad.prototype.setTexture = function (imageBase64) {
-        console.log(imageBase64);
+        var _this = this;
         var image = new Image();
+        image.onload = function () {
+            _this.gl.bindTexture(_this.gl.TEXTURE_2D, _this.texture);
+            _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
+            if (_this.isPowerOf2(image.width) && _this.isPowerOf2(image.height)) {
+                _this.gl.generateMipmap(_this.gl.TEXTURE_2D);
+            }
+            else {
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_S, _this.gl.CLAMP_TO_EDGE);
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_T, _this.gl.CLAMP_TO_EDGE);
+                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR);
+            }
+            _this.gl.bindTexture(_this.gl.TEXTURE_2D, null);
+        };
         image.src = imageBase64;
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
-        if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
-            this.gl.generateMipmap(this.gl.TEXTURE_2D);
-        }
-        else {
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-        }
-        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
     };
     TexturedQuad.prototype.isPowerOf2 = function (value) {
         return (value & (value - 1)) === 0;
