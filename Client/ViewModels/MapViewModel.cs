@@ -172,7 +172,7 @@ namespace Client.ViewModels
                                 if (s.Grid.IsActive)
                                 {
                                     const int lineThickness = 1; // ToDo
-                                    SolidColorBrush color = new(Colors.Red); // ToDo
+                                    SolidColorBrush color = new(Colors.LightGray); // ToDo
                                     var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
                                     Items.Add(map);
                                 }

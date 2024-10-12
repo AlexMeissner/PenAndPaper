@@ -54,7 +54,7 @@
                                       Color="{Binding Color}" LineThickness="{Binding LineThickness}" Size="{Binding Size}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type viewModels:TokenMapItem}">
-                    <Border BorderThickness="1" BorderBrush="Orange" Width="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}" Height="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size}">
+                    <Border BorderThickness="1" BorderBrush="Orange" Width="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size, UpdateSourceTrigger=PropertyChanged}" Height="{Binding ElementName=MapControl, Path=ViewModel.Grid.Size, UpdateSourceTrigger=PropertyChanged}">
                         <Grid>
                             <Image Stretch="UniformToFill" Source="{Binding Image}"/>
                             <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
