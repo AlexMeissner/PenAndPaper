@@ -151,40 +151,41 @@ namespace Client.ViewModels
 
             var activeMapResponse = await _activeMapApi.GetAsync(_sessionData.CampaignId);
 
-            activeMapResponse.Match(
-                async success =>
+            Id = activeMapResponse.Match(
+                success =>
                 {
-                    Id = success.MapId;
-
-                    if (Id is int mapId)
-                    {
-                        var mapResponse = await _mapApi.GetAsync(mapId);
-
-                        await Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            mapResponse.Match(
-                            s =>
-                            {
-                                var background = new BackgroundMapItem(s.ImageData);
-
-                                Items.Add(background);
-
-                                if (s.Grid.IsActive)
-                                {
-                                    const int lineThickness = 1; // ToDo
-                                    SolidColorBrush color = new(Colors.LightGray); // ToDo
-                                    var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
-                                    Items.Add(map);
-                                }
-                            },
-                            f => { });
-                        });
-                    }
+                    return success.MapId;
                 },
                 failure =>
                 {
                     MessageBoxUtility.Show(failure);
+                    return null;
                 });
+
+            if (Id is int mapId)
+            {
+                var mapResponse = await _mapApi.GetAsync(mapId);
+
+                mapResponse.Match(
+                    s =>
+                    {
+                        var background = new BackgroundMapItem(s.ImageData);
+
+                        Items.Add(background);
+
+                        if (s.Grid.IsActive)
+                        {
+                            const int lineThickness = 1; // ToDo
+                            SolidColorBrush color = new(Colors.LightGray); // ToDo
+                            var map = new GridMapItem(s.Grid.Size, background.Width, background.Height, lineThickness, color);
+                            Items.Add(map);
+                        }
+                    },
+                    f =>
+                    {
+                        MessageBoxUtility.Show(f);
+                    });
+            }
         }
 
         public async Task UpdateTokens()
@@ -196,9 +197,8 @@ namespace Client.ViewModels
             {
                 var response = await _tokenApi.GetAsync(mapId);
 
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    response.Match(success =>
+                response.Match(
+                    success =>
                     {
                         foreach (var item in success.Items)
                         {
@@ -206,8 +206,10 @@ namespace Client.ViewModels
                             Items.Add(token);
                         }
                     },
-                    failure => { });
-                });
+                    failure =>
+                    {
+                        MessageBoxUtility.Show(failure);
+                    });
             }
         }
 

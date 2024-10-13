@@ -153,6 +153,8 @@ class TexturedQuad extends Quad {
     setTexture(imageBase64: string): void {
         const image = new Image();
 
+        // the image is not available synchronously when setting the source
+        // wait for it to be finished before working with it
         image.onload = () => {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);

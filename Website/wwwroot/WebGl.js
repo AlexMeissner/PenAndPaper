@@ -137,6 +137,8 @@ var TexturedQuad = /** @class */ (function (_super) {
     TexturedQuad.prototype.setTexture = function (imageBase64) {
         var _this = this;
         var image = new Image();
+        // the image is not available synchronously when setting the source
+        // wait for it to be finished before working with it
         image.onload = function () {
             _this.gl.bindTexture(_this.gl.TEXTURE_2D, _this.texture);
             _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
