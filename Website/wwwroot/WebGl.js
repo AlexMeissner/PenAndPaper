@@ -104,13 +104,13 @@ var Quad = /** @class */ (function () {
         this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 8, 0);
         this.gl.enableVertexAttribArray(0);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-        var uvs = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0];
+        var uvs = [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0];
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
         this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
         this.gl.enableVertexAttribArray(1);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-        var indices = [0, 1, 2, 0, 2, 3];
+        var indices = [0, 1, 2, 2, 1, 3];
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
     };
@@ -128,10 +128,16 @@ var TexturedQuad = /** @class */ (function (_super) {
         _super.prototype.destroy.call(this);
     };
     TexturedQuad.prototype.render = function () {
-        this.gl.bindVertexArray(this.vertexArray);
-        if (this.shaderProgram != null) {
-            this.shaderProgram.bind();
+        if (this.shaderProgram == null) {
+            console.error("No shader bound.");
+            return;
         }
+        this.gl.bindVertexArray(this.vertexArray);
+        this.shaderProgram.bind();
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        var samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
+        this.gl.uniform1i(samplerLocation, 0);
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     };
     TexturedQuad.prototype.setTexture = function (imageBase64) {
@@ -141,6 +147,7 @@ var TexturedQuad = /** @class */ (function (_super) {
         // wait for it to be finished before working with it
         image.onload = function () {
             _this.gl.bindTexture(_this.gl.TEXTURE_2D, _this.texture);
+            _this.gl.pixelStorei(_this.gl.UNPACK_FLIP_Y_WEBGL, true);
             _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
             if (_this.isPowerOf2(image.width) && _this.isPowerOf2(image.height)) {
                 _this.gl.generateMipmap(_this.gl.TEXTURE_2D);

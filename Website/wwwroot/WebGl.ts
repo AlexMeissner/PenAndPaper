@@ -35,7 +35,7 @@ class ShaderProgram {
         this.gl.compileShader(vertexShader);
         const vertexCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS) as GLboolean;
         if (vertexCompileStatus == false) {
-            var compileLog = this.gl.getShaderInfoLog(vertexShader);
+            const compileLog = this.gl.getShaderInfoLog(vertexShader);
             console.error(compileLog);
             return false;
         }
@@ -45,7 +45,7 @@ class ShaderProgram {
         this.gl.compileShader(fragmentShader);
         const fragmentCompileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS) as GLboolean;
         if (fragmentCompileStatus == false) {
-            var compileLog = this.gl.getShaderInfoLog(fragmentShader);
+            const compileLog = this.gl.getShaderInfoLog(fragmentShader);
             console.error(compileLog);
             this.gl.deleteShader(vertexShader);
             return false;
@@ -56,7 +56,7 @@ class ShaderProgram {
         this.gl.linkProgram(this.program);
         const linkStatus = this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS);
         if (linkStatus == false) {
-            var linkLog = this.gl.getProgramInfoLog(this.program);
+            const linkLog = this.gl.getProgramInfoLog(this.program);
             console.error(linkLog);
             this.gl.deleteShader(vertexShader);
             this.gl.deleteShader(fragmentShader);
@@ -114,14 +114,14 @@ class Quad {
         this.gl.enableVertexAttribArray(0);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 
-        const uvs = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0];
+        const uvs = [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0];
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
         this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
         this.gl.enableVertexAttribArray(1);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 
-        const indices = [0, 1, 2, 0, 2, 3];
+        const indices = [0, 1, 2, 2, 1, 3];
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
     }
@@ -141,11 +141,18 @@ class TexturedQuad extends Quad {
     }
 
     render(): void {
-        this.gl.bindVertexArray(this.vertexArray);
-
-        if (this.shaderProgram != null) {
-            this.shaderProgram.bind();
+        if (this.shaderProgram == null) {
+            console.error("No shader bound.");
+            return;
         }
+
+        this.gl.bindVertexArray(this.vertexArray);
+        this.shaderProgram.bind();
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        const samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
+        this.gl.uniform1i(samplerLocation, 0);
 
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
     }
@@ -157,6 +164,7 @@ class TexturedQuad extends Quad {
         // wait for it to be finished before working with it
         image.onload = () => {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
 
             if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
