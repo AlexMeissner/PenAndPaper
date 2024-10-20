@@ -1,7 +1,10 @@
-attribute vec2 position;
-attribute vec2 uv;
+#version 300 es
+precision mediump float;
 
-varying vec2 texCoord;
+in vec2 position;
+in vec2 uv;
+
+out vec2 texCoord;
 
 void main()
 {

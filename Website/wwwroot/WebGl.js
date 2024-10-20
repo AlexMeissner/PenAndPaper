@@ -23,16 +23,32 @@ function uniform1f(gl, location, x) {
     gl.uniform1f(location, x);
 }
 var Camera = /** @class */ (function () {
-    function Camera() {
+    function Camera(gl) {
         this.x = 0.0;
         this.y = 0.0;
+        this.zoom = 1.0;
+        this.BINDING_POINT_NUMBER = 0;
+        this.gl = gl;
+        this.buffer = this.gl.createBuffer();
+        this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
+        var bufferSize = 3 * 4; // 3 x sizeof(GLfloat)
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, bufferSize, this.gl.DYNAMIC_DRAW);
     }
+    Camera.prototype.destroy = function () {
+        this.gl.deleteBuffer(this.buffer);
+    };
+    Camera.prototype.updateBuffer = function () {
+        this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
+        var cameraData = new Float32Array([this.x, this.y, this.zoom]);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, cameraData);
+    };
     return Camera;
 }());
 var ShaderProgram = /** @class */ (function () {
-    function ShaderProgram(gl) {
+    function ShaderProgram(gl, camera) {
         this.gl = gl;
         this.program = gl.createProgram();
+        this.camera = camera;
     }
     ShaderProgram.prototype.bind = function () {
         this.gl.useProgram(this.program);
@@ -70,6 +86,8 @@ var ShaderProgram = /** @class */ (function () {
         }
         this.gl.deleteShader(vertexShader);
         this.gl.deleteShader(fragmentShader);
+        var cameraBufferIndex = this.gl.getUniformBlockIndex(this.program, 'CameraBuffer');
+        this.gl.uniformBlockBinding(this.program, cameraBufferIndex, this.camera.BINDING_POINT_NUMBER);
         return true;
     };
     ShaderProgram.prototype.destroy = function () {
@@ -201,6 +219,14 @@ var RenderContext = /** @class */ (function () {
             return false;
         }
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
+        this.camera = new Camera(this.gl);
+        this.canvas.addEventListener("mousemove", function (event) {
+            // event.buttons
+            // 0: no button
+            // 1: left mouse button
+            // 2: right mouse button
+            // 3: left and right mouse buttons
+        });
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
         return true;
@@ -221,7 +247,7 @@ var RenderContext = /** @class */ (function () {
         }
     };
     RenderContext.prototype.createShaderProgram = function () {
-        return new ShaderProgram(this.gl);
+        return new ShaderProgram(this.gl, this.camera);
     };
     RenderContext.prototype.createTexturedQuad = function () {
         return new TexturedQuad(this.gl);
@@ -233,6 +259,9 @@ var RenderContext = /** @class */ (function () {
     RenderContext.prototype.render = function (timeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        if (this.camera != null) {
+            this.camera.updateBuffer();
+        }
         if (this.map != null) {
             this.map.render();
         }

@@ -1,10 +1,19 @@
+#version 300 es
 precision mediump float;
-
-varying vec2 texCoord;
 
 uniform sampler2D sampler;
 
+layout(std140) uniform CameraBuffer {
+    float x;
+    float y;
+    float zoom;
+} camera;
+
+in vec2 texCoord;
+
+out vec4 fragColor;
+
 void main()
 {
-    gl_FragColor = texture2D(sampler, texCoord);
+    fragColor = texture(sampler, texCoord) * vec4(camera.x, camera.y, camera.zoom, 1.0);
 }

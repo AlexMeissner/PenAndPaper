@@ -14,15 +14,44 @@ function uniform1f(gl: WebGL2RenderingContext, location: WebGLUniformLocation, x
 class Camera {
     x: GLfloat = 0.0;
     y: GLfloat = 0.0;
+    zoom: GLfloat = 1.0;
+
+    gl: WebGL2RenderingContext;
+    buffer: WebGLBuffer;
+
+    readonly BINDING_POINT_NUMBER: GLuint = 0;
+
+    constructor(gl: WebGL2RenderingContext) {
+        this.gl = gl;
+        this.buffer = this.gl.createBuffer();
+
+        this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
+
+        const bufferSize = 3 * 4; // 3 x sizeof(GLfloat)
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, bufferSize, this.gl.DYNAMIC_DRAW);
+    }
+
+    destroy(): void {
+        this.gl.deleteBuffer(this.buffer);
+    }
+
+    updateBuffer(): void {
+        this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
+
+        const cameraData = new Float32Array([this.x, this.y, this.zoom]);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, cameraData);
+    }
 }
 
 class ShaderProgram {
     gl: WebGL2RenderingContext;
     program: WebGLProgram;
+    camera: Camera;
 
-    constructor(gl: WebGL2RenderingContext) {
+    constructor(gl: WebGL2RenderingContext, camera: Camera) {
         this.gl = gl;
         this.program = gl.createProgram();
+        this.camera = camera;
     }
 
     bind(): void {
@@ -65,6 +94,9 @@ class ShaderProgram {
 
         this.gl.deleteShader(vertexShader);
         this.gl.deleteShader(fragmentShader);
+
+        const cameraBufferIndex = this.gl.getUniformBlockIndex(this.program, 'CameraBuffer');
+        this.gl.uniformBlockBinding(this.program, cameraBufferIndex, this.camera.BINDING_POINT_NUMBER);
 
         return true;
     }
@@ -213,6 +245,7 @@ class RenderContext {
     map: TexturedQuad | null;
     grid: Grid | null; // ToDo: Combine Grid with map? gridsize? gridcolor? but same size as map! maybe grid inherits texturedtoken as map?
     tokens: Token[] = [];
+    camera: Camera | null;
 
     initialize(identifier: string): boolean {
         this.canvas = document.getElementById(identifier) as HTMLCanvasElement | null;
@@ -230,6 +263,16 @@ class RenderContext {
         }
 
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
+
+        this.camera = new Camera(this.gl);
+
+        this.canvas.addEventListener("mousemove", (event) => {
+            // event.buttons
+            // 0: no button
+            // 1: left mouse button
+            // 2: right mouse button
+            // 3: left and right mouse buttons
+        });
 
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
@@ -257,7 +300,7 @@ class RenderContext {
     }
 
     createShaderProgram(): ShaderProgram {
-        return new ShaderProgram(this.gl);
+        return new ShaderProgram(this.gl, this.camera);
     }
 
     createTexturedQuad(): TexturedQuad {
@@ -272,6 +315,10 @@ class RenderContext {
     render(timeStamp: DOMHighResTimeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        if (this.camera != null) {
+            this.camera.updateBuffer();
+        }
 
         if (this.map != null) {
             this.map.render();
