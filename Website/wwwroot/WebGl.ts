@@ -324,6 +324,7 @@ class RenderContext {
         this.camera = new Camera(this.gl);
 
         this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseMove(event));
+        this.canvas.oncontextmenu = () => false;
 
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);

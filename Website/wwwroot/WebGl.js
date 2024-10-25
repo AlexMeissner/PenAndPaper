@@ -273,6 +273,7 @@ var RenderContext = /** @class */ (function () {
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
         this.camera = new Camera(this.gl);
         this.canvas.addEventListener("mousemove", function (event) { return _this.onMouseMove(event); });
+        this.canvas.oncontextmenu = function () { return false; };
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
         return true;
