@@ -80,10 +80,10 @@ var Camera = /** @class */ (function () {
     };
     Camera.prototype.updateBuffer = function (width, height) {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
-        var left = 0.0;
-        var right = width; //1.0;//width;
-        var bottom = -height; //-1.0;// height;
-        var top = 0.0; // 0.0;
+        var left = this.x;
+        var right = this.x + width; //1.0;//width;
+        var bottom = this.y - height; //-1.0;// height;
+        var top = this.y; // 0.0;
         //const left = this.x - width / 2.0;
         //const right = this.x + width / 2.0;
         //const bottom = this.y + height / 2.0;
@@ -259,6 +259,7 @@ var RenderContext = /** @class */ (function () {
         this.tokens = [];
     }
     RenderContext.prototype.initialize = function (identifier) {
+        var _this = this;
         this.canvas = document.getElementById(identifier);
         if (this.canvas == null) {
             console.error("Could not find canvas");
@@ -271,13 +272,7 @@ var RenderContext = /** @class */ (function () {
         }
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
         this.camera = new Camera(this.gl);
-        this.canvas.addEventListener("mousemove", function (event) {
-            // event.buttons
-            // 0: no button
-            // 1: left mouse button
-            // 2: right mouse button
-            // 3: left and right mouse buttons
-        });
+        this.canvas.addEventListener("mousemove", function (event) { return _this.onMouseMove(event); });
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
         return true;
@@ -306,6 +301,22 @@ var RenderContext = /** @class */ (function () {
     RenderContext.prototype.destroy = function () {
         this.cleanup();
         // ToDo: Clean up 'gl' context
+    };
+    RenderContext.prototype.onMouseMove = function (event) {
+        switch (event.buttons) {
+            case 0: // no mouse button
+                break;
+            case 1: // left mouse button
+                break;
+            case 2: // right mouse button
+                this.camera.x -= event.movementX;
+                this.camera.y += event.movementY;
+                break;
+            case 3: // left and right mouse buttons
+                break;
+            default:
+                break;
+        }
     };
     RenderContext.prototype.render = function (timeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);

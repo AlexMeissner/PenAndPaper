@@ -1,5 +1,4 @@
-﻿
-function drawElements(gl: WebGL2RenderingContext, mode: number, count: number, type: number, offset: number) {
+﻿function drawElements(gl: WebGL2RenderingContext, mode: number, count: number, type: number, offset: number) {
     gl.drawElements(mode, count, type, offset);
 }
 
@@ -86,10 +85,10 @@ class Camera {
     updateBuffer(width: GLfloat, height: GLfloat): void {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
 
-        const left = 0.0;
-        const right = width;//1.0;//width;
-        const bottom = -height;//-1.0;// height;
-        const top = 0.0;// 0.0;
+        const left = this.x;
+        const right = this.x + width;//1.0;//width;
+        const bottom = this.y - height;//-1.0;// height;
+        const top = this.y;// 0.0;
         //const left = this.x - width / 2.0;
         //const right = this.x + width / 2.0;
         //const bottom = this.y + height / 2.0;
@@ -260,8 +259,7 @@ class TexturedQuad extends Quad {
 
             if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
                 this.gl.generateMipmap(this.gl.TEXTURE_2D);
-            }
-            else {
+            } else {
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
@@ -325,13 +323,7 @@ class RenderContext {
 
         this.camera = new Camera(this.gl);
 
-        this.canvas.addEventListener("mousemove", (event) => {
-            // event.buttons
-            // 0: no button
-            // 1: left mouse button
-            // 2: right mouse button
-            // 3: left and right mouse buttons
-        });
+        this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseMove(event));
 
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
@@ -369,6 +361,27 @@ class RenderContext {
     destroy(): void {
         this.cleanup();
         // ToDo: Clean up 'gl' context
+    }
+
+    onMouseMove(event: MouseEvent): void {
+        switch (event.buttons) {
+            case 0: // no mouse button
+                break;
+
+            case 1: // left mouse button
+                break;
+
+            case 2: // right mouse button
+                this.camera.x -= event.movementX;
+                this.camera.y += event.movementY;
+                break;
+
+            case 3: // left and right mouse buttons
+                break;
+
+            default:
+                break;
+        }
     }
 
     render(timeStamp: DOMHighResTimeStamp) {
