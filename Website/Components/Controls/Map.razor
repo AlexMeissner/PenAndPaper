@@ -39,8 +39,8 @@
     {
         try
         {
-            var width = 1.0f; // 800.0f
-            var height = 1.0f; // 600.0f
+            var width = 800.0f;
+            var height = 600.0f;
             float[] vertices = [0.0f, 0.0f, width, 0.0f, 0.0f, -height, width, -height];
             var quad = await renderContext.CreateTexturedQuad();
             await quad.SetVertices(vertices);

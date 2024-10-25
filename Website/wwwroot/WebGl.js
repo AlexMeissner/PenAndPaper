@@ -31,16 +31,67 @@ var Camera = /** @class */ (function () {
         this.gl = gl;
         this.buffer = this.gl.createBuffer();
         this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
-        var bufferSize = 3 * 4; // 3 x sizeof(GLfloat)
-        this.gl.bufferData(this.gl.UNIFORM_BUFFER, bufferSize, this.gl.DYNAMIC_DRAW);
+        var matrix = this.createOrthographicMatrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength, this.gl.DYNAMIC_DRAW);
     }
+    Camera.prototype.createOrthographicMatrix = function (left, right, bottom, top, near, far) {
+        //const orthogonalMatrix = new Float32Array(16);
+        //
+        //orthogonalMatrix[0] = 2.0 / (right - left);
+        //orthogonalMatrix[1] = 0.0;
+        //orthogonalMatrix[2] = 0.0;
+        //orthogonalMatrix[3] = 0.0;
+        //orthogonalMatrix[4] = 0.0;
+        //orthogonalMatrix[5] = 2.0 / (top - bottom);
+        //orthogonalMatrix[6] = 0.0;
+        //orthogonalMatrix[7] = 0.0;
+        //orthogonalMatrix[8] = 0.0;
+        //orthogonalMatrix[9] = 0.0;
+        //orthogonalMatrix[10] = -2.0 / (far - near);
+        //orthogonalMatrix[11] = 0.0;
+        //orthogonalMatrix[12] = -(right + left) / (right - left);
+        //orthogonalMatrix[13] = -(top + bottom) / (top - bottom);
+        //orthogonalMatrix[14] = -(far + near) / (far - near);
+        //orthogonalMatrix[15] = 1.0;
+        //
+        //return orthogonalMatrix;
+        // Transposed?
+        var orthogonalMatrix = new Float32Array(16);
+        orthogonalMatrix[0] = 2.0 / (right - left);
+        orthogonalMatrix[1] = 0.0;
+        orthogonalMatrix[2] = 0.0;
+        orthogonalMatrix[3] = 0.0;
+        orthogonalMatrix[4] = 0.0;
+        orthogonalMatrix[5] = 2.0 / (top - bottom);
+        orthogonalMatrix[6] = 0.0;
+        orthogonalMatrix[7] = 0.0;
+        orthogonalMatrix[8] = 0.0;
+        orthogonalMatrix[9] = 0.0;
+        orthogonalMatrix[10] = -2.0 / (far - near);
+        orthogonalMatrix[11] = 0.0;
+        orthogonalMatrix[12] = (left + right) / (left - right);
+        orthogonalMatrix[13] = (bottom + top) / (bottom - top);
+        orthogonalMatrix[14] = (far + near) / (near - far);
+        orthogonalMatrix[15] = 1.0;
+        return orthogonalMatrix;
+    };
     Camera.prototype.destroy = function () {
         this.gl.deleteBuffer(this.buffer);
     };
-    Camera.prototype.updateBuffer = function () {
+    Camera.prototype.updateBuffer = function (width, height) {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
-        var cameraData = new Float32Array([this.x, this.y, this.zoom]);
-        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, cameraData);
+        var left = 0.0;
+        var right = width; //1.0;//width;
+        var bottom = -height; //-1.0;// height;
+        var top = 0.0; // 0.0;
+        //const left = this.x - width / 2.0;
+        //const right = this.x + width / 2.0;
+        //const bottom = this.y + height / 2.0;
+        //const top = this.y - height / 2.0;
+        var near = 0.1;
+        var far = 1.0;
+        var matrix = this.createOrthographicMatrix(left, right, bottom, top, near, far);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
     };
     return Camera;
 }());
@@ -260,7 +311,7 @@ var RenderContext = /** @class */ (function () {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         if (this.camera != null) {
-            this.camera.updateBuffer();
+            this.camera.updateBuffer(this.canvas.width, this.canvas.height);
         }
         if (this.map != null) {
             this.map.render();
