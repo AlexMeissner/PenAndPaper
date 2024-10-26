@@ -1,22 +1,6 @@
-﻿function drawElements(gl: WebGL2RenderingContext, mode: number, count: number, type: number, offset: number) {
-    gl.drawElements(mode, count, type, offset);
-}
-
-function getUniformLocation(gl: WebGL2RenderingContext, program: WebGLProgram, name: string) {
-    return gl.getUniformLocation(program, name);
-}
-
-function uniform1f(gl: WebGL2RenderingContext, location: WebGLUniformLocation, x: number) {
-    gl.uniform1f(location, x);
-}
-
-class Camera {
+﻿class Camera {
     private x: GLfloat = 0.0;
     private y: GLfloat = 0.0;
-    private left: GLfloat = 0.0;
-    private right: GLfloat = 800.0;
-    private top: GLfloat = 0.0;
-    private bottom: GLfloat = -600.0;
     private readonly near: number = 0.1;
     private readonly far: number = 1.0;
 
@@ -80,56 +64,19 @@ class Camera {
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
     }
 
-    public zoom(cursorX: number, cursorY: number, mapWidth: number, mapHeight: number, direction: number): void {
+    public zoom(cursorX: number, cursorY: number, direction: number): void {
+        const offsetXBefore = cursorX * this.zoomFactor - this.x;
+        const offsetYBefore = cursorY * this.zoomFactor + this.y;
+        const zoomFactorBefore = this.zoomFactor;
 
         this.zoomLevel += direction < 0.0 ? 1 : -1;
         this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
 
-        // Idee:
-        // projection matrix: zoom -> left needs to move for centered zoom i think
-        // view matrix: pan
+        const offsetXAfter = (this.zoomFactor / zoomFactorBefore) * offsetXBefore;
+        const offsetYAfter = (this.zoomFactor / zoomFactorBefore) * offsetYBefore;
 
-        //if (cursorX < this.left || cursorX > this.right || cursorY < this.top || cursorY > Math.abs(this.bottom)) {
-        //    console.log("outside map");
-        //    return;
-        //}
-
-        //// todo: max in min zoom anhand der canvas größe bestimmen
-        //this.zoomLevel += direction < 0.0 ? 1 : -1;
-//
-        //const relativeX: number = (cursorX - this.left) / (this.right - this.left);
-        //const relativeY: number = (cursorY - this.top) / Math.abs(this.top - this.bottom);
-//
-        //const sizeFactor: number = 1.0 - this.zoomLevel * this.zoomSpeed;
-        //const targetWidth: number = sizeFactor * mapWidth;
-        //const targetHeight: number = sizeFactor * mapHeight;
-//
-        //this.left = cursorX - relativeX * targetWidth;
-        //this.right = cursorX + (1 - relativeX) * targetWidth;
-        ////this.bottom = cursorY - relativeY * targetHeight;
-        ////this.top = cursorY + (1 - relativeY) * targetHeight;
-        //this.top = cursorY - relativeY * targetHeight;
-        //this.bottom = -(cursorY + (1 - relativeY) * targetHeight);
-
-        /*
-        const zF = direction < 0.0 ? 0.9 : 1.1;
-        // Calculate normalized cursor position on the canvas
-        const normCursorX = cursorX / canvasWidth;
-        const normCursorY = cursorY / canvasHeight;
-
-        // Calculate new width and height after zoom
-        const width = (this.right - this.left) * zF;
-        const height = (this.top - this.bottom) * zF;
-
-        // Recalculate bounds based on cursor position
-        const centerX = this.left + normCursorX * (this.right - this.left);
-        const centerY = this.bottom + normCursorY * (this.top - this.bottom);
-
-        this.left = centerX - normCursorX * width;
-        this.right = centerX + (1 - normCursorX) * width;
-        this.bottom = centerY - normCursorY * height;
-        this.top = centerY + (1 - normCursorY) * height;
-        */
+        this.x = cursorX * this.zoomFactor - offsetXAfter;
+        this.y = -cursorY * this.zoomFactor + offsetYAfter;
     }
 }
 
@@ -324,6 +271,7 @@ class TexturedQuad extends Quad {
 }
 
 class Grid extends Quad {
+    isActive: boolean;
     color: Float32Array;
     size: GLuint;
 
@@ -433,9 +381,7 @@ class RenderContext {
     }
 
     onMouseWheel(event: WheelEvent): void {
-        if (this.map != null) {
-            this.camera.zoom(event.clientX, event.clientY, this.map.getWidth(), this.map.getHeight(), event.deltaY);
-        }
+        this.camera.zoom(event.clientX, event.clientY, event.deltaY);
     }
 
     render(timeStamp: DOMHighResTimeStamp) {

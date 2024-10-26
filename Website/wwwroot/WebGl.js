@@ -13,23 +13,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-function drawElements(gl, mode, count, type, offset) {
-    gl.drawElements(mode, count, type, offset);
-}
-function getUniformLocation(gl, program, name) {
-    return gl.getUniformLocation(program, name);
-}
-function uniform1f(gl, location, x) {
-    gl.uniform1f(location, x);
-}
 var Camera = /** @class */ (function () {
     function Camera(gl) {
         this.x = 0.0;
         this.y = 0.0;
-        this.left = 0.0;
-        this.right = 800.0;
-        this.top = 0.0;
-        this.bottom = -600.0;
         this.near = 0.1;
         this.far = 1.0;
         this.zoomLevel = 0;
@@ -78,51 +65,31 @@ var Camera = /** @class */ (function () {
         var matrix = this.createOrthographicMatrix(width, height);
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
     };
-    Camera.prototype.zoom = function (cursorX, cursorY, mapWidth, mapHeight, direction) {
+    Camera.prototype.zoom = function (cursorX, cursorY, direction) {
+        var offsetXBefore = cursorX * this.zoomFactor - this.x;
+        var offsetYBefore = cursorY * this.zoomFactor + this.y;
+        var zoomFactorBefore = this.zoomFactor;
         this.zoomLevel += direction < 0.0 ? 1 : -1;
         this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
-        // Idee:
-        // projection matrix: zoom -> left needs to move for centered zoom i think
-        // view matrix: pan
-        //if (cursorX < this.left || cursorX > this.right || cursorY < this.top || cursorY > Math.abs(this.bottom)) {
-        //    console.log("outside map");
-        //    return;
-        //}
-        //// todo: max in min zoom anhand der canvas größe bestimmen
-        //this.zoomLevel += direction < 0.0 ? 1 : -1;
-        //
-        //const relativeX: number = (cursorX - this.left) / (this.right - this.left);
-        //const relativeY: number = (cursorY - this.top) / Math.abs(this.top - this.bottom);
-        //
-        //const sizeFactor: number = 1.0 - this.zoomLevel * this.zoomSpeed;
-        //const targetWidth: number = sizeFactor * mapWidth;
-        //const targetHeight: number = sizeFactor * mapHeight;
-        //
-        //this.left = cursorX - relativeX * targetWidth;
-        //this.right = cursorX + (1 - relativeX) * targetWidth;
-        ////this.bottom = cursorY - relativeY * targetHeight;
-        ////this.top = cursorY + (1 - relativeY) * targetHeight;
-        //this.top = cursorY - relativeY * targetHeight;
-        //this.bottom = -(cursorY + (1 - relativeY) * targetHeight);
+        var offsetXAfter = (this.zoomFactor / zoomFactorBefore) * offsetXBefore;
+        var offsetYAfter = (this.zoomFactor / zoomFactorBefore) * offsetYBefore;
+        console.log("Before", offsetYBefore, zoomFactorBefore, this.y);
+        console.log("After", offsetYAfter, this.zoomFactor, -cursorY * this.zoomFactor + offsetYAfter);
+        console.log("Calc #1", -cursorY * zoomFactorBefore, offsetYAfter);
+        console.log("Calc #2", -cursorY * this.zoomFactor, offsetYAfter);
+        this.x = cursorX * this.zoomFactor - offsetXAfter;
+        this.y = -cursorY * this.zoomFactor + offsetYAfter;
         /*
-        const zF = direction < 0.0 ? 0.9 : 1.1;
-        // Calculate normalized cursor position on the canvas
-        const normCursorX = cursorX / canvasWidth;
-        const normCursorY = cursorY / canvasHeight;
-
-        // Calculate new width and height after zoom
-        const width = (this.right - this.left) * zF;
-        const height = (this.top - this.bottom) * zF;
-
-        // Recalculate bounds based on cursor position
-        const centerX = this.left + normCursorX * (this.right - this.left);
-        const centerY = this.bottom + normCursorY * (this.top - this.bottom);
-
-        this.left = centerX - normCursorX * width;
-        this.right = centerX + (1 - normCursorX) * width;
-        this.bottom = centerY - normCursorY * height;
-        this.top = centerY + (1 - normCursorY) * height;
-        */
+        const offsetXBefore = cursorX * this.zoomFactor - this.x;
+        const offsetYBefore = cursorY * this.zoomFactor - this.y;
+        const zoomFactorBefore = this.zoomFactor;
+        
+        this.zoomLevel += direction < 0.0 ? 1 : -1;
+        this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
+        
+        this.x = cursorX * this.zoomFactor;
+        this.y = -cursorY * this.zoomFactor;
+         */
     };
     return Camera;
 }());
@@ -362,9 +329,7 @@ var RenderContext = /** @class */ (function () {
         }
     };
     RenderContext.prototype.onMouseWheel = function (event) {
-        if (this.map != null) {
-            this.camera.zoom(event.clientX, event.clientY, this.map.getWidth(), this.map.getHeight(), event.deltaY);
-        }
+        this.camera.zoom(event.clientX, event.clientY, event.deltaY);
     };
     RenderContext.prototype.render = function (timeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
