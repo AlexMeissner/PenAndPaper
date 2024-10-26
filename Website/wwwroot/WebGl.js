@@ -26,36 +26,27 @@ var Camera = /** @class */ (function () {
     function Camera(gl) {
         this.x = 0.0;
         this.y = 0.0;
-        this.zoom = 1.0;
+        this.left = 0.0;
+        this.right = 800.0;
+        this.top = 0.0;
+        this.bottom = -600.0;
+        this.near = 0.1;
+        this.far = 1.0;
+        this.zoomLevel = 0;
+        this.zoomFactor = 1.0;
+        this.zoomSpeed = 0.1;
         this.BINDING_POINT_NUMBER = 0;
         this.gl = gl;
         this.buffer = this.gl.createBuffer();
         this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
-        var matrix = this.createOrthographicMatrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        var matrix = this.createOrthographicMatrix(1.0, 1.0);
         this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength, this.gl.DYNAMIC_DRAW);
     }
-    Camera.prototype.createOrthographicMatrix = function (left, right, bottom, top, near, far) {
-        //const orthogonalMatrix = new Float32Array(16);
-        //
-        //orthogonalMatrix[0] = 2.0 / (right - left);
-        //orthogonalMatrix[1] = 0.0;
-        //orthogonalMatrix[2] = 0.0;
-        //orthogonalMatrix[3] = 0.0;
-        //orthogonalMatrix[4] = 0.0;
-        //orthogonalMatrix[5] = 2.0 / (top - bottom);
-        //orthogonalMatrix[6] = 0.0;
-        //orthogonalMatrix[7] = 0.0;
-        //orthogonalMatrix[8] = 0.0;
-        //orthogonalMatrix[9] = 0.0;
-        //orthogonalMatrix[10] = -2.0 / (far - near);
-        //orthogonalMatrix[11] = 0.0;
-        //orthogonalMatrix[12] = -(right + left) / (right - left);
-        //orthogonalMatrix[13] = -(top + bottom) / (top - bottom);
-        //orthogonalMatrix[14] = -(far + near) / (far - near);
-        //orthogonalMatrix[15] = 1.0;
-        //
-        //return orthogonalMatrix;
-        // Transposed?
+    Camera.prototype.createOrthographicMatrix = function (width, height) {
+        var left = 0.0;
+        var right = width * this.zoomFactor;
+        var top = 0.0;
+        var bottom = -height * this.zoomFactor;
         var orthogonalMatrix = new Float32Array(16);
         orthogonalMatrix[0] = 2.0 / (right - left);
         orthogonalMatrix[1] = 0.0;
@@ -67,31 +58,71 @@ var Camera = /** @class */ (function () {
         orthogonalMatrix[7] = 0.0;
         orthogonalMatrix[8] = 0.0;
         orthogonalMatrix[9] = 0.0;
-        orthogonalMatrix[10] = -2.0 / (far - near);
+        orthogonalMatrix[10] = -2.0 / (this.far - this.near);
         orthogonalMatrix[11] = 0.0;
-        orthogonalMatrix[12] = (left + right) / (left - right);
-        orthogonalMatrix[13] = (bottom + top) / (bottom - top);
-        orthogonalMatrix[14] = (far + near) / (near - far);
+        orthogonalMatrix[12] = (2 * this.x - right - left) / (right - left);
+        orthogonalMatrix[13] = (2 * this.y - top - bottom) / (top - bottom);
+        orthogonalMatrix[14] = -(this.far + this.near) / (this.far - this.near);
         orthogonalMatrix[15] = 1.0;
         return orthogonalMatrix;
     };
     Camera.prototype.destroy = function () {
         this.gl.deleteBuffer(this.buffer);
     };
+    Camera.prototype.move = function (x, y) {
+        this.x += x * this.zoomFactor;
+        this.y -= y * this.zoomFactor;
+    };
     Camera.prototype.updateBuffer = function (width, height) {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
-        var left = this.x;
-        var right = this.x + width; //1.0;//width;
-        var bottom = this.y - height; //-1.0;// height;
-        var top = this.y; // 0.0;
-        //const left = this.x - width / 2.0;
-        //const right = this.x + width / 2.0;
-        //const bottom = this.y + height / 2.0;
-        //const top = this.y - height / 2.0;
-        var near = 0.1;
-        var far = 1.0;
-        var matrix = this.createOrthographicMatrix(left, right, bottom, top, near, far);
+        var matrix = this.createOrthographicMatrix(width, height);
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
+    };
+    Camera.prototype.zoom = function (cursorX, cursorY, mapWidth, mapHeight, direction) {
+        this.zoomLevel += direction < 0.0 ? 1 : -1;
+        this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
+        // Idee:
+        // projection matrix: zoom -> left needs to move for centered zoom i think
+        // view matrix: pan
+        //if (cursorX < this.left || cursorX > this.right || cursorY < this.top || cursorY > Math.abs(this.bottom)) {
+        //    console.log("outside map");
+        //    return;
+        //}
+        //// todo: max in min zoom anhand der canvas größe bestimmen
+        //this.zoomLevel += direction < 0.0 ? 1 : -1;
+        //
+        //const relativeX: number = (cursorX - this.left) / (this.right - this.left);
+        //const relativeY: number = (cursorY - this.top) / Math.abs(this.top - this.bottom);
+        //
+        //const sizeFactor: number = 1.0 - this.zoomLevel * this.zoomSpeed;
+        //const targetWidth: number = sizeFactor * mapWidth;
+        //const targetHeight: number = sizeFactor * mapHeight;
+        //
+        //this.left = cursorX - relativeX * targetWidth;
+        //this.right = cursorX + (1 - relativeX) * targetWidth;
+        ////this.bottom = cursorY - relativeY * targetHeight;
+        ////this.top = cursorY + (1 - relativeY) * targetHeight;
+        //this.top = cursorY - relativeY * targetHeight;
+        //this.bottom = -(cursorY + (1 - relativeY) * targetHeight);
+        /*
+        const zF = direction < 0.0 ? 0.9 : 1.1;
+        // Calculate normalized cursor position on the canvas
+        const normCursorX = cursorX / canvasWidth;
+        const normCursorY = cursorY / canvasHeight;
+
+        // Calculate new width and height after zoom
+        const width = (this.right - this.left) * zF;
+        const height = (this.top - this.bottom) * zF;
+
+        // Recalculate bounds based on cursor position
+        const centerX = this.left + normCursorX * (this.right - this.left);
+        const centerY = this.bottom + normCursorY * (this.top - this.bottom);
+
+        this.left = centerX - normCursorX * width;
+        this.right = centerX + (1 - normCursorX) * width;
+        this.bottom = centerY - normCursorY * height;
+        this.top = centerY + (1 - normCursorY) * height;
+        */
     };
     return Camera;
 }());
@@ -151,6 +182,8 @@ var ShaderProgram = /** @class */ (function () {
 }());
 var Quad = /** @class */ (function () {
     function Quad(gl) {
+        this.width = 0;
+        this.height = 0;
         this.gl = gl;
         this.vertexArray = gl.createVertexArray();
         this.vertexBuffer = gl.createBuffer();
@@ -163,10 +196,19 @@ var Quad = /** @class */ (function () {
         this.gl.deleteBuffer(this.uvBuffer);
         this.gl.deleteBuffer(this.indexBuffer);
     };
+    Quad.prototype.getWidth = function () {
+        return this.width;
+    };
+    Quad.prototype.getHeight = function () {
+        return this.height;
+    };
     Quad.prototype.setShaderProgram = function (program) {
         this.shaderProgram = program;
     };
     Quad.prototype.setVertices = function (srcData) {
+        console.assert(srcData.length == 8);
+        this.width = Math.abs(srcData[2]);
+        this.height = Math.abs(srcData[5]);
         this.gl.bindVertexArray(this.vertexArray);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(srcData), this.gl.STATIC_DRAW);
@@ -273,6 +315,7 @@ var RenderContext = /** @class */ (function () {
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
         this.camera = new Camera(this.gl);
         this.canvas.addEventListener("mousemove", function (event) { return _this.onMouseMove(event); });
+        this.canvas.addEventListener("wheel", function (event) { return _this.onMouseWheel(event); });
         this.canvas.oncontextmenu = function () { return false; };
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
@@ -310,13 +353,17 @@ var RenderContext = /** @class */ (function () {
             case 1: // left mouse button
                 break;
             case 2: // right mouse button
-                this.camera.x -= event.movementX;
-                this.camera.y += event.movementY;
+                this.camera.move(event.movementX, event.movementY);
                 break;
             case 3: // left and right mouse buttons
                 break;
             default:
                 break;
+        }
+    };
+    RenderContext.prototype.onMouseWheel = function (event) {
+        if (this.map != null) {
+            this.camera.zoom(event.clientX, event.clientY, this.map.getWidth(), this.map.getHeight(), event.deltaY);
         }
     };
     RenderContext.prototype.render = function (timeStamp) {
