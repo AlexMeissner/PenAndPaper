@@ -65,18 +65,14 @@
     }
 
     public zoom(cursorX: number, cursorY: number, direction: number): void {
-        const offsetXBefore = cursorX * this.zoomFactor - this.x;
-        const offsetYBefore = cursorY * this.zoomFactor + this.y;
-        const zoomFactorBefore = this.zoomFactor;
+        const offsetX = cursorX * this.zoomFactor - this.x;
+        const offsetY = cursorY * this.zoomFactor + this.y;
 
         this.zoomLevel += direction < 0.0 ? 1 : -1;
         this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
 
-        const offsetXAfter = (this.zoomFactor / zoomFactorBefore) * offsetXBefore;
-        const offsetYAfter = (this.zoomFactor / zoomFactorBefore) * offsetYBefore;
-
-        this.x = cursorX * this.zoomFactor - offsetXAfter;
-        this.y = -cursorY * this.zoomFactor + offsetYAfter;
+        this.x = cursorX * this.zoomFactor - offsetX;
+        this.y = -cursorY * this.zoomFactor + offsetY;
     }
 }
 

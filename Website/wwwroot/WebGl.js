@@ -66,30 +66,12 @@ var Camera = /** @class */ (function () {
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
     };
     Camera.prototype.zoom = function (cursorX, cursorY, direction) {
-        var offsetXBefore = cursorX * this.zoomFactor - this.x;
-        var offsetYBefore = cursorY * this.zoomFactor + this.y;
-        var zoomFactorBefore = this.zoomFactor;
+        var offsetX = cursorX * this.zoomFactor - this.x;
+        var offsetY = cursorY * this.zoomFactor + this.y;
         this.zoomLevel += direction < 0.0 ? 1 : -1;
         this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
-        var offsetXAfter = (this.zoomFactor / zoomFactorBefore) * offsetXBefore;
-        var offsetYAfter = (this.zoomFactor / zoomFactorBefore) * offsetYBefore;
-        console.log("Before", offsetYBefore, zoomFactorBefore, this.y);
-        console.log("After", offsetYAfter, this.zoomFactor, -cursorY * this.zoomFactor + offsetYAfter);
-        console.log("Calc #1", -cursorY * zoomFactorBefore, offsetYAfter);
-        console.log("Calc #2", -cursorY * this.zoomFactor, offsetYAfter);
-        this.x = cursorX * this.zoomFactor - offsetXAfter;
-        this.y = -cursorY * this.zoomFactor + offsetYAfter;
-        /*
-        const offsetXBefore = cursorX * this.zoomFactor - this.x;
-        const offsetYBefore = cursorY * this.zoomFactor - this.y;
-        const zoomFactorBefore = this.zoomFactor;
-        
-        this.zoomLevel += direction < 0.0 ? 1 : -1;
-        this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
-        
-        this.x = cursorX * this.zoomFactor;
-        this.y = -cursorY * this.zoomFactor;
-         */
+        this.x = cursorX * this.zoomFactor - offsetX;
+        this.y = -cursorY * this.zoomFactor + offsetY;
     };
     return Camera;
 }());
