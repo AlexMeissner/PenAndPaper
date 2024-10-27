@@ -11,7 +11,7 @@
 
 <div class="master-panel">
     <div class="left-panel">
-        <Map CampaignId="@CampaignId" />
+        <Map CampaignId="@CampaignId"/>
         <!--<img src="https://cdn2.inkarnate.com/cdn-cgi/image/width=1800,height=1400/https://inkarnate-api-as-production.s3.amazonaws.com/wxabhd3ztw3qgg5da0k4gq9epzpt" />-->
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
             <i class="bi bi-dice-6"></i>
@@ -22,9 +22,9 @@
         <button class="btn btn-overlay btn-sound">
             <i class="bi bi-music-note-beamed"></i>
         </button>
-        <DiceRoller CampaignId="@CampaignId" @ref="diceRoller" />
-        <DiceRollVisualizer />
-        <MapSelection CampaignId="@CampaignId" @ref="mapSelection" />
+        <DiceRoller CampaignId="@CampaignId" @ref="diceRoller"/>
+        <DiceRollVisualizer/>
+        <MapSelection CampaignId="@CampaignId" @ref="mapSelection"/>
     </div>
     <div class="right-panel">
         <!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_tabs_close -->
@@ -53,8 +53,7 @@
 </div>
 
 @code {
-    [Parameter]
-    public int CampaignId { get; set; }
+    [Parameter] public int CampaignId { get; set; }
 
     // ToDo: Get correct user id
     private int userId = 1;
@@ -85,9 +84,12 @@
         diceRoller?.Toggle();
     }
 
-    private void ToggleMapSelection()
+    private async Task ToggleMapSelection()
     {
-        mapSelection?.Toggle();
+        if (mapSelection is not null)
+        {
+            await mapSelection.Toggle();
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -108,4 +110,5 @@
             }
         );
     }
+
 }

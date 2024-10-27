@@ -266,16 +266,10 @@ class TexturedQuad extends Quad {
     }
 }
 
-class Grid extends Quad {
-    isActive: boolean;
-    color: Float32Array;
-    size: GLuint;
-
-    constructor(gl: WebGL2RenderingContext, color: Float32Array, size: GLuint) {
-        super(gl);
-        this.color = color;
-        this.size = size;
-    }
+class Grid {
+    public isActive: boolean;
+    public color: Float32Array;
+    public size: GLuint;
 }
 
 class Token extends TexturedQuad {
@@ -291,7 +285,7 @@ class RenderContext {
     canvas: HTMLCanvasElement | null;
     gl: WebGL2RenderingContext | null;
     map: TexturedQuad | null;
-    grid: Grid | null; // ToDo: Combine Grid with map? gridsize? gridcolor? but same size as map! maybe grid inherits texturedtoken as map?
+    grid: Grid = new Grid();
     tokens: Token[] = [];
     camera: Camera | null;
 
@@ -331,11 +325,6 @@ class RenderContext {
     cleanup(): void {
         this.tokens.forEach(token => token.destroy());
         this.tokens = [];
-
-        if (this.grid != null) {
-            this.grid.destroy();
-            this.grid = null;
-        }
 
         if (this.map != null) {
             this.map.destroy();

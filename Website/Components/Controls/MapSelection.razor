@@ -1,9 +1,10 @@
 ﻿@using DataTransfer.Map
 @using Website.Services.API
 
-@inject IMapOverviewApi mapOverviewApi
+@inject IMapOverviewApi MapOverviewApi
+@inject IActiveMapApi ActiveMapApi
 
-<div class="backdrop" style="display: @display">
+<div class="backdrop" style="display: @_display">
     <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Filter...">
         <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
@@ -15,15 +16,15 @@
                 <button type="button" class="btn btn-outline-success">Erstellen</button>
             </div>
         </div>
-        @foreach (var map in mapOverviewItems)
+        @foreach (var map in _mapOverviewItems)
         {
             <div class="card mb-3">
-                <img src="data:image/png;base64, @map.ImageBase64" class="card-img-top" alt="" />
+                <img src="data:image/png;base64, @map.ImageBase64" class="card-img-top" alt=""/>
                 <div class="card-body">
                     <h3 class="card-title">@map.Name</h3>
                 </div>
                 <div class="card-footer btn-group" role="group">
-                    <button type="button" class="btn btn-outline-success">
+                    <button type="button" class="btn btn-outline-success" @onclick="async () => await OnPlay(map)">
                         <i class="bi bi-play-fill"></i>
                     </button>
                     <button type="button" class="btn btn-outline-primary">
@@ -39,22 +40,18 @@
 </div>
 
 @code {
-    [Parameter]
-    public int CampaignId { get; set; }
+    [Parameter] public int CampaignId { get; set; }
 
-    private string display = "none";
+    private string _display = "none";
 
-    private ICollection<MapOverviewItemDto> mapOverviewItems = [];
+    private ICollection<MapOverviewItemDto> _mapOverviewItems = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await mapOverviewApi.GetAsync(CampaignId);
+        var response = await MapOverviewApi.GetAsync(CampaignId);
 
         response.Match(
-            mapOverview =>
-            {
-                mapOverviewItems = mapOverview.Items;
-            },
+            mapOverview => { _mapOverviewItems = mapOverview.Items; },
             errorCode =>
             {
                 // ToDo: Log + Toast
@@ -63,15 +60,30 @@
         );
     }
 
-    public void Close()
+    public async Task Toggle()
     {
-        display = "none";
-        StateHasChanged();
+        _display = _display == "none" ? "block" : "none";
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void Toggle()
+    private async Task Close()
     {
-        display = display == "none" ? "block" : "none";
-        StateHasChanged();
+        _display = "none";
+        await InvokeAsync(StateHasChanged);
     }
+
+    private async Task OnPlay(MapOverviewItemDto map)
+    {
+        var payload = new ActiveMapDto(CampaignId, map.MapId);
+        var response = await ActiveMapApi.PutAsync(payload);
+
+        if (response.Failed)
+        {
+            // ToDo: Log + Toast
+            Console.WriteLine(response.StatusCode);
+        }
+
+        await Close();
+    }
+
 }

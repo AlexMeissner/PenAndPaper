@@ -226,16 +226,11 @@ var TexturedQuad = /** @class */ (function (_super) {
     };
     return TexturedQuad;
 }(Quad));
-var Grid = /** @class */ (function (_super) {
-    __extends(Grid, _super);
-    function Grid(gl, color, size) {
-        var _this = _super.call(this, gl) || this;
-        _this.color = color;
-        _this.size = size;
-        return _this;
+var Grid = /** @class */ (function () {
+    function Grid() {
     }
     return Grid;
-}(Quad));
+}());
 var Token = /** @class */ (function (_super) {
     __extends(Token, _super);
     function Token(gl, name) {
@@ -247,6 +242,7 @@ var Token = /** @class */ (function (_super) {
 }(TexturedQuad));
 var RenderContext = /** @class */ (function () {
     function RenderContext() {
+        this.grid = new Grid();
         this.tokens = [];
     }
     RenderContext.prototype.initialize = function (identifier) {
@@ -276,10 +272,6 @@ var RenderContext = /** @class */ (function () {
     RenderContext.prototype.cleanup = function () {
         this.tokens.forEach(function (token) { return token.destroy(); });
         this.tokens = [];
-        if (this.grid != null) {
-            this.grid.destroy();
-            this.grid = null;
-        }
         if (this.map != null) {
             this.map.destroy();
             this.map = null;
