@@ -1,56 +1,49 @@
 ﻿using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Server.Hubs;
 using Server.Services.BusinessLogic;
 
 namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ActiveMapController(ICampaignManager campaignManager) : ControllerBase
+    public class ActiveMapController(
+        ICampaignManager campaignManager,
+        IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
         {
-            try
-            {
-                var activeMap = await campaignManager.GetActiveCampaignElements(campaignId);
+            var activeMap = await campaignManager.GetActiveCampaignElements(campaignId);
 
-                if (activeMap is null)
-                {
-                    return NotFound(campaignId);
-                }
-
-                return Ok(activeMap);
-            }
-            catch (Exception exception)
+            if (activeMap is null)
             {
-                return this.InternalServerError(exception);
+                return NotFound(campaignId);
             }
+
+            return Ok(activeMap);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(ActiveMapDto payload)
         {
-            try
+            var updated = await campaignManager.UpdateActiveCampaignElements(payload);
+
+            if (updated is null)
             {
-                var updated = await campaignManager.UpdateActiveCampaignElements(payload);
-
-                if (updated is null)
-                {
-                    return NotFound(payload);
-                }
-
-                if (updated is false)
-                {
-                    return this.NotModified(payload);
-                }
-
-                return Ok(payload);
+                return NotFound(payload);
             }
-            catch (Exception exception)
+
+            if (updated is false)
             {
-                return this.InternalServerError(exception);
+                return this.NotModified(payload);
             }
+
+            var eventArgs = new MapChangedEventArgs();
+            await campaignUpdateHub.Clients.All.MapChanged(eventArgs);
+
+            return Ok(payload);
         }
     }
 }

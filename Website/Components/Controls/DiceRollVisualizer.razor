@@ -58,16 +58,16 @@
         {
             var count = result.Count();
 
-            switch (count)
+            return count switch
             {
-                case 4: return DiceType.D4;
-                case 6: return DiceType.D6;
-                case 8: return DiceType.D8;
-                case 10: return DiceType.D10;
-                case 12: return DiceType.D12;
-                case 20: return DiceType.D20;
-                default: throw new ArgumentException($"Invalid number ({count}) of dice roll results");
-            }
+                4 => DiceType.D4,
+                6 => DiceType.D6,
+                8 => DiceType.D8,
+                10 => DiceType.D10,
+                12 => DiceType.D12,
+                20 => DiceType.D20,
+                _ => throw new ArgumentException($"Invalid number ({count}) of dice roll results")
+            };
         }
     }
 
@@ -93,7 +93,7 @@
         const int totalRevealTime = 3000;
         var delay = totalRevealTime / e.Successes.Count();
 
-        for (int i = 0; i < e.Successes.Count(); i++)
+        for (var i = 0; i < e.Successes.Count(); i++)
         {
             await Task.Delay(delay);
             result.CssClass[i] = e.Successes.ElementAt(i) ? SUCCESS_CLASS : FAILED_CLASS;

@@ -12,7 +12,10 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RollController(SQLDatabase dbContext, IUpdateNotifier updateNotifier, IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
+    public class RollController(
+        SQLDatabase dbContext,
+        IUpdateNotifier updateNotifier,
+        IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get(int campaignId)
@@ -43,7 +46,7 @@ namespace Server.Controllers
             int max = DiceToInt(payload.Dice);
             int roll = random.Next(1, max + 1);
 
-            var player = await dbContext.Users.AsNoTracking().FirstAsync(x => x.Id == payload.PlayerId);
+            var player = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == payload.PlayerId);
 
             if (player is null)
             {

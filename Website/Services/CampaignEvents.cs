@@ -29,6 +29,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public CampaignEvents()
     {
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
+        _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
         _hubConnection.StartAsync(); // ToDo: Async in constructr
     }
 
@@ -37,11 +38,19 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         await _hubConnection.DisposeAsync();
     }
 
-    private async Task OnDiceRolled(DiceRolledEventArgs diceRoll)
+    private async Task OnDiceRolled(DiceRolledEventArgs e)
     {
         if (DiceRolled is not null)
         {
-            await DiceRolled.Invoke(diceRoll);
+            await DiceRolled.Invoke(e);
+        }
+    }
+    
+    private async Task OnMapChanged(MapChangedEventArgs e)
+    {
+        if (MapChanged is not null)
+        {
+            await MapChanged.Invoke(e);
         }
     }
 }

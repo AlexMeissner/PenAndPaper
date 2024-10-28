@@ -1,12 +1,18 @@
-﻿@using Website.Services
+﻿@using DataTransfer.Map
+@using Website.Converter
+@using Website.Services
 @using Website.Services.API
 @using Website.Services.Graphics
 
-@inject IMapApi mapApi
-@inject IActiveMapApi activeMapApi
-@inject RenderContext renderContext
+@inject IMapApi MapApi
+@inject IActiveMapApi ActiveMapApi
+@inject RenderContext RenderContext
+@inject ICampaignEvents CampaignEvents
+@inject ILogger<Map> Logger
 
-<canvas id="@CANVAS_ID" class="render-context" />
+@implements IDisposable
+
+<canvas id="@CANVAS_ID" class="render-context"/>
 
 <script>
     const canvas = document.getElementById("renderCanvas");
@@ -20,85 +26,113 @@
 </script>
 
 @code {
-    [Parameter]
-    public int CampaignId { get; set; }
+    [Parameter] public int CampaignId { get; set; }
+
+    private TexturedQuad? _texturedQuad;
+    private ShaderProgram? _shaderProgram;
 
     private static readonly string CANVAS_ID = "renderCanvas";
+
+    public void Dispose()
+    {
+        CampaignEvents.MapChanged -= OnMapChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        CampaignEvents.MapChanged += OnMapChanged;
+    }
+
+    private async Task OnMapChanged(MapChangedEventArgs e)
+    {
+        await Task.CompletedTask;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await renderContext.Initialize(CANVAS_ID);
-
-            await Test();
+            await RenderContext.Initialize(CANVAS_ID);
+            await LoadShaderProgram();
+            await ReloadMap();
         }
     }
 
-    private async Task Test()
+    private async Task LoadShaderProgram()
     {
-        try
+        var vertexSource = await ResourceReader.GetAsync("Map.vert");
+        var fragmentSource = await ResourceReader.GetAsync("Map.frag");
+
+        _shaderProgram = await RenderContext.CreateShaderProgram();
+
+        var hasSucceeded = await _shaderProgram.Compile(vertexSource, fragmentSource);
+
+        if (!hasSucceeded)
         {
-            var width = 800.0f;
-            var height = 600.0f;
-            float[] vertices = [0.0f, 0.0f, width, 0.0f, 0.0f, -height, width, -height];
-            var quad = await renderContext.CreateTexturedQuad();
-            await quad.SetVertices(vertices);
-
-            var vertexSource = await ResourceReader.GetAsync("Map.vert");
-            var fragmentSource = await ResourceReader.GetAsync("Map.frag");
-
-            var shaderProgram = await renderContext.CreateShaderProgram();
-            var hasSucceeded = await shaderProgram.Compile(vertexSource, fragmentSource);
-
-            if (!hasSucceeded)
-            {
-                Console.WriteLine("Alarm!");
-            }
-
-            var activeMapResult = await activeMapApi.GetAsync(CampaignId);
-            int? mapId = null;
-
-            activeMapResult.Match(
-                map =>
-                {
-                    mapId = map.MapId;
-                },
-                errorCode =>
-                {
-                    Console.WriteLine(errorCode);
-                }
-            );
-
-            if (mapId is int id)
-            {
-                var mapResult = await mapApi.GetAsync(id);
-
-                var image = mapResult.Match(
-                    map =>
-                    {
-                        return map.ImageData;
-                    },
-                    errorCode =>
-                    {
-                        Console.WriteLine(errorCode);
-                        return [];
-                    }
-                );
-
-                if (image.Length > 0)
-                {
-                    await quad.SetTexture(image);
-                }
-            }
-
-            await quad.SetShaderProgram(shaderProgram);
-
-            await renderContext.SetMap(quad);
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine(exception.ToString());
+            Logger.LogError("Failed to compile map shader");
         }
     }
+
+    private async Task ReloadMap()
+    {
+        var mapId = await GetActiveMapId();
+
+        if (mapId is null) return;
+
+        var map = await GetMapData((int)mapId);
+
+        if (map is null) return;
+
+        var dimensions = ByteArrayToImageSizeConverter.Convert(map.ImageData);
+
+        float[] vertices =
+        [
+            0.0f, 0.0f,
+            dimensions.Width, 0.0f,
+            0.0f, -dimensions.Height,
+            dimensions.Width, -dimensions.Height
+        ];
+
+        var quad = await RenderContext.CreateTexturedQuad();
+        await quad.SetVertices(vertices);
+
+        if (map.ImageData.Length > 0)
+        {
+            await quad.SetTexture(map.ImageData);
+        }
+
+        if (_shaderProgram is not null)
+        {
+            await quad.SetShaderProgram(_shaderProgram);
+        }
+
+        await RenderContext.SetMap(quad);
+    }
+
+    private async Task<int?> GetActiveMapId()
+    {
+        var response = await ActiveMapApi.GetAsync(CampaignId);
+
+        return response.Match(
+            activeMap => activeMap.MapId,
+            statusCode =>
+            {
+                Logger.LogError("Failed to get the active map ({statusCode})", statusCode);
+                return null;
+            });
+    }
+
+    private async Task<MapDto?> GetMapData(int mapId)
+    {
+        var response = await MapApi.GetAsync(mapId);
+
+        return response.Match<MapDto?>(
+            map => map,
+            statusCode =>
+            {
+                Logger.LogError("Failed to get map data ({statusCode})", statusCode);
+                return null;
+            });
+    }
+
 }

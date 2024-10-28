@@ -1,4 +1,5 @@
 ﻿using DataTransfer.Dice;
+using DataTransfer.Map;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Server.Hubs;
@@ -14,4 +15,5 @@ public class CampaignUpdateHub : Hub<ICampaignUpdate>
 public interface ICampaignUpdate
 {
     Task DiceRolled(DiceRolledEventArgs diceRoll);
+    Task MapChanged(MapChangedEventArgs diceRoll);
 }
