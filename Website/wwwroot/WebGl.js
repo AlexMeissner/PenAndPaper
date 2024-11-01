@@ -60,6 +60,12 @@ var Camera = /** @class */ (function () {
         this.x += x * this.zoomFactor;
         this.y -= y * this.zoomFactor;
     };
+    Camera.prototype.reset = function () {
+        this.x = 0.0;
+        this.y = 0.0;
+        this.zoomLevel = 0;
+        this.zoomFactor = 1.0;
+    };
     Camera.prototype.updateBuffer = function (width, height) {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
         var matrix = this.createOrthographicMatrix(width, height);
@@ -327,6 +333,7 @@ var RenderContext = /** @class */ (function () {
     };
     RenderContext.prototype.setMap = function (map) {
         this.map = map;
+        this.camera.reset();
     };
     return RenderContext;
 }());

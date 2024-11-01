@@ -58,6 +58,13 @@
         this.y -= y * this.zoomFactor;
     }
 
+    public reset(): void {
+        this.x = 0.0;
+        this.y = 0.0;
+        this.zoomLevel = 0;
+        this.zoomFactor = 1.0;
+    }
+
     public updateBuffer(width: GLfloat, height: GLfloat): void {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
         const matrix = this.createOrthographicMatrix(width, height);
@@ -397,6 +404,7 @@ class RenderContext {
 
     setMap(map: TexturedQuad) {
         this.map = map;
+        this.camera.reset();
     }
 }
 
