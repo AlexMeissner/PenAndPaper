@@ -40,7 +40,8 @@ namespace Server.Controllers
                 return this.NotModified(payload);
             }
 
-            var eventArgs = new MapChangedEventArgs();
+            // ToDo: payload.MapId should not be null
+            var eventArgs = new MapChangedEventArgs((int)payload.MapId);
             await campaignUpdateHub.Clients.All.MapChanged(eventArgs);
 
             return Ok(payload);

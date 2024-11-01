@@ -75,6 +75,7 @@
         }
 
 .tabcontent {
+    height: calc(100% - 69px);
     color: #ffffff;
     margin: 10px;
 }

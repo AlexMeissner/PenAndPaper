@@ -156,7 +156,7 @@ namespace Server.Services.BusinessLogic
             var camapign = await campaignRepository
                 .Include(c => c.ActiveMap)
                 .Include(c => c.Maps)
-                .FirstAsync(c => c.Id == activeMap.CampaignId);
+                .FirstOrDefaultAsync(c => c.Id == activeMap.CampaignId);
 
             if (camapign is null)
             {

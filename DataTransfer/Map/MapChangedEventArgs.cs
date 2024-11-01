@@ -1,3 +1,3 @@
 ﻿namespace DataTransfer.Map;
 
-public record MapChangedEventArgs();
+public record MapChangedEventArgs(int MapId);
