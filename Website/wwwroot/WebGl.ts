@@ -177,11 +177,11 @@ class Quad {
         return this.height
     }
 
-    setShaderProgram(program: ShaderProgram): void {
+    public setShaderProgram(program: ShaderProgram): void {
         this.shaderProgram = program;
     }
 
-    setVertices(srcData: number[]): void {
+    public setVertices(srcData: number[]): void {
         console.assert(srcData.length == 8);
         this.width = Math.abs(srcData[2]);
         this.height = Math.abs(srcData[5]);
@@ -204,6 +204,17 @@ class Quad {
         const indices = [0, 1, 2, 2, 1, 3];
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
+    }
+
+    public updateVertices(newData: number[]): void {
+        console.assert(newData.length == 8);
+        this.width = Math.abs(newData[2]);
+        this.height = Math.abs(newData[5]);
+
+        this.gl.bindVertexArray(this.vertexArray);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(newData));
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
     }
 }
 

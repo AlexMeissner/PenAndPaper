@@ -45,7 +45,7 @@
 
     private async Task OnMapChanged(MapChangedEventArgs e)
     {
-        await Task.CompletedTask;
+        await LoadActiveMap();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -54,7 +54,7 @@
         {
             await RenderContext.Initialize(CANVAS_ID);
             await LoadShaderProgram();
-            await ReloadMap();
+            await LoadActiveMap();
         }
     }
 
@@ -73,7 +73,7 @@
         }
     }
 
-    private async Task ReloadMap()
+    private async Task LoadActiveMap()
     {
         var mapId = await GetActiveMapId();
 
@@ -93,20 +93,27 @@
             dimensions.Width, -dimensions.Height
         ];
 
-        var quad = await RenderContext.CreateTexturedQuad();
-        await quad.SetVertices(vertices);
+        if (_texturedQuad is null)
+        {
+            _texturedQuad = await RenderContext.CreateTexturedQuad();
+            await _texturedQuad.SetVertices(vertices);
+        }
+        else
+        {
+            await _texturedQuad.UpdateVertices(vertices);
+        }
 
         if (map.ImageData.Length > 0)
         {
-            await quad.SetTexture(map.ImageData);
+            await _texturedQuad.SetTexture(map.ImageData);
         }
 
         if (_shaderProgram is not null)
         {
-            await quad.SetShaderProgram(_shaderProgram);
+            await _texturedQuad.SetShaderProgram(_shaderProgram);
         }
 
-        await RenderContext.SetMap(quad);
+        await RenderContext.SetMap(_texturedQuad);
     }
 
     private async Task<int?> GetActiveMapId()

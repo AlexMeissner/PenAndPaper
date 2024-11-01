@@ -174,6 +174,15 @@ var Quad = /** @class */ (function () {
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
     };
+    Quad.prototype.updateVertices = function (newData) {
+        console.assert(newData.length == 8);
+        this.width = Math.abs(newData[2]);
+        this.height = Math.abs(newData[5]);
+        this.gl.bindVertexArray(this.vertexArray);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(newData));
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+    };
     return Quad;
 }());
 var TexturedQuad = /** @class */ (function (_super) {
