@@ -8,7 +8,7 @@ public class TexturedQuad(IJSObjectReference jsObjectReference)
 
     public async Task SetShaderProgram(ShaderProgram shaderProgram)
     {
-        await jsObjectReference.InvokeVoidAsync("setShaderProgram", shaderProgram.JSObjectReference);
+        await jsObjectReference.InvokeVoidAsync("setShaderProgram", shaderProgram.JsObjectReference);
     }
 
     public async Task SetTexture(byte[] image)

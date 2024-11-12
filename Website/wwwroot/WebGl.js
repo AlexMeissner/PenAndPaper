@@ -1,20 +1,12 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Camera = /** @class */ (function () {
-    function Camera(gl) {
+class UniformBuffer {
+    constructor(gl) {
+        this.gl = gl;
+        this.buffer = this.gl.createBuffer();
+    }
+}
+class Camera extends UniformBuffer {
+    constructor(gl) {
+        super(gl);
         this.x = 0.0;
         this.y = 0.0;
         this.near = 0.1;
@@ -23,18 +15,46 @@ var Camera = /** @class */ (function () {
         this.zoomFactor = 1.0;
         this.zoomSpeed = 0.1;
         this.BINDING_POINT_NUMBER = 0;
-        this.gl = gl;
-        this.buffer = this.gl.createBuffer();
         this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
-        var matrix = this.createOrthographicMatrix(1.0, 1.0);
-        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength, this.gl.DYNAMIC_DRAW);
+        const matrix = this.createViewProjectionMatrix(1.0, 1.0);
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength * 2, this.gl.DYNAMIC_DRAW);
     }
-    Camera.prototype.createOrthographicMatrix = function (width, height) {
-        var left = 0.0;
-        var right = width * this.zoomFactor;
-        var top = 0.0;
-        var bottom = -height * this.zoomFactor;
-        var orthogonalMatrix = new Float32Array(16);
+    GetBindingPoint() {
+        return this.BINDING_POINT_NUMBER;
+    }
+    GetName() {
+        return 'CameraBuffer';
+    }
+    createProjectionMatrix(width, height) {
+        const left = 0.0;
+        const right = width * this.zoomFactor;
+        const top = 0.0;
+        const bottom = -height * this.zoomFactor;
+        const orthogonalMatrix = new Float32Array(16);
+        orthogonalMatrix[0] = 2.0 / (right - left);
+        orthogonalMatrix[1] = 0.0;
+        orthogonalMatrix[2] = 0.0;
+        orthogonalMatrix[3] = 0.0;
+        orthogonalMatrix[4] = 0.0;
+        orthogonalMatrix[5] = 2.0 / (top - bottom);
+        orthogonalMatrix[6] = 0.0;
+        orthogonalMatrix[7] = 0.0;
+        orthogonalMatrix[8] = 0.0;
+        orthogonalMatrix[9] = 0.0;
+        orthogonalMatrix[10] = -2.0 / (this.far - this.near);
+        orthogonalMatrix[11] = 0.0;
+        orthogonalMatrix[12] = -(right + left) / (right - left);
+        orthogonalMatrix[13] = -(top + bottom) / (top - bottom);
+        orthogonalMatrix[14] = -(this.far + this.near) / (this.far - this.near);
+        orthogonalMatrix[15] = 1.0;
+        return orthogonalMatrix;
+    }
+    createViewProjectionMatrix(width, height) {
+        const left = 0.0;
+        const right = width * this.zoomFactor;
+        const top = 0.0;
+        const bottom = -height * this.zoomFactor;
+        const orthogonalMatrix = new Float32Array(16);
         orthogonalMatrix[0] = 2.0 / (right - left);
         orthogonalMatrix[1] = 0.0;
         orthogonalMatrix[2] = 0.0;
@@ -52,60 +72,98 @@ var Camera = /** @class */ (function () {
         orthogonalMatrix[14] = -(this.far + this.near) / (this.far - this.near);
         orthogonalMatrix[15] = 1.0;
         return orthogonalMatrix;
-    };
-    Camera.prototype.destroy = function () {
+    }
+    destroy() {
         this.gl.deleteBuffer(this.buffer);
-    };
-    Camera.prototype.move = function (x, y) {
+    }
+    move(x, y) {
         this.x += x * this.zoomFactor;
         this.y -= y * this.zoomFactor;
-    };
-    Camera.prototype.reset = function () {
+    }
+    reset() {
         this.x = 0.0;
         this.y = 0.0;
         this.zoomLevel = 0;
         this.zoomFactor = 1.0;
-    };
-    Camera.prototype.updateBuffer = function (width, height) {
+    }
+    updateBuffer(width, height) {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
-        var matrix = this.createOrthographicMatrix(width, height);
-        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
-    };
-    Camera.prototype.zoom = function (cursorX, cursorY, direction) {
-        var offsetX = cursorX * this.zoomFactor - this.x;
-        var offsetY = cursorY * this.zoomFactor + this.y;
+        const projectionMatrix = this.createProjectionMatrix(width, height);
+        const viewProjectionMatrix = this.createViewProjectionMatrix(width, height);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, projectionMatrix);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, projectionMatrix.byteLength, viewProjectionMatrix);
+    }
+    zoom(cursorX, cursorY, direction) {
+        const offsetX = cursorX * this.zoomFactor - this.x;
+        const offsetY = cursorY * this.zoomFactor + this.y;
         this.zoomLevel += direction < 0.0 ? 1 : -1;
         this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
         this.x = cursorX * this.zoomFactor - offsetX;
         this.y = -cursorY * this.zoomFactor + offsetY;
-    };
-    return Camera;
-}());
-var ShaderProgram = /** @class */ (function () {
-    function ShaderProgram(gl, camera) {
+    }
+}
+class Grid extends UniformBuffer {
+    constructor(gl) {
+        super(gl);
+        this.isActive = false;
+        this.color = new Float32Array(4);
+        this.size = 1.0;
+        this.BINDING_POINT_NUMBER = 1;
+        this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
+        const gridData = this.createBufferData();
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, gridData.byteLength, this.gl.DYNAMIC_DRAW);
+    }
+    GetBindingPoint() {
+        return this.BINDING_POINT_NUMBER;
+    }
+    GetName() {
+        return 'GridBuffer';
+    }
+    destroy() {
+        this.gl.deleteBuffer(this.buffer);
+    }
+    updateBuffer() {
+        this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
+        const gridData = this.createBufferData();
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, gridData);
+    }
+    createBufferData() {
+        const data = new Float32Array(6);
+        data.set(this.color, 0);
+        data[4] = this.size;
+        data[5] = this.isActive ? 1.0 : 0.0;
+        return data;
+    }
+}
+class ShaderProgram {
+    constructor(gl, camera) {
         this.gl = gl;
         this.program = gl.createProgram();
         this.camera = camera;
     }
-    ShaderProgram.prototype.bind = function () {
+    addUniformBuffer(buffer) {
+        const uniformBlockIndex = this.gl.getUniformBlockIndex(this.program, buffer.GetName());
+        this.gl.uniformBlockBinding(this.program, uniformBlockIndex, buffer.GetBindingPoint());
+    }
+    bind() {
         this.gl.useProgram(this.program);
-    };
-    ShaderProgram.prototype.compile = function (vertexSource, fragmentSource) {
-        var vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+    }
+    compile(vertexSource, fragmentSource) {
+        const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(vertexShader, vertexSource);
         this.gl.compileShader(vertexShader);
-        var vertexCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS);
+        const vertexCompileStatus = this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS);
         if (vertexCompileStatus == false) {
-            var compileLog = this.gl.getShaderInfoLog(vertexShader);
+            const compileLog = this.gl.getShaderInfoLog(vertexShader);
             console.error(compileLog);
             return false;
         }
-        var fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
         this.gl.shaderSource(fragmentShader, fragmentSource);
         this.gl.compileShader(fragmentShader);
-        var fragmentCompileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS);
+        const fragmentCompileStatus = this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS);
         if (fragmentCompileStatus == false) {
-            var compileLog = this.gl.getShaderInfoLog(fragmentShader);
+            const compileLog = this.gl.getShaderInfoLog(fragmentShader);
             console.error(compileLog);
             this.gl.deleteShader(vertexShader);
             return false;
@@ -113,9 +171,9 @@ var ShaderProgram = /** @class */ (function () {
         this.gl.attachShader(this.program, vertexShader);
         this.gl.attachShader(this.program, fragmentShader);
         this.gl.linkProgram(this.program);
-        var linkStatus = this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS);
+        const linkStatus = this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS);
         if (linkStatus == false) {
-            var linkLog = this.gl.getProgramInfoLog(this.program);
+            const linkLog = this.gl.getProgramInfoLog(this.program);
             console.error(linkLog);
             this.gl.deleteShader(vertexShader);
             this.gl.deleteShader(fragmentShader);
@@ -123,20 +181,18 @@ var ShaderProgram = /** @class */ (function () {
         }
         this.gl.deleteShader(vertexShader);
         this.gl.deleteShader(fragmentShader);
-        var cameraBufferIndex = this.gl.getUniformBlockIndex(this.program, 'CameraBuffer');
-        this.gl.uniformBlockBinding(this.program, cameraBufferIndex, this.camera.BINDING_POINT_NUMBER);
         return true;
-    };
-    ShaderProgram.prototype.destroy = function () {
+    }
+    destroy() {
         this.gl.deleteProgram(this.program);
-    };
-    ShaderProgram.prototype.release = function () {
+    }
+    release() {
         this.gl.useProgram(null);
-    };
-    return ShaderProgram;
-}());
-var Quad = /** @class */ (function () {
-    function Quad(gl) {
+    }
+}
+class TexturedQuad {
+    constructor(gl) {
+        this.floatUniforms = new Map();
         this.width = 0;
         this.height = 0;
         this.gl = gl;
@@ -144,124 +200,116 @@ var Quad = /** @class */ (function () {
         this.vertexBuffer = gl.createBuffer();
         this.uvBuffer = gl.createBuffer();
         this.indexBuffer = gl.createBuffer();
+        this.texture = gl.createTexture();
     }
-    Quad.prototype.destroy = function () {
+    destroy() {
+        this.gl.deleteTexture(this.texture);
         this.gl.deleteVertexArray(this.vertexArray);
         this.gl.deleteBuffer(this.vertexBuffer);
         this.gl.deleteBuffer(this.uvBuffer);
         this.gl.deleteBuffer(this.indexBuffer);
-    };
-    Quad.prototype.getWidth = function () {
-        return this.width;
-    };
-    Quad.prototype.getHeight = function () {
-        return this.height;
-    };
-    Quad.prototype.setShaderProgram = function (program) {
-        this.shaderProgram = program;
-    };
-    Quad.prototype.setVertices = function (srcData) {
-        console.assert(srcData.length == 8);
-        this.width = Math.abs(srcData[2]);
-        this.height = Math.abs(srcData[5]);
-        this.gl.bindVertexArray(this.vertexArray);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(srcData), this.gl.STATIC_DRAW);
-        this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 8, 0);
-        this.gl.enableVertexAttribArray(0);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-        var uvs = [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0];
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
-        this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
-        this.gl.enableVertexAttribArray(1);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-        var indices = [0, 1, 2, 2, 1, 3];
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
-    };
-    Quad.prototype.updateVertices = function (newData) {
-        console.assert(newData.length == 8);
-        this.width = Math.abs(newData[2]);
-        this.height = Math.abs(newData[5]);
-        this.gl.bindVertexArray(this.vertexArray);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
-        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(newData));
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-    };
-    return Quad;
-}());
-var TexturedQuad = /** @class */ (function (_super) {
-    __extends(TexturedQuad, _super);
-    function TexturedQuad(gl) {
-        var _this = _super.call(this, gl) || this;
-        _this.texture = gl.createTexture();
-        return _this;
     }
-    TexturedQuad.prototype.destroy = function () {
-        this.gl.deleteTexture(this.texture);
-        _super.prototype.destroy.call(this);
-    };
-    TexturedQuad.prototype.render = function () {
+    getWidth() {
+        return this.width;
+    }
+    getHeight() {
+        return this.height;
+    }
+    render() {
         if (this.shaderProgram == null) {
             console.error("No shader bound.");
             return;
         }
         this.gl.bindVertexArray(this.vertexArray);
         this.shaderProgram.bind();
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-        var samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
-        this.gl.uniform1i(samplerLocation, 0);
+        const samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
+        if (samplerLocation != null) {
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.uniform1i(samplerLocation, 0);
+        }
+        this.floatUniforms.forEach((value, name) => {
+            const location = this.gl.getUniformLocation(this.shaderProgram.program, name);
+            if (location != null) {
+                this.gl.uniform1f(location, value);
+            }
+        });
         this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
-    };
-    TexturedQuad.prototype.setTexture = function (imageBase64) {
-        var _this = this;
-        var image = new Image();
+    }
+    setShaderProgram(program) {
+        this.shaderProgram = program;
+    }
+    setTexture(imageBase64) {
+        const image = new Image();
         // the image is not available synchronously when setting the source
         // wait for it to be finished before working with it
-        image.onload = function () {
-            _this.gl.bindTexture(_this.gl.TEXTURE_2D, _this.texture);
-            _this.gl.pixelStorei(_this.gl.UNPACK_FLIP_Y_WEBGL, true);
-            _this.gl.texImage2D(_this.gl.TEXTURE_2D, 0, _this.gl.RGBA, _this.gl.RGBA, _this.gl.UNSIGNED_BYTE, image);
-            if (_this.isPowerOf2(image.width) && _this.isPowerOf2(image.height)) {
-                _this.gl.generateMipmap(_this.gl.TEXTURE_2D);
+        image.onload = () => {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+            if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
+                this.gl.generateMipmap(this.gl.TEXTURE_2D);
             }
             else {
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_S, _this.gl.CLAMP_TO_EDGE);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_WRAP_T, _this.gl.CLAMP_TO_EDGE);
-                _this.gl.texParameteri(_this.gl.TEXTURE_2D, _this.gl.TEXTURE_MIN_FILTER, _this.gl.LINEAR);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             }
-            _this.gl.bindTexture(_this.gl.TEXTURE_2D, null);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
         };
         image.src = imageBase64;
-    };
-    TexturedQuad.prototype.isPowerOf2 = function (value) {
+    }
+    setUniform(name, value) {
+        this.floatUniforms.set(name, value);
+    }
+    setVertices(srcData) {
+        console.assert(srcData.length == 8);
+        this.width = Math.abs(srcData[2]);
+        this.height = Math.abs(srcData[5]);
+        this.setUniform("width", this.width);
+        this.setUniform("height", this.height);
+        this.gl.bindVertexArray(this.vertexArray);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(srcData), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        const uvs = [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0];
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.uvBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uvs), this.gl.STATIC_DRAW);
+        this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8, 0);
+        this.gl.enableVertexAttribArray(1);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+        const indices = [0, 1, 2, 2, 1, 3];
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
+    }
+    updateVertices(newData) {
+        console.assert(newData.length == 8);
+        this.width = Math.abs(newData[2]);
+        this.height = Math.abs(newData[5]);
+        this.setUniform("width", this.width);
+        this.setUniform("height", this.height);
+        this.gl.bindVertexArray(this.vertexArray);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(newData));
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+    }
+    isPowerOf2(value) {
         return (value & (value - 1)) === 0;
-    };
-    return TexturedQuad;
-}(Quad));
-var Grid = /** @class */ (function () {
-    function Grid() {
     }
-    return Grid;
-}());
-var Token = /** @class */ (function (_super) {
-    __extends(Token, _super);
-    function Token(gl, name) {
-        var _this = _super.call(this, gl) || this;
-        _this.name = name;
-        return _this;
+}
+class Token extends TexturedQuad {
+    constructor(gl, name) {
+        super(gl);
+        this.name = name;
     }
-    return Token;
-}(TexturedQuad));
-var RenderContext = /** @class */ (function () {
-    function RenderContext() {
-        this.grid = new Grid();
+}
+class RenderContext {
+    constructor() {
         this.tokens = [];
     }
-    RenderContext.prototype.initialize = function (identifier) {
-        var _this = this;
+    initialize(identifier) {
         this.canvas = document.getElementById(identifier);
         if (this.canvas == null) {
             console.error("Could not find canvas");
@@ -272,37 +320,44 @@ var RenderContext = /** @class */ (function () {
             console.error("Could not create WebGL context");
             return false;
         }
-        this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
+        this.grid = new Grid(this.gl);
         this.camera = new Camera(this.gl);
-        this.canvas.addEventListener("mousemove", function (event) { return _this.onMouseMove(event); });
-        this.canvas.addEventListener("wheel", function (event) { return _this.onMouseWheel(event); });
-        this.canvas.oncontextmenu = function () { return false; };
+        this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
+        this.canvas.addEventListener("mousemove", (event) => this.onMouseMove(event));
+        this.canvas.addEventListener("wheel", (event) => this.onMouseWheel(event));
+        this.canvas.oncontextmenu = () => false;
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
         return true;
-    };
-    RenderContext.prototype.addToken = function (token) {
+    }
+    addToken(token) {
         this.tokens.push(token);
-    };
-    RenderContext.prototype.cleanup = function () {
-        this.tokens.forEach(function (token) { return token.destroy(); });
+    }
+    cleanup() {
+        this.tokens.forEach(token => token.destroy());
         this.tokens = [];
         if (this.map != null) {
             this.map.destroy();
             this.map = null;
         }
-    };
-    RenderContext.prototype.createShaderProgram = function () {
+    }
+    createShaderProgram() {
         return new ShaderProgram(this.gl, this.camera);
-    };
-    RenderContext.prototype.createTexturedQuad = function () {
+    }
+    createTexturedQuad() {
         return new TexturedQuad(this.gl);
-    };
-    RenderContext.prototype.destroy = function () {
+    }
+    getCamera() {
+        return this.camera;
+    }
+    getGrid() {
+        return this.grid;
+    }
+    destroy() {
         this.cleanup();
         // ToDo: Clean up 'gl' context
-    };
-    RenderContext.prototype.onMouseMove = function (event) {
+    }
+    onMouseMove(event) {
         switch (event.buttons) {
             case 0: // no mouse button
                 break;
@@ -316,28 +371,34 @@ var RenderContext = /** @class */ (function () {
             default:
                 break;
         }
-    };
-    RenderContext.prototype.onMouseWheel = function (event) {
+    }
+    onMouseWheel(event) {
         this.camera.zoom(event.clientX, event.clientY, event.deltaY);
-    };
-    RenderContext.prototype.render = function (timeStamp) {
+    }
+    render(timeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         if (this.camera != null) {
             this.camera.updateBuffer(this.canvas.width, this.canvas.height);
         }
+        if (this.grid != null) {
+            this.grid.updateBuffer();
+        }
         if (this.map != null) {
             this.map.render();
         }
         window.requestAnimationFrame(this.render);
-    };
-    RenderContext.prototype.setMap = function (map) {
+    }
+    setMap(map) {
         this.map = map;
         this.camera.reset();
-    };
-    return RenderContext;
-}());
+    }
+    updateGrid(isActive, size, color) {
+        this.grid.isActive = isActive;
+        this.grid.size = size;
+        this.grid.color = color;
+    }
+}
 function createRenderContext() {
     return new RenderContext();
 }
-//# sourceMappingURL=WebGl.js.map

@@ -8,8 +8,6 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
 {
     private IJSObjectReference? _renderContext;
 
-    private readonly Grid _grid = new();
-
     public async Task<bool> Initialize(string identifier)
     {
         _renderContext = await jsRuntime.InvokeAsync<IJSObjectReference>("createRenderContext");
@@ -27,8 +25,6 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
             logger.LogError("Could not initialize the render context");
             return false;
         }
-
-        await _grid.Initialize();
 
         return true;
     }
@@ -50,10 +46,20 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
         return new TexturedQuad(jsObjectReference);
     }
 
+    public async Task<Camera> GetCamera()
+    {
+        var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("getCamera");
+        return new Camera(jsObjectReference);
+    }
+    
+    public async Task<Grid> GetGrid()
+    {
+        var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("getGrid");
+        return new Grid(jsObjectReference);
+    }
+    
     public async ValueTask DisposeAsync()
     {
-        await _grid.DisposeAsync();
-
         if (_renderContext is not null)
         {
             await _renderContext.InvokeVoidAsync("destroy");
@@ -65,5 +71,10 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
     public async Task SetMap(TexturedQuad map)
     {
         await _renderContext!.InvokeVoidAsync("setMap", map.JSObjectReference);
+    }
+
+    public async Task UpdateGrid(bool isActive, float size, float[] color)
+    {
+        await _renderContext!.InvokeVoidAsync("updateGrid", isActive, size, color);
     }
 }

@@ -1,15 +1,7 @@
-﻿namespace Website.Services.Graphics;
+using Microsoft.JSInterop;
 
-public class Grid : IAsyncDisposable
+namespace Website.Services.Graphics;
+
+public class Grid(IJSObjectReference jsObjectReference) : UniformBuffer(jsObjectReference)
 {
-    public Task Initialize()
-    {
-        return Task.CompletedTask;
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-        return ValueTask.CompletedTask;
-    }
 }

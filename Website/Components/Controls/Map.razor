@@ -71,6 +71,12 @@
         {
             Logger.LogError("Failed to compile map shader");
         }
+
+        var cameraBuffer = await RenderContext.GetCamera();
+        await _shaderProgram.AddUniformBuffer(cameraBuffer);
+
+        var gridBuffer = await RenderContext.GetGrid();
+        await _shaderProgram.AddUniformBuffer(gridBuffer);
     }
 
     private async Task LoadActiveMap()
@@ -114,6 +120,9 @@
         }
 
         await RenderContext.SetMap(_texturedQuad);
+
+        float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
+        await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
     }
 
     private async Task<int?> GetActiveMapId()

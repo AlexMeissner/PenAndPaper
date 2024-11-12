@@ -1,4 +1,18 @@
-﻿class Camera {
+﻿abstract class UniformBuffer {
+    protected readonly gl: WebGL2RenderingContext;
+    protected readonly buffer: WebGLBuffer;
+
+    protected constructor(gl: WebGL2RenderingContext) {
+        this.gl = gl;
+        this.buffer = this.gl.createBuffer();
+    }
+
+    public abstract GetBindingPoint(): number;
+
+    public abstract GetName(): string;
+}
+
+class Camera extends UniformBuffer {
     private x: GLfloat = 0.0;
     private y: GLfloat = 0.0;
     private readonly near: number = 0.1;
@@ -8,22 +22,50 @@
     private zoomFactor: GLfloat = 1.0;
     private readonly zoomSpeed: GLfloat = 0.1;
 
-    private readonly gl: WebGL2RenderingContext;
-    private readonly buffer: WebGLBuffer;
-
-    public readonly BINDING_POINT_NUMBER: GLuint = 0;
+    private readonly BINDING_POINT_NUMBER: GLuint = 0;
 
     constructor(gl: WebGL2RenderingContext) {
-        this.gl = gl;
-        this.buffer = this.gl.createBuffer();
-
+        super(gl);
         this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
-
-        const matrix = this.createOrthographicMatrix(1.0, 1.0);
-        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength, this.gl.DYNAMIC_DRAW);
+        const matrix = this.createViewProjectionMatrix(1.0, 1.0);
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength * 2, this.gl.DYNAMIC_DRAW);
     }
 
-    private createOrthographicMatrix(width: GLfloat, height: GLfloat): Float32Array {
+    public GetBindingPoint(): number {
+        return this.BINDING_POINT_NUMBER;
+    }
+
+    public GetName(): string {
+        return 'CameraBuffer';
+    }
+
+    private createProjectionMatrix(width: GLfloat, height: GLfloat): Float32Array {
+        const left: GLfloat = 0.0;
+        const right: GLfloat = width * this.zoomFactor;
+        const top: GLfloat = 0.0;
+        const bottom: GLfloat = -height * this.zoomFactor;
+
+        const orthogonalMatrix = new Float32Array(16);
+        orthogonalMatrix[0] = 2.0 / (right - left);
+        orthogonalMatrix[1] = 0.0;
+        orthogonalMatrix[2] = 0.0;
+        orthogonalMatrix[3] = 0.0;
+        orthogonalMatrix[4] = 0.0;
+        orthogonalMatrix[5] = 2.0 / (top - bottom);
+        orthogonalMatrix[6] = 0.0;
+        orthogonalMatrix[7] = 0.0;
+        orthogonalMatrix[8] = 0.0;
+        orthogonalMatrix[9] = 0.0;
+        orthogonalMatrix[10] = -2.0 / (this.far - this.near);
+        orthogonalMatrix[11] = 0.0;
+        orthogonalMatrix[12] = -(right + left) / (right - left);
+        orthogonalMatrix[13] = -(top + bottom) / (top - bottom);
+        orthogonalMatrix[14] = -(this.far + this.near) / (this.far - this.near);
+        orthogonalMatrix[15] = 1.0;
+        return orthogonalMatrix;
+    }
+
+    private createViewProjectionMatrix(width: GLfloat, height: GLfloat): Float32Array {
         const left: GLfloat = 0.0;
         const right: GLfloat = width * this.zoomFactor;
         const top: GLfloat = 0.0;
@@ -67,8 +109,10 @@
 
     public updateBuffer(width: GLfloat, height: GLfloat): void {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
-        const matrix = this.createOrthographicMatrix(width, height);
-        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, matrix);
+        const projectionMatrix = this.createProjectionMatrix(width, height);
+        const viewProjectionMatrix = this.createViewProjectionMatrix(width, height);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, projectionMatrix);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, projectionMatrix.byteLength, viewProjectionMatrix);
     }
 
     public zoom(cursorX: number, cursorY: number, direction: number): void {
@@ -83,6 +127,47 @@
     }
 }
 
+class Grid extends UniformBuffer {
+    public isActive: boolean = false;
+    public color: Float32Array = new Float32Array(4);
+    public size: GLfloat = 1.0;
+
+    private readonly BINDING_POINT_NUMBER: GLuint = 1;
+
+    constructor(gl: WebGL2RenderingContext) {
+        super(gl);
+        this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
+        const gridData = this.createBufferData();
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, gridData.byteLength, this.gl.DYNAMIC_DRAW);
+    }
+
+    public GetBindingPoint(): number {
+        return this.BINDING_POINT_NUMBER;
+    }
+
+    public GetName(): string {
+        return 'GridBuffer';
+    }
+
+    public destroy(): void {
+        this.gl.deleteBuffer(this.buffer);
+    }
+
+    public updateBuffer(): void {
+        this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
+        const gridData = this.createBufferData();
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, gridData);
+    }
+
+    private createBufferData(): Float32Array {
+        const data = new Float32Array(6);
+        data.set(this.color, 0);
+        data[4] = this.size;
+        data[5] = this.isActive ? 1.0 : 0.0;
+        return data;
+    }
+}
+
 class ShaderProgram {
     gl: WebGL2RenderingContext;
     program: WebGLProgram;
@@ -94,11 +179,16 @@ class ShaderProgram {
         this.camera = camera;
     }
 
-    bind(): void {
+    public addUniformBuffer(buffer: UniformBuffer): void {
+        const uniformBlockIndex = this.gl.getUniformBlockIndex(this.program, buffer.GetName());
+        this.gl.uniformBlockBinding(this.program, uniformBlockIndex, buffer.GetBindingPoint());
+    }
+
+    public bind(): void {
         this.gl.useProgram(this.program);
     }
 
-    compile(vertexSource: string, fragmentSource: string): boolean {
+    public compile(vertexSource: string, fragmentSource: string): boolean {
         const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         this.gl.shaderSource(vertexShader, vertexSource);
         this.gl.compileShader(vertexShader);
@@ -135,28 +225,27 @@ class ShaderProgram {
         this.gl.deleteShader(vertexShader);
         this.gl.deleteShader(fragmentShader);
 
-        const cameraBufferIndex = this.gl.getUniformBlockIndex(this.program, 'CameraBuffer');
-        this.gl.uniformBlockBinding(this.program, cameraBufferIndex, this.camera.BINDING_POINT_NUMBER);
-
         return true;
     }
 
-    destroy(): void {
+    public destroy(): void {
         this.gl.deleteProgram(this.program);
     }
 
-    release(): void {
+    public release(): void {
         this.gl.useProgram(null);
     }
 }
 
-class Quad {
+class TexturedQuad {
     gl: WebGL2RenderingContext;
     vertexArray: WebGLVertexArrayObject;
     vertexBuffer: WebGLBuffer;
     uvBuffer: WebGLBuffer;
     indexBuffer: WebGLBuffer;
     shaderProgram: ShaderProgram | null;
+    texture: WebGLTexture;
+    floatUniforms: Map<string, GLfloat> = new Map();
 
     private width: number = 0;
     private height: number = 0;
@@ -167,9 +256,11 @@ class Quad {
         this.vertexBuffer = gl.createBuffer();
         this.uvBuffer = gl.createBuffer();
         this.indexBuffer = gl.createBuffer();
+        this.texture = gl.createTexture();
     }
 
     destroy(): void {
+        this.gl.deleteTexture(this.texture);
         this.gl.deleteVertexArray(this.vertexArray);
         this.gl.deleteBuffer(this.vertexBuffer);
         this.gl.deleteBuffer(this.uvBuffer);
@@ -184,14 +275,71 @@ class Quad {
         return this.height
     }
 
+    public render(): void {
+        if (this.shaderProgram == null) {
+            console.error("No shader bound.");
+            return;
+        }
+
+        this.gl.bindVertexArray(this.vertexArray);
+        this.shaderProgram.bind();
+
+        const samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
+        if (samplerLocation != null) {
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.uniform1i(samplerLocation, 0);
+        }
+
+        this.floatUniforms.forEach((value: GLfloat, name: string) => {
+            const location = this.gl.getUniformLocation(this.shaderProgram.program, name);
+            if (location != null) {
+                this.gl.uniform1f(location, value);
+            }
+        });
+
+        this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
+    }
+
     public setShaderProgram(program: ShaderProgram): void {
         this.shaderProgram = program;
+    }
+
+    public setTexture(imageBase64: string): void {
+        const image = new Image();
+
+        // the image is not available synchronously when setting the source
+        // wait for it to be finished before working with it
+        image.onload = () => {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+
+            if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
+                this.gl.generateMipmap(this.gl.TEXTURE_2D);
+            } else {
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            }
+
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        }
+
+        image.src = imageBase64;
+    }
+
+    public setUniform(name: string, value: GLfloat) {
+        this.floatUniforms.set(name, value);
     }
 
     public setVertices(srcData: number[]): void {
         console.assert(srcData.length == 8);
         this.width = Math.abs(srcData[2]);
         this.height = Math.abs(srcData[5]);
+
+        this.setUniform("width", this.width);
+        this.setUniform("height", this.height);
 
         this.gl.bindVertexArray(this.vertexArray);
 
@@ -218,76 +366,18 @@ class Quad {
         this.width = Math.abs(newData[2]);
         this.height = Math.abs(newData[5]);
 
+        this.setUniform("width", this.width);
+        this.setUniform("height", this.height);
+
         this.gl.bindVertexArray(this.vertexArray);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
         this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(newData));
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
     }
-}
 
-class TexturedQuad extends Quad {
-    texture: WebGLTexture;
-
-    constructor(gl: WebGL2RenderingContext) {
-        super(gl);
-        this.texture = gl.createTexture();
-    }
-
-    destroy(): void {
-        this.gl.deleteTexture(this.texture);
-        super.destroy();
-    }
-
-    render(): void {
-        if (this.shaderProgram == null) {
-            console.error("No shader bound.");
-            return;
-        }
-
-        this.gl.bindVertexArray(this.vertexArray);
-        this.shaderProgram.bind();
-
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-        const samplerLocation = this.gl.getUniformLocation(this.shaderProgram.program, "sampler");
-        this.gl.uniform1i(samplerLocation, 0);
-
-        this.gl.drawElements(this.gl.TRIANGLES, 6, this.gl.UNSIGNED_SHORT, 0);
-    }
-
-    setTexture(imageBase64: string): void {
-        const image = new Image();
-
-        // the image is not available synchronously when setting the source
-        // wait for it to be finished before working with it
-        image.onload = () => {
-            this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
-
-            if (this.isPowerOf2(image.width) && this.isPowerOf2(image.height)) {
-                this.gl.generateMipmap(this.gl.TEXTURE_2D);
-            } else {
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-            }
-
-            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-        }
-
-        image.src = imageBase64;
-    }
-
-    isPowerOf2(value: number): boolean {
+    private isPowerOf2(value: number): boolean {
         return (value & (value - 1)) === 0;
     }
-}
-
-class Grid {
-    public isActive: boolean;
-    public color: Float32Array;
-    public size: GLuint;
 }
 
 class Token extends TexturedQuad {
@@ -303,7 +393,7 @@ class RenderContext {
     canvas: HTMLCanvasElement | null;
     gl: WebGL2RenderingContext | null;
     map: TexturedQuad | null;
-    grid: Grid = new Grid();
+    grid: Grid | null;
     tokens: Token[] = [];
     camera: Camera | null;
 
@@ -322,9 +412,10 @@ class RenderContext {
             return false;
         }
 
-        this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
-
+        this.grid = new Grid(this.gl);
         this.camera = new Camera(this.gl);
+
+        this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
 
         this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseMove(event));
         this.canvas.addEventListener("wheel", (event: WheelEvent): void => this.onMouseWheel(event));
@@ -336,11 +427,11 @@ class RenderContext {
         return true;
     }
 
-    addToken(token: Token): void {
+    public addToken(token: Token): void {
         this.tokens.push(token);
     }
 
-    cleanup(): void {
+    public cleanup(): void {
         this.tokens.forEach(token => token.destroy());
         this.tokens = [];
 
@@ -350,20 +441,28 @@ class RenderContext {
         }
     }
 
-    createShaderProgram(): ShaderProgram {
+    public createShaderProgram(): ShaderProgram {
         return new ShaderProgram(this.gl, this.camera);
     }
 
-    createTexturedQuad(): TexturedQuad {
+    public createTexturedQuad(): TexturedQuad {
         return new TexturedQuad(this.gl);
     }
 
-    destroy(): void {
+    public getCamera(): Camera {
+        return this.camera;
+    }
+
+    public getGrid(): Grid {
+        return this.grid;
+    }
+
+    public destroy(): void {
         this.cleanup();
         // ToDo: Clean up 'gl' context
     }
 
-    onMouseMove(event: MouseEvent): void {
+    private onMouseMove(event: MouseEvent): void {
         switch (event.buttons) {
             case 0: // no mouse button
                 break;
@@ -383,16 +482,20 @@ class RenderContext {
         }
     }
 
-    onMouseWheel(event: WheelEvent): void {
+    private onMouseWheel(event: WheelEvent): void {
         this.camera.zoom(event.clientX, event.clientY, event.deltaY);
     }
 
-    render(timeStamp: DOMHighResTimeStamp) {
+    private render(timeStamp: DOMHighResTimeStamp) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
         if (this.camera != null) {
             this.camera.updateBuffer(this.canvas.width, this.canvas.height);
+        }
+
+        if (this.grid != null) {
+            this.grid.updateBuffer();
         }
 
         if (this.map != null) {
@@ -402,9 +505,15 @@ class RenderContext {
         window.requestAnimationFrame(this.render);
     }
 
-    setMap(map: TexturedQuad) {
+    public setMap(map: TexturedQuad) {
         this.map = map;
         this.camera.reset();
+    }
+
+    public updateGrid(isActive: boolean, size: GLint, color: Float32Array) {
+        this.grid.isActive = isActive;
+        this.grid.size = size;
+        this.grid.color = color;
     }
 }
 
