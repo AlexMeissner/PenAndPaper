@@ -29,7 +29,6 @@ try
     builder.Services.AddDatabase(builder.Configuration);
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
     builder.Services.AddSingletonServices();
     builder.Services.AddScopedServices();
     builder.Services.AddSignalR();
@@ -41,12 +40,9 @@ try
 
     app.UseSerilogRequestLogging();
 
-    // SWAGGER: Automatically open Browser -> Server > Properties > Debug > Open Debug launch profile UI > Launch browser
-    // https://localhost:7099/swagger/index.html
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        app.MapOpenApi();
         app.UseHttpsRedirection();
     }
 
