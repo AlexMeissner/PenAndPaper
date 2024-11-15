@@ -26,7 +26,7 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
-    builder.Services.AddDatabase(builder.Configuration);
+    builder.Services.AddDatabase();
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSingletonServices();

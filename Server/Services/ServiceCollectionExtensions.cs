@@ -26,15 +26,9 @@ namespace Server.Services
             return services;
         }
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfigurationManager configurationManager)
+        public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
-#if DEBUG
             services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source = Database.db"));
-#else
-services.AddDbContext<SQLDatabase>(options => options.UseSqlite($"Data Source = Database.db"));
-            //var connectionString = configurationManager.GetConnectionString("Database");
-            //services.AddDbContext<SQLDatabase>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-#endif
             return services;
         }
     }
