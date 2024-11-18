@@ -51,13 +51,13 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
         var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("getCamera");
         return new Camera(jsObjectReference);
     }
-    
+
     public async Task<Grid> GetGrid()
     {
         var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("getGrid");
         return new Grid(jsObjectReference);
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         if (_renderContext is not null)

@@ -49,4 +49,8 @@
     <TypeScriptCompile Include="wwwroot\WebGl.ts" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\sounds\effects\dice\" />
+  </ItemGroup>
+
 </Project>
