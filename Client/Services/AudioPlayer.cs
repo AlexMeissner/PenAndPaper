@@ -3,8 +3,8 @@ using DataTransfer;
 using DataTransfer.Sound;
 using NAudio.Wave;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Media.Effects;
 using static Client.Services.ServiceExtension;
 
 namespace Client.Services
@@ -32,6 +32,8 @@ namespace Client.Services
         private readonly ISessionData _sessionData;
         private readonly ISoundApi _soundApi;
         private readonly IActiveSoundApi _activeSoundApi;
+
+        private readonly Dictionary<WaveOut, Mp3FileReader> _fileReader = [];
 
         public AudioPlayer(IUpdateNotifier campaignUpdates, ISettings settings, ICache cache, ISessionData sessionData, ISoundApi soundApi, IActiveSoundApi activeSoundApi)
         {
@@ -79,13 +81,27 @@ namespace Client.Services
 
         private void PlayEffect(string filepath)
         {
-            // ToDo: 'waveProvider' and 'waveOut' do not get disposed
-            // Fix: Register to 'PlaybackStopped' and dispose in there if possible
             var waveProvider = new Mp3FileReader(filepath);
             var waveOut = new WaveOut();
+
+            _fileReader.Add(waveOut, waveProvider);
+
             waveOut.Init(waveProvider);
             waveOut.Volume = _settings.EffectVolume;
             waveOut.Play();
+            waveOut.PlaybackStopped += OnEffectFinished;
+        }
+
+        private void OnEffectFinished(object? sender, StoppedEventArgs e)
+        {
+            if (sender is WaveOut waveOut)
+            {
+                if (_fileReader.TryGetValue(waveOut, out var mp3FileReader))
+                {
+                    mp3FileReader.Dispose();
+                }
+                waveOut.Dispose();
+            }
         }
 
         private void OnAmbientVolumeChanged(object? sender, float e)
