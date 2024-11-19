@@ -3,7 +3,6 @@ using DataTransfer;
 using DataTransfer.Sound;
 using NAudio.Wave;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Client.Services.ServiceExtension;
 
@@ -32,8 +31,6 @@ namespace Client.Services
         private readonly ISessionData _sessionData;
         private readonly ISoundApi _soundApi;
         private readonly IActiveSoundApi _activeSoundApi;
-
-        private readonly Dictionary<WaveOut, Mp3FileReader> _fileReader = [];
 
         public AudioPlayer(IUpdateNotifier campaignUpdates, ISettings settings, ICache cache, ISessionData sessionData, ISoundApi soundApi, IActiveSoundApi activeSoundApi)
         {
@@ -83,25 +80,17 @@ namespace Client.Services
         {
             var waveProvider = new Mp3FileReader(filepath);
             var waveOut = new WaveOut();
-
-            _fileReader.Add(waveOut, waveProvider);
-
             waveOut.Init(waveProvider);
             waveOut.Volume = _settings.EffectVolume;
             waveOut.Play();
-            waveOut.PlaybackStopped += OnEffectFinished;
-        }
-
-        private void OnEffectFinished(object? sender, StoppedEventArgs e)
-        {
-            if (sender is WaveOut waveOut)
+            waveOut.PlaybackStopped += (sender, e) =>
             {
-                if (_fileReader.TryGetValue(waveOut, out var mp3FileReader))
+                if (sender is WaveOut waveOut)
                 {
-                    mp3FileReader.Dispose();
+                    waveProvider.Dispose();
+                    waveOut.Dispose();
                 }
-                waveOut.Dispose();
-            }
+            };
         }
 
         private void OnAmbientVolumeChanged(object? sender, float e)
