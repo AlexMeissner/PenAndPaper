@@ -81,7 +81,7 @@ namespace Client.Services
             var waveProvider = new Mp3FileReader(filepath);
             var waveOut = new WaveOut();
             waveOut.Init(waveProvider);
-            waveOut.Volume = _settings.EffectVolume;
+            waveOut.Volume = _settings.AmbientVolume;
             waveOut.Play();
             waveOut.PlaybackStopped += (sender, e) =>
             {
