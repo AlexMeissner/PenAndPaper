@@ -11,7 +11,7 @@
 
 <div class="master-panel">
     <div class="left-panel">
-        <Map CampaignId="@CampaignId"/>
+        <Map CampaignId="@CampaignId"></Map>
         <!--<img src="https://cdn2.inkarnate.com/cdn-cgi/image/width=1800,height=1400/https://inkarnate-api-as-production.s3.amazonaws.com/wxabhd3ztw3qgg5da0k4gq9epzpt" />-->
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
             <i class="bi bi-dice-6"></i>
@@ -43,8 +43,7 @@
 
             case TabIndex.Chat:
                 <div class="tabcontent">
-                    <h3>Chat</h3>
-                    <p>I am a text message.</p>
+                    <Chat CampaignId="@CampaignId"></Chat>
                 </div>
                 break;
         }

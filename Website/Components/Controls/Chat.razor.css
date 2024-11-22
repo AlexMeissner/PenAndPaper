@@ -1,0 +1,130 @@
+.chat-container {
+    height: 100%;
+}
+
+.chat-messages {
+    height: calc(100% - 50px);
+    margin-bottom: 10px;
+    overflow: auto;
+}
+
+.chat-message-container {
+    display: flow-root;
+}
+
+.chat-message {
+    width: 100%;
+}
+
+.chat-message-dice-roll-received {
+    width: calc(100% - 60px);
+    font-style: italic;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.chat-message-dice-roll-sent {
+    width: calc(100% - 60px);
+    font-style: italic;
+    border-radius: 10px;
+    text-align: center;
+    float: right;
+}
+
+.chat-message-received {
+    max-width: 80%;
+    float: left;
+    border-radius: 0 10px 10px 10px;
+}
+
+.chat-message-sent {
+    max-width: 80%;
+    float: right;
+    border-radius: 10px 10px 0 10px;
+}
+
+.chat-message-private {
+    color: #00B2FF;
+}
+
+.chat-message-text {
+    background-color: #272a34;
+    padding: 10px;
+}
+
+.chat-message-image {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    border: 2px solid gold;
+    float: right;
+}
+
+.chat-message-timestamp {
+    font-style: italic;
+    margin-bottom: 10px;
+    color: #C3C3C3;
+}
+
+.chat-message-timestamp-received {
+    margin-left: 5px;
+}
+
+.chat-message-timestamp-sent {
+    margin-right: 5px;
+    margin-left: auto;
+}
+
+.chat-message-timestamp-container {
+    display: flex;
+}
+
+.chat-input {
+
+}
+
+.dropdown-item {
+    color: #ffffff;
+}
+
+.dropdown-item:hover {
+    color: #ffffff;
+    background-color: #21242d;
+}
+
+button {
+    min-width: 100px;
+    background-color: #21242d;
+    border: none;
+    border-radius: 19px 0 0 19px;
+}
+
+button:focus {
+    border-color: inherit;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+input {
+    background-color: #272a34;
+    border: none;
+    color: #ffffff;
+    border-radius: 19px;
+}
+
+input:focus {
+    color: #ffffff;
+    background-color: #272a34;
+    outline-style: none;
+    border-color: inherit;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+input::placeholder {
+    color: #C3C3C3;
+}
+
+ul {
+    background: #272a34;
+}
