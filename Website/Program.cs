@@ -20,6 +20,7 @@ try
 
     Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
+            .WriteToAspire(builder.Configuration)
             .CreateLogger();
     builder.Host.UseSerilog(Log.Logger);
 
@@ -28,6 +29,7 @@ try
 
     builder.Services.AddHttpContextAccessor();
     builder.Services.RegisterServicesFromAttributes();
+    builder.AddServiceDefaults();
 
     builder.Services.AddAuthentication(options =>
     {
@@ -79,6 +81,8 @@ try
 
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
+
+    app.MapDefaultEndpoints();
 
     app.Run();
 }

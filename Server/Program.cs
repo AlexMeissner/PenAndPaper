@@ -18,13 +18,10 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     Log.Logger = new LoggerConfiguration()
-        .ReadFrom.Configuration(builder.Configuration)
-        .CreateLogger();
-
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
+             .ReadFrom.Configuration(builder.Configuration)
+             .WriteToAspire(builder.Configuration)
+             .CreateLogger();
+    builder.Host.UseSerilog(Log.Logger);
 
     builder.Services.AddDatabase();
     builder.Services.AddControllers();
@@ -32,6 +29,7 @@ try
     builder.Services.AddSingletonServices();
     builder.Services.AddScopedServices();
     builder.Services.AddSignalR();
+    builder.AddServiceDefaults();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle();
     builder.Services.AddAuthorization();
@@ -53,6 +51,7 @@ try
     app.MapHub<CampaignUpdateHub>("CampaignUpdates");
     app.MigrateDatabase();
     app.UpdateRulesInDatabase();
+    app.MapDefaultEndpoints();
     app.Run();
 }
 catch (Exception exception)
