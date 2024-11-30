@@ -6,13 +6,14 @@
 
 @inject IMapApi MapApi
 @inject IActiveMapApi ActiveMapApi
+@inject ITokenApi TokenApi
 @inject RenderContext RenderContext
 @inject ICampaignEvents CampaignEvents
 @inject ILogger<Map> Logger
 
 @implements IDisposable
 
-<canvas id="@CANVAS_ID" class="render-context"/>
+<canvas id="@CanvasId" class="render-context"></canvas>
 
 <script>
     const canvas = document.getElementById("renderCanvas");
@@ -29,9 +30,10 @@
     [Parameter] public int CampaignId { get; set; }
 
     private TexturedQuad? _texturedQuad;
-    private ShaderProgram? _shaderProgram;
+    private ShaderProgram? _mapShaderProgram;
+    private ShaderProgram? _tokenShaderProgram;
 
-    private static readonly string CANVAS_ID = "renderCanvas";
+    private static readonly string CanvasId = "renderCanvas";
 
     public void Dispose()
     {
@@ -45,27 +47,34 @@
 
     private async Task OnMapChanged(MapChangedEventArgs e)
     {
-        await LoadActiveMap();
+        await LoadActiveMap(e.MapId);
+        await LoadTokens(e.MapId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await RenderContext.Initialize(CANVAS_ID);
-            await LoadShaderProgram();
-            await LoadActiveMap();
+            await RenderContext.Initialize(CanvasId);
+            await LoadMapShaderProgram();
+            await LoadTokenShaderProgram();
+
+            if (await GetActiveMapId() is { } mapId)
+            {
+                await LoadActiveMap(mapId);
+                await LoadTokens(mapId);
+            }
         }
     }
 
-    private async Task LoadShaderProgram()
+    private async Task LoadMapShaderProgram()
     {
         var vertexSource = await ResourceReader.GetAsync("Map.vert");
         var fragmentSource = await ResourceReader.GetAsync("Map.frag");
 
-        _shaderProgram = await RenderContext.CreateShaderProgram();
+        _mapShaderProgram = await RenderContext.CreateShaderProgram();
 
-        var hasSucceeded = await _shaderProgram.Compile(vertexSource, fragmentSource);
+        var hasSucceeded = await _mapShaderProgram.Compile(vertexSource, fragmentSource);
 
         if (!hasSucceeded)
         {
@@ -73,19 +82,36 @@
         }
 
         var cameraBuffer = await RenderContext.GetCamera();
-        await _shaderProgram.AddUniformBuffer(cameraBuffer);
+        await _mapShaderProgram.AddUniformBuffer(cameraBuffer);
 
         var gridBuffer = await RenderContext.GetGrid();
-        await _shaderProgram.AddUniformBuffer(gridBuffer);
+        await _mapShaderProgram.AddUniformBuffer(gridBuffer);
     }
 
-    private async Task LoadActiveMap()
+    private async Task LoadTokenShaderProgram()
     {
-        var mapId = await GetActiveMapId();
+        var vertexSource = await ResourceReader.GetAsync("Token.vert");
+        var fragmentSource = await ResourceReader.GetAsync("Token.frag");
 
-        if (mapId is null) return;
+        _tokenShaderProgram = await RenderContext.CreateShaderProgram();
 
-        var map = await GetMapData((int)mapId);
+        var hasSucceeded = await _tokenShaderProgram.Compile(vertexSource, fragmentSource);
+
+        if (!hasSucceeded)
+        {
+            Logger.LogError("Failed to compile map shader");
+        }
+
+        var cameraBuffer = await RenderContext.GetCamera();
+        await _tokenShaderProgram.AddUniformBuffer(cameraBuffer);
+
+        var gridBuffer = await RenderContext.GetGrid();
+        await _tokenShaderProgram.AddUniformBuffer(gridBuffer);
+    }
+
+    private async Task LoadActiveMap(int mapId)
+    {
+        var map = await GetMapData(mapId);
 
         if (map is null) return;
 
@@ -114,15 +140,55 @@
             await _texturedQuad.SetTexture(map.ImageData);
         }
 
-        if (_shaderProgram is not null)
+        if (_mapShaderProgram is not null)
         {
-            await _texturedQuad.SetShaderProgram(_shaderProgram);
+            await _texturedQuad.SetShaderProgram(_mapShaderProgram);
         }
 
         await RenderContext.SetMap(_texturedQuad);
 
         float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
         await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
+    }
+
+    private async Task LoadTokens(int mapId)
+    {
+        var response = await TokenApi.GetAsync(mapId);
+
+        var tokens = response.Match(
+            tokens => tokens.Items,
+            statusCode =>
+            {
+                Logger.LogError("Failed to get the tokens for map {mapId} ({statusCode})", mapId, statusCode);
+                return [];
+            });
+
+        await RenderContext.ClearTokens();
+
+        float[] vertices =
+        [
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, -1.0f,
+            1.0f, -1.0f
+        ];
+
+        foreach (var token in tokens)
+        {
+            var quad = await RenderContext.CreateToken();
+            await quad.SetVertices(vertices);
+            await quad.SetTexture(token.Image);
+
+            if (_tokenShaderProgram is not null)
+            {
+                await quad.SetShaderProgram(_tokenShaderProgram);
+            }
+
+            await quad.SetUniform("x", token.X);
+            await quad.SetUniform("y", token.Y);
+
+            await RenderContext.AddToken(quad);
+        }
     }
 
     private async Task<int?> GetActiveMapId()

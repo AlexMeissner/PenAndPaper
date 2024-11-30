@@ -333,9 +333,12 @@ class RenderContext {
     addToken(token) {
         this.tokens.push(token);
     }
-    cleanup() {
+    clearTokens() {
         this.tokens.forEach(token => token.destroy());
         this.tokens = [];
+    }
+    cleanup() {
+        this.clearTokens();
         if (this.map != null) {
             this.map.destroy();
             this.map = null;
@@ -346,6 +349,9 @@ class RenderContext {
     }
     createTexturedQuad() {
         return new TexturedQuad(this.gl);
+    }
+    createToken(name) {
+        return new Token(this.gl, name);
     }
     getCamera() {
         return this.camera;
@@ -387,6 +393,9 @@ class RenderContext {
         if (this.map != null) {
             this.map.render();
         }
+        this.tokens.forEach(token => {
+            token.render();
+        });
         window.requestAnimationFrame(this.render);
     }
     setMap(map) {

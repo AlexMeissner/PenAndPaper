@@ -28,6 +28,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Services\Graphics\Shader\Map.frag" />
     <EmbeddedResource Include="Services\Graphics\Shader\Map.vert" />
+    <EmbeddedResource Include="Services\Graphics\Shader\Token.frag" />
+    <EmbeddedResource Include="Services\Graphics\Shader\Token.vert" />
   </ItemGroup>
 
   <ItemGroup>

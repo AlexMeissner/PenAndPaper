@@ -29,6 +29,16 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
         return true;
     }
 
+    public async Task AddToken(TexturedQuad token)
+    {
+        await _renderContext!.InvokeVoidAsync("addToken", token.JsObjectReference);
+    }
+
+    public async Task ClearTokens()
+    {
+        await _renderContext!.InvokeVoidAsync("clearTokens");
+    }
+
     public async Task Cleanup()
     {
         await _renderContext!.InvokeAsync<IJSObjectReference>("cleanup");
@@ -44,6 +54,12 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
     {
         var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("createTexturedQuad");
         return new TexturedQuad(jsObjectReference);
+    }
+
+    public async Task<Token> CreateToken()
+    {
+        var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("createToken");
+        return new Token(jsObjectReference);
     }
 
     public async Task<Camera> GetCamera()
@@ -70,7 +86,7 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
 
     public async Task SetMap(TexturedQuad map)
     {
-        await _renderContext!.InvokeVoidAsync("setMap", map.JSObjectReference);
+        await _renderContext!.InvokeVoidAsync("setMap", map.JsObjectReference);
     }
 
     public async Task UpdateGrid(bool isActive, float size, float[] color)

@@ -431,9 +431,13 @@ class RenderContext {
         this.tokens.push(token);
     }
 
-    public cleanup(): void {
+    public clearTokens(): void {
         this.tokens.forEach(token => token.destroy());
         this.tokens = [];
+    }
+
+    public cleanup(): void {
+        this.clearTokens();
 
         if (this.map != null) {
             this.map.destroy();
@@ -447,6 +451,10 @@ class RenderContext {
 
     public createTexturedQuad(): TexturedQuad {
         return new TexturedQuad(this.gl);
+    }
+
+    public createToken(name: string): Token {
+        return new Token(this.gl, name);
     }
 
     public getCamera(): Camera {
@@ -501,6 +509,10 @@ class RenderContext {
         if (this.map != null) {
             this.map.render();
         }
+
+        this.tokens.forEach(token => {
+            token.render();
+        });
 
         window.requestAnimationFrame(this.render);
     }

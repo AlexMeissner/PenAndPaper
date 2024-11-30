@@ -4,7 +4,7 @@ namespace Website.Services.Graphics;
 
 public class TexturedQuad(IJSObjectReference jsObjectReference)
 {
-    public IJSObjectReference JSObjectReference => jsObjectReference;
+    public IJSObjectReference JsObjectReference => jsObjectReference;
 
     public async Task SetShaderProgram(ShaderProgram shaderProgram)
     {
@@ -21,7 +21,12 @@ public class TexturedQuad(IJSObjectReference jsObjectReference)
     {
         await jsObjectReference.InvokeVoidAsync("setVertices", vertices);
     }
-    
+
+    public async Task SetUniform(string name, float value)
+    {
+        await jsObjectReference.InvokeVoidAsync("setUniform", name, value);
+    }
+
     public async Task UpdateVertices(float[] vertices)
     {
         await jsObjectReference.InvokeVoidAsync("updateVertices", vertices);
