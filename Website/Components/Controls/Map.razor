@@ -1,10 +1,13 @@
 ﻿@using DataTransfer.Map
+@using DataTransfer.Mouse
+@using DataTransfer.Types
 @using Website.Converter
 @using Website.Services
 @using Website.Services.API
 @using Website.Services.Graphics
 
 @inject IMapApi MapApi
+@inject IMouseApi MouseApi
 @inject IActiveMapApi ActiveMapApi
 @inject ITokenApi TokenApi
 @inject RenderContext RenderContext
@@ -13,7 +16,7 @@
 
 @implements IDisposable
 
-<canvas id="@CanvasId" class="render-context"></canvas>
+<canvas id="@CanvasId" class="render-context" @onmousemove="OnMouseMove"></canvas>
 
 <script>
     const canvas = document.getElementById("renderCanvas");
@@ -38,11 +41,13 @@
     public void Dispose()
     {
         CampaignEvents.MapChanged -= OnMapChanged;
+        CampaignEvents.MouseMoved -= OnMouseMoved;
     }
 
     protected override void OnInitialized()
     {
         CampaignEvents.MapChanged += OnMapChanged;
+        CampaignEvents.MouseMoved += OnMouseMoved;
     }
 
     private async Task OnMapChanged(MapChangedEventArgs e)
@@ -189,6 +194,24 @@
 
             await RenderContext.AddToken(quad);
         }
+    }
+
+    private async Task OnMouseMove(MouseEventArgs e)
+    {
+        const long leftMouseButton = 1;
+
+        if (e.Buttons == leftMouseButton)
+        {
+            var position = new Vector2D(e.ClientX, e.ClientY);
+            var color = new Vector3D(0.8, 0.4, 0.6);
+            var payload = new MouseMoveEventArgs(position, color);
+            await MouseApi.PostAsync(payload);
+        }
+    }
+
+    private async Task OnMouseMoved(MouseMoveEventArgs e)
+    {
+        Console.WriteLine("Mouse Moved");
     }
 
     private async Task<int?> GetActiveMapId()

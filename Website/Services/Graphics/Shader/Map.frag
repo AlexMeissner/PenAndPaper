@@ -20,6 +20,7 @@ layout(std140) uniform GridBuffer {
 
 void main()
 {
+    fragColor = texture(sampler, texCoord);
     /*
     fragColor = texture(sampler, texCoord);
 
@@ -56,46 +57,6 @@ void main()
     */
 
     /*
-    // Convert world position to screen-space
-    vec2 u_resolution = vec2(width, height);
-    vec2 screenPos = (screenPosition * 0.5 + 0.5) * u_resolution;
-
-    // Calculate line thickness in screen-space units
-    float lineWidthInPixels = 0.002;// Set line thickness to 1 pixel
-    float cellWidthInScreen = (grid.size / 100.0) * (u_resolution.x / (u_resolution.x - 1.0));
-
-    // Use mod to determine grid line positions in world space, but maintain line thickness in screen-space
-    float fx = mod(screenPos.x, cellWidthInScreen);
-    float fy = mod(screenPos.y, cellWidthInScreen);
-
-    // Determine if the fragment is near a grid line based on screen-space line width
-    float line = step(fx, lineWidthInPixels) + step(fy, lineWidthInPixels);
-    float alpha = clamp(line, 0.0, 1.0);
-
-    // Set color of grid lines (white lines on black background)
-    vec4 mapImage = texture(sampler, texCoord);
-
-    fragColor = mix(mapImage, grid.color, alpha);
-
-    fragColor = vec4(screenPos, 0.0, 1.0);
-    */
-
-    /*
-    float lineWidthInPixels = 10.0;
-    float cellWidthInScreen = 50.0;
-
-    float fx = mod(screenPosition.x * width, cellWidthInScreen);
-    //float fy = mod(screenPosition.y * height, cellWidthInScreen);
-
-    //float line = step(fx, lineWidthInPixels) + step(fy, lineWidthInPixels);
-    float line = step(fx, lineWidthInPixels);
-    float alpha = clamp(line, 0.0, 1.0);
-
-    fragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), grid.color, alpha);
-    //fragColor = vec4(abs(screenPosition.x), abs(screenPosition.y), 0.0, 1.0);
-    */
-
-    /*
     float fx = mod(screenPosition.x, grid.size);
     float world = min(fx, grid.size - fx);
     float screen = 0.5 * world / width;
@@ -122,18 +83,4 @@ void main()
 
     fragColor = vec4(screenPosition.x / width, abs(screenPosition.y) / height, 0.0, 1.0);
     */
-
-    float pixel_width = 2.0 / width;
-    float grid_size = grid.size * pixel_width;
-    float fx = mod(screenPosition.x, grid_size);
-    float world = min(fx, grid_size - fx);
-    
-    
-    vec2 s = screenPosition + vec2(1.0, -1.0);
-
-
-
-    fragColor = vec4(world, world, world, 1.0);
-    //fragColor = vec4(s.x, s.y, 0.0, 1.0);
-    //fragColor = vec4(abs(s.x), abs(s.y), 0.0, 1.0);
 }
