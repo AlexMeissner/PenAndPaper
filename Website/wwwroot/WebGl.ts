@@ -333,6 +333,10 @@ class TexturedQuad {
         this.floatUniforms.set(name, value);
     }
 
+    public getUniform(name: string): GLfloat {
+        return this.floatUniforms.get(name);
+    }
+
     public setVertices(srcData: number[]): void {
         console.assert(srcData.length == 8);
         this.width = Math.abs(srcData[2]);
@@ -389,12 +393,36 @@ class Token extends TexturedQuad {
     }
 }
 
+class MouseIndicator extends TexturedQuad {
+    constructor(gl: WebGL2RenderingContext) {
+        super(gl);
+        this.setUniform("alpha", 0.0);
+    }
+
+    public setPosition(x: number, y: number): void {
+        this.setUniform("x", x);
+        this.setUniform("y", y);
+        this.setUniform("alpha", 1.0);
+    }
+
+    public render(): void {
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        super.render();
+        this.gl.disable(this.gl.BLEND);
+        
+        const alpha = Math.max(0.0, this.getUniform("alpha") - 0.01);
+        this.setUniform("alpha", alpha);
+    }
+}
+
 class RenderContext {
     canvas: HTMLCanvasElement | null;
     gl: WebGL2RenderingContext | null;
     map: TexturedQuad | null;
     grid: Grid | null;
     tokens: Token[] = [];
+    mouseIndicators: MouseIndicator[] = [];
     camera: Camera | null;
 
     initialize(identifier: string): boolean {
@@ -427,6 +455,10 @@ class RenderContext {
         return true;
     }
 
+    public addMouseIndicator(mouseIndicator: MouseIndicator): void {
+        this.mouseIndicators.push(mouseIndicator);
+    }
+
     public addToken(token: Token): void {
         this.tokens.push(token);
     }
@@ -455,6 +487,10 @@ class RenderContext {
 
     public createToken(name: string): Token {
         return new Token(this.gl, name);
+    }
+
+    public createMouseIndicator(): MouseIndicator {
+        return new MouseIndicator(this.gl);
     }
 
     public getCamera(): Camera {
@@ -512,6 +548,10 @@ class RenderContext {
 
         this.tokens.forEach(token => {
             token.render();
+        });
+
+        this.mouseIndicators.forEach(mouseIndicator => {
+            mouseIndicator.render();
         });
 
         window.requestAnimationFrame(this.render);

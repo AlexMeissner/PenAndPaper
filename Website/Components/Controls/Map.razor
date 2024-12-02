@@ -33,8 +33,10 @@
     [Parameter] public int CampaignId { get; set; }
 
     private TexturedQuad? _texturedQuad;
+    private MouseIndicator? _mouseIndicator;
     private ShaderProgram? _mapShaderProgram;
     private ShaderProgram? _tokenShaderProgram;
+    private ShaderProgram? _mouseShaderProgram;
 
     private static readonly string CanvasId = "renderCanvas";
 
@@ -63,6 +65,10 @@
             await RenderContext.Initialize(CanvasId);
             await LoadMapShaderProgram();
             await LoadTokenShaderProgram();
+            await LoadMouseShaderProgram();
+
+            _mouseIndicator = await CreateMouseIndicator();
+            await RenderContext.AddMouseIndicator(_mouseIndicator);
 
             if (await GetActiveMapId() is { } mapId)
             {
@@ -114,6 +120,24 @@
         await _tokenShaderProgram.AddUniformBuffer(gridBuffer);
     }
 
+    private async Task LoadMouseShaderProgram()
+    {
+        var vertexSource = await ResourceReader.GetAsync("Mouse.vert");
+        var fragmentSource = await ResourceReader.GetAsync("Mouse.frag");
+
+        _mouseShaderProgram = await RenderContext.CreateShaderProgram();
+
+        var hasSucceeded = await _mouseShaderProgram.Compile(vertexSource, fragmentSource);
+
+        if (!hasSucceeded)
+        {
+            Logger.LogError("Failed to compile map shader");
+        }
+
+        var cameraBuffer = await RenderContext.GetCamera();
+        await _mouseShaderProgram.AddUniformBuffer(cameraBuffer);
+    }
+
     private async Task LoadActiveMap(int mapId)
     {
         var map = await GetMapData(mapId);
@@ -154,6 +178,28 @@
 
         float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
         await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
+    }
+
+    private async Task<MouseIndicator> CreateMouseIndicator()
+    {
+        const float halfSize = 25.0f;
+        float[] vertices =
+        [
+            -halfSize, halfSize,
+            halfSize, halfSize,
+            -halfSize, -halfSize,
+            halfSize, -halfSize
+        ];
+
+        var mouseIndicator = await RenderContext.CreateMouseIndicator();
+        await mouseIndicator.SetVertices(vertices);
+
+        if (_mouseShaderProgram is not null)
+        {
+            await mouseIndicator.SetShaderProgram(_mouseShaderProgram);
+        }
+
+        return mouseIndicator;
     }
 
     private async Task LoadTokens(int mapId)
@@ -211,7 +257,7 @@
 
     private async Task OnMouseMoved(MouseMoveEventArgs e)
     {
-        Console.WriteLine("Mouse Moved");
+        await _mouseIndicator!.SetPosition(e.Position);
     }
 
     private async Task<int?> GetActiveMapId()

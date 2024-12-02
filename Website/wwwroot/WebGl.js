@@ -262,6 +262,9 @@ class TexturedQuad {
     setUniform(name, value) {
         this.floatUniforms.set(name, value);
     }
+    getUniform(name) {
+        return this.floatUniforms.get(name);
+    }
     setVertices(srcData) {
         console.assert(srcData.length == 8);
         this.width = Math.abs(srcData[2]);
@@ -305,9 +308,30 @@ class Token extends TexturedQuad {
         this.name = name;
     }
 }
+class MouseIndicator extends TexturedQuad {
+    constructor(gl) {
+        super(gl);
+        this.setUniform("alpha", 0.0);
+    }
+    setPosition(x, y) {
+        this.setUniform("x", x);
+        this.setUniform("y", y);
+        this.setUniform("alpha", 1.0);
+    }
+    render() {
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        super.render();
+        this.gl.disable(this.gl.BLEND);
+        const alpha = Math.max(0.0, this.getUniform("alpha") - 0.01);
+        console.info(alpha);
+        this.setUniform("alpha", alpha);
+    }
+}
 class RenderContext {
     constructor() {
         this.tokens = [];
+        this.mouseIndicators = [];
     }
     initialize(identifier) {
         this.canvas = document.getElementById(identifier);
@@ -329,6 +353,9 @@ class RenderContext {
         this.render = this.render.bind(this);
         window.requestAnimationFrame(this.render);
         return true;
+    }
+    addMouseIndicator(mouseIndicator) {
+        this.mouseIndicators.push(mouseIndicator);
     }
     addToken(token) {
         this.tokens.push(token);
@@ -352,6 +379,9 @@ class RenderContext {
     }
     createToken(name) {
         return new Token(this.gl, name);
+    }
+    createMouseIndicator() {
+        return new MouseIndicator(this.gl);
     }
     getCamera() {
         return this.camera;
@@ -395,6 +425,9 @@ class RenderContext {
         }
         this.tokens.forEach(token => {
             token.render();
+        });
+        this.mouseIndicators.forEach(mouseIndicator => {
+            mouseIndicator.render();
         });
         window.requestAnimationFrame(this.render);
     }

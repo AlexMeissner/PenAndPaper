@@ -29,6 +29,11 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
         return true;
     }
 
+    public async Task AddMouseIndicator(MouseIndicator mouseIndicator)
+    {
+        await _renderContext!.InvokeVoidAsync("addMouseIndicator", mouseIndicator.JsObjectReference);
+    }
+
     public async Task AddToken(TexturedQuad token)
     {
         await _renderContext!.InvokeVoidAsync("addToken", token.JsObjectReference);
@@ -60,6 +65,12 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
     {
         var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("createToken");
         return new Token(jsObjectReference);
+    }
+
+    public async Task<MouseIndicator> CreateMouseIndicator()
+    {
+        var jsObjectReference = await _renderContext!.InvokeAsync<IJSObjectReference>("createMouseIndicator");
+        return new MouseIndicator(jsObjectReference);
     }
 
     public async Task<Camera> GetCamera()
