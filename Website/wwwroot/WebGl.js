@@ -319,12 +319,15 @@ class MouseIndicator extends TexturedQuad {
         this.setUniform("alpha", 1.0);
     }
     render() {
-        this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        super.render();
-        this.gl.disable(this.gl.BLEND);
-        const alpha = Math.max(0.0, this.getUniform("alpha") - 0.01);
-        this.setUniform("alpha", alpha);
+        let alpha = this.getUniform("alpha");
+        if (alpha > 0.0) {
+            this.gl.enable(this.gl.BLEND);
+            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+            super.render();
+            this.gl.disable(this.gl.BLEND);
+            alpha = Math.max(0.0, alpha - 0.01);
+            this.setUniform("alpha", alpha);
+        }
     }
 }
 class RenderContext {
