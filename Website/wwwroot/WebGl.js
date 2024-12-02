@@ -324,7 +324,6 @@ class MouseIndicator extends TexturedQuad {
         super.render();
         this.gl.disable(this.gl.BLEND);
         const alpha = Math.max(0.0, this.getUniform("alpha") - 0.01);
-        console.info(alpha);
         this.setUniform("alpha", alpha);
     }
 }
