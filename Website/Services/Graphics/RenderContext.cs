@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using DataTransfer.Types;
+using Microsoft.JSInterop;
 using static Website.Services.ServiceExtension;
 
 namespace Website.Services.Graphics;
@@ -98,6 +99,13 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
     public async Task SetMap(TexturedQuad map)
     {
         await _renderContext!.InvokeVoidAsync("setMap", map.JsObjectReference);
+    }
+
+    public async Task<Vector2D> TransformPosition(Vector2D position)
+    {
+        var transformedPosition =
+            await _renderContext!.InvokeAsync<double[]>("transformPosition", position.X, position.Y);
+        return new Vector2D(transformedPosition[0], transformedPosition[1]);
     }
 
     public async Task UpdateGrid(bool isActive, float size, float[] color)

@@ -249,8 +249,9 @@
         if (e.Buttons == leftMouseButton)
         {
             var position = new Vector2D(e.ClientX, e.ClientY);
+            var transformedPosition = await RenderContext.TransformPosition(position);
             var color = new Vector3D(0.8, 0.4, 0.6);
-            var payload = new MouseMoveEventArgs(position, color);
+            var payload = new MouseMoveEventArgs(transformedPosition, color);
             await MouseApi.PostAsync(payload);
         }
     }

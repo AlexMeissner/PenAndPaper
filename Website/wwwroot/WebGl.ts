@@ -39,6 +39,14 @@ class Camera extends UniformBuffer {
         return 'CameraBuffer';
     }
 
+    public GetPosition(): number[] {
+        return [this.x, this.y];
+    }
+
+    public GetZoomFactor(): number {
+        return this.zoomFactor;
+    }
+
     private createProjectionMatrix(width: GLfloat, height: GLfloat): Float32Array {
         const left: GLfloat = 0.0;
         const right: GLfloat = width * this.zoomFactor;
@@ -564,6 +572,14 @@ class RenderContext {
     public setMap(map: TexturedQuad) {
         this.map = map;
         this.camera.reset();
+    }
+
+    public transformPosition(x: number, y: number): number[] {
+        const camera = this.getCamera();
+        const offset = camera.GetPosition();
+        const zoom = camera.GetZoomFactor();
+
+        return [x * zoom - offset[0], y * zoom + offset[1]];
     }
 
     public updateGrid(isActive: boolean, size: GLint, color: Float32Array) {

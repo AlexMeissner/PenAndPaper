@@ -25,6 +25,12 @@ class Camera extends UniformBuffer {
     GetName() {
         return 'CameraBuffer';
     }
+    GetPosition() {
+        return [this.x, this.y];
+    }
+    GetZoomFactor() {
+        return this.zoomFactor;
+    }
     createProjectionMatrix(width, height) {
         const left = 0.0;
         const right = width * this.zoomFactor;
@@ -436,6 +442,38 @@ class RenderContext {
     setMap(map) {
         this.map = map;
         this.camera.reset();
+    }
+    transformPosition(x, y) {
+        const vector = [x, y, 0, 1];
+        const camera = this.getCamera();
+        const offset = camera.GetPosition();
+        const zoom = camera.GetZoomFactor();
+        return [(x * zoom - offset[0]), (y * zoom + offset[1])];
+        //const matrix = this.getCamera().createViewProjectionMatrix(this.canvas.width, this.canvas.height);
+        //
+        //const transformed = [
+        //    matrix[0] * vector[0] + matrix[4] * vector[1] + matrix[8] * vector[2] + matrix[12] * vector[3],
+        //    matrix[1] * vector[0] + matrix[5] * vector[1] + matrix[9] * vector[2] + matrix[13] * vector[3],
+        //    matrix[2] * vector[0] + matrix[6] * vector[1] + matrix[10] * vector[2] + matrix[14] * vector[3],
+        //    matrix[3] * vector[0] + matrix[7] * vector[1] + matrix[11] * vector[2] + matrix[15] * vector[3],
+        //];
+        //
+        //const w = transformed[3];
+        //
+        //console.log(x);
+        //console.log(y);
+        //console.log(matrix);
+        //console.log(w);
+        //console.log(transformed);
+        //
+        //if (w !== 0 && w !== 1) {
+        //    transformed[0] /= w;
+        //    transformed[1] /= w;
+        //}
+        //
+        //console.log(transformed);
+        //
+        //return [transformed[0], transformed[1]];
     }
     updateGrid(isActive, size, color) {
         this.grid.isActive = isActive;
