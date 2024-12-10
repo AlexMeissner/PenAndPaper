@@ -394,10 +394,29 @@ class TexturedQuad {
 
 class Token extends TexturedQuad {
     name: string;
+    isMouseHover: number = 0.0;
 
     constructor(gl: WebGL2RenderingContext, name: string) {
         super(gl);
         this.name = name;
+    }
+
+    public render(): void {
+        this.setUniform("isMouseOver", this.isMouseHover);
+        super.render();
+    }
+
+    public hover(mouseX: number, mouseY: number, grid: Grid): void {
+        const x: number = this.getUniform("x");
+        const y: number = this.getUniform("y");
+        const width: number = this.getWidth() * grid.size;
+        const height: number = this.getHeight() * grid.size;
+
+        if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height) {
+            this.isMouseHover = 1.0;
+        } else {
+            this.isMouseHover = 0.0;
+        }
     }
 }
 
@@ -519,6 +538,12 @@ class RenderContext {
     }
 
     private onMouseMove(event: MouseEvent): void {
+        this.tokens.forEach(token => {
+                const position: number[] = this.transformPosition(event.clientX, event.clientY);
+                token.hover(position[0], position[1], this.grid);
+            }
+        );
+
         switch (event.buttons) {
             case 0: // no mouse button
                 break;

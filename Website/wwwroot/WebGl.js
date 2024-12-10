@@ -311,7 +311,24 @@ class TexturedQuad {
 class Token extends TexturedQuad {
     constructor(gl, name) {
         super(gl);
+        this.isMouseHover = 0.0;
         this.name = name;
+    }
+    render() {
+        this.setUniform("isMouseOver", this.isMouseHover);
+        super.render();
+    }
+    hover(mouseX, mouseY, grid) {
+        const x = this.getUniform("x");
+        const y = this.getUniform("y");
+        const width = this.getWidth() * grid.size;
+        const height = this.getHeight() * grid.size;
+        if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height) {
+            this.isMouseHover = 1.0;
+        }
+        else {
+            this.isMouseHover = 0.0;
+        }
     }
 }
 class MouseIndicator extends TexturedQuad {
@@ -402,6 +419,10 @@ class RenderContext {
         // ToDo: Clean up 'gl' context
     }
     onMouseMove(event) {
+        this.tokens.forEach(token => {
+            const position = this.transformPosition(event.clientX, event.clientY);
+            token.hover(position[0], position[1], this.grid);
+        });
         switch (event.buttons) {
             case 0: // no mouse button
                 break;
@@ -444,36 +465,10 @@ class RenderContext {
         this.camera.reset();
     }
     transformPosition(x, y) {
-        const vector = [x, y, 0, 1];
         const camera = this.getCamera();
         const offset = camera.GetPosition();
         const zoom = camera.GetZoomFactor();
-        return [(x * zoom - offset[0]), (y * zoom + offset[1])];
-        //const matrix = this.getCamera().createViewProjectionMatrix(this.canvas.width, this.canvas.height);
-        //
-        //const transformed = [
-        //    matrix[0] * vector[0] + matrix[4] * vector[1] + matrix[8] * vector[2] + matrix[12] * vector[3],
-        //    matrix[1] * vector[0] + matrix[5] * vector[1] + matrix[9] * vector[2] + matrix[13] * vector[3],
-        //    matrix[2] * vector[0] + matrix[6] * vector[1] + matrix[10] * vector[2] + matrix[14] * vector[3],
-        //    matrix[3] * vector[0] + matrix[7] * vector[1] + matrix[11] * vector[2] + matrix[15] * vector[3],
-        //];
-        //
-        //const w = transformed[3];
-        //
-        //console.log(x);
-        //console.log(y);
-        //console.log(matrix);
-        //console.log(w);
-        //console.log(transformed);
-        //
-        //if (w !== 0 && w !== 1) {
-        //    transformed[0] /= w;
-        //    transformed[1] /= w;
-        //}
-        //
-        //console.log(transformed);
-        //
-        //return [transformed[0], transformed[1]];
+        return [x * zoom - offset[0], y * zoom + offset[1]];
     }
     updateGrid(isActive, size, color) {
         this.grid.isActive = isActive;
