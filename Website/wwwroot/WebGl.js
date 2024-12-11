@@ -312,10 +312,12 @@ class Token extends TexturedQuad {
     constructor(gl, name) {
         super(gl);
         this.isMouseHover = 0.0;
+        this.isLeftMouseButtonDown = 0.0;
         this.name = name;
     }
     render() {
         this.setUniform("isMouseOver", this.isMouseHover);
+        this.setUniform("isLeftMouseButtonDown", this.isLeftMouseButtonDown);
         super.render();
     }
     hover(mouseX, mouseY, grid) {
@@ -329,6 +331,9 @@ class Token extends TexturedQuad {
         else {
             this.isMouseHover = 0.0;
         }
+    }
+    setLeftMouseButtonDown(isMouseDown) {
+        this.isLeftMouseButtonDown = isMouseDown ? 1.0 : 0.0;
     }
 }
 class MouseIndicator extends TexturedQuad {
@@ -372,7 +377,9 @@ class RenderContext {
         this.grid = new Grid(this.gl);
         this.camera = new Camera(this.gl);
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
-        this.canvas.addEventListener("mousemove", (event) => this.onMouseMove(event));
+        this.canvas.addEventListener("mousemove", (event) => this.onMouseChanged(event));
+        this.canvas.addEventListener("mousedown", (event) => this.onMouseChanged(event));
+        this.canvas.addEventListener("mouseup", (event) => this.onMouseChanged(event));
         this.canvas.addEventListener("wheel", (event) => this.onMouseWheel(event));
         this.canvas.oncontextmenu = () => false;
         this.render = this.render.bind(this);
@@ -418,10 +425,12 @@ class RenderContext {
         this.cleanup();
         // ToDo: Clean up 'gl' context
     }
-    onMouseMove(event) {
+    onMouseChanged(event) {
         this.tokens.forEach(token => {
             const position = this.transformPosition(event.clientX, event.clientY);
             token.hover(position[0], position[1], this.grid);
+            const isLeftMouseButtonDown = event.buttons == 1;
+            token.setLeftMouseButtonDown(isLeftMouseButtonDown);
         });
         switch (event.buttons) {
             case 0: // no mouse button

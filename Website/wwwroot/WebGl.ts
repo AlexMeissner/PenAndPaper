@@ -395,6 +395,7 @@ class TexturedQuad {
 class Token extends TexturedQuad {
     name: string;
     isMouseHover: number = 0.0;
+    isLeftMouseButtonDown: number = 0.0;
 
     constructor(gl: WebGL2RenderingContext, name: string) {
         super(gl);
@@ -403,6 +404,7 @@ class Token extends TexturedQuad {
 
     public render(): void {
         this.setUniform("isMouseOver", this.isMouseHover);
+        this.setUniform("isLeftMouseButtonDown", this.isLeftMouseButtonDown);
         super.render();
     }
 
@@ -417,6 +419,10 @@ class Token extends TexturedQuad {
         } else {
             this.isMouseHover = 0.0;
         }
+    }
+
+    public setLeftMouseButtonDown(isMouseDown: boolean): void {
+        this.isLeftMouseButtonDown = isMouseDown ? 1.0 : 0.0;
     }
 }
 
@@ -476,7 +482,9 @@ class RenderContext {
 
         this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
 
-        this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseMove(event));
+        this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseChanged(event));
+        this.canvas.addEventListener("mousedown", (event: MouseEvent): void => this.onMouseChanged(event));
+        this.canvas.addEventListener("mouseup", (event: MouseEvent): void => this.onMouseChanged(event));
         this.canvas.addEventListener("wheel", (event: WheelEvent): void => this.onMouseWheel(event));
         this.canvas.oncontextmenu = () => false;
 
@@ -537,10 +545,13 @@ class RenderContext {
         // ToDo: Clean up 'gl' context
     }
 
-    private onMouseMove(event: MouseEvent): void {
+    private onMouseChanged(event: MouseEvent): void {
         this.tokens.forEach(token => {
                 const position: number[] = this.transformPosition(event.clientX, event.clientY);
                 token.hover(position[0], position[1], this.grid);
+
+                const isLeftMouseButtonDown: boolean = event.buttons == 1;
+                token.setLeftMouseButtonDown(isLeftMouseButtonDown);
             }
         );
 
