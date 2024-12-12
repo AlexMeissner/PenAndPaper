@@ -1,0 +1,59 @@
+.monsters {
+    height: 100%;
+    overflow: scroll;
+}
+
+.monsters-item {
+    display: flex;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.monsters-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.monster-texts {
+    margin-left: 10px;
+}
+
+.monster-name {
+    height: 50%;
+    font-weight: bold;
+    align-items: center;
+}
+
+.monster-details {
+    height: 50%;
+    display: flex;
+    font-style: italic;
+    align-items: center;
+}
+
+.monster-detail {
+    margin-right: 20px;
+}
+
+.monster-icon {
+    width: 60px;
+    height: 60px;
+}
+
+.monster-challenge-rating {
+    transform: rotate(-45deg);
+}
+
+.diamond {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: rebeccapurple;
+    transform: rotate(45deg);
+    align-content: center;
+    text-align: center;
+    align-self: center;
+    margin-left: auto;
+    margin-right: 10px;
+}

@@ -31,6 +31,7 @@
         <div class="tab">
             <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">Skript</button>
             <button class="@GetTabStyle(TabIndex.Chat)" @onclick="() => ActiveTab(TabIndex.Chat)">Chat</button>
+            <button class="@GetTabStyle(TabIndex.Monsters)" @onclick="() => ActiveTab(TabIndex.Monsters)">Monsters</button>
         </div>
 
         @switch (activeTabIndex)
@@ -44,6 +45,12 @@
             case TabIndex.Chat:
                 <div class="tabcontent">
                     <Chat CampaignId="@CampaignId"></Chat>
+                </div>
+                break;
+
+            case TabIndex.Monsters:
+                <div class="tabcontent">
+                    <Monsters></Monsters>
                 </div>
                 break;
         }
@@ -64,7 +71,8 @@
     private enum TabIndex
     {
         Script,
-        Chat
+        Chat,
+        Monsters
     }
 
     private void ActiveTab(TabIndex tabIndex)

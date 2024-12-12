@@ -48,7 +48,10 @@
         double ChallangeRating,
         int Experience,
         string Actions,
-        byte[] Image);
+        byte[] Image)
+    {
+        public string ImageBase64 => Convert.ToBase64String(Image);
+    }
 
     public record MonstersDto(ICollection<MonsterDto> Items);
 }

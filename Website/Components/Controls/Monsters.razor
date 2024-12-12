@@ -1,0 +1,43 @@
+@using DataTransfer.Monster
+@using Website.Services.API
+
+@inject IMonsterApi MonsterApi
+@inject ILogger<Monsters> Logger
+
+<div class="monsters">
+    @foreach (var monster in _monsters)
+    {
+        <div class="monsters-item">
+            <img class="monster-icon" src="data:image/png;base64,@monster.ImageBase64" alt="Icon"/>
+            <div class="monster-texts">
+                <div class="monster-name">@monster.Name</div>
+                <div class="monster-details">
+                    <div class="monster-detail">@monster.Size</div>
+                    <div class="monster-detail">@monster.Type</div>
+                    <div class="monster-detail">@monster.Alignment</div>
+                </div>
+            </div>
+            <div class="diamond">
+                <div class="monster-challenge-rating">@monster.ChallangeRating</div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<MonsterDto> _monsters = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await MonsterApi.GetAll();
+
+        _monsters = response.Match(
+            monsters => monsters.Items.ToList(),
+            statusCode =>
+            {
+                Logger.LogError("Failed to get all monsters {statusCode}", statusCode);
+                return [];
+            });
+    }
+
+}
