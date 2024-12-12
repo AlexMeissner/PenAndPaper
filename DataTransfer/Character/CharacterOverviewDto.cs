@@ -1,7 +1,6 @@
 ﻿namespace DataTransfer.Character
 {
-    public record CharacterOverviewItem
-    (
+    public record CharacterOverviewItem(
         int PlayerId,
         int CharacterId,
         string PlayerName,
@@ -19,7 +18,10 @@
         int Intelligence,
         int Wisdom,
         int Charisma
-    );
+    )
+    {
+        public string ImageBase64 => Convert.ToBase64String(Image);
+    }
 
     public record CharacterOverviewDto(ICollection<CharacterOverviewItem> Items);
 }

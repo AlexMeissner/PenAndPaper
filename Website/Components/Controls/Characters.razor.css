@@ -1,0 +1,40 @@
+.characters {
+    height: 100%;
+    overflow: scroll;
+}
+
+.character {
+    display: flex;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.character:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.character-texts {
+    margin-left: 10px;
+}
+
+.character-text-row {
+    display: flex;
+    height: 50%;
+}
+
+.character-text-title {
+    font-weight: bold;
+    margin-right: 10px;
+    align-content: center;
+}
+
+.character-name {
+    align-content: center;
+}
+
+.character-image {
+    width: 60px;
+    height: 60px;
+}

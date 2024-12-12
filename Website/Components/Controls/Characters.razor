@@ -1,0 +1,44 @@
+@using DataTransfer.Character
+@using Website.Services.API
+
+@inject ICharacterApi CharacterApi
+@inject ILogger<Characters> Logger
+
+<div class="characters">
+    @foreach (var character in _characters)
+    {
+        <div class="character">
+            <img class="character-image" src="data:image/png;base64,@character.ImageBase64" alt="Icon"/>
+            <div class="character-texts">
+                <div class="character-text-row">
+                    <div class="character-text-title">Spieler</div>
+                    <div class="character-name">@character.PlayerName</div>
+                </div>
+                <div class="character-text-row">
+                    <div class="character-text-title">Charakter</div>
+                    <div class="character-name">@character.CharacterName</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int CampaignId { get; set; }
+
+    private List<CharacterOverviewItem> _characters = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await CharacterApi.GetOverviewAsync(CampaignId);
+
+        _characters = response.Match(
+            overview => overview.Items.ToList(),
+            statusCode =>
+            {
+                Logger.LogError("Failed to get character overview ({statusCode})", statusCode);
+                return [];
+            });
+    }
+
+}
