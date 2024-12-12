@@ -1,7 +1,10 @@
 ﻿using DataTransfer.Map;
+using DataTransfer.Token;
 using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Server.Hubs;
 using Server.Models;
 using Server.Services;
 
@@ -9,7 +12,10 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TokenController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
+    public class TokenController(
+        SQLDatabase dbContext,
+        IUpdateNotifier updateNotifier,
+        IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get(int mapId)
@@ -58,7 +64,8 @@ namespace Server.Controllers
 
             var alreadyContainsCharacter = await dbContext.CharacterTokens
                 .Include(t => t.Character)
-                .AnyAsync(t => t.MapId == payload.MapId && payload.CharacterId != null && t.Character.Id == payload.CharacterId);
+                .AnyAsync(t =>
+                    t.MapId == payload.MapId && payload.CharacterId != null && t.Character.Id == payload.CharacterId);
 
             if (alreadyContainsCharacter)
             {
@@ -94,6 +101,10 @@ namespace Server.Controllers
             var tokenUpdate = new TokenMovedDto(token.Id, token.X, token.Y);
             await updateNotifier.Send(payload.CampaignId, tokenUpdate);
 
+            // ToDo: Should only notify clients in campaign
+            var eventArgs = new TokenMovedEventArgs(token.Id, token.X, token.Y);
+            await campaignUpdateHub.Clients.All.TokenMoved(eventArgs);
+            
             return Ok(token);
         }
 
@@ -101,7 +112,8 @@ namespace Server.Controllers
         {
             if (creationInfo.CharacterId is not null)
             {
-                var character = await dbContext.Characters.FindAsync(creationInfo.CharacterId) ?? throw new NullReferenceException();
+                var character = await dbContext.Characters.FindAsync(creationInfo.CharacterId) ??
+                                throw new NullReferenceException();
 
                 return new CharacterToken()
                 {
@@ -112,7 +124,8 @@ namespace Server.Controllers
             }
             else if (creationInfo.MonsterId is not null)
             {
-                var monster = await dbContext.Monsters.FindAsync(creationInfo.MonsterId) ?? throw new NullReferenceException();
+                var monster = await dbContext.Monsters.FindAsync(creationInfo.MonsterId) ??
+                              throw new NullReferenceException();
 
                 return new MonsterToken()
                 {

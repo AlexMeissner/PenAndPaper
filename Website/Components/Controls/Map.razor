@@ -1,5 +1,6 @@
 ﻿@using DataTransfer.Map
 @using DataTransfer.Mouse
+@using DataTransfer.Token
 @using DataTransfer.Types
 @using Website.Converter
 @using Website.Services
@@ -16,7 +17,13 @@
 
 @implements IDisposable
 
-<canvas id="@CanvasId" class="render-context" @onmousemove="OnMouseMove"></canvas>
+<canvas id="@CanvasId"
+        class="render-context"
+        @onmousemove="OnMouseMove"
+        @onmousedown="OnMouseButtonChanged"
+        @onmouseup="OnMouseButtonChanged"
+        @onmouseleave="OnMouseLeave">
+</canvas>
 
 <script>
     const canvas = document.getElementById("renderCanvas");
@@ -32,24 +39,32 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
 
+    private int _gridSize;
+    private Vector2D _selectedTokenPosition = new Vector2D(0, 0);
+    private Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
     private MouseIndicator? _mouseIndicator;
     private ShaderProgram? _mapShaderProgram;
     private ShaderProgram? _tokenShaderProgram;
     private ShaderProgram? _mouseShaderProgram;
 
+    private readonly List<Token> _tokens = [];
+
+    const long LeftMouseButton = 1;
     private static readonly string CanvasId = "renderCanvas";
 
     public void Dispose()
     {
         CampaignEvents.MapChanged -= OnMapChanged;
         CampaignEvents.MouseMoved -= OnMouseMoved;
+        CampaignEvents.TokenMoved -= OnTokenMoved;
     }
 
     protected override void OnInitialized()
     {
         CampaignEvents.MapChanged += OnMapChanged;
         CampaignEvents.MouseMoved += OnMouseMoved;
+        CampaignEvents.TokenMoved += OnTokenMoved;
     }
 
     private async Task OnMapChanged(MapChangedEventArgs e)
@@ -178,6 +193,8 @@
 
         float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
         await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
+
+        _gridSize = map.Grid.Size;
     }
 
     private async Task<MouseIndicator> CreateMouseIndicator()
@@ -215,6 +232,7 @@
             });
 
         await RenderContext.ClearTokens();
+        _tokens.Clear();
 
         float[] vertices =
         [
@@ -224,41 +242,98 @@
             1.0f, -1.0f
         ];
 
-        foreach (var token in tokens)
+        foreach (var tokenItem in tokens)
         {
-            var quad = await RenderContext.CreateToken();
-            await quad.SetVertices(vertices);
-            await quad.SetTexture(token.Image);
+            var token = await RenderContext.CreateToken();
+            token.Id = tokenItem.Id;
+
+            await token.SetVertices(vertices);
+            await token.SetTexture(tokenItem.Image);
 
             if (_tokenShaderProgram is not null)
             {
-                await quad.SetShaderProgram(_tokenShaderProgram);
+                await token.SetShaderProgram(_tokenShaderProgram);
             }
 
-            await quad.SetUniform("x", token.X);
-            await quad.SetUniform("y", token.Y);
+            await token.SetUniform("x", tokenItem.X);
+            await token.SetUniform("y", tokenItem.Y);
 
-            await RenderContext.AddToken(quad);
+            await RenderContext.AddToken(token);
+            _tokens.Add(token);
         }
+    }
+
+    private async Task OnMouseButtonChanged(MouseEventArgs e)
+    {
+        _selectedToken = null;
+
+        if (e.Buttons == LeftMouseButton)
+        {
+            foreach (var token in _tokens)
+            {
+                if (await token.GetUniform("isMouseOver") == 1.0f)
+                {
+                    var position = new Vector2D(e.ClientX, e.ClientY);
+                    var transformedPosition = await RenderContext.TransformPosition(position);
+                    _selectedTokenPosition = GetGridSnapPosition(transformedPosition);
+                    _selectedToken = token;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void OnMouseLeave(MouseEventArgs e)
+    {
+        _selectedToken = null;
     }
 
     private async Task OnMouseMove(MouseEventArgs e)
     {
-        const long leftMouseButton = 1;
-
-        if (e.Buttons == leftMouseButton)
+        if (e.Buttons == LeftMouseButton)
         {
             var position = new Vector2D(e.ClientX, e.ClientY);
             var transformedPosition = await RenderContext.TransformPosition(position);
-            var color = new Vector3D(0.8, 0.4, 0.6);
-            var payload = new MouseMoveEventArgs(transformedPosition, color);
-            await MouseApi.PostAsync(payload);
+
+            if (_selectedToken is null)
+            {
+                var color = new Vector3D(0.8, 0.4, 0.6);
+                var payload = new MouseMoveEventArgs(transformedPosition, color);
+                await MouseApi.PostAsync(payload);
+            }
+            else
+            {
+                var snapPosition = GetGridSnapPosition(transformedPosition);
+
+                if (snapPosition.X != _selectedTokenPosition.X || snapPosition.Y != _selectedTokenPosition.Y)
+                {
+                    var payload = new TokenUpdateDto(CampaignId, _selectedToken.Id, (int)snapPosition.X, (int)snapPosition.Y);
+                    await TokenApi.PutAsync(payload);
+                    _selectedTokenPosition = snapPosition;
+                }
+            }
         }
     }
 
     private async Task OnMouseMoved(MouseMoveEventArgs e)
     {
         await _mouseIndicator!.SetPosition(e.Position);
+    }
+
+    private async Task OnTokenMoved(TokenMovedEventArgs e)
+    {
+        if (_tokens.Find(x => x.Id == e.TokenId) is { } token)
+        {
+            await token.SetUniform("x", e.X);
+            await token.SetUniform("y", e.Y);
+        }
+    }
+
+    private Vector2D GetGridSnapPosition(Vector2D position)
+    {
+        var x = (int)position.X / _gridSize * _gridSize;
+        var y = (int)position.Y / _gridSize * _gridSize;
+        return new Vector2D(x, y);
     }
 
     private async Task<int?> GetActiveMapId()

@@ -27,6 +27,11 @@ public class TexturedQuad(IJSObjectReference jsObjectReference)
         await jsObjectReference.InvokeVoidAsync("setUniform", name, value);
     }
 
+    public async Task<float> GetUniform(string name)
+    {
+        return await jsObjectReference.InvokeAsync<float>("getUniform", name);
+    }
+
     public async Task UpdateVertices(float[] vertices)
     {
         await jsObjectReference.InvokeVoidAsync("updateVertices", vertices);
