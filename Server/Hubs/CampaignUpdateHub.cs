@@ -19,5 +19,6 @@ public interface ICampaignUpdate
     Task DiceRolled(DiceRolledEventArgs e);
     Task MapChanged(MapChangedEventArgs e);
     Task MouseMoved(MouseMoveEventArgs e);
+    Task TokenAdded(TokenAddedEventArgs e);
     Task TokenMoved(TokenMovedEventArgs e);
 }

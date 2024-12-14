@@ -1,4 +1,6 @@
-﻿@using DataTransfer.Map
+﻿@using DataTransfer.Character
+@using DataTransfer.Map
+@using DataTransfer.Monster
 @using DataTransfer.Mouse
 @using DataTransfer.Token
 @using DataTransfer.Types
@@ -13,6 +15,7 @@
 @inject ITokenApi TokenApi
 @inject RenderContext RenderContext
 @inject ICampaignEvents CampaignEvents
+@inject IDragAndDrop DragAndDrop
 @inject ILogger<Map> Logger
 
 @implements IDisposable
@@ -22,7 +25,9 @@
         @onmousemove="OnMouseMove"
         @onmousedown="OnMouseButtonChanged"
         @onmouseup="OnMouseButtonChanged"
-        @onmouseleave="OnMouseLeave">
+        @onmouseleave="OnMouseLeave"
+        @ondrop="OnDrop"
+        ondragover="event.preventDefault()">
 </canvas>
 
 <script>
@@ -38,6 +43,8 @@
 
 @code {
     [Parameter] public int CampaignId { get; set; }
+
+    private int _mapId;
 
     private int _gridSize;
     private Vector2D _selectedTokenPosition = new Vector2D(0, 0);
@@ -57,6 +64,7 @@
     {
         CampaignEvents.MapChanged -= OnMapChanged;
         CampaignEvents.MouseMoved -= OnMouseMoved;
+        CampaignEvents.TokenAdded -= OnTokenAdded;
         CampaignEvents.TokenMoved -= OnTokenMoved;
     }
 
@@ -64,11 +72,13 @@
     {
         CampaignEvents.MapChanged += OnMapChanged;
         CampaignEvents.MouseMoved += OnMouseMoved;
+        CampaignEvents.TokenAdded += OnTokenAdded;
         CampaignEvents.TokenMoved += OnTokenMoved;
     }
 
     private async Task OnMapChanged(MapChangedEventArgs e)
     {
+        _mapId = e.MapId;
         await LoadActiveMap(e.MapId);
         await LoadTokens(e.MapId);
     }
@@ -234,6 +244,14 @@
         await RenderContext.ClearTokens();
         _tokens.Clear();
 
+        foreach (var tokenItem in tokens)
+        {
+            await CreateToken(tokenItem.Id, tokenItem.Image, tokenItem.X, tokenItem.Y);
+        }
+    }
+
+    private async Task CreateToken(int id, byte[] image, int x, int y)
+    {
         float[] vertices =
         [
             0.0f, 0.0f,
@@ -242,25 +260,22 @@
             1.0f, -1.0f
         ];
 
-        foreach (var tokenItem in tokens)
+        var token = await RenderContext.CreateToken();
+        token.Id = id;
+
+        await token.SetVertices(vertices);
+        await token.SetTexture(image);
+
+        if (_tokenShaderProgram is not null)
         {
-            var token = await RenderContext.CreateToken();
-            token.Id = tokenItem.Id;
-
-            await token.SetVertices(vertices);
-            await token.SetTexture(tokenItem.Image);
-
-            if (_tokenShaderProgram is not null)
-            {
-                await token.SetShaderProgram(_tokenShaderProgram);
-            }
-
-            await token.SetUniform("x", tokenItem.X);
-            await token.SetUniform("y", tokenItem.Y);
-
-            await RenderContext.AddToken(token);
-            _tokens.Add(token);
+            await token.SetShaderProgram(_tokenShaderProgram);
         }
+
+        await token.SetUniform("x", x);
+        await token.SetUniform("y", y);
+
+        await RenderContext.AddToken(token);
+        _tokens.Add(token);
     }
 
     private async Task OnMouseButtonChanged(MouseEventArgs e)
@@ -329,6 +344,11 @@
         }
     }
 
+    private async Task OnTokenAdded(TokenAddedEventArgs e)
+    {
+        await CreateToken(e.Id, e.Image, e.X, e.Y);
+    }
+
     private Vector2D GetGridSnapPosition(Vector2D position)
     {
         var x = (int)position.X / _gridSize * _gridSize;
@@ -360,6 +380,40 @@
                 Logger.LogError("Failed to get map data ({statusCode})", statusCode);
                 return null;
             });
+    }
+
+    private async Task OnDrop(DragEventArgs e)
+    {
+        var clientPosition = new Vector2D(e.ClientX, e.ClientY);
+        var transformedPosition = await RenderContext.TransformPosition(clientPosition);
+        var snapPosition = GetGridSnapPosition(transformedPosition);
+
+        switch (DragAndDrop.Data)
+        {
+            case MonsterDto monster:
+                var monsterCreationInfo = new TokenCreationDto(
+                    CampaignId,
+                    _mapId,
+                    null,
+                    monster.Id,
+                    (int)snapPosition.X,
+                    (int)snapPosition.Y);
+
+                await TokenApi.PostAsync(monsterCreationInfo);
+                break;
+
+            case CharacterOverviewItem character:
+                var characterCreationInfo = new TokenCreationDto(
+                    CampaignId,
+                    _mapId,
+                    character.CharacterId,
+                    null,
+                    (int)snapPosition.X,
+                    (int)snapPosition.Y);
+
+                await TokenApi.PostAsync(characterCreationInfo);
+                break;
+        }
     }
 
 }

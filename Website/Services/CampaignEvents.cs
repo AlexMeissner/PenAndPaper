@@ -35,6 +35,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
         _hubConnection.On<MouseMoveEventArgs>("MouseMoved", OnMouseMoved);
+        _hubConnection.On<TokenAddedEventArgs>("TokenAdded", OnTokenAdded);
         _hubConnection.On<TokenMovedEventArgs>("TokenMoved", OnTokenMoved);
         _hubConnection.StartAsync(); // ToDo: Async in constructr
     }
@@ -65,6 +66,14 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         if (MouseMoved is not null)
         {
             await MouseMoved.Invoke(e);
+        }
+    }
+
+    private async Task OnTokenAdded(TokenAddedEventArgs e)
+    {
+        if (TokenAdded is not null)
+        {
+            await TokenAdded.Invoke(e);
         }
     }
 

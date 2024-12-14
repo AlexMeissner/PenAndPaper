@@ -1,13 +1,15 @@
 @using DataTransfer.Character
+@using Website.Services
 @using Website.Services.API
 
 @inject ICharacterApi CharacterApi
+@inject IDragAndDrop DragAndDrop
 @inject ILogger<Characters> Logger
 
 <div class="characters">
     @foreach (var character in _characters)
     {
-        <div class="character">
+        <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
             <img class="character-image" src="data:image/png;base64,@character.ImageBase64" alt="Icon"/>
             <div class="character-texts">
                 <div class="character-text-row">
@@ -39,6 +41,11 @@
                 Logger.LogError("Failed to get character overview ({statusCode})", statusCode);
                 return [];
             });
+    }
+
+    private void OnDragStart(CharacterOverviewItem character)
+    {
+        DragAndDrop.Data = character;
     }
 
 }

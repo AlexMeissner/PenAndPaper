@@ -80,6 +80,17 @@ namespace Server.Controllers
 
             await updateNotifier.Send(payload.CampaignId, UpdateEntity.TokenAdded);
 
+            // ToDo: Should only notify clients in campaign
+            var image = token switch
+            {
+                CharacterToken characterToken => characterToken.Character.Image,
+                MonsterToken monsterToken => monsterToken.Monster.Image,
+                _ => throw new Exception("Unknown token type")
+            };
+
+            var eventArgs = new TokenAddedEventArgs(token.Id, image, token.X, token.Y);
+            await campaignUpdateHub.Clients.All.TokenAdded(eventArgs);
+
             return CreatedAtAction(nameof(Get), token.Id);
         }
 
@@ -104,7 +115,7 @@ namespace Server.Controllers
             // ToDo: Should only notify clients in campaign
             var eventArgs = new TokenMovedEventArgs(token.Id, token.X, token.Y);
             await campaignUpdateHub.Clients.All.TokenMoved(eventArgs);
-            
+
             return Ok(token);
         }
 

@@ -1,13 +1,15 @@
 @using DataTransfer.Monster
+@using Website.Services
 @using Website.Services.API
 
 @inject IMonsterApi MonsterApi
+@inject IDragAndDrop DragAndDrop
 @inject ILogger<Monsters> Logger
 
 <div class="monsters">
     @foreach (var monster in _monsters)
     {
-        <div class="monsters-item">
+        <div class="monsters-item" draggable="true" @ondragstart="() => OnDragStart(monster)">
             <img class="monster-icon" src="data:image/png;base64,@monster.ImageBase64" alt="Icon"/>
             <div class="monster-texts">
                 <div class="monster-name">@monster.Name</div>
@@ -38,6 +40,11 @@
                 Logger.LogError("Failed to get all monsters {statusCode}", statusCode);
                 return [];
             });
+    }
+
+    private void OnDragStart(MonsterDto monster)
+    {
+        DragAndDrop.Data = monster;
     }
 
 }
