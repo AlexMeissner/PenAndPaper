@@ -5,6 +5,7 @@ namespace Website.Services.API
 {
     public interface ITokenApi
     {
+        public Task<HttpResponse> DeleteAsync(int tokenId);
         public Task<HttpResponse<TokensDto>> GetAsync(int mapId);
         public Task<HttpResponse> PostAsync(TokenCreationDto payload);
         public Task<HttpResponse> PutAsync(TokenUpdateDto payload);
@@ -14,6 +15,11 @@ namespace Website.Services.API
     public class TokenApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ITokenApi
     {
         private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Token", tokenProvider);
+
+        public Task<HttpResponse> DeleteAsync(int tokenId)
+        {
+            return _request.DeleteAsync($"tokenId={tokenId}");
+        }
 
         public Task<HttpResponse<TokensDto>> GetAsync(int mapId)
         {

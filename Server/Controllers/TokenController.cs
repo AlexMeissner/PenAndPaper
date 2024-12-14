@@ -17,6 +17,24 @@ namespace Server.Controllers
         IUpdateNotifier updateNotifier,
         IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int tokenId)
+        {
+            var token = await dbContext.Tokens.FindAsync(tokenId);
+
+            if (token is null)
+            {
+                return NotFound(tokenId);
+            }
+
+            dbContext.Tokens.Remove(token);
+            await dbContext.SaveChangesAsync();
+            
+            // ToDo: Fire an event such that all connected client remove the token from the map
+
+            return Ok(tokenId);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get(int mapId)
         {

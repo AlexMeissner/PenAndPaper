@@ -18,10 +18,10 @@
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Map> Logger
 
-@implements IDisposable
-
 <canvas id="@CanvasId"
+        tabindex="0"
         class="render-context"
+        @onkeydown="OnKeyDown"
         @onmousemove="OnMouseMove"
         @onmousedown="OnMouseButtonChanged"
         @onmouseup="OnMouseButtonChanged"
@@ -47,7 +47,7 @@
     private int _mapId;
 
     private int _gridSize;
-    private Vector2D _selectedTokenPosition = new Vector2D(0, 0);
+    private Vector2D _selectedTokenPosition = new(0, 0);
     private Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
     private MouseIndicator? _mouseIndicator;
@@ -413,6 +413,15 @@
 
                 await TokenApi.PostAsync(characterCreationInfo);
                 break;
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("Delete", StringComparison.OrdinalIgnoreCase) && _selectedToken is not null)
+        {
+            await TokenApi.DeleteAsync(_selectedToken.Id);
+            _selectedToken = null;
         }
     }
 
