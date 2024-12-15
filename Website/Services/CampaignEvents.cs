@@ -34,6 +34,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     {
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
+        _hubConnection.On<MapCollectionChangedEventArgs>("MapCollectionChanged", OnMapCollectionChanged);
         _hubConnection.On<MouseMoveEventArgs>("MouseMoved", OnMouseMoved);
         _hubConnection.On<TokenAddedEventArgs>("TokenAdded", OnTokenAdded);
         _hubConnection.On<TokenMovedEventArgs>("TokenMoved", OnTokenMoved);
@@ -58,6 +59,14 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         if (MapChanged is not null)
         {
             await MapChanged.Invoke(e);
+        }
+    }
+
+    private async Task OnMapCollectionChanged(MapCollectionChangedEventArgs e)
+    {
+        if (MapCollectionChanged is not null)
+        {
+            await MapCollectionChanged.Invoke(e);
         }
     }
 

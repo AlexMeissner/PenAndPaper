@@ -1,8 +1,15 @@
 ﻿@using DataTransfer.Map
+@using Website.Services
 @using Website.Services.API
 
+@inject IMapApi MapApi
 @inject IMapOverviewApi MapOverviewApi
 @inject IActiveMapApi ActiveMapApi
+@inject ILogger<MapSelection> Logger
+@inject IJSRuntime JsRuntime
+@inject ICampaignEvents CampaignEvents
+
+@implements IDisposable
 
 <div class="backdrop" style="display: @_display">
     <div class="input-group mb-3">
@@ -13,7 +20,9 @@
         <div class="card mb-3 text-center">
             <i class="bi bi-plus-circle create-icon"></i>
             <div class="card-footer card-footer-create btn-group" role="group">
-                <button type="button" class="btn btn-outline-success">Erstellen</button>
+                <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
+                <InputFile id="fileInput" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
+                           style="display: none"></InputFile>
             </div>
         </div>
         @foreach (var map in _mapOverviewItems)
@@ -21,16 +30,22 @@
             <div class="card mb-3">
                 <img src="data:image/png;base64, @map.ImageBase64" class="card-img-top" alt=""/>
                 <div class="card-body">
-                    <h3 class="card-title">@map.Name</h3>
+                    @if (_editMap == map)
+                    {
+                        <form @onsubmit="OnSubmit" @onkeydown="OnKeyDown" @onblur="OnBlur">
+                            <input type="text" class="form-control" @bind="_editMapName"/>
+                        </form>
+                    }
+                    else
+                    {
+                        <h3 class="card-title" @onclick="() => OnEdit(map)">@map.Name</h3>
+                    }
                 </div>
                 <div class="card-footer btn-group" role="group">
                     <button type="button" class="btn btn-outline-success" @onclick="async () => await OnPlay(map)">
                         <i class="bi bi-play-fill"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-primary">
-                        <i class="bi bi-pencil-fill"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger">
+                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await OnDelete(map)">
                         <i class="bi bi-trash-fill"></i>
                     </button>
                 </div>
@@ -39,25 +54,31 @@
     </div>
 </div>
 
+<script>
+    function triggerFileInput() {
+        document.getElementById("fileInput").click();
+    }
+</script>
+
 @code {
     [Parameter] public int CampaignId { get; set; }
 
     private string _display = "none";
 
+    private string _editMapName = "";
+    private MapOverviewItemDto? _editMap = null;
     private ICollection<MapOverviewItemDto> _mapOverviewItems = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await MapOverviewApi.GetAsync(CampaignId);
+        CampaignEvents.MapCollectionChanged += OnMapCollectionChanged;
 
-        response.Match(
-            mapOverview => { _mapOverviewItems = mapOverview.Items; },
-            errorCode =>
-            {
-                // ToDo: Log + Toast
-                Console.WriteLine(errorCode);
-            }
-        );
+        await LoadItems();
+    }
+
+    public void Dispose()
+    {
+        CampaignEvents.MapCollectionChanged -= OnMapCollectionChanged;
     }
 
     public async Task Toggle()
@@ -72,6 +93,54 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private async Task OnMapCollectionChanged(MapCollectionChangedEventArgs e)
+    {
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        var response = await MapOverviewApi.GetAsync(CampaignId);
+
+        response.Match(
+            mapOverview => { _mapOverviewItems = mapOverview.Items; },
+            errorCode =>
+            {
+                // ToDo: Log + Toast
+                Console.WriteLine(errorCode);
+            }
+        );
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnCreate()
+    {
+        await JsRuntime.InvokeVoidAsync("triggerFileInput");
+    }
+
+    private async Task LoadImage(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        await using var stream = file.OpenReadStream(maxAllowedSize: file.Size);
+
+        var imageBuffer = new byte[file.Size];
+        var totalBytesRead = 0;
+
+        while (totalBytesRead < file.Size)
+        {
+            var bytesRead = await stream.ReadAsync(imageBuffer, totalBytesRead, (int)(file.Size - totalBytesRead));
+            totalBytesRead += bytesRead;
+            if (bytesRead == 0) break;
+        }
+
+        var grid = new GridDto(10, false);
+        var payload = new MapDto(0, CampaignId, "Neue Karte", imageBuffer, grid);
+
+        await MapApi.PostAsync(payload);
+    }
+
     private async Task OnPlay(MapOverviewItemDto map)
     {
         var payload = new ActiveMapDto(CampaignId, map.MapId);
@@ -84,6 +153,53 @@
         }
 
         await Close();
+    }
+
+    private void OnEdit(MapOverviewItemDto map)
+    {
+        _editMapName = map.Name;
+        _editMap = map;
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("Escape", StringComparison.OrdinalIgnoreCase))
+        {
+            _editMap = null;
+        }
+    }
+
+    private void OnBlur()
+    {
+        _editMap = null;
+    }
+
+    private async Task OnSubmit()
+    {
+        if (_editMap is null) return;
+
+        var response = await MapApi.GetAsync(_editMap.MapId);
+
+        var map = response.Match<MapDto?>(
+            map => map,
+            statusCode =>
+            {
+                // ToDo: Improve error handling
+                Logger.LogError("Failed to get map information {statusCode}", statusCode);
+                return null;
+            });
+
+        if (map is null) return;
+
+        var payload = map with { Name = _editMapName };
+        await MapApi.PutAsync(payload);
+
+        _editMap = null;
+    }
+
+    private async Task OnDelete(MapOverviewItemDto map)
+    {
+        await MapApi.DeleteAsync(map.MapId);
     }
 
 }

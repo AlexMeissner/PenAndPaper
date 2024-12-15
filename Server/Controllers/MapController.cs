@@ -1,7 +1,9 @@
 ﻿using DataTransfer.Map;
 using DataTransfer.WebSocket;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Server.Hubs;
 using Server.Models;
 using Server.Services;
 
@@ -9,7 +11,10 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MapController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
+    public class MapController(
+        SQLDatabase dbContext,
+        IUpdateNotifier updateNotifier,
+        IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get(int mapId)
@@ -26,7 +31,7 @@ namespace Server.Controllers
                 CampaignId: map.CampaignId,
                 Name: map.Name,
                 ImageData: map.ImageData,
-                Grid: new(map.GridSize, map.GridIsActive)
+                Grid: new GridDto(map.GridSize, map.GridIsActive)
             );
 
             return Ok(payload);
@@ -50,6 +55,9 @@ namespace Server.Controllers
 
             await updateNotifier.Send(payload.CampaignId, UpdateEntity.MapCollection);
 
+            var eventArgs = new MapCollectionChangedEventArgs();
+            await campaignUpdateHub.Clients.All.MapCollectionChanged(eventArgs);
+
             return CreatedAtAction(nameof(Get), map.Id);
         }
 
@@ -72,6 +80,9 @@ namespace Server.Controllers
 
             await updateNotifier.Send(payload.CampaignId, UpdateEntity.MapCollection);
 
+            var eventArgs = new MapCollectionChangedEventArgs();
+            await campaignUpdateHub.Clients.All.MapCollectionChanged(eventArgs);
+
             return Ok(map);
         }
 
@@ -87,7 +98,7 @@ namespace Server.Controllers
 
             var campaign = await dbContext.Campaigns
                 .Include(c => c.ActiveMap)
-                .FirstAsync(c => c.ActiveMap != null && c.ActiveMap.Id == map.Id);
+                .FirstOrDefaultAsync(c => c.ActiveMap != null && c.ActiveMap.Id == map.Id);
 
             if (campaign is not null)
             {
@@ -99,6 +110,9 @@ namespace Server.Controllers
             await dbContext.SaveChangesAsync();
 
             await updateNotifier.Send(map.CampaignId, UpdateEntity.MapCollection);
+
+            var eventArgs = new MapCollectionChangedEventArgs();
+            await campaignUpdateHub.Clients.All.MapCollectionChanged(eventArgs);
 
             return Ok();
         }

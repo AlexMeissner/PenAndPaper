@@ -13,6 +13,11 @@
     right: 10px;
 }
 
+.btn-grid {
+    top: 10px;
+    left: 10px;
+}
+
 .btn-overlay {
     position: absolute;
     z-index: 1;
