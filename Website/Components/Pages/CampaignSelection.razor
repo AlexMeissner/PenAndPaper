@@ -2,20 +2,26 @@
 @rendermode InteractiveServer
 
 @using DataTransfer.Campaign
+@using DataTransfer.Login
+@using Website.Services
 @using Website.Services.API
 
 @inject ICampaignOverviewApi campaignOverviewApi
 @inject NavigationManager navigationManager
+@inject IIdentityProvider IdentityProvider
+@inject IUserApi UserApi
+@inject ILogger<CampaignSelection> Logger
 
 <div class="background-image">
     <div class="centered-backdrop">
         <ul class="list-group">
-            @foreach (var campaign in campaignItems)
+            @foreach (var campaign in _campaignItems)
             {
                 <li class="list-group-item list-group-item-action campaign-item-level-0">
                     <a href="campaign/@campaign.Id" class="campaign-item-link campaign-item-level-0">
                         <div class="campaign-item-icon">
-                            <img width="60" height="60" src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
+                            <img width="60" height="60"
+                                 src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png"/>
                         </div>
                         <div class="campaign-item-level-1">
                             <div class="campaign-item-header">@campaign.Name</div>
@@ -34,7 +40,8 @@
                     </a>
                     @if (campaign.IsGamemaster)
                     {
-                        <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button" @onclick="() => OnEdit(campaign.Id)">
+                        <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button"
+                                @onclick="() => OnEdit(campaign.Id)">
                             <i class="bi bi-pencil"></i>
                         </button>
                     }
@@ -47,26 +54,68 @@
 </div>
 
 @code {
-    // ToDo: Get correct user id
-    private readonly int userId = 1;
+    private int? _userId;
 
-    private ICollection<CampaignOverviewItemDto> campaignItems = [];
+    private ICollection<CampaignOverviewItemDto> _campaignItems = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await campaignOverviewApi.GetAsync(userId);
+        var isLoggedIn = await Login(false);
 
+        if (!isLoggedIn)
+        {
+            await Register();
+            await Login(true);
+        }
+
+        await LoadCampaigns();
+    }
+
+    private async Task<bool> Login(bool logError)
+    {
+        var email = await IdentityProvider.GetEmailAsync();
+        var name = await IdentityProvider.GetNameAsync();
+
+        var payload = new UserCredentialsDto(email, name, "");
+        var response = await UserApi.LoginAsync(payload);
         response.Match(
-            campaignOverview =>
+            login => _userId = login.UserId,
+            statusCode =>
             {
-                campaignItems = campaignOverview.CampaignItems;
-            },
-            errorCode =>
-            {
-                // ToDo: Log + Toast
-                Console.WriteLine(errorCode);
-            }
-        );
+                if (logError)
+                {
+                    // ToDo: Improve
+                    Logger.LogError("Login failed ({statusCode})", statusCode);
+                }
+            });
+
+        return _userId is not null;
+    }
+
+    private async Task Register()
+    {
+        var email = await IdentityProvider.GetEmailAsync();
+        var name = await IdentityProvider.GetNameAsync();
+
+        var payload = new UserCredentialsDto(email, name, "");
+        var response = await UserApi.RegisterAsync(payload);
+    }
+
+    private async Task LoadCampaigns()
+    {
+        if (_userId is { } userId)
+        {
+            var response = await campaignOverviewApi.GetAsync(userId);
+
+            response.Match(
+                campaignOverview => { _campaignItems = campaignOverview.CampaignItems; },
+                errorCode =>
+                {
+                    // ToDo: Log + Toast
+                    Console.WriteLine(errorCode);
+                }
+            );
+        }
     }
 
     private void OnCreate()
@@ -79,4 +128,5 @@
         // If campaignId is always the same value check https://www.telerik.com/blogs/how-to-pass-arguments-to-your-onclick-functions-blazor
         navigationManager.NavigateTo($"campaignCreation/{campaignId}");
     }
+
 }

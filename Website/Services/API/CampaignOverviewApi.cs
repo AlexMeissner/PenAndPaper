@@ -9,9 +9,9 @@ public interface ICampaignOverviewApi
 }
 
 [TransistentService]
-public class CampaignOverviewApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ICampaignOverviewApi
+public class CampaignOverviewApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : ICampaignOverviewApi
 {
-    private readonly HttpRequest _request = new(endPointProvider.BaseURL + "CampaignOverview", tokenProvider);
+    private readonly HttpRequest _request = new(endPointProvider.BaseURL + "CampaignOverview", identityProvider);
 
     public Task<HttpResponse<CampaignOverviewDto>> GetAsync(int userId)
     {

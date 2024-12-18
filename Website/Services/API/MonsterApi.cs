@@ -11,9 +11,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class MonsterApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IMonsterApi
+    public class MonsterApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : IMonsterApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Monster", tokenProvider);
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Monster", identityProvider);
 
         public Task<HttpResponse<MonsterDto>> Get(int monsterId)
         {

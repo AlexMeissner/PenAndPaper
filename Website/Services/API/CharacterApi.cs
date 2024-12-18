@@ -17,10 +17,10 @@ namespace Website.Services.API
         private readonly HttpRequest _characterRequest;
         private readonly HttpRequest _overviewRequest;
 
-        public CharacterApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider)
+        public CharacterApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider)
         {
-            _characterRequest = new(endPointProvider.BaseURL + "Character", tokenProvider);
-            _overviewRequest = new(endPointProvider.BaseURL + "CharacterOverview", tokenProvider);
+            _characterRequest = new(endPointProvider.BaseURL + "Character", identityProvider);
+            _overviewRequest = new(endPointProvider.BaseURL + "CharacterOverview", identityProvider);
         }
 
         public Task<HttpResponse<CharacterCreationDto>> GetAsync(int characterId)

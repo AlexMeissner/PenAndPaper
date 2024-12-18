@@ -13,10 +13,10 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class ActiveSoundApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IActiveSoundApi
+    public class ActiveSoundApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : IActiveSoundApi
     {
-        private readonly HttpRequest _ambientRequest = new(endPointProvider.BaseURL + "ActiveAmbientSound", tokenProvider);
-        private readonly HttpRequest _effectRequest = new(endPointProvider.BaseURL + "ActiveSoundEffect", tokenProvider);
+        private readonly HttpRequest _ambientRequest = new(endPointProvider.BaseURL + "ActiveAmbientSound", identityProvider);
+        private readonly HttpRequest _effectRequest = new(endPointProvider.BaseURL + "ActiveSoundEffect", identityProvider);
 
         public Task<HttpResponse<ActiveAmbientSoundDto>> GetAmbientSoundAsync(int campaignId)
         {

@@ -11,9 +11,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class RollApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IRollApi
+    public class RollApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : IRollApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Roll", tokenProvider);
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Roll", identityProvider);
 
         public Task<HttpResponse<DiceRollResultDto>> GetAsync(int campaignId)
         {

@@ -9,9 +9,9 @@ public interface IMouseApi
 }
 
 [TransistentService]
-public class MouseApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IMouseApi
+public class MouseApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : IMouseApi
 {
-    private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Mouse", tokenProvider);
+    private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Mouse", identityProvider);
 
     public Task<HttpResponse> PostAsync(MouseMoveEventArgs payload)
     {

@@ -12,9 +12,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class CampaignCreationApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ICampaignCreationApi
+    public class CampaignCreationApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : ICampaignCreationApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "CampaignCreation", tokenProvider);
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "CampaignCreation", identityProvider);
 
         public Task<HttpResponse<CampaignCreationDto>> GetAsync(int campaignId, int userId)
         {
