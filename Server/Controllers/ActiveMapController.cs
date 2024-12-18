@@ -30,18 +30,16 @@ namespace Server.Controllers
         {
             var updated = await campaignManager.UpdateActiveCampaignElements(payload);
 
-            if (updated is null)
+            switch (updated)
             {
-                return NotFound(payload);
-            }
-
-            if (updated is false)
-            {
-                return this.NotModified(payload);
+                case null:
+                    return NotFound(payload);
+                case false:
+                    return this.NotModified(payload);
             }
 
             // ToDo: payload.MapId should not be null
-            var eventArgs = new MapChangedEventArgs((int)payload.MapId);
+            var eventArgs = new MapChangedEventArgs((int)payload.MapId!);
             await campaignUpdateHub.Clients.All.MapChanged(eventArgs);
 
             return Ok(payload);

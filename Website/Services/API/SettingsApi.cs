@@ -12,9 +12,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class SettingsApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : ISettingsApi
+    public class SettingsApi(IEndPointProvider endPointProvider,  ITokenProvider tokenProvider) : ISettingsApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Settings", identityProvider);
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Settings", tokenProvider);
 
         public Task<HttpResponse<SettingsDto>> GetAsync()
         {

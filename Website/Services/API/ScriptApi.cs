@@ -15,9 +15,9 @@ namespace Website.Services.API
     {
         private readonly HttpRequest _request;
 
-        public ScriptApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider)
+        public ScriptApi(IEndPointProvider endPointProvider, ITokenProvider tokenProvider)
         {
-            _request = new(endPointProvider.BaseURL + "Script", identityProvider);
+            _request = new(endPointProvider.BaseURL + "Script", tokenProvider);
         }
 
         public Task<HttpResponse<ScriptDto>> Get(int mapId)

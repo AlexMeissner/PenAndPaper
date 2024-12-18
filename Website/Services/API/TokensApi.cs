@@ -12,9 +12,9 @@ namespace Website.Services.API
     }
 
     [TransistentService]
-    public class TokenApi(IEndPointProvider endPointProvider, IIdentityProvider identityProvider) : ITokenApi
+    public class TokenApi(IEndPointProvider endPointProvider,  ITokenProvider tokenProvider) : ITokenApi
     {
-        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Token", identityProvider);
+        private readonly HttpRequest _request = new(endPointProvider.BaseURL + "Token", tokenProvider);
 
         public Task<HttpResponse> DeleteAsync(int tokenId)
         {

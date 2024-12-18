@@ -2,14 +2,13 @@
 @rendermode InteractiveServer
 
 @using DataTransfer.Campaign
-@using DataTransfer.Login
+@using DataTransfer.User
 @using Website.Services
 @using Website.Services.API
 
-@inject ICampaignOverviewApi campaignOverviewApi
-@inject NavigationManager navigationManager
+@inject ICampaignOverviewApi CampaignOverviewApi
+@inject NavigationManager NavigationManager
 @inject IIdentityProvider IdentityProvider
-@inject IUserApi UserApi
 @inject ILogger<CampaignSelection> Logger
 
 <div class="background-image">
@@ -54,58 +53,21 @@
 </div>
 
 @code {
-    private int? _userId;
+    private UsersDto? _user;
 
     private ICollection<CampaignOverviewItemDto> _campaignItems = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var isLoggedIn = await Login(false);
-
-        if (!isLoggedIn)
-        {
-            await Register();
-            await Login(true);
-        }
-
+        _user = await IdentityProvider.GetUserAsync();
         await LoadCampaigns();
-    }
-
-    private async Task<bool> Login(bool logError)
-    {
-        var email = await IdentityProvider.GetEmailAsync();
-        var name = await IdentityProvider.GetNameAsync();
-
-        var payload = new UserCredentialsDto(email, name, "");
-        var response = await UserApi.LoginAsync(payload);
-        response.Match(
-            login => _userId = login.UserId,
-            statusCode =>
-            {
-                if (logError)
-                {
-                    // ToDo: Improve
-                    Logger.LogError("Login failed ({statusCode})", statusCode);
-                }
-            });
-
-        return _userId is not null;
-    }
-
-    private async Task Register()
-    {
-        var email = await IdentityProvider.GetEmailAsync();
-        var name = await IdentityProvider.GetNameAsync();
-
-        var payload = new UserCredentialsDto(email, name, "");
-        var response = await UserApi.RegisterAsync(payload);
     }
 
     private async Task LoadCampaigns()
     {
-        if (_userId is { } userId)
+        if (_user?.Id is { } userId)
         {
-            var response = await campaignOverviewApi.GetAsync(userId);
+            var response = await CampaignOverviewApi.GetAsync(userId);
 
             response.Match(
                 campaignOverview => { _campaignItems = campaignOverview.CampaignItems; },
@@ -120,13 +82,13 @@
 
     private void OnCreate()
     {
-        navigationManager.NavigateTo("campaignCreation");
+        NavigationManager.NavigateTo("campaignCreation");
     }
 
     private void OnEdit(int campaignId)
     {
         // If campaignId is always the same value check https://www.telerik.com/blogs/how-to-pass-arguments-to-your-onclick-functions-blazor
-        navigationManager.NavigateTo($"campaignCreation/{campaignId}");
+        NavigationManager.NavigateTo($"campaignCreation/{campaignId}");
     }
 
 }

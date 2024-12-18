@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Website.Services.API;
 
-public class HttpRequest(string endpoint, IIdentityProvider identityProvider)
+public class HttpRequest(string endpoint, ITokenProvider tokenProvider)
 {
     public async Task<HttpResponse> GetAsync()
     {
@@ -96,7 +96,7 @@ public class HttpRequest(string endpoint, IIdentityProvider identityProvider)
 
     private FlurlRequest CreateRequest(string url)
     {
-        var token = identityProvider.GetTokenAsync();
+        var token = tokenProvider.GetTokenAsync();
         return new FlurlRequest(url).WithOAuthBearerToken(token);
     }
 
