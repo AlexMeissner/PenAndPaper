@@ -2,17 +2,16 @@
 @rendermode InteractiveServer
 
 @using Website.Components.Controls
+@using Website.Services
 @using Website.Services.API
-@using Website.Services.Graphics
 
-@inject IWebGl webGl
-@inject ICampaignOverviewApi campaignOverviewApi
-@inject NavigationManager navigationManager
+@inject ICampaignOverviewApi CampaignOverviewApi
+@inject IIdentityProvider IdentityProvider
 
 <div class="master-panel">
     <div class="left-panel">
         <Map CampaignId="@CampaignId"></Map>
-        @if (isGamemaster)
+        @if (_isGamemaster)
         {
             <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
                 <i class="bi bi-map"></i>
@@ -25,14 +24,14 @@
                 <i class="bi bi-grid-3x3"></i>
             </button>
 
-            <MapSelection CampaignId="@CampaignId" @ref="mapSelection"/>
+            <MapSelection CampaignId="@CampaignId" @ref="_mapSelection"/>
         }
 
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
             <i class="bi bi-dice-6"></i>
         </button>
 
-        <DiceRoller CampaignId="@CampaignId" @ref="diceRoller"/>
+        <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller"/>
         <DiceRollVisualizer/>
     </div>
     <div class="right-panel">
@@ -40,7 +39,7 @@
         <div class="tab">
             <button class="@GetTabStyle(TabIndex.Chat)" @onclick="() => ActiveTab(TabIndex.Chat)">Chat</button>
 
-            @if (isGamemaster)
+            @if (_isGamemaster)
             {
                 <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">Skript
                 </button>
@@ -52,7 +51,7 @@
             }
         </div>
 
-        @switch (activeTabIndex)
+        @switch (_activeTabIndex)
         {
             case TabIndex.Script:
                 <div class="tabcontent">
@@ -81,7 +80,7 @@
     </div>
 </div>
 
-@if (isGamemaster)
+@if (_isGamemaster)
 {
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
@@ -111,13 +110,11 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    // ToDo: Get correct user id
-    private int userId = 1;
-    private bool isGamemaster;
-    private TabIndex activeTabIndex = TabIndex.Script;
+    private bool _isGamemaster;
+    private TabIndex _activeTabIndex = TabIndex.Script;
 
-    private MapSelection? mapSelection;
-    private DiceRoller? diceRoller;
+    private MapSelection? _mapSelection;
+    private DiceRoller? _diceRoller;
 
     private enum TabIndex
     {
@@ -129,37 +126,39 @@
 
     private void ActiveTab(TabIndex tabIndex)
     {
-        activeTabIndex = tabIndex;
+        _activeTabIndex = tabIndex;
     }
 
     private string GetTabStyle(TabIndex tabIndex)
     {
-        return tabIndex == activeTabIndex ? "active" : string.Empty;
+        return tabIndex == _activeTabIndex ? "active" : string.Empty;
     }
 
     private void ToggleDiceRoller()
     {
-        diceRoller?.Toggle();
+        _diceRoller?.Toggle();
     }
 
     private async Task ToggleMapSelection()
     {
-        if (mapSelection is not null)
+        if (_mapSelection is not null)
         {
-            await mapSelection.Toggle();
+            await _mapSelection.Toggle();
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await campaignOverviewApi.GetAsync(userId);
+        var user = await IdentityProvider.GetUserAsync();
+
+        var response = await CampaignOverviewApi.GetAsync(user.Id);
 
         response.Match(
             campaignOverview =>
             {
                 // ToDo: Add a better endpoint for that request
                 var campaign = campaignOverview.CampaignItems.FirstOrDefault(c => c.Id == CampaignId);
-                isGamemaster = campaign is null ? false : campaign.IsGamemaster;
+                _isGamemaster = campaign?.IsGamemaster ?? false;
             },
             errorCode =>
             {
