@@ -1,0 +1,40 @@
+<div>
+    @switch (_creationStep)
+    {
+        case CreationStep.Class:
+            break;
+        case CreationStep.Race:
+            break;
+        case CreationStep.Stats:
+            break;
+        default:
+            throw new ArgumentOutOfRangeException();
+    }
+</div>
+
+@code {
+
+    private enum CreationStep
+    {
+        Class,
+        Race,
+        Stats
+    }
+
+    private CreationStep _creationStep = CreationStep.Class;
+
+    private void GoToClass()
+    {
+        _creationStep = CreationStep.Class;
+    }
+    
+    private void GoToRace()
+    {
+        _creationStep = CreationStep.Race;
+    }
+    
+    private void GoToStats()
+    {
+        _creationStep = CreationStep.Stats;
+    }
+}

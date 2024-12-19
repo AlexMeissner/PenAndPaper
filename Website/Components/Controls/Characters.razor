@@ -7,6 +7,7 @@
 @inject ILogger<Characters> Logger
 
 <div class="characters">
+    <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
     @foreach (var character in _characters)
     {
         <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
@@ -46,6 +47,10 @@
     private void OnDragStart(CharacterOverviewItem character)
     {
         DragAndDrop.Data = character;
+    }
+
+    private async Task OnCreate()
+    {
     }
 
 }
