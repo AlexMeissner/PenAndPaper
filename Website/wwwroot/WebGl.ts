@@ -480,7 +480,7 @@ class RenderContext {
         this.grid = new Grid(this.gl);
         this.camera = new Camera(this.gl);
 
-        this.gl.clearColor(1.0, 0.5, 0.5, 1.0);
+        this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
 
         this.canvas.addEventListener("mousemove", (event: MouseEvent): void => this.onMouseChanged(event));
         this.canvas.addEventListener("mousedown", (event: MouseEvent): void => this.onMouseChanged(event));
