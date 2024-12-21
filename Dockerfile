@@ -1,29 +1,37 @@
-# BUILD AND PUBLISH PROJECT IN THE TARGET ENVIRONMENT
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
-# Set the working directory
-WORKDIR /app
+# Install Node.js in the build stage
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
+    apt-get install -y nodejs
 
-# Copy project file from local folder to docker container
+# Set working directory inside the container
+WORKDIR /src
+
+# Copy source files
 COPY . ./
 
-# Restore dependencies
-RUN dotnet restore ./Server/Server.csproj
+# Restore all projects
+RUN dotnet restore AppHost/AppHost.csproj
 
-# Build the application
-RUN dotnet publish ./Server/Server.csproj -c Release -o /app/publish
+# Build all projects in Release mode
+RUN dotnet build AppHost/AppHost.csproj -c Release -o /app/build
 
-# USE PUBLISHED PROJECT DATA TO BUILD DOCKER IMAGE INCLUDING ONLY THE REQUIRED FILES
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Publish the AppHost project, which includes starting the Web API and Blazor Server
+RUN dotnet publish AppHost/AppHost.csproj -c Release -o /app/publish
 
-# Set the working directory
+# Use an official .NET 9 runtime image for running
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS runtime
+
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy the published application
-COPY --from=build /app/publish .
+# Copy the published output from the build stage
+COPY --from=build /app/build ./
 
-# Expose the port that your API will run on
-EXPOSE 8080
+# Expose necessary ports for the Web API and Blazor app
+EXPOSE 80
 
-# Define the entry point for your application
-ENTRYPOINT ["dotnet", "Server.dll"]
+# Specify the entry point for the container
+ENTRYPOINT ["dotnet", "AppHost.dll"]
