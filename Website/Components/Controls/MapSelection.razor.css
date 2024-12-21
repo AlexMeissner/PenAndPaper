@@ -35,9 +35,14 @@
     color: #198754;
     font-size: 100px;
     position: relative;
-    top: 20%;
+    align-content: center;
+    height: 274px;
 }
 
-.card-footer-create {
-    top: 124px;
+.row {
+    --bs-gutter-x: 0;
+}
+
+.input-group {
+    margin-bottom: 20px;
 }

@@ -12,42 +12,47 @@
 @implements IDisposable
 
 <div class="backdrop" style="display: @_display">
-    <div class="input-group mb-3">
+    <div class="input-group">
         <input type="text" class="form-control" placeholder="Filter...">
         <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
     </div>
-    <div class="card-group">
-        <div class="card mb-3 text-center">
-            <i class="bi bi-plus-circle create-icon"></i>
-            <div class="card-footer card-footer-create btn-group" role="group">
-                <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
-                <InputFile id="fileInput" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
-                           style="display: none"></InputFile>
+    <div class="row row-cols-1 row-cols-md-4">
+        <div class="col">
+            <div class="card text-center">
+                <i class="bi bi-plus-circle create-icon"></i>
+                <div class="card-footer" role="group">
+                    <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
+                    <InputFile id="fileInput" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
+                               style="display: none"></InputFile>
+                </div>
             </div>
         </div>
+
         @foreach (var map in _mapOverviewItems)
         {
-            <div class="card mb-3">
-                <img src="data:image/png;base64, @map.ImageBase64" class="card-img-top" alt=""/>
-                <div class="card-body">
-                    @if (_editMap == map)
-                    {
-                        <form @onsubmit="OnSubmit" @onkeydown="OnKeyDown" @onblur="OnBlur">
-                            <input type="text" class="form-control" @bind="_editMapName"/>
-                        </form>
-                    }
-                    else
-                    {
-                        <h3 class="card-title" @onclick="() => OnEdit(map)">@map.Name</h3>
-                    }
-                </div>
-                <div class="card-footer btn-group" role="group">
-                    <button type="button" class="btn btn-outline-success" @onclick="async () => await OnPlay(map)">
-                        <i class="bi bi-play-fill"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger" @onclick="async () => await OnDelete(map)">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
+            <div class="col">
+                <div class="card">
+                    <img src="data:image/png;base64, @map.ImageBase64" class="card-img-top" alt=""/>
+                    <div class="card-body">
+                        @if (_editMap == map)
+                        {
+                            <form @onsubmit="OnSubmit" @onkeydown="OnKeyDown" @onblur="OnBlur">
+                                <input type="text" class="form-control" @bind="_editMapName"/>
+                            </form>
+                        }
+                        else
+                        {
+                            <h3 class="card-title" @onclick="() => OnEdit(map)">@map.Name</h3>
+                        }
+                    </div>
+                    <div class="card-footer btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success" @onclick="async () => await OnPlay(map)">
+                            <i class="bi bi-play-fill"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" @onclick="async () => await OnDelete(map)">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         }
