@@ -1,4 +1,5 @@
 ﻿using DataTransfer.Dice;
+using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
 using DataTransfer.Token;
@@ -10,6 +11,7 @@ namespace Website.Services;
 internal interface ICampaignEvents
 {
     event Func<DiceRolledEventArgs, Task>? DiceRolled;
+    event Func<GridChangedEventArgs, Task>? GridChanged;
     event Func<MapChangedEventArgs, Task>? MapChanged;
     event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     event Func<MouseMoveEventArgs, Task>? MouseMoved;
@@ -24,6 +26,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         new HubConnectionBuilder().WithUrl("https://localhost:7099/CampaignUpdates").Build();
 
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
+    public event Func<GridChangedEventArgs, Task>? GridChanged;
     public event Func<MapChangedEventArgs, Task>? MapChanged;
     public event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     public event Func<MouseMoveEventArgs, Task>? MouseMoved;
@@ -33,6 +36,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public CampaignEvents()
     {
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
+        _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
         _hubConnection.On<MapCollectionChangedEventArgs>("MapCollectionChanged", OnMapCollectionChanged);
         _hubConnection.On<MouseMoveEventArgs>("MouseMoved", OnMouseMoved);
@@ -51,6 +55,14 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         if (DiceRolled is not null)
         {
             await DiceRolled.Invoke(e);
+        }
+    }
+
+    private async Task OnGridChanged(GridChangedEventArgs e)
+    {
+        if (GridChanged is not null)
+        {
+            await GridChanged.Invoke(e);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿@using DataTransfer.Character
+@using DataTransfer.Grid
 @using DataTransfer.Map
 @using DataTransfer.Monster
 @using DataTransfer.Mouse
@@ -10,6 +11,7 @@
 @using Website.Services.Graphics
 
 @inject IMapApi MapApi
+@inject IGridApi GridApi
 @inject IMouseApi MouseApi
 @inject IActiveMapApi ActiveMapApi
 @inject ITokenApi TokenApi
@@ -17,6 +19,8 @@
 @inject ICampaignEvents CampaignEvents
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Map> Logger
+
+@implements IDisposable
 
 <canvas id="@CanvasId"
         tabindex="0"
@@ -29,6 +33,34 @@
         @ondrop="OnDrop"
         ondragover="event.preventDefault()">
 </canvas>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Grid Einstellungen</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="input-group mb-3">
+            <span class="input-group-text">Aktiv</span>
+            <div class="input-group-text">
+                <input class="form-check-input mt-0" type="checkbox" value="@GridIsActive"
+                       @onchange="OnGridActivityChanged">
+            </div>
+        </div>
+        <!--
+        <div class="input-group mb-3">
+            <span class="input-group-text">Farbe</span>
+            <input type="color" class="form-control" value="#000000"/>
+        </div>
+        -->
+        <div class="input-group mb-3">
+            <span class="input-group-text">Größe</span>
+            <input type="range" class="form-range form-control" min="0" max="100" step="1.0" value="@GridSize"
+                   @onchange="OnGridSizeChanged">
+            <input type="number" class="form-control" value="@GridSize" @onchange="OnGridSizeChanged">
+        </div>
+    </div>
+</div>
 
 <script>
     const canvas = document.getElementById("renderCanvas");
@@ -44,9 +76,10 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    private int _mapId;
+    private int GridSize { get; set; }
+    private bool GridIsActive { get; set; }
 
-    private int _gridSize;
+    private int _mapId;
     private Vector2D _selectedTokenPosition = new(0, 0);
     private Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
@@ -62,6 +95,7 @@
 
     public void Dispose()
     {
+        CampaignEvents.GridChanged -= OnGridChanged;
         CampaignEvents.MapChanged -= OnMapChanged;
         CampaignEvents.MouseMoved -= OnMouseMoved;
         CampaignEvents.TokenAdded -= OnTokenAdded;
@@ -70,15 +104,21 @@
 
     protected override void OnInitialized()
     {
+        CampaignEvents.GridChanged += OnGridChanged;
         CampaignEvents.MapChanged += OnMapChanged;
         CampaignEvents.MouseMoved += OnMouseMoved;
         CampaignEvents.TokenAdded += OnTokenAdded;
         CampaignEvents.TokenMoved += OnTokenMoved;
     }
 
+    private async Task OnGridChanged(GridChangedEventArgs e)
+    {
+        float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
+        await RenderContext.UpdateGrid(e.IsActive, e.Size, color);
+    }
+
     private async Task OnMapChanged(MapChangedEventArgs e)
     {
-        _mapId = e.MapId;
         await LoadActiveMap(e.MapId);
         await LoadTokens(e.MapId);
     }
@@ -169,6 +209,8 @@
 
         if (map is null) return;
 
+        _mapId = mapId;
+
         var dimensions = ByteArrayToImageSizeConverter.Convert(map.ImageData);
 
         float[] vertices =
@@ -204,7 +246,8 @@
         float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
         await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
 
-        _gridSize = map.Grid.Size;
+        GridIsActive = map.Grid.IsActive;
+        GridSize = map.Grid.Size;
     }
 
     private async Task<MouseIndicator> CreateMouseIndicator()
@@ -351,8 +394,8 @@
 
     private Vector2D GetGridSnapPosition(Vector2D position)
     {
-        var x = (int)position.X / _gridSize * _gridSize;
-        var y = (int)position.Y / _gridSize * _gridSize;
+        var x = (int)position.X / GridSize * GridSize;
+        var y = (int)position.Y / GridSize * GridSize;
         return new Vector2D(x, y);
     }
 
@@ -422,6 +465,28 @@
         {
             await TokenApi.DeleteAsync(_selectedToken.Id);
             _selectedToken = null;
+        }
+    }
+
+    private async Task OnGridActivityChanged(ChangeEventArgs e)
+    {
+        if (e.Value is bool isActive)
+        {
+            GridIsActive = isActive;
+
+            var payload = new GridUpdateDto(_mapId, GridIsActive, GridSize);
+            await GridApi.PutAsync(payload);
+        }
+    }
+
+    private async Task OnGridSizeChanged(ChangeEventArgs e)
+    {
+        if (e.Value is { } value && value.ToString() is { } valueText)
+        {
+            GridSize = int.Parse(valueText);
+
+            var payload = new GridUpdateDto(_mapId, GridIsActive, GridSize);
+            await GridApi.PutAsync(payload);
         }
     }
 

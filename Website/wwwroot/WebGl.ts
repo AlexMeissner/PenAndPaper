@@ -128,7 +128,7 @@ class Camera extends UniformBuffer {
         const offsetY = cursorY * this.zoomFactor + this.y;
 
         this.zoomLevel += direction < 0.0 ? 1 : -1;
-        this.zoomFactor = 1.0 - this.zoomLevel * this.zoomSpeed;
+        this.zoomFactor = Math.exp(-this.zoomLevel * this.zoomSpeed);
 
         this.x = cursorX * this.zoomFactor - offsetX;
         this.y = -cursorY * this.zoomFactor + offsetY;
