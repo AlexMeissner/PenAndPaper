@@ -20,15 +20,17 @@ void main()
 {
     fragColor = texture(sampler, texCoord);
 
-    if (grid.isActive)
+    if (!grid.isActive)
     {
-        vec2 gridPosition = vec2(screenPosition.x, -screenPosition.y);
-        float dx = min(mod(gridPosition.x, grid.size), grid.size - mod(gridPosition.x, grid.size));
-        float dy = min(mod(gridPosition.y, grid.size), grid.size - mod(gridPosition.y, grid.size));
-
-        float minDistance = clamp(min(dx, dy), 0.0, lineThickness);
-        float gridAlpha = 1.0 - (minDistance / lineThickness);
-
-        fragColor = mix(fragColor, grid.color, gridAlpha);
+        return;
     }
+
+    vec2 gridPosition = vec2(screenPosition.x, -screenPosition.y);
+    vec2 offset = mod(gridPosition, grid.size);
+    vec2 minimalOffset = min(offset, grid.size - offset);
+
+    float minDistance = min(minimalOffset.x, minimalOffset.y);
+    float gridAlpha = smoothstep(lineThickness, 0.0, minDistance);
+
+    fragColor = mix(fragColor, grid.color, gridAlpha);
 }
