@@ -6,32 +6,61 @@
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Characters> Logger
 
-<div class="characters">
-    <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
-    @foreach (var character in _characters)
-    {
-        <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
-            <img class="character-image" src="data:image/png;base64,@character.ImageBase64" alt="Icon"/>
-            <div class="character-texts">
-                <div class="character-text-row">
-                    <div class="character-text-title">Spieler</div>
-                    <div class="character-name">@character.PlayerName</div>
-                </div>
-                <div class="character-text-row">
-                    <div class="character-text-title">Charakter</div>
-                    <div class="character-name">@character.CharacterName</div>
+@if (_isCreatingCharacter)
+{
+    <CharacterCreation CampaignId="CampaignId" OnCreated="OnCreated"></CharacterCreation>
+}
+else
+{
+    <div class="characters">
+        <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
+        @foreach (var character in _characters)
+        {
+            <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
+                <img class="character-image" src="data:image/png;base64,@character.ImageBase64" alt="Icon"/>
+                <div class="character-texts">
+                    <div class="character-text-row">
+                        <div class="character-text-title">Spieler</div>
+                        <div class="character-name">@character.PlayerName</div>
+                    </div>
+                    <div class="character-text-row">
+                        <div class="character-text-title">Charakter</div>
+                        <div class="character-name">@character.CharacterName</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
 
 @code {
     [Parameter] public int CampaignId { get; set; }
 
     private List<CharacterOverviewItem> _characters = [];
+    private bool _isCreatingCharacter = false;
 
     protected override async Task OnInitializedAsync()
+    {
+        await UpdateCharacterList();
+    }
+
+    private void OnDragStart(CharacterOverviewItem character)
+    {
+        DragAndDrop.Data = character;
+    }
+
+    private void OnCreate()
+    {
+        _isCreatingCharacter = true;
+    }
+    
+    private async Task OnCreated()
+    {
+        await UpdateCharacterList();
+        _isCreatingCharacter = false;
+    }
+
+    private async Task UpdateCharacterList()
     {
         var response = await CharacterApi.GetOverviewAsync(CampaignId);
 
@@ -42,15 +71,6 @@
                 Logger.LogError("Failed to get character overview ({statusCode})", statusCode);
                 return [];
             });
-    }
-
-    private void OnDragStart(CharacterOverviewItem character)
-    {
-        DragAndDrop.Data = character;
-    }
-
-    private async Task OnCreate()
-    {
     }
 
 }

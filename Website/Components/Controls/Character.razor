@@ -1,5 +1,55 @@
-<h3>Character @CampaignId</h3>
+@using DataTransfer.Character
+@using Website.Services.API
+
+@inject ICharacterApi CharacterApi
+@inject ILogger<Character> Logger
+
+@if (_character is null)
+{
+    <CharacterCreation CampaignId="CampaignId" OnCreated="OnCreated"></CharacterCreation>
+}
+else
+{
+    <div>
+        <image class="character-image" alt="" src="data:image/png;base64,@_character.Image"/>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Name</span>
+            <span class="input-group-text">@_character.Name</span>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Klasse</span>
+            <span class="input-group-text">@_character.Class</span>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Rasse</span>
+            <span class="input-group-text">@_character.Race</span>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter] public int CampaignId { get; set; }
+
+    private CharacterCreationDto? _character;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var characterId = 1000;
+        var response = await CharacterApi.GetAsync(characterId);
+
+        response.Match(
+            character => { _character = character; },
+            statusCode => { Logger.LogError("Failed to receive character information({statusCode})", statusCode); }
+        );
+    }
+
+    private Task OnCreated(CharacterCreationDto character)
+    {
+        _character = character;
+        return Task.CompletedTask;
+    }
+
 }

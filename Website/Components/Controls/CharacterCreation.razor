@@ -1,40 +1,105 @@
+@using DataTransfer.Character
+@using Website.Services
+@using Website.Services.API
+
+@inject IJSRuntime JsRuntime
+@inject ICharacterApi CharacterApi
+@inject IIdentityProvider IdentityProvider
+
 <div>
-    @switch (_creationStep)
-    {
-        case CreationStep.Class:
-            break;
-        case CreationStep.Race:
-            break;
-        case CreationStep.Stats:
-            break;
-        default:
-            throw new ArgumentOutOfRangeException();
-    }
+    <input type="image" class="character-image" alt="Bild auswählen" src="data:image/png;base64,@ImageBase64"
+           @onclick="OnLoadImage"/>
+    <InputFile id="fileInputCharacterCreation" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
+               style="display: none"></InputFile>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Name</span>
+        <input type="text" class="form-control" @bind="Name">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Klasse</span>
+        <InputSelect class="input-group-input-select" @bind-Value="Class">
+            @foreach (var dndClass in Enum.GetValues(typeof(Class)))
+            {
+                <option value="@dndClass">@dndClass</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Rasse</span>
+        <InputSelect class="input-group-input-select" @bind-Value="Race">
+            @foreach (var dndRace in Enum.GetValues(typeof(Race)))
+            {
+                <option value="@dndRace">@dndRace</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
 </div>
 
+<script>
+    function triggerFileInput() {
+        document.getElementById("fileInputCharacterCreation").click();
+    }
+</script>
+
 @code {
+    [Parameter] public int CampaignId { get; set; }
+    [Parameter] public EventCallback<CharacterCreationDto> OnCreated { get; set; }
 
-    private enum CreationStep
+    private string Name { get; set; } = "";
+    private Class Class { get; set; } = Class.Barbarian;
+    private Race Race { get; set; } = Race.Human;
+
+    private byte[] _image = [];
+    private string ImageBase64 => Convert.ToBase64String(_image);
+
+    private async Task OnCreate()
     {
-        Class,
-        Race,
-        Stats
+        var user = await IdentityProvider.GetUserAsync();
+
+        var character = new CharacterCreationDto(
+            CampaignId,
+            user.Id,
+            Name,
+            Class,
+            Race,
+            _image,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        );
+
+        await CharacterApi.PostAsync(character);
+        await OnCreated.InvokeAsync(character);
     }
 
-    private CreationStep _creationStep = CreationStep.Class;
+    private async Task OnLoadImage()
+    {
+        await JsRuntime.InvokeVoidAsync("triggerFileInput");
+    }
 
-    private void GoToClass()
+    private async Task LoadImage(InputFileChangeEventArgs e)
     {
-        _creationStep = CreationStep.Class;
+        var file = e.File;
+
+        await using var stream = file.OpenReadStream(maxAllowedSize: file.Size);
+
+        _image = new byte[file.Size];
+        var totalBytesRead = 0;
+
+        while (totalBytesRead < file.Size)
+        {
+            var bytesRead = await stream.ReadAsync(_image, totalBytesRead, (int)(file.Size - totalBytesRead));
+            totalBytesRead += bytesRead;
+            if (bytesRead == 0) break;
+        }
     }
-    
-    private void GoToRace()
-    {
-        _creationStep = CreationStep.Race;
-    }
-    
-    private void GoToStats()
-    {
-        _creationStep = CreationStep.Stats;
-    }
+
 }

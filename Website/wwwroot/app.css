@@ -67,3 +67,10 @@ h1:focus {
     background: rgba(0, 0, 0, 0.6);
     border-radius: 5px;
 }
+
+.input-group-input-select {
+    background-color: white;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0;
+    flex: 1 1 auto;
+}
