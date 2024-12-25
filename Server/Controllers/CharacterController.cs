@@ -12,32 +12,65 @@ namespace Server.Controllers
     public class CharacterController(SQLDatabase dbContext, IUpdateNotifier updateNotifier) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> Get(int characterId)
+        public async Task<IActionResult> Get(int? characterId, int? userId, int? campaignId)
         {
-            var character = await dbContext.Characters
+            if (characterId is not null)
+            {
+                var character = await dbContext.Characters
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == characterId);
 
-            if (character is null)
+                if (character is null)
+                {
+                    return NotFound(characterId);
+                }
+
+                var payload = new CharacterCreationDto(
+                    character.CampaignId,
+                    character.User.Id,
+                    character.Name,
+                    character.Class,
+                    character.Race,
+                    character.Image,
+                    character.Strength,
+                    character.Dexterity,
+                    character.Constitution,
+                    character.Intelligence,
+                    character.Wisdom,
+                    character.Charisma);
+
+                return Ok(payload);
+            }
+            else if (userId is not null && campaignId is not null)
             {
-                return NotFound(characterId);
+                var character = await dbContext.Characters
+                .Include(c => c.User)
+                .Include(c => c.Campaign)
+                .FirstOrDefaultAsync(c => c.Campaign.Id == campaignId && c.User.Id == userId);
+
+                if (character is null)
+                {
+                    return NotFound();
+                }
+
+                var payload = new CharacterCreationDto(
+                    character.CampaignId,
+                    character.User.Id,
+                    character.Name,
+                    character.Class,
+                    character.Race,
+                    character.Image,
+                    character.Strength,
+                    character.Dexterity,
+                    character.Constitution,
+                    character.Intelligence,
+                    character.Wisdom,
+                    character.Charisma);
+
+                return Ok(payload);
             }
 
-            var payload = new CharacterCreationDto(
-                character.CampaignId,
-                character.User.Id,
-                character.Name,
-                character.Class,
-                character.Race,
-                character.Image,
-                character.Strength,
-                character.Dexterity,
-                character.Constitution,
-                character.Intelligence,
-                character.Wisdom,
-                character.Charisma);
-
-            return Ok(payload);
+            return BadRequest("Invalid parameters.");
         }
 
         [HttpPost]

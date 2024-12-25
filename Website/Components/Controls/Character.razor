@@ -1,6 +1,9 @@
+@using System.Net
 @using DataTransfer.Character
+@using Website.Services
 @using Website.Services.API
 
+@inject IIdentityProvider IdentityProvider
 @inject ICharacterApi CharacterApi
 @inject ILogger<Character> Logger
 
@@ -11,7 +14,7 @@
 else
 {
     <div>
-        <image class="character-image" alt="" src="data:image/png;base64,@_character.Image"/>
+        <img class="character-image" alt="" src="data:image/png;base64,@ImageBase64"/>
 
         <div class="input-group mb-3">
             <span class="input-group-text">Name</span>
@@ -34,15 +37,23 @@ else
     [Parameter] public int CampaignId { get; set; }
 
     private CharacterCreationDto? _character;
+    private string ImageBase64 => _character is null ? "" : Convert.ToBase64String(_character.Image);
 
     protected override async Task OnInitializedAsync()
     {
-        var characterId = 1000;
-        var response = await CharacterApi.GetAsync(characterId);
+        var user = await IdentityProvider.GetUserAsync();
+        var response = await CharacterApi.GetAsync(user.Id, CampaignId);
 
         response.Match(
             character => { _character = character; },
-            statusCode => { Logger.LogError("Failed to receive character information({statusCode})", statusCode); }
+            statusCode =>
+            {
+                // Initially, no player has a character, yet
+                if (statusCode != HttpStatusCode.NotFound)
+                {
+                    Logger.LogError("Failed to receive character information({statusCode})", statusCode);
+                }
+            }
         );
     }
 
