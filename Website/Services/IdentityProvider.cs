@@ -89,9 +89,7 @@ public class IdentityProvider(
                 return null;
             });
 
-        if (userId is null) throw new NullReferenceException("User id not found");
-
-        return new UsersDto((int)userId, name, email);
+        return userId is null ? null : new UsersDto((int)userId, name, email);
     }
 
     private async Task Register()
