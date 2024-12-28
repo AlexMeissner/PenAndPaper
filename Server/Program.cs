@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Server.Extensions;
@@ -23,6 +24,7 @@ try
              .CreateLogger();
     builder.Host.UseSerilog(Log.Logger);
 
+    builder.Services.AddOpenApi();
     builder.Services.AddDatabase();
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
@@ -41,6 +43,7 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
+        app.MapScalarApiReference();
         app.UseHttpsRedirection();
     }
 
