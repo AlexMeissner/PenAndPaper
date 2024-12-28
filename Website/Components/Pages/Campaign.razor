@@ -8,6 +8,8 @@
 @inject ICampaignOverviewApi CampaignOverviewApi
 @inject IIdentityProvider IdentityProvider
 
+<PageTitle>@_title</PageTitle>
+
 <div class="master-panel">
     <div class="left-panel">
         <Map CampaignId="@CampaignId"></Map>
@@ -90,6 +92,7 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
 
+    private string _title = "Unbekannte Kampagne";
     private bool _isGamemaster;
     private TabIndex _activeTabIndex = TabIndex.Chat;
 
@@ -134,19 +137,25 @@
 
         var response = await CampaignOverviewApi.GetAsync(user.Id);
 
-        response.Match(
+        var campaign = response.Match(
             campaignOverview =>
             {
                 // ToDo: Add a better endpoint for that request
-                var campaign = campaignOverview.CampaignItems.FirstOrDefault(c => c.Id == CampaignId);
-                _isGamemaster = campaign?.IsGamemaster ?? false;
+                return campaignOverview.CampaignItems.FirstOrDefault(c => c.Id == CampaignId);
             },
             errorCode =>
             {
                 // ToDo: Log + Toast
                 Console.WriteLine(errorCode);
+                return null;
             }
         );
+
+        if (campaign is not null)
+        {
+            _title = campaign?.Name ?? "Unbekannte Kampagne";
+            _isGamemaster = campaign?.IsGamemaster ?? false;
+        }
     }
 
 }
