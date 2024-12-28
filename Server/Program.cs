@@ -43,7 +43,7 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
-        app.MapScalarApiReference();
+        app.MapScalarApiReference(); // https://localhost:7099/scalar/v1
         app.UseHttpsRedirection();
     }
 
