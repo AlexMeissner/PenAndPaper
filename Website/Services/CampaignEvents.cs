@@ -22,8 +22,7 @@ internal interface ICampaignEvents
 [ScopedService]
 internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
 {
-    private readonly HubConnection _hubConnection =
-        new HubConnectionBuilder().WithUrl("https://localhost:7099/CampaignUpdates").Build();
+    private readonly HubConnection _hubConnection;
 
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
     public event Func<GridChangedEventArgs, Task>? GridChanged;
@@ -33,8 +32,10 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public event Func<TokenAddedEventArgs, Task>? TokenAdded;
     public event Func<TokenMovedEventArgs, Task>? TokenMoved;
 
-    public CampaignEvents()
+    public CampaignEvents(IEndPointProvider endPointProvider)
     {
+        var url = endPointProvider.BaseURL + "CampaignUpdates";
+        _hubConnection = new HubConnectionBuilder().WithUrl(url).Build();
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
