@@ -4,33 +4,12 @@ using static Website.Services.ServiceExtension;
 namespace Website.Services.Sound;
 
 [ScopedService]
-public class SoundContext(ILogger<SoundContext> logger, IJSRuntime jsRuntime) : IAsyncDisposable
+public class SoundContext(IJSRuntime jsRuntime, IEndPointProvider endpointProvider)
 {
-    private IJSObjectReference? _soundContext;
-
-    public async Task<bool> Initialize()
+    public async Task<Sound> CreateSound(string fileName, bool isLooped)
     {
-        _soundContext = await jsRuntime.InvokeAsync<IJSObjectReference>("createSoundContext");
-
-        if (_soundContext is not null) return true;
-
-        logger.LogError("Could not create a sound context");
-        return false;
-    }
-
-    public async Task<Sound> CreateSound(string filePath, bool isLooped)
-    {
-        var jsSound = await _soundContext!.InvokeAsync<IJSObjectReference>("createSound", filePath, isLooped);
+        var url = $"{endpointProvider.BaseURL}Audio?name={fileName}";
+        var jsSound = await jsRuntime.InvokeAsync<IJSObjectReference>("createSound", url, isLooped);
         return new Sound(jsSound);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_soundContext is not null)
-        {
-            await _soundContext.InvokeVoidAsync("destroy");
-        }
-
-        GC.SuppressFinalize(this);
     }
 }

@@ -1,0 +1,24 @@
+<div class="backdrop" style="display: @_display">
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Filter...">
+        <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int CampaignId { get; set; }
+
+    private string _display = "none";
+    
+    public async Task Toggle()
+    {
+        _display = _display == "none" ? "block" : "none";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Close()
+    {
+        _display = "none";
+        await InvokeAsync(StateHasChanged);
+    }
+}

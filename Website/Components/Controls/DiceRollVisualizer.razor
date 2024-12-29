@@ -4,6 +4,7 @@
 
 @inject ICampaignEvents CampaignEvents
 @inject SoundContext SoundContext
+@inject IEndPointProvider EndpointProvider
 
 @implements IDisposable
 
@@ -103,20 +104,12 @@
         CampaignEvents.DiceRolled += OnDiceRolled;
     }
 
-    // ToDo: How to enable sounds?
-    // * Maybe need to disable authentication for testing
-    // * ``curl -I -r 0-100 https://localhost:7287/sounds/effects/dice/RollSuccess.mp3`` does not return the asset otherwise
-    // * Not sure if that is a problem
-    // * Wait for https://github.com/dotnet/aspnetcore/issues/58829 to be fixed
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    // ToDo: Das sollte nur exakt 1x beim öffnen der Webseite passieren
-    //    // await SoundContext.Initialize();
-    //}
-
     private async Task OnDiceRolled(DiceRolledEventArgs e)
     {
-        //var successSound = await SoundContext.CreateSound("sounds/effects/dice/RollSuccess.mp3", false);
+        await using var rollFail = await SoundContext.CreateSound("RollFail", false);
+        await using var rollSuccess = await SoundContext.CreateSound("RollSuccess", false);
+        await using var rollMin = await SoundContext.CreateSound("RollMin", false);
+        await using var rollMax = await SoundContext.CreateSound("RollMax", false);
 
         var result = new RollResult(e);
         _results.Add(result);
@@ -126,11 +119,27 @@
         const int totalRevealTime = 3000;
         var delay = totalRevealTime / e.Successes.Count();
 
+        var isCriticalSuccess = e.Successes.All(x => x);
+        var isCriticalFailure = e.Successes.Count(x => x) == 1;
+
         for (var i = 0; i < e.Successes.Count(); i++)
         {
             await Task.Delay(delay);
-            //await successSound.Play();
-            result.CssClass[i] = e.Successes.ElementAt(i) ? SUCCESS_CLASS : FAILED_CLASS;
+
+            var isSuccess = e.Successes.ElementAt(i);
+
+            if (i == e.Successes.Count() - 1 && (isCriticalFailure || isCriticalSuccess))
+            {
+                var sound = isCriticalSuccess ? rollMax : rollMin;
+                await sound.Play();
+            }
+            else
+            {
+                var sound = isSuccess ? rollSuccess : rollFail;
+                await sound.Play();
+            }
+
+            result.CssClass[i] = isSuccess ? SUCCESS_CLASS : FAILED_CLASS;
             await InvokeAsync(StateHasChanged);
         }
 

@@ -70,11 +70,11 @@ static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 {
     try
     {
-        Log.Fatal((Exception)e.ExceptionObject, "Unhandled excpetion");
+        Log.Fatal((Exception)e.ExceptionObject, "Unhandled exception");
     }
     catch (Exception exception)
     {
-        Log.Fatal(exception, "Could not retrieve information from unhandled excpetion");
+        Log.Fatal(exception, "Could not retrieve information from unhandled exception");
     }
 
     Log.CloseAndFlush();

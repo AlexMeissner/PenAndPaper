@@ -2,7 +2,7 @@ using Microsoft.JSInterop;
 
 namespace Website.Services.Sound;
 
-public class Sound(IJSObjectReference jsObjectReference)
+public sealed class Sound(IJSObjectReference jsObjectReference) : IAsyncDisposable
 {
     public async Task FadeIn(double duration, double volume)
     {
@@ -23,4 +23,6 @@ public class Sound(IJSObjectReference jsObjectReference)
     {
         await jsObjectReference.InvokeVoidAsync("setVolume", volume);
     }
+
+    public async ValueTask DisposeAsync() => await jsObjectReference.DisposeAsync();
 }

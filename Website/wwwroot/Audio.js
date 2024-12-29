@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class Sound {
     constructor(filePath, isLooped) {
+        console.log("Sound: " + filePath);
         this.audio = new Audio(filePath);
         this.audio.preload = "auto";
         this.audio.loop = isLooped;
@@ -44,14 +45,6 @@ class Sound {
         this.audio.volume = volume;
     }
 }
-class SoundContext {
-    createSound(filePath, isLooped) {
-        return new Sound(filePath, isLooped);
-    }
-    destroy() {
-    }
+function createSound(filePath, isLooped) {
+    return new Sound(filePath, isLooped);
 }
-function createSoundContext() {
-    return new SoundContext();
-}
-// Well fuck... https://github.com/dotnet/aspnetcore/issues/58829

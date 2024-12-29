@@ -2,6 +2,7 @@ class Sound {
     audio: HTMLAudioElement;
 
     public constructor(filePath: string, isLooped: boolean) {
+        console.log("Sound: " + filePath);
         this.audio = new Audio(filePath);
         this.audio.preload = "auto";
         this.audio.loop = isLooped;
@@ -39,18 +40,6 @@ class Sound {
     }
 }
 
-class SoundContext {
-    public createSound(filePath: string, isLooped: boolean): Sound {
-        return new Sound(filePath, isLooped);
-    }
-
-    public destroy(): void {
-
-    }
+function createSound(filePath: string, isLooped: boolean): Sound {
+    return new Sound(filePath, isLooped);
 }
-
-function createSoundContext(): SoundContext {
-    return new SoundContext();
-}
-
-// Well fuck... https://github.com/dotnet/aspnetcore/issues/58829

@@ -18,7 +18,7 @@
             <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
                 <i class="bi bi-map"></i>
             </button>
-            <button class="btn btn-overlay btn-sound">
+            <button class="btn btn-overlay btn-sound" @onclick="ToggleSoundSelection">
                 <i class="bi bi-music-note-beamed"></i>
             </button>
             <button class="btn btn-overlay btn-grid" type="button" data-bs-toggle="offcanvas"
@@ -27,6 +27,7 @@
             </button>
 
             <MapSelection CampaignId="@CampaignId" @ref="_mapSelection"/>
+            <Soundboard CampaignId="@CampaignId" @ref="_soundboard"/>
         }
 
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
@@ -97,6 +98,7 @@
     private TabIndex _activeTabIndex = TabIndex.Chat;
 
     private MapSelection? _mapSelection;
+    private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;
 
     private enum TabIndex
@@ -128,6 +130,14 @@
         if (_mapSelection is not null)
         {
             await _mapSelection.Toggle();
+        }
+    }
+
+    private async Task ToggleSoundSelection()
+    {
+        if (_soundboard is not null)
+        {
+            await _soundboard.Toggle();
         }
     }
 
