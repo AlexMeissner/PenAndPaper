@@ -44,6 +44,10 @@ class Sound {
     setVolume(volume) {
         this.audio.volume = volume;
     }
+    stop() {
+        this.audio.pause();
+        this.audio.currentTime = 0;
+    }
 }
 function createSound(filePath, isLooped) {
     return new Sound(filePath, isLooped);

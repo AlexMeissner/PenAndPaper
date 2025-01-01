@@ -24,5 +24,10 @@ public sealed class Sound(IJSObjectReference jsObjectReference) : IAsyncDisposab
         await jsObjectReference.InvokeVoidAsync("setVolume", volume);
     }
 
+    public async Task Stop()
+    {
+        await jsObjectReference.InvokeVoidAsync("stop");
+    }
+
     public async ValueTask DisposeAsync() => await jsObjectReference.DisposeAsync();
 }

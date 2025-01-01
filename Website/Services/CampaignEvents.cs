@@ -2,6 +2,7 @@
 using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
+using DataTransfer.Sound;
 using DataTransfer.Token;
 using Microsoft.AspNetCore.SignalR.Client;
 using static Website.Services.ServiceExtension;
@@ -15,6 +16,8 @@ internal interface ICampaignEvents
     event Func<MapChangedEventArgs, Task>? MapChanged;
     event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     event Func<MouseMoveEventArgs, Task>? MouseMoved;
+    event Func<SoundStartedEventArgs, Task>? SoundStarted;
+    event Func<SoundStoppedEventArgs, Task>? SoundStopped;
     event Func<TokenAddedEventArgs, Task>? TokenAdded;
     event Func<TokenMovedEventArgs, Task>? TokenMoved;
 }
@@ -29,6 +32,8 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public event Func<MapChangedEventArgs, Task>? MapChanged;
     public event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     public event Func<MouseMoveEventArgs, Task>? MouseMoved;
+    public event Func<SoundStartedEventArgs, Task>? SoundStarted;
+    public event Func<SoundStoppedEventArgs, Task>? SoundStopped;
     public event Func<TokenAddedEventArgs, Task>? TokenAdded;
     public event Func<TokenMovedEventArgs, Task>? TokenMoved;
 
@@ -41,9 +46,11 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
         _hubConnection.On<MapCollectionChangedEventArgs>("MapCollectionChanged", OnMapCollectionChanged);
         _hubConnection.On<MouseMoveEventArgs>("MouseMoved", OnMouseMoved);
+        _hubConnection.On<SoundStartedEventArgs>("SoundStarted", OnSoundStarted);
+        _hubConnection.On<SoundStoppedEventArgs>("SoundStopped", OnSoundStopped);
         _hubConnection.On<TokenAddedEventArgs>("TokenAdded", OnTokenAdded);
         _hubConnection.On<TokenMovedEventArgs>("TokenMoved", OnTokenMoved);
-        _hubConnection.StartAsync(); // ToDo: Async in constructr
+        _hubConnection.StartAsync(); // ToDo: Async in constructor
     }
 
     public async ValueTask DisposeAsync()
@@ -88,6 +95,22 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         if (MouseMoved is not null)
         {
             await MouseMoved.Invoke(e);
+        }
+    }
+
+    private async Task OnSoundStarted(SoundStartedEventArgs e)
+    {
+        if (SoundStarted is not null)
+        {
+            await SoundStarted.Invoke(e);
+        }
+    }
+
+    private async Task OnSoundStopped(SoundStoppedEventArgs e)
+    {
+        if (SoundStopped is not null)
+        {
+            await SoundStopped.Invoke(e);
         }
     }
 

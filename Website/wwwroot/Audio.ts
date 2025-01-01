@@ -38,6 +38,11 @@ class Sound {
     public setVolume(volume: number): void {
         this.audio.volume = volume;
     }
+
+    public stop(): void {
+        this.audio.pause();
+        this.audio.currentTime = 0;
+    }
 }
 
 function createSound(filePath: string, isLooped: boolean): Sound {

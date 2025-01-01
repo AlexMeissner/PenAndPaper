@@ -2,6 +2,7 @@
 using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
+using DataTransfer.Sound;
 using DataTransfer.Token;
 using Microsoft.AspNetCore.SignalR;
 
@@ -22,6 +23,8 @@ public interface ICampaignUpdate
     Task MapChanged(MapChangedEventArgs e);
     Task MapCollectionChanged(MapCollectionChangedEventArgs e);
     Task MouseMoved(MouseMoveEventArgs e);
+    Task SoundStarted(SoundStartedEventArgs e);
+    Task SoundStopped(SoundStoppedEventArgs e);
     Task TokenAdded(TokenAddedEventArgs e);
     Task TokenMoved(TokenMovedEventArgs e);
 }
