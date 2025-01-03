@@ -686,3 +686,5 @@ fabric.properties
 
 *.db-shm
 *.db-wal
+
+*.mp3
