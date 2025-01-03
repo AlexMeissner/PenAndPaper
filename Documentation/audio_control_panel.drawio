@@ -1,0 +1,100 @@
+<mxfile host="65bd71144e">
+    <diagram id="sSWx2ltSZh_H9-IXxe8D" name="Page-1">
+        <mxGraphModel dx="2026" dy="1139" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="13" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="680" width="680" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="80" width="680" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="Regen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="510" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Schritte" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Donner" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="510" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Schritte im Schnee" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Leichter Kampf" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="710" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Mittel-schwerer Kampf" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="710" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Schwerer Kampf" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="710" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Boss Kampf" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="710" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="Loops" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="Songs" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="640" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Tropfen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="510" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="Spooky" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="210" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="Grillen zirpen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="Bäume im Wind" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="210" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Wind" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="210" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="Lagerfeuer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Brand" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Traurig" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="790" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="Bach" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="410" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="Fluss" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="410" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="Pferde trampeln" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="Kutsche" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="110" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Taverne" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="790" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="Gespräche" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="790" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="Möwen" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="410" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="Sturm" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="210" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="Meer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="410" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="Vögel zwischern" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
