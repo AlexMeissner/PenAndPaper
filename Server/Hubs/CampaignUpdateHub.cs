@@ -1,4 +1,5 @@
-﻿using DataTransfer.Dice;
+﻿using DataTransfer.Chat;
+using DataTransfer.Dice;
 using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
@@ -18,6 +19,7 @@ public class CampaignUpdateHub : Hub<ICampaignUpdate>
 
 public interface ICampaignUpdate
 {
+    Task ChatMessageReceived(ChatMessageEventArgs messageEventArgs);
     Task DiceRolled(DiceRolledEventArgs e);
     Task GridChanged(GridChangedEventArgs e);
     Task MapChanged(MapChangedEventArgs e);

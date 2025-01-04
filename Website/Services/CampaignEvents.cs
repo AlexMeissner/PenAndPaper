@@ -1,4 +1,5 @@
-﻿using DataTransfer.Dice;
+﻿using DataTransfer.Chat;
+using DataTransfer.Dice;
 using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
@@ -11,6 +12,7 @@ namespace Website.Services;
 
 internal interface ICampaignEvents
 {
+    event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
     event Func<DiceRolledEventArgs, Task>? DiceRolled;
     event Func<GridChangedEventArgs, Task>? GridChanged;
     event Func<MapChangedEventArgs, Task>? MapChanged;
@@ -27,6 +29,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
 
+    public event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
     public event Func<GridChangedEventArgs, Task>? GridChanged;
     public event Func<MapChangedEventArgs, Task>? MapChanged;
@@ -41,6 +44,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     {
         var url = endPointProvider.BaseURL + "CampaignUpdates";
         _hubConnection = new HubConnectionBuilder().WithUrl(url).Build();
+        _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
@@ -56,6 +60,14 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await _hubConnection.DisposeAsync();
+    }
+
+    private async Task OnChatMessageReceived(ChatMessageEventArgs e)
+    {
+        if (ChatMessageReceived is not null)
+        {
+            await ChatMessageReceived.Invoke(e);
+        }
     }
 
     private async Task OnDiceRolled(DiceRolledEventArgs e)
