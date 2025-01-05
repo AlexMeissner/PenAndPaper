@@ -59,12 +59,26 @@ public class ChatController(SQLDatabase dbContext, IHubContext<CampaignUpdateHub
             .OrderBy(c => c.Id)
             .LastOrDefaultAsync(c => c.Campaign.Id == campaign.Id && c.User.Id == payload.SenderId);
 
-        if (character is null) return NotFound(payload.SenderId);
+
+        string senderName;
+        string senderImage;
+
+        if (payload.SenderId == campaign.Gamemaster.Id)
+        {
+            senderName = "Spielmeister";
+            senderImage = GameMasterImage;
+        }
+        else if (character is null)
+        {
+            return NotFound(payload.SenderId);
+        }
+        else
+        {
+            senderName = character.Name;
+            senderImage = Convert.ToBase64String(character.Image);
+        }
 
         var isPrivate = payload.ReceiverId is not null;
-        var isSenderGameMaster = payload.SenderId == campaign.Gamemaster.Id;
-        var senderName = isSenderGameMaster ? "Spielmeister" : character.Name;
-        var senderImage = isSenderGameMaster ? GameMasterImage : Convert.ToBase64String(character.Image);
 
         var chatMessage = new ChatMessageEventArgs(
             DateTime.Now,
