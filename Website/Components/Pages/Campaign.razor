@@ -14,7 +14,7 @@
 
 <div class="master-panel">
     <div class="left-panel">
-        <Map CampaignId="@CampaignId"></Map>
+        <Map CampaignId="@CampaignId" IsGamemaster="@_isGamemaster"></Map>
         @if (_isGamemaster)
         {
             <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">

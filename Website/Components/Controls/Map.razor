@@ -18,6 +18,7 @@
 @inject RenderContext RenderContext
 @inject ICampaignEvents CampaignEvents
 @inject IDragAndDrop DragAndDrop
+@inject IIdentityProvider IdentityProvider
 @inject ILogger<Map> Logger
 
 @implements IDisposable
@@ -75,11 +76,13 @@
 
 @code {
     [Parameter] public int CampaignId { get; set; }
+    [Parameter] public bool IsGamemaster { get; set; }
 
     private int GridSize { get; set; }
     private bool GridIsActive { get; set; }
 
     private int _mapId;
+    private int _userId;
     private Vector2D _selectedTokenPosition = new(0, 0);
     private Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
@@ -102,8 +105,11 @@
         CampaignEvents.TokenMoved -= OnTokenMoved;
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var user = await IdentityProvider.GetUserAsync();
+        _userId = user.Id;
+
         CampaignEvents.GridChanged += OnGridChanged;
         CampaignEvents.MapChanged += OnMapChanged;
         CampaignEvents.MouseMoved += OnMouseMoved;
@@ -289,11 +295,11 @@
 
         foreach (var tokenItem in tokens)
         {
-            await CreateToken(tokenItem.Id, tokenItem.Image, tokenItem.X, tokenItem.Y);
+            await CreateToken(tokenItem.Id, tokenItem.UserId, tokenItem.Image, tokenItem.X, tokenItem.Y);
         }
     }
 
-    private async Task CreateToken(int id, byte[] image, int x, int y)
+    private async Task CreateToken(int tokenId, int userId, byte[] image, int x, int y)
     {
         float[] vertices =
         [
@@ -304,7 +310,8 @@
         ];
 
         var token = await RenderContext.CreateToken();
-        token.Id = id;
+        token.Id = tokenId;
+        token.UserId = userId;
 
         await token.SetVertices(vertices);
         await token.SetTexture(image);
@@ -363,7 +370,10 @@
             {
                 var snapPosition = GetGridSnapPosition(transformedPosition);
 
-                if (snapPosition.X != _selectedTokenPosition.X || snapPosition.Y != _selectedTokenPosition.Y)
+                var hasPermission = IsGamemaster || _userId == _selectedToken.UserId;
+                var hasPositionChanged = snapPosition.X != _selectedTokenPosition.X || snapPosition.Y != _selectedTokenPosition.Y;
+
+                if (hasPermission && hasPositionChanged)
                 {
                     var payload = new TokenUpdateDto(CampaignId, _selectedToken.Id, (int)snapPosition.X, (int)snapPosition.Y);
                     await TokenApi.PutAsync(payload);
@@ -389,7 +399,7 @@
 
     private async Task OnTokenAdded(TokenAddedEventArgs e)
     {
-        await CreateToken(e.Id, e.Image, e.X, e.Y);
+        await CreateToken(e.Id, e.UserId, e.Image, e.X, e.Y);
     }
 
     private Vector2D GetGridSnapPosition(Vector2D position)

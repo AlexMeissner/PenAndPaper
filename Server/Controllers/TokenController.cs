@@ -29,7 +29,7 @@ namespace Server.Controllers
 
             dbContext.Tokens.Remove(token);
             await dbContext.SaveChangesAsync();
-            
+
             // ToDo: Fire an event such that all connected client remove the token from the map
 
             return Ok(tokenId);
@@ -73,11 +73,19 @@ namespace Server.Controllers
         {
             // ToDo: Refactor: One endpoint for monster token and one for character token
 
-            var map = await dbContext.Maps.Include(m => m.Tokens).FirstAsync(m => m.Id == payload.MapId);
+            var map = await dbContext.Maps.Include(m => m.Tokens).FirstOrDefaultAsync(m => m.Id == payload.MapId);
 
             if (map is null)
             {
                 return NotFound(payload.MapId);
+            }
+
+            var character = await dbContext.Characters.Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == payload.CharacterId);
+
+            if (character is null)
+            {
+                return NotFound(payload.CharacterId);
             }
 
             var alreadyContainsCharacter = await dbContext.CharacterTokens
@@ -98,7 +106,6 @@ namespace Server.Controllers
 
             await updateNotifier.Send(payload.CampaignId, UpdateEntity.TokenAdded);
 
-            // ToDo: Should only notify clients in campaign
             var image = token switch
             {
                 CharacterToken characterToken => characterToken.Character.Image,
@@ -106,7 +113,8 @@ namespace Server.Controllers
                 _ => throw new Exception("Unknown token type")
             };
 
-            var eventArgs = new TokenAddedEventArgs(token.Id, image, token.X, token.Y);
+            // ToDo: Should only notify clients in campaign
+            var eventArgs = new TokenAddedEventArgs(token.Id, character.User.Id, image, token.X, token.Y);
             await campaignUpdateHub.Clients.All.TokenAdded(eventArgs);
 
             return CreatedAtAction(nameof(Get), token.Id);
