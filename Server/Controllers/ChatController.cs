@@ -59,7 +59,6 @@ public class ChatController(SQLDatabase dbContext, IHubContext<CampaignUpdateHub
             .OrderBy(c => c.Id)
             .LastOrDefaultAsync(c => c.Campaign.Id == campaign.Id && c.User.Id == payload.SenderId);
 
-
         string senderName;
         string senderImage;
 
@@ -75,7 +74,7 @@ public class ChatController(SQLDatabase dbContext, IHubContext<CampaignUpdateHub
         else
         {
             senderName = character.Name;
-            senderImage = Convert.ToBase64String(character.Image);
+            senderImage = "data:image/jpeg;base64," + Convert.ToBase64String(character.Image);
         }
 
         var isPrivate = payload.ReceiverId is not null;

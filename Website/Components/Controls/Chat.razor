@@ -139,8 +139,8 @@
         if (e.Code is "Enter" or "NumpadEnter")
         {
             int? receiverId = _target.UserId == 0 ? null : _target.UserId;
-            var payload = new ChatMessageDto(CampaignId, _userId, receiverId, _inputText);
-            await ChatApi.PostAsync(payload);
+            var payload = new ChatMessageDto(CampaignId, 1, receiverId, _inputText);
+            await ChatApi.PostAsync(payload); // ToDo: Handle error codes e.g. player has no character yet
             _inputText = "";
             await InvokeAsync(StateHasChanged);
         }
