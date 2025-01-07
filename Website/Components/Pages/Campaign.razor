@@ -63,31 +63,25 @@
         </div>
 
         <div class="tab-content">
-            @switch (_activeTabIndex)
-            {
-                case TabIndex.Script:
-                    <Script CampaignId="@CampaignId"></Script>
-                    break;
+            <div class="@GetContentStyle(TabIndex.Chat)">
+                <Chat CampaignId="@CampaignId"></Chat>
+            </div>
 
-                case TabIndex.Chat:
-                    <Chat CampaignId="@CampaignId"></Chat>
-                    break;
+            <div class="@GetContentStyle(TabIndex.Script)">
+                <Script CampaignId="@CampaignId"></Script>
+            </div>
 
-                case TabIndex.Character:
-                    <Character CampaignId="@CampaignId"></Character>
-                    break;
+            <div class="@GetContentStyle(TabIndex.Character)">
+                <Character CampaignId="@CampaignId"></Character>
+            </div>
 
-                case TabIndex.Characters:
-                    <Characters CampaignId="@CampaignId"></Characters>
-                    break;
+            <div class="@GetContentStyle(TabIndex.Characters)">
+                <Characters CampaignId="@CampaignId"></Characters>
+            </div>
 
-                case TabIndex.Monsters:
-                    <Monsters></Monsters>
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            <div class="@GetContentStyle(TabIndex.Monsters)">
+                <Monsters></Monsters>
+            </div>
         </div>
     </div>
 </div>
@@ -120,6 +114,11 @@
     private string GetTabStyle(TabIndex tabIndex)
     {
         return tabIndex == _activeTabIndex ? "active" : string.Empty;
+    }
+
+    private string GetContentStyle(TabIndex tabIndex)
+    {
+        return tabIndex == _activeTabIndex ? "tab-content-element" : "hidden";
     }
 
     private void ToggleDiceRoller()

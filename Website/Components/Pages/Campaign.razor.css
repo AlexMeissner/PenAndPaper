@@ -28,10 +28,10 @@
     border: 1px solid #1f222b;
 }
 
-    .btn-overlay:hover {
-        background-color: #43485c;
-        transform: scale(1.05);
-    }
+.btn-overlay:hover {
+    background-color: #43485c;
+    transform: scale(1.05);
+}
 
 .left-panel {
     width: 65%;
@@ -58,29 +58,37 @@
     border-bottom: 1px solid #1f222b;
 }
 
-    .tab button {
-        color: #ffffff;
-        background-color: inherit;
-        float: left;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 5px 20px;
-        transition: 0.3s;
-        border-radius: 5px;
-        margin: 5px;
-    }
+.tab button {
+    color: #ffffff;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 20px;
+    transition: 0.3s;
+    border-radius: 5px;
+    margin: 5px;
+}
 
-        .tab button:hover {
-            background-color: #43485c;
-        }
+.tab button:hover {
+    background-color: #43485c;
+}
 
-        .tab button.active {
-            background-color: #1f222b;
-        }
+.tab button.active {
+    background-color: #1f222b;
+}
 
 .tab-content {
     height: calc(100% - 69px);
     color: #ffffff;
     margin: 10px;
+}
+
+.tab-content-element {
+    height: 100%;
+}
+
+.hidden {
+    display: none;
 }
