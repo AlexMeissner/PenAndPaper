@@ -28,6 +28,7 @@ try
         .AddInteractiveServerComponents();
 
     builder.Services.AddHttpContextAccessor();
+    builder.Services.AddControllers();
     builder.Services.RegisterServicesFromAttributes();
     builder.AddServiceDefaults();
 
@@ -82,6 +83,7 @@ try
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode();
 
+    app.MapControllers();
     app.MapDefaultEndpoints();
 
     app.Run();
