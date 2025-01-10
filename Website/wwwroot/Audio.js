@@ -25,6 +25,9 @@ class Sound {
             }
         });
     }
+    clone() {
+        return new Sound(this.audio.src, this.audio.loop);
+    }
     fadeIn(duration, volume) {
         return __awaiter(this, void 0, void 0, function* () {
             this.setVolume(0);

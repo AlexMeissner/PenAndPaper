@@ -6,7 +6,7 @@
 @inject SoundContext SoundContext
 @inject IEndPointProvider EndpointProvider
 
-@implements IDisposable
+@implements IAsyncDisposable
 
 @foreach (var result in _results)
 {
@@ -64,16 +64,16 @@
 }
 
 @code {
-    private static readonly string NETURAL_CLASS = "dice-neutral";
-    private static readonly string SUCCESS_CLASS = "dice-success";
-    private static readonly string FAILED_CLASS = "dice-failed";
+    private static readonly string NeutralClass = "dice-neutral";
+    private static readonly string SuccessClass = "dice-success";
+    private static readonly string FailedClass = "dice-failed";
 
     internal class RollResult(DiceRolledEventArgs args)
     {
         public string Name => args.Name;
         public DiceType DiceType => ToDiceType(args.Successes);
-        public List<string> CssClass { get; set; } = args.Successes.Select(s => NETURAL_CLASS).ToList();
-        public int Digit => CssClass.Count(c => c == SUCCESS_CLASS);
+        public List<string> CssClass { get; set; } = args.Successes.Select(s => NeutralClass).ToList();
+        public int Digit => CssClass.Count(c => c == SuccessClass);
 
         private static DiceType ToDiceType(IEnumerable<bool> result)
         {
@@ -92,25 +92,38 @@
         }
     }
 
+    private Sound? _rollFail;
+    private Sound? _rollSuccess;
+    private Sound? _rollMin;
+    private Sound? _rollMax;
+
     private List<RollResult> _results = [];
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         CampaignEvents.DiceRolled -= OnDiceRolled;
+
+        if (_rollFail is not null) await _rollFail.DisposeAsync();
+        if (_rollSuccess is not null) await _rollSuccess.DisposeAsync();
+        if (_rollMin is not null) await _rollMin.DisposeAsync();
+        if (_rollMax is not null) await _rollMax.DisposeAsync();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        CampaignEvents.DiceRolled += OnDiceRolled;
+        if (firstRender)
+        {
+            _rollFail = await SoundContext.CreateSound("RollFail", false);
+            _rollSuccess = await SoundContext.CreateSound("RollSuccess", false);
+            _rollMin = await SoundContext.CreateSound("RollMin", false);
+            _rollMax = await SoundContext.CreateSound("RollMax", false);
+
+            CampaignEvents.DiceRolled += OnDiceRolled;
+        }
     }
 
     private async Task OnDiceRolled(DiceRolledEventArgs e)
     {
-        await using var rollFail = await SoundContext.CreateSound("RollFail", false);
-        await using var rollSuccess = await SoundContext.CreateSound("RollSuccess", false);
-        await using var rollMin = await SoundContext.CreateSound("RollMin", false);
-        await using var rollMax = await SoundContext.CreateSound("RollMax", false);
-
         var result = new RollResult(e);
         _results.Add(result);
         await InvokeAsync(StateHasChanged);
@@ -122,29 +135,48 @@
         var isCriticalSuccess = e.Successes.All(x => x);
         var isCriticalFailure = e.Successes.Count(x => x) == 1;
 
+        List<Sound> sounds = [];
+
         for (var i = 0; i < e.Successes.Count(); i++)
         {
             await Task.Delay(delay);
 
             var isSuccess = e.Successes.ElementAt(i);
 
+            Sound? sound;
+
             if (i == e.Successes.Count() - 1 && (isCriticalFailure || isCriticalSuccess))
             {
-                var sound = isCriticalSuccess ? rollMax : rollMin;
-                await sound.Play();
+                sound = isCriticalSuccess ? _rollMax : _rollMin;
             }
             else
             {
-                var sound = isSuccess ? rollSuccess : rollFail;
-                await sound.Play();
+                sound = isSuccess ? _rollSuccess : _rollFail;
             }
 
-            result.CssClass[i] = isSuccess ? SUCCESS_CLASS : FAILED_CLASS;
+            if (sound is not null)
+            {
+                var clone = await sound.Clone();
+                await clone.Play();
+                sounds.Add(clone);
+            }
+
+            result.CssClass[i] = isSuccess ? SuccessClass : FailedClass;
             await InvokeAsync(StateHasChanged);
         }
 
         await Task.Delay(timeToHide);
+
         _results.Remove(result);
+
+        // Sounds need to be cloned and disposed, because the same sound can not be played twice at the same time.
+        // However, this happens for larger dice, as the delay is shorter than the sound file in these cases.
+        // When a sound gets disposed, it gets stopped. Thus, we need to wait until all sounds are finished.
+        foreach (var sound in sounds)
+        {
+            await sound.DisposeAsync();
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 

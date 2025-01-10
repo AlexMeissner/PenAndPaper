@@ -4,6 +4,12 @@ namespace Website.Services.Sound;
 
 public sealed class Sound(IJSObjectReference jsObjectReference) : IAsyncDisposable
 {
+    public async Task<Sound> Clone()
+    {
+        var jsSound = await jsObjectReference.InvokeAsync<IJSObjectReference>("clone");
+        return new Sound(jsSound);
+    }
+
     public async Task FadeIn(double duration, double volume)
     {
         await jsObjectReference.InvokeVoidAsync("fadeIn", duration, volume);

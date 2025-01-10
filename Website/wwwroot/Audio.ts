@@ -20,6 +20,10 @@ class Sound {
         });
     }
 
+    public clone(): Sound {
+        return new Sound(this.audio.src, this.audio.loop);
+    }
+
     public async fadeIn(duration: number, volume: number): Promise<void> {
         this.setVolume(0);
         await this.play();
