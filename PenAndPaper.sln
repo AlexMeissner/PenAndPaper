@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{CA4AD792-A5ED-41C3-A5BD-87BAED288E45}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DungeonsAndDragons5e", "DungeonsAndDragons5e\DungeonsAndDragons5e.csproj", "{1E0BDC8A-84ED-4F2C-9AF1-EC56115BA58E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransfer", "DataTransfer\DataTransfer.csproj", "{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}"
@@ -17,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterManager", "MonsterMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Website", "Website\Website.csproj", "{199802F7-162A-42E1-8DD0-A23E6C46782A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "AppHost\AppHost.csproj", "{9D2EC33E-29DD-41D3-BF7C-3FD0C43EF423}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireServiceDefaults", "AspireServiceDefaults\AspireServiceDefaults.csproj", "{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}"
 EndProject
 Global
@@ -27,14 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CA4AD792-A5ED-41C3-A5BD-87BAED288E45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA4AD792-A5ED-41C3-A5BD-87BAED288E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA4AD792-A5ED-41C3-A5BD-87BAED288E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA4AD792-A5ED-41C3-A5BD-87BAED288E45}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E0BDC8A-84ED-4F2C-9AF1-EC56115BA58E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E0BDC8A-84ED-4F2C-9AF1-EC56115BA58E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E0BDC8A-84ED-4F2C-9AF1-EC56115BA58E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E0BDC8A-84ED-4F2C-9AF1-EC56115BA58E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,10 +41,6 @@ Global
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D2EC33E-29DD-41D3-BF7C-3FD0C43EF423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D2EC33E-29DD-41D3-BF7C-3FD0C43EF423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D2EC33E-29DD-41D3-BF7C-3FD0C43EF423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D2EC33E-29DD-41D3-BF7C-3FD0C43EF423}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
