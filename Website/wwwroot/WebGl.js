@@ -318,7 +318,10 @@ class Token extends TexturedQuad {
     render() {
         this.setUniform("isMouseOver", this.isMouseHover);
         this.setUniform("isLeftMouseButtonDown", this.isLeftMouseButtonDown);
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         super.render();
+        this.gl.disable(this.gl.BLEND);
     }
     hover(mouseX, mouseY, grid) {
         const x = this.getUniform("x");
