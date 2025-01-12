@@ -59,6 +59,8 @@
 
     private async Task OnCreate()
     {
+        if (_image.Length == 0) return;
+
         var user = await IdentityProvider.GetUserAsync();
 
         var character = new CharacterCreationDto(
