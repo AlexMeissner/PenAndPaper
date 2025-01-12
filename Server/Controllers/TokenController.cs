@@ -83,9 +83,19 @@ namespace Server.Controllers
             var character = await dbContext.Characters.Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == payload.CharacterId);
 
+            int userId;
+
             if (character is null)
             {
-                return NotFound(payload.CharacterId);
+                var campaign = await dbContext.Campaigns
+                    .Include(c => c.Gamemaster)
+                    .FirstAsync(c => c.Id == payload.CampaignId);
+
+                userId = campaign.Gamemaster.Id;
+            }
+            else
+            {
+                userId = character.User.Id;
             }
 
             var alreadyContainsCharacter = await dbContext.CharacterTokens
@@ -114,7 +124,7 @@ namespace Server.Controllers
             };
 
             // ToDo: Should only notify clients in campaign
-            var eventArgs = new TokenAddedEventArgs(token.Id, character.User.Id, image, token.X, token.Y);
+            var eventArgs = new TokenAddedEventArgs(token.Id, userId, image, token.X, token.Y);
             await campaignUpdateHub.Clients.All.TokenAdded(eventArgs);
 
             return CreatedAtAction(nameof(Get), token.Id);
