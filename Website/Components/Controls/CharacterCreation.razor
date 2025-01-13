@@ -9,7 +9,7 @@
 <div>
     <input type="image" class="character-image" alt="Bild auswählen" src="data:image/png;base64,@ImageBase64"
            @onclick="OnLoadImage"/>
-    <InputFile id="fileInputCharacterCreation" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
+    <InputFile id="characterCreationInputFile" OnChange="LoadCharacterImage" accept="image/png, image/jpeg, image/jpg"
                style="display: none"></InputFile>
 
     <div class="input-group mb-3">
@@ -40,12 +40,6 @@
     <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
 </div>
 
-<script>
-    function triggerFileInput() {
-        document.getElementById("fileInputCharacterCreation").click();
-    }
-</script>
-
 @code {
     [Parameter] public int CampaignId { get; set; }
     [Parameter] public EventCallback<CharacterCreationDto> OnCreated { get; set; }
@@ -57,8 +51,13 @@
     private byte[] _image = [];
     private string ImageBase64 => Convert.ToBase64String(_image);
 
+    // ToDo: This is a really dirty fix.
+    // When LoadCharacterImage is called 'this' is a different instance in comparison to when OnLoadImage is called.
+    private static CharacterCreation? _instance;
+
     private async Task OnCreate()
     {
+        // ToDo: Add user feedback
         if (_image.Length == 0) return;
 
         var user = await IdentityProvider.GetUserAsync();
@@ -84,10 +83,11 @@
 
     private async Task OnLoadImage()
     {
-        await JsRuntime.InvokeVoidAsync("triggerFileInput");
+        _instance = this;
+        await JsRuntime.InvokeVoidAsync("triggerClick", "characterCreationInputFile");
     }
 
-    private async Task LoadImage(InputFileChangeEventArgs e)
+    private async Task LoadCharacterImage(InputFileChangeEventArgs e)
     {
         var file = e.File;
 
@@ -101,6 +101,13 @@
             var bytesRead = await stream.ReadAsync(_image, totalBytesRead, (int)(file.Size - totalBytesRead));
             totalBytesRead += bytesRead;
             if (bytesRead == 0) break;
+        }
+
+        if (_instance is not null)
+        {
+            _instance._image = _image;
+            _instance.StateHasChanged();
+            _instance = null;
         }
     }
 

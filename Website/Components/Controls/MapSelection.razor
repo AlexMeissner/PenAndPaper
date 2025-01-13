@@ -22,7 +22,8 @@
                 <i class="bi bi-plus-circle create-icon"></i>
                 <div class="card-footer" role="group">
                     <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
-                    <InputFile id="fileInput" OnChange="LoadImage" accept="image/png, image/jpeg, image/jpg"
+                    <InputFile id="mapCreationInputFile" OnChange="LoadMapImage"
+                               accept="image/png, image/jpeg, image/jpg"
                                style="display: none"></InputFile>
                 </div>
             </div>
@@ -58,12 +59,6 @@
         }
     </div>
 </div>
-
-<script>
-    function triggerFileInput() {
-        document.getElementById("fileInput").click();
-    }
-</script>
 
 @code {
     [Parameter] public int CampaignId { get; set; }
@@ -121,10 +116,10 @@
 
     private async Task OnCreate()
     {
-        await JsRuntime.InvokeVoidAsync("triggerFileInput");
+        await JsRuntime.InvokeVoidAsync("triggerClick", "mapCreationInputFile");
     }
 
-    private async Task LoadImage(InputFileChangeEventArgs e)
+    private async Task LoadMapImage(InputFileChangeEventArgs e)
     {
         var file = e.File;
 
