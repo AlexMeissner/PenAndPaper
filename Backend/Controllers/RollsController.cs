@@ -4,7 +4,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class RollsController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()
