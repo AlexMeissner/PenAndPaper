@@ -3,12 +3,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("campaigns/{campaignId:int}")]
 public class ScriptsController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpGet("scripts")]
+    public IActionResult GetAll(int campaignId)
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("maps/{mapId:int}/script")]
+    public IActionResult Get(int campaignId, int mapId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPut("maps/{mapId:int}/script")]
+    public IActionResult Update(int campaignId, int mapId)
+    {
+        throw new NotImplementedException();
     }
 }

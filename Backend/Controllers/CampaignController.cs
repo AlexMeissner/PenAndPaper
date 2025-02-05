@@ -3,12 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class CampaignControllerController : ControllerBase
+[Route("campaigns")]
+public class CampaignsControllerController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpPost]
+    public IActionResult Create()
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("{campaignId:int}")]
+    public IActionResult GetById(int campaignId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPatch("{campaignId:int}")]
+    public IActionResult Patch(int campaignId)
+    {
+        throw new NotImplementedException();
     }
 }

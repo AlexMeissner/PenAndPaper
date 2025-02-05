@@ -3,12 +3,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("campaigns/{campaignId:int}")]
 public class CharactersController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpGet("characters")]
+    public IActionResult GetAll(int campaignId)
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("users/{userId:int}/characters")]
+    public IActionResult GetAll(int campaignId, int userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPost("users/{userId:int}/characters")]
+    public IActionResult Post(int campaignId, int userId)
+    {
+        throw new NotImplementedException();
     }
 }
