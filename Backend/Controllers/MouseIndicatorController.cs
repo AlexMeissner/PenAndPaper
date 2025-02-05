@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("campaigns/{campaignId:int}/users/{userId:int}/mouse-indicators")]
 public class MouseIndicatorController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpPost]
+    public IActionResult Post(int campaignId, int userId)
     {
-        return Ok();
+        throw new NotImplementedException();
     }
 }

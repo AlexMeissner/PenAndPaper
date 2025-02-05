@@ -3,12 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("campaigns/{campaignId:int}/chat")]
 public class ChatController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpPost]
+    public IActionResult Post(int campaignId, int userId)
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("users")]
+    public IActionResult Get(int campaignId)
+    {
+        throw new NotImplementedException();
     }
 }

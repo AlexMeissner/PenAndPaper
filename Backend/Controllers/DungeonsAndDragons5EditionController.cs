@@ -3,12 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("dungeons-and-dragons-5e/monsters")]
 public class DungeonsAndDragons5EditionController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpGet("{monsterId:int}")]
+    public IActionResult Get(int monsterId)
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        throw new NotImplementedException();
     }
 }

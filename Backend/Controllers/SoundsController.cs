@@ -3,12 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("campaigns/{campaignId:int}/sounds/{soundId:int}")]
 public class SoundsController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpDelete]
+    public IActionResult Stop(int campaignId, int soundId)
     {
-        return Ok();
+        throw new NotImplementedException();
+    }
+
+    [HttpPost]
+    public IActionResult Start(int campaignId, int soundId)
+    {
+        throw new NotImplementedException();
     }
 }
