@@ -13,12 +13,7 @@ public class PenAndPaperDatabase(DbContextOptions<PenAndPaperDatabase> options) 
     public DbSet<CharacterToken> CharacterTokens { get; set; }
     public DbSet<MonsterToken> MonsterTokens { get; set; }
     public DbSet<User> Users { get; set; }
-
-    public void Migrate()
-    {
-        Database.Migrate();
-    }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Token>().UseTptMappingStrategy();
