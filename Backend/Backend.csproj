@@ -22,4 +22,8 @@
     <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Repositories\" />
+  </ItemGroup>
+
 </Project>
