@@ -53,10 +53,4 @@ public class Monster
     public int Experience { get; init; }
     [MaxLength(32)] public required string Actions { get; init; }
     public required byte[] Image { get; init; }
-
-    #region Relations
-
-    public ICollection<MonsterToken> Tokens { get; init; } = [];
-
-    #endregion
 }

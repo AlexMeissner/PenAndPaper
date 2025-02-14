@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Models;
 
@@ -10,16 +9,14 @@ public class Campaign
 
     #region Relations
 
-    [InverseProperty(nameof(User.GameMasterCampaigns))]
+    public int GameMasterId { get; init; }
     public required User GameMaster { get; init; }
 
-    [InverseProperty(nameof(Map.ActiveCampaign))]
+    public int? ActiveMapId { get; set; }
     public Map? ActiveMap { get; set; }
 
-    [InverseProperty(nameof(Map.Campaign))]
     public ICollection<Map> Maps { get; set; } = [];
 
-    [InverseProperty(nameof(User.PlayerCampaigns))]
     public ICollection<User> Players { get; set; } = [];
 
     public ICollection<Character> Characters { get; set; } = [];

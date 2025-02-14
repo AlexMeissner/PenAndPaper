@@ -29,6 +29,9 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ActiveMapId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("GameMasterId")
                         .HasColumnType("integer");
 
@@ -38,6 +41,9 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(64)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActiveMapId")
+                        .IsUnique();
 
                     b.HasIndex("GameMasterId");
 
@@ -71,8 +77,6 @@ namespace Backend.Migrations
 
                     b.HasIndex("CampaignId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Characters");
                 });
 
@@ -83,9 +87,6 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ActiveCampaignId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("CampaignId")
                         .HasColumnType("integer");
@@ -110,9 +111,6 @@ namespace Backend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActiveCampaignId")
-                        .IsUnique();
 
                     b.HasIndex("CampaignId");
 
@@ -304,7 +302,15 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
                     b.Property<int>("MapId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
                     b.Property<int>("X")
@@ -317,9 +323,13 @@ namespace Backend.Migrations
 
                     b.HasIndex("MapId");
 
+                    b.HasIndex("OwnerId");
+
                     b.ToTable("Tokens");
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator().HasValue("Token");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Backend.Database.Models.User", b =>
@@ -329,6 +339,9 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CampaignId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -342,22 +355,9 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CampaignId");
+
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("CampaignUser", b =>
-                {
-                    b.Property<int>("PlayerCampaignsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PlayersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("PlayerCampaignsId", "PlayersId");
-
-                    b.HasIndex("PlayersId");
-
-                    b.ToTable("CampaignUser");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.CharacterToken", b =>
@@ -369,7 +369,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("CharacterTokens");
+                    b.HasDiscriminator().HasValue("CharacterToken");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.MonsterToken", b =>
@@ -381,93 +381,74 @@ namespace Backend.Migrations
 
                     b.HasIndex("MonsterId");
 
-                    b.ToTable("MonsterTokens");
+                    b.HasDiscriminator().HasValue("MonsterToken");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Campaign", b =>
                 {
+                    b.HasOne("Backend.Database.Models.Map", "ActiveMap")
+                        .WithOne()
+                        .HasForeignKey("Backend.Database.Models.Campaign", "ActiveMapId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Backend.Database.Models.User", "GameMaster")
-                        .WithMany("GameMasterCampaigns")
+                        .WithMany()
                         .HasForeignKey("GameMasterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ActiveMap");
 
                     b.Navigation("GameMaster");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Character", b =>
                 {
-                    b.HasOne("Backend.Database.Models.Campaign", "Campaign")
+                    b.HasOne("Backend.Database.Models.Campaign", null)
                         .WithMany("Characters")
                         .HasForeignKey("CampaignId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Backend.Database.Models.User", "User")
-                        .WithMany("Characters")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campaign");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Map", b =>
                 {
-                    b.HasOne("Backend.Database.Models.Campaign", "ActiveCampaign")
-                        .WithOne("ActiveMap")
-                        .HasForeignKey("Backend.Database.Models.Map", "ActiveCampaignId");
-
-                    b.HasOne("Backend.Database.Models.Campaign", "Campaign")
+                    b.HasOne("Backend.Database.Models.Campaign", null)
                         .WithMany("Maps")
                         .HasForeignKey("CampaignId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ActiveCampaign");
-
-                    b.Navigation("Campaign");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Token", b =>
                 {
-                    b.HasOne("Backend.Database.Models.Map", "Map")
+                    b.HasOne("Backend.Database.Models.Map", null)
                         .WithMany("Tokens")
                         .HasForeignKey("MapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Map");
+                    b.HasOne("Backend.Database.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("CampaignUser", b =>
+            modelBuilder.Entity("Backend.Database.Models.User", b =>
                 {
                     b.HasOne("Backend.Database.Models.Campaign", null)
-                        .WithMany()
-                        .HasForeignKey("PlayerCampaignsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Database.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("PlayersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Players")
+                        .HasForeignKey("CampaignId");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.CharacterToken", b =>
                 {
                     b.HasOne("Backend.Database.Models.Character", "Character")
-                        .WithMany("Tokens")
+                        .WithMany()
                         .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Backend.Database.Models.Token", null)
-                        .WithOne()
-                        .HasForeignKey("Backend.Database.Models.CharacterToken", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -476,14 +457,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Database.Models.MonsterToken", b =>
                 {
-                    b.HasOne("Backend.Database.Models.Token", null)
-                        .WithOne()
-                        .HasForeignKey("Backend.Database.Models.MonsterToken", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Backend.Database.Models.Monster", "Monster")
-                        .WithMany("Tokens")
+                        .WithMany()
                         .HasForeignKey("MonsterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -493,33 +468,16 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Database.Models.Campaign", b =>
                 {
-                    b.Navigation("ActiveMap");
-
                     b.Navigation("Characters");
 
                     b.Navigation("Maps");
-                });
 
-            modelBuilder.Entity("Backend.Database.Models.Character", b =>
-                {
-                    b.Navigation("Tokens");
+                    b.Navigation("Players");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Map", b =>
                 {
                     b.Navigation("Tokens");
-                });
-
-            modelBuilder.Entity("Backend.Database.Models.Monster", b =>
-                {
-                    b.Navigation("Tokens");
-                });
-
-            modelBuilder.Entity("Backend.Database.Models.User", b =>
-                {
-                    b.Navigation("Characters");
-
-                    b.Navigation("GameMasterCampaigns");
                 });
 #pragma warning restore 612, 618
         }
