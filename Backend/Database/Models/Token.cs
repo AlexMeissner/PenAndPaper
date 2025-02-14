@@ -9,7 +9,9 @@ public class Token
     #region Relations
 
     public int MapId { get; init; }
-    public required Map Map { get; init; }
+
+    public int OwnerId { get; init; }
+    public required User Owner { get; init; }
 
     #endregion
 }
@@ -18,6 +20,7 @@ public class CharacterToken : Token
 {
     #region Relations
 
+    public int CharacterId { get; init; }
     public required Character Character { get; init; }
 
     #endregion
@@ -27,6 +30,7 @@ public class MonsterToken : Token
 {
     #region Relations
 
+    public int MonsterId { get; init; }
     public required Monster Monster { get; init; }
 
     #endregion

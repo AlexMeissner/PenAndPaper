@@ -11,10 +11,8 @@ public class Character
     #region Relations
 
     public int UserId { get; init; }
-    public required User User { get; init; }
+
     public int CampaignId { get; init; }
-    public required Campaign Campaign { get; init; }
-    public ICollection<CharacterToken> Tokens { get; set; } = [];
 
     #endregion
 }

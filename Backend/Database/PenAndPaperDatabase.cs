@@ -16,6 +16,16 @@ public class PenAndPaperDatabase(DbContextOptions<PenAndPaperDatabase> options) 
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Token>().UseTptMappingStrategy();
+        modelBuilder.Entity<Campaign>()
+            .HasOne(c => c.ActiveMap)
+            .WithOne()
+            .HasForeignKey<Campaign>(c => c.ActiveMapId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Campaign>()
+            .HasMany(c => c.Maps)
+            .WithOne()
+            .HasForeignKey(m => m.CampaignId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

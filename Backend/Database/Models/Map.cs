@@ -13,10 +13,8 @@ public class Map
 
     #region Relations
 
-    public int? ActiveCampaignId { get; init; }
-    public Campaign? ActiveCampaign { get; init; }
     public int CampaignId { get; init; }
-    public required Campaign Campaign { get; init; }
+
     public ICollection<Token> Tokens { get; set; } = [];
 
     #endregion
