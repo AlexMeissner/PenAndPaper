@@ -1,5 +1,5 @@
+using ApiClient;
 using Microsoft.AspNetCore.Mvc;
-using Website.Services;
 
 namespace Website.Controller;
 
@@ -10,7 +10,7 @@ public class AudioProxyController(HttpClient httpClient, IEndPointProvider endPo
     [HttpGet]
     public async Task<IActionResult> Get(string name)
     {
-        var apiUrl = $"{endPointProvider.BaseURL}Audio?name={name}";
+        var apiUrl = $"{endPointProvider.BaseUrl}Audio?name={name}";
 
         var response = await httpClient.GetAsync(apiUrl, HttpCompletionOption.ResponseHeadersRead);
 

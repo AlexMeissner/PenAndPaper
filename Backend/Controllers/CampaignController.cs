@@ -1,32 +1,49 @@
+using Backend.Services.Repositories;
+using DataTransfer.Campaign;
 using Microsoft.AspNetCore.Mvc;
+using Backend.Extensions;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("campaigns")]
-public class CampaignsControllerController : ControllerBase
+public class CampaignsControllerController(ICampaignRepository campaignRepository) : ControllerBase
 {
     [HttpPost]
-    public IActionResult Create()
+    public async Task<IActionResult> Create(CampaignCreationDto payload)
     {
-        throw new NotImplementedException();
+        var response = await campaignRepository.CreateAsync(payload);
+
+        return response.Match<IActionResult>(
+            campaignId => CreatedAtAction(nameof(GetById), campaignId),
+            this.StatusCode);
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        throw new NotImplementedException();
+        var response = campaignRepository.GetAll();
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
     [HttpGet("{campaignId:int}")]
-    public IActionResult GetById(int campaignId)
+    public async Task<IActionResult> GetById(int campaignId)
     {
-        throw new NotImplementedException();
+        var response = await campaignRepository.GetAsync(campaignId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
     [HttpPatch("{campaignId:int}")]
-    public IActionResult Patch(int campaignId)
+    public async Task<IActionResult> Update(int campaignId, CampaignUpdateDto payload)
     {
-        throw new NotImplementedException();
+        var response = await campaignRepository.UpdateAsync(campaignId, payload);
+
+        return this.StatusCode(response.StatusCode);
     }
 }

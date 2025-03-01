@@ -1,6 +1,6 @@
+@using ApiClient
 @using DataTransfer.Monster
 @using Website.Services
-@using Website.Services.API
 
 @inject IMonsterApi MonsterApi
 @inject IDragAndDrop DragAndDrop
@@ -10,39 +10,40 @@
     @foreach (var monster in _monsters)
     {
         <div class="monsters-item" draggable="true" @ondragstart="() => OnDragStart(monster)">
-            <img class="monster-icon" src="data:image/png;base64,@monster.ImageBase64" alt="Icon"/>
+            <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(monster.Image)" alt="Icon"/>
             <div class="monster-texts">
                 <div class="monster-name">@monster.Name</div>
                 <div class="monster-details">
-                    <div class="monster-detail">@monster.Size</div>
+                    <div class="monster-detail">@monster.SizeCategory</div>
                     <div class="monster-detail">@monster.Type</div>
                     <div class="monster-detail">@monster.Alignment</div>
                 </div>
             </div>
             <div class="diamond">
-                <div class="monster-challenge-rating">@monster.ChallangeRating</div>
+                <div class="monster-challenge-rating">@monster.ChallengeRating</div>
             </div>
         </div>
     }
 </div>
 
 @code {
-    private List<MonsterDto> _monsters = [];
+    private IEnumerable<MonstersDto> _monsters = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await MonsterApi.GetAll();
+        var response = await MonsterApi.GetAllAsync();
 
-        _monsters = response.Match(
-            monsters => monsters.Items.ToList(),
+        _monsters = response.Match<IEnumerable<MonstersDto>>(
+            monsters => monsters,
             statusCode =>
             {
+                // ToDo: Toast
                 Logger.LogError("Failed to get all monsters {statusCode}", statusCode);
                 return [];
             });
     }
 
-    private void OnDragStart(MonsterDto monster)
+    private void OnDragStart(MonstersDto monster)
     {
         DragAndDrop.Data = monster;
     }

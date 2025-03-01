@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApiClient\ApiClient.csproj" />
     <ProjectReference Include="..\AspireServiceDefaults\AspireServiceDefaults.csproj" />
     <ProjectReference Include="..\DataTransfer\DataTransfer.csproj" />
   </ItemGroup>

@@ -1,4 +1,5 @@
-using Backend;
+using Backend.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 using Serilog.Events;
 
@@ -8,7 +9,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+AppDomain.CurrentDomain.UnhandledException += (_, e) =>
 {
     try
     {
@@ -36,9 +37,13 @@ try
 
     builder.AddDatabase();
 
+    builder.Services.AddScopedServices();
+    builder.Services.AddRepositories();
     builder.Services.AddControllers();
     builder.Services.AddOpenApi();
     builder.Services.AddSignalR();
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle(builder.Configuration);
+    builder.Services.AddAuthorization();
 
     var app = builder.Build();
 
@@ -48,9 +53,10 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
+        app.UseHttpsRedirection();
     }
 
-    app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 

@@ -1,40 +1,18 @@
+@using ApiClient
 @using DataTransfer.Character
-@using Website.Services
-@using Website.Services.API
 
 @inject IJSRuntime JsRuntime
 @inject ICharacterApi CharacterApi
-@inject IIdentityProvider IdentityProvider
 
 <div>
-    <input type="image" class="character-image" alt="Bild auswählen" src="data:image/png;base64,@ImageBase64"
-           @onclick="OnLoadImage"/>
+    <input type="image" class="character-image" alt="Bild auswählen"
+           src="data:image/png;base64,@Convert.ToBase64String(_image)" @onclick="OnLoadImage"/>
     <InputFile id="characterCreationInputFile" OnChange="LoadCharacterImage" accept="image/png, image/jpeg, image/jpg"
                style="display: none"></InputFile>
 
     <div class="input-group mb-3">
         <span class="input-group-text">Name</span>
         <input type="text" class="form-control" @bind="Name">
-    </div>
-
-    <div class="input-group mb-3">
-        <span class="input-group-text">Klasse</span>
-        <InputSelect class="input-group-input-select" @bind-Value="Class">
-            @foreach (var dndClass in Enum.GetValues(typeof(Class)))
-            {
-                <option value="@dndClass">@dndClass</option>
-            }
-        </InputSelect>
-    </div>
-
-    <div class="input-group mb-3">
-        <span class="input-group-text">Rasse</span>
-        <InputSelect class="input-group-input-select" @bind-Value="Race">
-            @foreach (var dndRace in Enum.GetValues(typeof(Race)))
-            {
-                <option value="@dndRace">@dndRace</option>
-            }
-        </InputSelect>
     </div>
 
     <button type="button" class="btn btn-outline-success" @onclick="OnCreate">Erstellen</button>
@@ -45,11 +23,7 @@
     [Parameter] public EventCallback<CharacterCreationDto> OnCreated { get; set; }
 
     private string Name { get; set; } = "";
-    private Class Class { get; set; } = Class.Barbarian;
-    private Race Race { get; set; } = Race.Human;
-
     private byte[] _image = [];
-    private string ImageBase64 => Convert.ToBase64String(_image);
 
     // ToDo: This is a really dirty fix.
     // When LoadCharacterImage is called 'this' is a different instance in comparison to when OnLoadImage is called.
@@ -60,24 +34,9 @@
         // ToDo: Add user feedback
         if (_image.Length == 0) return;
 
-        var user = await IdentityProvider.GetUserAsync();
+        var character = new CharacterCreationDto(Name, _image);
 
-        var character = new CharacterCreationDto(
-            CampaignId,
-            user.Id,
-            Name,
-            Class,
-            Race,
-            _image,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        );
-
-        await CharacterApi.PostAsync(character);
+        await CharacterApi.CreateAsync(CampaignId, character);
         await OnCreated.InvokeAsync(character);
     }
 

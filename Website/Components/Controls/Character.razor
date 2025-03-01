@@ -1,66 +1,62 @@
 @using System.Net
+@using ApiClient
 @using DataTransfer.Character
-@using Website.Services
-@using Website.Services.API
 
-@inject IIdentityProvider IdentityProvider
 @inject ICharacterApi CharacterApi
 @inject ILogger<Character> Logger
 
-@if (_character is null)
+@if (_characters.Any())
 {
-    <CharacterCreation CampaignId="CampaignId" OnCreated="OnCreated"></CharacterCreation>
+    @foreach (var character in _characters)
+    {
+        <div>
+            <img class="character-image" alt="" src="data:image/png;base64,@Convert.ToBase64String(character.Image)"/>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text">Name</span>
+                <span class="input-group-text">@character.CharacterName</span>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text">Spieler</span>
+                <span class="input-group-text">@character.PlayerName</span>
+            </div>
+        </div>
+    }
 }
 else
 {
-    <div>
-        <img class="character-image" alt="" src="data:image/png;base64,@ImageBase64"/>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">Name</span>
-            <span class="input-group-text">@_character.Name</span>
-        </div>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">Klasse</span>
-            <span class="input-group-text">@_character.Class</span>
-        </div>
-
-        <div class="input-group mb-3">
-            <span class="input-group-text">Rasse</span>
-            <span class="input-group-text">@_character.Race</span>
-        </div>
-    </div>
+    <CharacterCreation CampaignId="CampaignId" OnCreated="OnCreated"></CharacterCreation>
 }
 
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    private CharacterCreationDto? _character;
-    private string ImageBase64 => _character is null ? "" : Convert.ToBase64String(_character.Image);
+    private IEnumerable<CharactersDto> _characters = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await IdentityProvider.GetUserAsync();
-        var response = await CharacterApi.GetAsync(user.Id, CampaignId);
-
-        response.Match(
-            character => { _character = character; },
-            statusCode =>
-            {
-                // Initially, no player has a character, yet
-                if (statusCode != HttpStatusCode.NotFound)
-                {
-                    Logger.LogError("Failed to receive character information({statusCode})", statusCode);
-                }
-            }
-        );
+        await Update();
     }
 
-    private Task OnCreated(CharacterCreationDto character)
+    private async Task OnCreated(CharacterCreationDto character)
     {
-        _character = character;
-        return Task.CompletedTask;
+        await Update();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Update()
+    {
+        var response = await CharacterApi.GetAllAsync(CampaignId);
+
+        _characters = response.Match<IEnumerable<CharactersDto>>(
+            characters => characters,
+            statusCode =>
+            {
+                // ToDo: Toast
+                return [];
+            }
+        );
     }
 
 }

@@ -1,56 +1,74 @@
+using Backend.Extensions;
+using Backend.Services.Repositories;
+using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("campaigns/{campaignId:int}")]
-public class MapsController : ControllerBase
+public class MapsController(IMapRepository mapRepository) : ControllerBase
 {
-    [HttpGet("active-map")]
-    public IActionResult GetActiveMap(int campaignId)
+    [HttpGet("campaigns/{campaignId:int}/active-map")]
+    public async Task<IActionResult> GetActiveMap(int campaignId)
     {
-        throw new NotImplementedException();
-    }
-    
-    [HttpPatch("active-map")]
-    public IActionResult UpdateActiveMap(int campaignId)
-    {
-        throw new NotImplementedException();
+        var response = await mapRepository.GetActiveMapAsync(campaignId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
-    [HttpPost("maps")]
-    public IActionResult Create(int campaignId)
+    [HttpPatch("campaigns/{campaignId:int}/active-map")]
+    public async Task<IActionResult> UpdateActiveMap(int campaignId, ActiveMapUpdateDto payload)
     {
-        throw new NotImplementedException();
+        var response = await mapRepository.UpdateActiveMapAsync(campaignId, payload);
+
+        return this.StatusCode(response.StatusCode);
     }
 
-    [HttpGet("maps")]
+    [HttpPost("campaigns/{campaignId:int}/maps")]
+    public async Task<IActionResult> Create(int campaignId, MapCreationDto payload)
+    {
+        var response = await mapRepository.CreateAsync(campaignId, payload);
+
+        return response.Match<IActionResult>(
+            mapId => CreatedAtAction(nameof(Get), mapId),
+            this.StatusCode);
+    }
+
+    [HttpGet("campaigns/{campaignId:int}/maps")]
     public IActionResult GetAll(int campaignId)
     {
-        throw new NotImplementedException();
+        var response = mapRepository.GetAllAsync(campaignId);
+
+        return Ok(response);
     }
 
     [HttpDelete("maps/{mapId:int}")]
-    public IActionResult Delete(int campaignId, int mapId)
+    public async Task<IActionResult> Delete(int mapId)
     {
-        throw new NotImplementedException();
+        var response = await mapRepository.DeleteAsync(mapId);
+
+        return this.StatusCode(response.StatusCode);
     }
-    
+
     [HttpGet("maps/{mapId:int}")]
-    public IActionResult Get(int campaignId, int mapId)
+    public async Task<IActionResult> Get(int mapId)
     {
-        throw new NotImplementedException();
+        var response = await mapRepository.GetAsync(mapId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
-    [HttpPatch("maps/{mapId:int}/grid")]
-    public IActionResult UpdateGrid(int campaignId, int mapId)
+    [HttpPatch("maps/{mapId:int}")]
+    public async Task<IActionResult> Update(int mapId, MapUpdateDto payload)
     {
-        throw new NotImplementedException();
-    }
+        var response = await mapRepository.UpdateAsync(mapId, payload);
 
-    [HttpPatch("maps/{mapId:int}/name")]
-    public IActionResult UpdateName(int campaignId, int mapId)
-    {
-        throw new NotImplementedException();
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 }

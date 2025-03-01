@@ -4,7 +4,6 @@
 
 @inject ICampaignEvents CampaignEvents
 @inject SoundContext SoundContext
-@inject IEndPointProvider EndpointProvider
 
 @implements IAsyncDisposable
 
@@ -72,7 +71,7 @@
     {
         public string Name => args.Name;
         public DiceType DiceType => ToDiceType(args.Successes);
-        public List<string> CssClass { get; set; } = args.Successes.Select(s => NeutralClass).ToList();
+        public List<string> CssClass { get; set; } = args.Successes.Select(_ => NeutralClass).ToList();
         public int Digit => CssClass.Count(c => c == SuccessClass);
 
         private static DiceType ToDiceType(IEnumerable<bool> result)

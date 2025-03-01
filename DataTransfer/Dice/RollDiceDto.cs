@@ -11,5 +11,5 @@
         D100
     }
 
-    public record RollDiceDto(int CampaignId, int PlayerId, Dice Dice);
+    public record RollDiceDto(Dice Dice);
 }

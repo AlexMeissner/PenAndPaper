@@ -1,45 +1,41 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
+@using ApiClient
 @using DataTransfer.Campaign
-@using DataTransfer.User
-@using Website.Services
-@using Website.Services.API
 
-@inject ICampaignOverviewApi CampaignOverviewApi
+@inject ICampaignApi CampaignApi
 @inject NavigationManager NavigationManager
-@inject IIdentityProvider IdentityProvider
-@inject ILogger<CampaignSelection> Logger
 
 <PageTitle>Pen & Paper Kampagnenauswahl</PageTitle>
 
 <div class="background-image">
     <div class="centered-backdrop">
         <ul class="list-group">
-            @foreach (var campaign in _campaignItems)
+            @foreach (var campaign in _campaigns)
             {
                 <li class="list-group-item list-group-item-action campaign-item-level-0">
                     <a href="campaign/@campaign.Id" class="campaign-item-link campaign-item-level-0">
                         <div class="campaign-item-icon">
-                            <img width="60" height="60"
+                            <img width="60" height="60" alt=""
                                  src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png"/>
                         </div>
                         <div class="campaign-item-level-1">
                             <div class="campaign-item-header">@campaign.Name</div>
                             <div class="campaign-item-level-2">
                                 <div class="campaign-item-sub-header">Spielleiter</div>
-                                <div class="campaign-item-player-name">@campaign.Gamemaster</div>
+                                <div class="campaign-item-player-name">@campaign.GameMaster</div>
                             </div>
                             <div class="campaign-item-level-2">
                                 <div class="campaign-item-sub-header">Spieler</div>
-                                @foreach (var player in campaign.Characters)
+                                @foreach (var player in campaign.Players)
                                 {
                                     <div class="campaign-item-player-name">@player</div>
                                 }
                             </div>
                         </div>
                     </a>
-                    @if (campaign.IsGamemaster)
+                    @if (campaign.IsGameMaster)
                     {
                         <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button"
                                 @onclick="() => OnEdit(campaign.Id)">
@@ -55,31 +51,19 @@
 </div>
 
 @code {
-    private UsersDto? _user;
-
-    private ICollection<CampaignOverviewItemDto> _campaignItems = [];
+    private IEnumerable<CampaignsDto> _campaigns = [];
 
     protected override async Task OnInitializedAsync()
     {
-        _user = await IdentityProvider.GetUserAsync();
-        await LoadCampaigns();
-    }
+        var response = await CampaignApi.GetAllAsync();
 
-    private async Task LoadCampaigns()
-    {
-        if (_user?.Id is { } userId)
-        {
-            var response = await CampaignOverviewApi.GetAsync(userId);
-
-            response.Match(
-                campaignOverview => { _campaignItems = campaignOverview.CampaignItems; },
-                errorCode =>
-                {
-                    // ToDo: Log + Toast
-                    Console.WriteLine(errorCode);
-                }
-            );
-        }
+        _campaigns = response.Match<IEnumerable<CampaignsDto>>(
+            cam => cam,
+            statusCode =>
+            {
+                // ToDo: Toast
+                return [];
+            });
     }
 
     private void OnCreate()
@@ -89,7 +73,6 @@
 
     private void OnEdit(int campaignId)
     {
-        // If campaignId is always the same value check https://www.telerik.com/blogs/how-to-pass-arguments-to-your-onclick-functions-blazor
         NavigationManager.NavigateTo($"campaignCreation/{campaignId}");
     }
 
