@@ -1,0 +1,127 @@
+using System.Net;
+using Backend.Database;
+using Backend.Database.Models;
+using DataTransfer.Response;
+using DataTransfer.Token;
+using Microsoft.EntityFrameworkCore;
+
+namespace Backend.Services.Repositories;
+
+public interface ITokenRepository
+{
+    Task<Response<int>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto);
+    Task<Response<int>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto);
+    Task<Response> DeleteAsync(int tokenId);
+    Response<IEnumerable<TokensDto>> GetAllAsync(int mapId);
+    Task<Response> UpdateAsync(int tokenId, TokenUpdateDto payload);
+}
+
+public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
+{
+    public async Task<Response<int>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto)
+    {
+        var monster = await dbContext.Monsters.FindAsync(monsterId);
+
+        if (monster is null)
+        {
+            return new Response<int>(HttpStatusCode.NotFound);
+        }
+
+        var campaign = await dbContext.Campaigns
+            .Include(c => c.Maps)
+            .FirstOrDefaultAsync(c => c.Maps.Any(m => m.Id == mapId));
+
+        if (campaign is null)
+        {
+            return new Response<int>(HttpStatusCode.NotFound);
+        }
+
+        var token = new MonsterToken()
+        {
+            X = tokenCreationDto.X,
+            Y = tokenCreationDto.Y,
+            MapId = mapId,
+            OwnerId = campaign.GameMasterId,
+            Monster = monster
+        };
+
+        await dbContext.AddAsync(token);
+        await dbContext.SaveChangesAsync();
+
+        return new Response<int>(HttpStatusCode.Created, token.Id);
+    }
+
+    public async Task<Response<int>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto)
+    {
+        var character = await dbContext.Characters.FindAsync(characterId);
+
+        if (character is null)
+        {
+            return new Response<int>(HttpStatusCode.NotFound);
+        }
+
+        var token = new CharacterToken()
+        {
+            X = tokenCreationDto.X,
+            Y = tokenCreationDto.Y,
+            MapId = mapId,
+            OwnerId = character.UserId,
+            Character = character
+        };
+
+        await dbContext.AddAsync(token);
+        await dbContext.SaveChangesAsync();
+
+        return new Response<int>(HttpStatusCode.Created, token.Id);
+    }
+
+    public async Task<Response> DeleteAsync(int tokenId)
+    {
+        var token = await dbContext.Tokens.FindAsync(tokenId);
+
+        if (token is null)
+        {
+            return new Response(HttpStatusCode.NotFound);
+        }
+
+        dbContext.Remove(token);
+
+        await dbContext.SaveChangesAsync();
+
+        return new Response(HttpStatusCode.OK);
+    }
+
+    public Response<IEnumerable<TokensDto>> GetAllAsync(int mapId)
+    {
+        var characterTokens = dbContext.CharacterTokens
+            .Where(t => t.MapId == mapId)
+            .Include(t => t.Character)
+            .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Character.Name, t.Character.Image));
+
+        var monsterTokens = dbContext.MonsterTokens
+            .Where(t => t.MapId == mapId)
+            .Include(t => t.Monster)
+            .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Monster.Name, t.Monster.Image));
+
+        var tokens = characterTokens.Concat(monsterTokens);
+
+        return new Response<IEnumerable<TokensDto>>(HttpStatusCode.OK, tokens);
+    }
+
+    public async Task<Response> UpdateAsync(int tokenId, TokenUpdateDto payload)
+    {
+        var token = await dbContext.Tokens.FindAsync(tokenId);
+
+        if (token is null)
+        {
+            return new Response(HttpStatusCode.NotFound);
+        }
+
+        token.X = payload.X;
+        token.Y = payload.Y;
+
+        await dbContext.SaveChangesAsync();
+
+        return new Response(HttpStatusCode.OK);
+    }
+}

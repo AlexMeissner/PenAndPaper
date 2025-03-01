@@ -1,11 +1,10 @@
+@using ApiClient
 @using DataTransfer.Chat
 @using Website.Services
-@using Website.Services.API
 
 @rendermode InteractiveServer
 
 @inject IChatApi ChatApi
-@inject IIdentityProvider IdentityProvider
 @inject ICampaignEvents CampaignEvents
 
 @implements IDisposable
@@ -16,7 +15,7 @@
         {
             <div class="chat-message">
                 <div class="chat-message-container">
-                    @if (!IsMe(chatMessage.UserId))
+                    @if (chatMessage.Direction == MessageDirection.Received)
                     {
                         <img class="chat-message-image" alt="" title="@chatMessage.Sender" src="@chatMessage.Image"/>
                     }
@@ -55,13 +54,12 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    private int _userId;
     private string _inputText = string.Empty;
 
     private readonly List<ChatMessageEventArgs> _chatMessages = [];
 
-    private IEnumerable<ChatUser> _chatUsers = [];
-    private ChatUser _target = new ChatUser(0, "Alle");
+    private IEnumerable<ChatUserDto> _chatUsers = [];
+    private ChatUserDto _target;
 
     public void Dispose()
     {
@@ -70,14 +68,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var me = await IdentityProvider.GetUserAsync();
-        _userId = me.Id;
+        var response = await ChatApi.GetUsers(CampaignId);
 
-        var response = await ChatApi.GetAsync(CampaignId);
-
-        _chatUsers = response.Match(
-            chatUsers => chatUsers.Users,
-            statusCode => []);
+        _chatUsers = response.Match<IEnumerable<ChatUserDto>>(
+            chatUsers => chatUsers,
+            statusCode =>
+            {
+                // ToDo: Toast
+                return [];
+            });
 
         _target = _chatUsers.First();
 
@@ -90,20 +89,18 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private bool IsMe(int userId) => _userId == userId;
-
-    private string GetTextStyleClasses(ChatMessageEventArgs chatMessageEventArgs)
+    private string GetTextStyleClasses(ChatMessageEventArgs e)
     {
         var style = "chat-message-text";
 
-        style += chatMessageEventArgs.Type switch
+        style += e.Type switch
         {
-            ChatMessageType.DiceRoll => IsMe(chatMessageEventArgs.UserId) ? " chat-message-dice-roll-sent" : " chat-message-dice-roll-received",
-            ChatMessageType.Message => IsMe(chatMessageEventArgs.UserId) ? " chat-message-sent" : " chat-message-received",
+            ChatMessageType.DiceRoll => e.Direction == MessageDirection.Sent ? " chat-message-dice-roll-sent" : " chat-message-dice-roll-received",
+            ChatMessageType.Message => e.Direction == MessageDirection.Sent ? " chat-message-sent" : " chat-message-received",
             _ => throw new Exception("Unhandled chat message type")
         };
 
-        if (chatMessageEventArgs.IsPrivate)
+        if (e.IsPrivate)
         {
             style += " chat-message-private";
         }
@@ -111,10 +108,10 @@
         return style;
     }
 
-    private string GetTimestampStyleClasses(ChatMessageEventArgs chatMessageEventArgs)
+    private string GetTimestampStyleClasses(ChatMessageEventArgs e)
     {
         var style = "chat-message-timestamp";
-        style += IsMe(chatMessageEventArgs.UserId) ? " chat-message-timestamp-sent" : " chat-message-timestamp-received";
+        style += e.Direction == MessageDirection.Sent ? " chat-message-timestamp-sent" : " chat-message-timestamp-received";
         return style;
     }
 
@@ -138,15 +135,14 @@
 
         if (e.Code is "Enter" or "NumpadEnter")
         {
-            int? receiverId = _target.UserId == 0 ? null : _target.UserId;
-            var payload = new ChatMessageDto(CampaignId, _userId, receiverId, _inputText);
-            await ChatApi.PostAsync(payload); // ToDo: Handle error codes e.g. player has no character yet
+            var payload = new ChatMessageDto(_target.Id, _inputText);
+            await ChatApi.SendMessageAsync(CampaignId, payload);
             _inputText = "";
             await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async Task OnSelectTarget(ChatUser character)
+    private async Task OnSelectTarget(ChatUserDto character)
     {
         _target = character;
         await InvokeAsync(StateHasChanged);

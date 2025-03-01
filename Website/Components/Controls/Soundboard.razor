@@ -1,7 +1,7 @@
+@using ApiClient
 @using DataTransfer.Sound
-@using Website.Services.API
 
-@inject IAudioApi AudioApi
+@inject ISoundApi SoundApi
 
 <div class="backdrop" style="display: @_display">
     <div class="input-group">
@@ -359,16 +359,18 @@
         isPlaying = !isPlaying;
         _buttonStates[identifier] = isPlaying;
 
+        int soundId = 0;
+        
         if (isPlaying)
         {
-            var payload = new SoundStartedEventArgs(identifier, true, false);
-            await AudioApi.Start(payload);
+            await SoundApi.Start(CampaignId, soundId,true);
         }
         else
         {
-            var payload = new SoundStoppedEventArgs(identifier, false);
-            await AudioApi.Stop(payload);
+            await SoundApi.Stop(CampaignId, soundId);
         }
+        
+        // ToDo: Error Handling
     }
 
 }

@@ -11,6 +11,7 @@ public class Character
     #region Relations
 
     public int UserId { get; init; }
+    public required User User { get; init; }
 
     public int CampaignId { get; init; }
 

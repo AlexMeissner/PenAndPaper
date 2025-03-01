@@ -1,26 +1,29 @@
+using Backend.Extensions;
+using Backend.Services.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("campaigns/{campaignId:int}")]
-public class ScriptsController : ControllerBase
+public class ScriptsController(IScriptRepository scriptRepository) : ControllerBase
 {
-    [HttpGet("scripts")]
-    public IActionResult GetAll(int campaignId)
+    [HttpGet("campaigns/{campaignId:int}/scripts")]
+    public async Task<IActionResult> GetAll(int campaignId)
     {
-        throw new NotImplementedException();
+        var response = await scriptRepository.GetAllAsync(campaignId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
     [HttpGet("maps/{mapId:int}/script")]
-    public IActionResult Get(int campaignId, int mapId)
+    public async Task<IActionResult> Get(int mapId)
     {
-        throw new NotImplementedException();
-    }
+        var response = await scriptRepository.GetAsync(mapId);
 
-    [HttpPut("maps/{mapId:int}/script")]
-    public IActionResult Update(int campaignId, int mapId)
-    {
-        throw new NotImplementedException();
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 }

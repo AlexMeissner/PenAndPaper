@@ -1,4 +1,5 @@
-﻿using DataTransfer.Chat;
+﻿using ApiClient;
+using DataTransfer.Chat;
 using DataTransfer.Dice;
 using DataTransfer.Grid;
 using DataTransfer.Map;
@@ -42,7 +43,7 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
 
     public CampaignEvents(IEndPointProvider endPointProvider)
     {
-        var url = endPointProvider.BaseURL + "CampaignUpdates";
+        var url = endPointProvider.BaseUrl + "CampaignUpdates";
         _hubConnection = new HubConnectionBuilder().WithUrl(url).Build();
         _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);

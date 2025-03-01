@@ -11,7 +11,6 @@ public class Token
     public int MapId { get; init; }
 
     public int OwnerId { get; init; }
-    public required User Owner { get; init; }
 
     #endregion
 }

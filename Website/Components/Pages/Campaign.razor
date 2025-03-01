@@ -1,21 +1,20 @@
 ﻿@page "/campaign/{campaignId:int}"
+
 @rendermode InteractiveServer
 
+@using ApiClient
 @using Website.Components.Controls
-@using Website.Services
-@using Website.Services.API
 @using Website.Services.Sound
 
-@inject ICampaignOverviewApi CampaignOverviewApi
-@inject IIdentityProvider IdentityProvider
+@inject ICampaignApi CampaignApi
 @inject AudioPlayer AudioPlayer
 
 <PageTitle>@_title</PageTitle>
 
 <div class="master-panel">
     <div class="left-panel">
-        <Map CampaignId="@CampaignId" IsGamemaster="@_isGamemaster"></Map>
-        @if (_isGamemaster)
+        <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster"></Map>
+        @if (_isGameMaster)
         {
             <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
                 <i class="bi bi-map"></i>
@@ -40,11 +39,10 @@
         <DiceRollVisualizer/>
     </div>
     <div class="right-panel">
-        <!-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_tabs_close -->
         <div class="tab">
             <button class="@GetTabStyle(TabIndex.Chat)" @onclick="() => ActiveTab(TabIndex.Chat)">Chat</button>
 
-            @if (_isGamemaster)
+            @if (_isGameMaster)
             {
                 <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">Skript
                 </button>
@@ -90,7 +88,7 @@
     [Parameter] public int CampaignId { get; set; }
 
     private string _title = "Unbekannte Kampagne";
-    private bool _isGamemaster;
+    private bool _isGameMaster;
     private TabIndex _activeTabIndex = TabIndex.Chat;
 
     private MapSelection? _mapSelection;
@@ -144,29 +142,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await IdentityProvider.GetUserAsync();
+        var response = await CampaignApi.GetAsync(CampaignId);
 
-        var response = await CampaignOverviewApi.GetAsync(user.Id);
-
-        var campaign = response.Match(
-            campaignOverview =>
+        response.Match(
+            campaign =>
             {
-                // ToDo: Add a better endpoint for that request
-                return campaignOverview.CampaignItems.FirstOrDefault(c => c.Id == CampaignId);
+                _title = campaign.Name;
+                _isGameMaster = campaign.IsGameMaster;
             },
-            errorCode =>
+            statusCode =>
             {
                 // ToDo: Log + Toast
-                Console.WriteLine(errorCode);
-                return null;
             }
         );
-
-        if (campaign is not null)
-        {
-            _title = campaign?.Name ?? "Unbekannte Kampagne";
-            _isGamemaster = campaign?.IsGamemaster ?? false;
-        }
     }
 
 }

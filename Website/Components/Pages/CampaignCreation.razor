@@ -1,14 +1,13 @@
 ﻿@page "/campaignCreation"
 @page "/campaignCreation/{campaignId:int}"
+
 @rendermode InteractiveServer
 
+@using ApiClient
 @using DataTransfer.Campaign;
-@using DataTransfer.User;
-@using Website.Services
-@using Website.Services.API
+@using DataTransfer.Response
 
-@inject ICampaignCreationApi CampaignCreationApi
-@inject IIdentityProvider IdentityProvider
+@inject ICampaignApi CampaignApi
 @inject NavigationManager NavigationManager
 
 <PageTitle>Pen & Paper Kampagnenerstellung</PageTitle>
@@ -22,30 +21,23 @@
             <input type="text" class="form-control" @bind="_campaignName" placeholder="Kampagnenname"
                    aria-label="Username" aria-describedby="basic-addon1">
         </div>
-        <div class="input-group top-panels">
-            <div class="input-group-prepend">
-                <i class="bi bi-compass input-group-text icons"></i>
-            </div>
-            <input type="text" class="form-control" @bind="_gamemaster" readonly placeholder="Spielleiter"
-                   aria-label="Username" aria-describedby="basic-addon1">
-        </div>
         <div class="player-selection">
             <div class="left-panel">
                 <h4 class="headings">Spielerliste</h4>
                 <ul class="list-group">
-                    @foreach (var user in _usersNotInCampaign)
+                    @foreach (var user in _uninvitedUsers)
                     {
                         <button type="button" class="list-group-item"
-                                @onclick="() => OnAddPlayer(user)">@user.Username</button>
+                                @onclick="() => OnAddPlayer(user)">@user.Name</button>
                     }
                 </ul>
             </div>
             <div class="right-panel">
                 <h4 class="headings">Spieler in Kampagne</h4>
                 <ul class="list-group">
-                    @foreach (var user in _usersInCampaign)
+                    @foreach (var user in _players)
                     {
-                        <button class="list-group-item" @onclick="() => OnRemovePlayer(user)">@user.Username</button>
+                        <button class="list-group-item" @onclick="() => OnRemovePlayer(user)">@user.Name</button>
                     }
                 </ul>
             </div>
@@ -63,43 +55,39 @@
     private string ButtonText => CampaignId is null ? "Erstellen" : "Aktualisieren";
 
     private string _campaignName = string.Empty;
-    private string _gamemaster = string.Empty;
-    private List<UsersDto> _usersNotInCampaign = [];
-    private List<UsersDto> _usersInCampaign = [];
+    private ICollection<CampaignUser> _players = [];
+    private ICollection<CampaignUser> _uninvitedUsers = [];
 
     protected override async Task OnInitializedAsync()
     {
         var campaignId = CampaignId ?? -1;
 
-        var user = await IdentityProvider.GetUserAsync();
-
-        var response = await CampaignCreationApi.GetAsync(campaignId, user.Id);
+        var response = await CampaignApi.GetAsync(campaignId);
 
         response.Match(
             campaign =>
             {
-                _campaignName = campaign.CampaignName;
-                _gamemaster = campaign.Gamemaster.Username;
-                _usersInCampaign = campaign.UsersInCampaign.ToList();
-                _usersNotInCampaign = campaign.UsersNotInCampaign.ToList();
+                _campaignName = campaign.Name;
+                _players = campaign.Players.ToList();
+                _uninvitedUsers = campaign.UninvitedUsers.ToList();
             },
-            errorCode =>
+            statusCode =>
             {
                 // ToDo: Log + Toast
             }
         );
     }
 
-    private void OnAddPlayer(UsersDto user)
+    private void OnAddPlayer(CampaignUser user)
     {
-        _usersNotInCampaign.Remove(user);
-        _usersInCampaign.Add(user);
+        _uninvitedUsers.Remove(user);
+        _players.Add(user);
     }
 
-    private void OnRemovePlayer(UsersDto user)
+    private void OnRemovePlayer(CampaignUser user)
     {
-        _usersInCampaign.Remove(user);
-        _usersNotInCampaign.Add(user);
+        _players.Remove(user);
+        _uninvitedUsers.Add(user);
     }
 
     private void OnCancel()
@@ -109,34 +97,43 @@
 
     private async Task OnOk()
     {
-        var me = await IdentityProvider.GetUserAsync();
+        var players = _players.Select(p => p.Id);
 
-        var campaignId = CampaignId ?? -1;
-        var campaignCreation = new CampaignCreationDto(
-            campaignId,
-            _campaignName,
-            me,
-            _usersNotInCampaign,
-            _usersInCampaign);
-
-        HttpResponse response;
-
-        if (CampaignId is null)
+        if (CampaignId is { } campaignId)
         {
-            response = await CampaignCreationApi.PostAsync(campaignCreation);
+            await ModifyCampaign(campaignId, players);
         }
         else
         {
-            response = await CampaignCreationApi.PutAsync(campaignCreation);
+            await CreateCampaign(players);
         }
+    }
 
-        if (response.Succeded)
+    private async Task CreateCampaign(IEnumerable<int> players)
+    {
+        var payload = new CampaignCreationDto(_campaignName, players);
+        var response = await CampaignApi.CreateAsync(payload);
+
+        response.Match(
+            campaignId => NavigationManager.NavigateTo($"campaign/{campaignId}"),
+            statusCode =>
+            {
+                // ToDo: Toast
+            });
+    }
+
+    private async Task ModifyCampaign(int campaignId, IEnumerable<int> players)
+    {
+        var payload = new CampaignUpdateDto(_campaignName, players);
+        var response = await CampaignApi.ModifyAsync(campaignId, payload);
+
+        if (response.IsSuccess)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo($"campaign/{campaignId}");
         }
         else
         {
-            // ToDo: Toast and log
+            // ToDo: Toast
         }
     }
 

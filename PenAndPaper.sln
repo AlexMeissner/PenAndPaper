@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransfer", "DataTransfer\DataTransfer.csproj", "{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Tests", "Server.Tests\Server.Tests.csproj", "{E5BC119E-100A-4052-A069-FFDB17F38609}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterManager", "MonsterManager\MonsterManager.csproj", "{220F2542-1B57-4F16-B813-7AAA9444AF41}"
 EndProject
@@ -27,18 +23,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E3ADF58-7BEF-47EF-9419-2A333C1C4BEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5BC119E-100A-4052-A069-FFDB17F38609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5BC119E-100A-4052-A069-FFDB17F38609}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5BC119E-100A-4052-A069-FFDB17F38609}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5BC119E-100A-4052-A069-FFDB17F38609}.Release|Any CPU.Build.0 = Release|Any CPU
 		{220F2542-1B57-4F16-B813-7AAA9444AF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{220F2542-1B57-4F16-B813-7AAA9444AF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{220F2542-1B57-4F16-B813-7AAA9444AF41}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,6 +1,6 @@
+@using ApiClient
 @using DataTransfer.Character
 @using Website.Services
-@using Website.Services.API
 
 @inject ICharacterApi CharacterApi
 @inject IDragAndDrop DragAndDrop
@@ -17,7 +17,8 @@ else
         @foreach (var character in _characters)
         {
             <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
-                <img class="character-image" src="data:image/png;base64,@character.ImageBase64" alt="Icon"/>
+                <img class="character-image" src="data:image/png;base64,@Convert.ToBase64String(character.Image)"
+                     alt="Icon"/>
                 <div class="character-texts">
                     <div class="character-text-row">
                         <div class="character-text-title">Spieler</div>
@@ -36,7 +37,7 @@ else
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    private List<CharacterOverviewItem> _characters = [];
+    private IEnumerable<CharactersDto> _characters = [];
     private bool _isCreatingCharacter = false;
 
     protected override async Task OnInitializedAsync()
@@ -44,7 +45,7 @@ else
         await UpdateCharacterList();
     }
 
-    private void OnDragStart(CharacterOverviewItem character)
+    private void OnDragStart(CharactersDto character)
     {
         DragAndDrop.Data = character;
     }
@@ -53,7 +54,7 @@ else
     {
         _isCreatingCharacter = true;
     }
-    
+
     private async Task OnCreated()
     {
         await UpdateCharacterList();
@@ -62,12 +63,13 @@ else
 
     private async Task UpdateCharacterList()
     {
-        var response = await CharacterApi.GetOverviewAsync(CampaignId);
+        var response = await CharacterApi.GetAllAsync(CampaignId);
 
-        _characters = response.Match(
-            overview => overview.Items.ToList(),
+        _characters = response.Match<IEnumerable<CharactersDto>>(
+            characters => characters,
             statusCode =>
             {
+                // ToDo: Toast
                 Logger.LogError("Failed to get character overview ({statusCode})", statusCode);
                 return [];
             });

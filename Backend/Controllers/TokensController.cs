@@ -1,38 +1,56 @@
+using Backend.Extensions;
+using Backend.Services.Repositories;
+using DataTransfer.Token;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("campaigns/{campaignId:int}/tokens")]
-public class TokensController : ControllerBase
+public class TokensController(ITokenRepository tokenRepository) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult GetAll(int campaignId)
+    [HttpDelete("tokens/{tokenId:int}")]
+    public async Task<IActionResult> Delete(int tokenId)
     {
-        throw new NotImplementedException();
+        var response = await tokenRepository.DeleteAsync(tokenId);
+
+        return this.StatusCode(response.StatusCode);
     }
 
-    [HttpDelete("{tokenId:int}")]
-    public IActionResult GetAll(int tokenId, int campaignId)
+    [HttpPatch("tokens/{tokenId:int}")]
+    public async Task<IActionResult> Update(int tokenId, TokenUpdateDto payload)
     {
-        throw new NotImplementedException();
+        var response = await tokenRepository.UpdateAsync(tokenId, payload);
+
+        return this.StatusCode(response.StatusCode);
     }
 
-    [HttpPatch("{tokenId:int}")]
-    public IActionResult Update(int tokenId, int campaignId)
+    [HttpGet("maps/{mapId:int}/tokens")]
+    public IActionResult GetAll(int mapId)
     {
-        throw new NotImplementedException();
+        var response = tokenRepository.GetAllAsync(mapId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
-    [HttpPost("characters/{characterId:int}")]
-    public IActionResult CreateCharacter(int characterId, int campaignId)
+    [HttpPost("maps/{mapId:int}/character-tokens/{characterId:int}")]
+    public async Task<IActionResult> CreateCharacter(int mapId, int characterId, TokenCreationDto payload)
     {
-        throw new NotImplementedException();
+        var response = await tokenRepository.CreateCharacterToken(mapId, characterId, payload);
+
+        return response.Match<IActionResult>(
+            _ => CreatedAtAction(nameof(GetAll), new { mapId }),
+            this.StatusCode);
     }
 
-    [HttpPost("monsters/{monsterId:int}")]
-    public IActionResult CreateMonster(int monsterId, int campaignId)
+    [HttpPost("maps/{mapId:int}/monster-tokens/{monsterId:int}")]
+    public async Task<IActionResult> CreateMonster(int mapId, int monsterId, TokenCreationDto payload)
     {
-        throw new NotImplementedException();
+        var response = await tokenRepository.CreateMonsterToken(mapId, monsterId, payload);
+
+        return response.Match<IActionResult>(
+            _ => CreatedAtAction(nameof(GetAll), new { mapId }),
+            this.StatusCode);
     }
 }

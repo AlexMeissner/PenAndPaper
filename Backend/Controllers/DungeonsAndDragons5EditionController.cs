@@ -1,20 +1,27 @@
+using Backend.Extensions;
+using Backend.Services.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("dungeons-and-dragons-5e/monsters")]
-public class DungeonsAndDragons5EditionController : ControllerBase
+public class DungeonsAndDragons5EditionController(IMonsterRepository monsterRepository) : ControllerBase
 {
     [HttpGet("{monsterId:int}")]
-    public IActionResult Get(int monsterId)
+    public async Task<IActionResult> Get(int monsterId)
     {
-        throw new NotImplementedException();
+        var response = await monsterRepository.GetAsync(monsterId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        throw new NotImplementedException();
+        var response = monsterRepository.GetAll();
+        return Ok(response);
     }
 }

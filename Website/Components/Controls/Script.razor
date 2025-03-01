@@ -1,11 +1,10 @@
+@using ApiClient
 @using DataTransfer.Map
-@using DataTransfer.Script
 @using Markdig
 @using Website.Services
-@using Website.Services.API
 
 @inject ILogger<Script> Logger
-@inject IActiveMapApi ActiveMapApi
+@inject IMapApi MapApi
 @inject IScriptApi ScriptApi
 @inject ICampaignEvents CampaignEvents
 
@@ -56,7 +55,7 @@ else
     {
         CampaignEvents.MapChanged += OnMapChanged;
 
-        if (await GetActiveMapId() is int mapId)
+        if (await GetActiveMapId() is { } mapId)
         {
             await UpdateScript(mapId);
         }
@@ -78,12 +77,12 @@ else
 
     private async Task OnSave()
     {
-        if (await GetActiveMapId() is int mapId)
+        if (await GetActiveMapId() is { } mapId)
         {
-            var payload = new ScriptDto(mapId, _script);
-            var response = await ScriptApi.Update(payload);
+            var payload = new ScriptUpdateDto(_script);
+            var response = await ScriptApi.Update(mapId, payload);
 
-            if (response.Succeded)
+            if (response.IsSuccess)
             {
                 _scriptHtml = new MarkupString(Markdown.ToHtml(_script));
                 _isEditMode = false;
@@ -100,7 +99,7 @@ else
 
     private async Task UpdateScript(int mapId)
     {
-        var response = await ScriptApi.Get(mapId);
+        var response = await ScriptApi.GetAsync(mapId);
 
         response.Match(
             script =>
@@ -108,19 +107,24 @@ else
                 _script = script.Text;
                 _scriptHtml = new MarkupString(Markdown.ToHtml(script.Text));
             },
-            statusCode => { Logger.LogError("Failed to retrieve the script for map {mapId} ({statusCode})", mapId, statusCode); });
+            statusCode =>
+            {
+                // ToDo: Toast
+                Logger.LogError("Failed to retrieve the script for map {mapId} ({statusCode})", mapId, statusCode);
+            });
 
         await InvokeAsync(StateHasChanged);
     }
 
     private async Task<int?> GetActiveMapId()
     {
-        var response = await ActiveMapApi.GetAsync(CampaignId);
+        var response = await MapApi.GetActiveMapAsync(CampaignId);
 
         return response.Match(
             activeMap => activeMap.MapId,
             statusCode =>
             {
+                // ToDo: Toast
                 Logger.LogError("Failed to get the active map ({statusCode})", statusCode);
                 return null;
             });

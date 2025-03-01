@@ -6,17 +6,19 @@ public enum ChatMessageType
     Message
 }
 
+public enum MessageDirection
+{
+    Sent,
+    Received
+}
+
 public record ChatMessageEventArgs(
     DateTime Timestamp,
     ChatMessageType Type,
-    int UserId,
+    MessageDirection Direction,
     string Sender,
     string Text,
     string? Image,
     bool IsPrivate);
 
-public record ChatMessageDto(int CampaignId, int SenderId, int? ReceiverId, string Text);
-
-public record ChatUser(int UserId, string Name);
-
-public record ChatUsersDto(IEnumerable<ChatUser> Users);
+public record ChatMessageDto(int? ReceiverId, string Text);
