@@ -77,6 +77,8 @@ namespace Backend.Migrations
 
                     b.HasIndex("CampaignId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Characters");
                 });
 
@@ -323,8 +325,6 @@ namespace Backend.Migrations
 
                     b.HasIndex("MapId");
 
-                    b.HasIndex("OwnerId");
-
                     b.ToTable("Tokens");
 
                     b.HasDiscriminator().HasValue("Token");
@@ -409,6 +409,14 @@ namespace Backend.Migrations
                         .HasForeignKey("CampaignId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Backend.Database.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.Map", b =>
@@ -427,14 +435,6 @@ namespace Backend.Migrations
                         .HasForeignKey("MapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Backend.Database.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Backend.Database.Models.User", b =>
