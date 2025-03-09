@@ -1,4 +1,5 @@
 using DataTransfer.Response;
+using DataTransfer.User;
 
 namespace ApiClient;
 
@@ -8,15 +9,17 @@ public interface IUserApi
     Task<Response> Register();
 }
 
-public class UserApi(IRequest request) : IUserApi
+public class UserApi(IRequestBuilder requestBuilder) : IUserApi
 {
     public Task<Response> Login()
     {
-        throw new NotImplementedException();
+        var payload = new LoginDto();
+        return requestBuilder.Path("sessions").PostAsync(payload);
     }
 
     public Task<Response> Register()
     {
-        throw new NotImplementedException();
+        var payload = new RegisterDto();
+        return requestBuilder.Path("users").PostAsync(payload);
     }
 }

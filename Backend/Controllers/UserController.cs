@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Backend.Extensions;
 using Backend.Services;
+using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -9,7 +10,7 @@ namespace Backend.Controllers;
 public class UserController(IIdentity identity) : ControllerBase
 {
     [HttpPost("sessions")]
-    public async Task<IActionResult> Login()
+    public async Task<IActionResult> Login(LoginDto _)
     {
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
@@ -24,17 +25,17 @@ public class UserController(IIdentity identity) : ControllerBase
     }
 
     [HttpPost("users")]
-    public async Task<IActionResult> Register()
+    public async Task<IActionResult> Register(RegisterDto _)
     {
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var name = User.FindFirst(ClaimTypes.Name)?.Value;
+        var name = User.FindFirst(ClaimTypes.GivenName)?.Value;
 
         if (email is null || name is null)
         {
             return Unauthorized();
         }
 
-        var response = await identity.Register(name, email);
+        var response = await identity.Register(email, name);
 
         return this.StatusCode(response.StatusCode);
     }

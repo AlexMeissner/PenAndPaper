@@ -8,10 +8,10 @@ public interface IRollApi
     Task<Response> RollAsync(int campaignId, RollDiceDto payload);
 }
 
-public class RollApi(IRequest request) : IRollApi
+public class RollApi(IRequestBuilder requestBuilder) : IRollApi
 {
     public Task<Response> RollAsync(int campaignId, RollDiceDto payload)
     {
-        return request.Path("campaigns", campaignId, "rolls").PostAsync(payload);
+        return requestBuilder.Path("campaigns", campaignId, "rolls").PostAsync(payload);
     }
 }

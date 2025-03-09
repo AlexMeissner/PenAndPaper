@@ -11,25 +11,25 @@ public interface ICampaignApi
     Task<Response> ModifyAsync(int campaignId, CampaignUpdateDto payload);
 }
 
-public class CampaignApi(IRequest request) : ICampaignApi
+public class CampaignApi(IRequestBuilder requestBuilder) : ICampaignApi
 {
     public Task<Response<int>> CreateAsync(CampaignCreationDto payload)
     {
-        return request.Path("campaigns").PostAsync<int>(payload);
+        return requestBuilder.Path("campaigns").PostAsync<int>(payload);
     }
 
     public Task<Response<CampaignDto>> GetAsync(int campaignId)
     {
-        return request.Path("campaigns", campaignId).GetAsync<CampaignDto>();
+        return requestBuilder.Path("campaigns", campaignId).GetAsync<CampaignDto>();
     }
 
     public Task<Response<IEnumerable<CampaignsDto>>> GetAllAsync()
     {
-        return request.Path("campaigns").GetAsync<IEnumerable<CampaignsDto>>();
+        return requestBuilder.Path("campaigns").GetAsync<IEnumerable<CampaignsDto>>();
     }
 
     public Task<Response> ModifyAsync(int campaignId, CampaignUpdateDto payload)
     {
-        return request.Path("campaigns", campaignId).PutAsync(payload);
+        return requestBuilder.Path("campaigns", campaignId).PutAsync(payload);
     }
 }

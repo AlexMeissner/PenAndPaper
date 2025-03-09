@@ -9,16 +9,16 @@ public interface ISoundApi
     Task<Response> Stop(int campaignId, int soundId);
 }
 
-public class SoundApi(IRequest request) : ISoundApi
+public class SoundApi(IRequestBuilder requestBuilder) : ISoundApi
 {
     public Task<Response> Start(int campaignId, int soundId, bool isLooped)
     {
         var payload = new SoundStartDto(isLooped);
-        return request.Path("campaigns", campaignId, "sounds", soundId).PostAsync(payload);
+        return requestBuilder.Path("campaigns", campaignId, "sounds", soundId).PostAsync(payload);
     }
 
     public Task<Response> Stop(int campaignId, int soundId)
     {
-        return request.Path("campaigns", campaignId, "sounds", soundId).DeleteAsync();
+        return requestBuilder.Path("campaigns", campaignId, "sounds", soundId).DeleteAsync();
     }
 }

@@ -11,20 +11,20 @@ public interface IScriptApi
     Task<Response> Update(int mapId, ScriptUpdateDto payload);
 }
 
-public class ScriptApi(IRequest request) : IScriptApi
+public class ScriptApi(IRequestBuilder requestBuilder) : IScriptApi
 {
     public Task<Response<ScriptDto>> GetAsync(int mapId)
     {
-        return request.Path("maps", mapId, "scripts").GetAsync<ScriptDto>();
+        return requestBuilder.Path("maps", mapId, "scripts").GetAsync<ScriptDto>();
     }
 
     public Task<Response<IEnumerable<ScriptsDto>>> GetAllAsync(int campaignId)
     {
-        return request.Path("campaigns", campaignId, "scripts").GetAsync<IEnumerable<ScriptsDto>>();
+        return requestBuilder.Path("campaigns", campaignId, "scripts").GetAsync<IEnumerable<ScriptsDto>>();
     }
     
     public Task<Response> Update(int mapId, ScriptUpdateDto payload)
     {
-        return request.Path("maps", mapId).PatchAsync(payload);
+        return requestBuilder.Path("maps", mapId).PatchAsync(payload);
     }
 }

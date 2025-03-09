@@ -12,30 +12,30 @@ public interface ITokenApi
     Task<Response> RemoveAsync(int tokenId);
 }
 
-public class TokenApi(IRequest request) : ITokenApi
+public class TokenApi(IRequestBuilder requestBuilder) : ITokenApi
 {
     public Task<Response<int>> CreateCharacter(int mapId, int characterId, TokenCreationDto payload)
     {
-        return request.Path("maps", mapId, "character-tokens", characterId).PostAsync<int>(payload);
+        return requestBuilder.Path("maps", mapId, "character-tokens", characterId).PostAsync<int>(payload);
     }
 
     public Task<Response<int>> CreateMonster(int mapId, int monsterId, TokenCreationDto payload)
     {
-        return request.Path("maps", mapId, "monster-tokens", monsterId).PostAsync<int>(payload);
+        return requestBuilder.Path("maps", mapId, "monster-tokens", monsterId).PostAsync<int>(payload);
     }
 
     public Task<Response<IEnumerable<TokensDto>>> GetAllAsync(int mapId)
     {
-        return request.Path("maps", mapId, "tokens").GetAsync<IEnumerable<TokensDto>>();
+        return requestBuilder.Path("maps", mapId, "tokens").GetAsync<IEnumerable<TokensDto>>();
     }
 
     public Task<Response> MoveAsync(int tokenId, TokenUpdateDto payload)
     {
-        return request.Path("tokens", tokenId).PatchAsync(payload);
+        return requestBuilder.Path("tokens", tokenId).PatchAsync(payload);
     }
 
     public Task<Response> RemoveAsync(int tokenId)
     {
-        return request.Path("tokens", tokenId).DeleteAsync();
+        return requestBuilder.Path("tokens", tokenId).DeleteAsync();
     }
 }
