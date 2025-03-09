@@ -9,15 +9,15 @@ public interface IMonsterApi
     Task<Response<MonsterDto>> GetAsync(int monsterId);
 }
 
-public class MonsterApi(IRequest request) : IMonsterApi
+public class MonsterApi(IRequestBuilder requestBuilder) : IMonsterApi
 {
     public Task<Response<IEnumerable<MonstersDto>>> GetAllAsync()
     {
-        return request.Path("dungeons-and-dragons-5e", "monsters").GetAsync<IEnumerable<MonstersDto>>();
+        return requestBuilder.Path("dungeons-and-dragons-5e", "monsters").GetAsync<IEnumerable<MonstersDto>>();
     }
 
     public Task<Response<MonsterDto>> GetAsync(int monsterId)
     {
-        return request.Path("dungeons-and-dragons-5e", "monsters", monsterId).GetAsync<MonsterDto>();
+        return requestBuilder.Path("dungeons-and-dragons-5e", "monsters", monsterId).GetAsync<MonsterDto>();
     }
 }

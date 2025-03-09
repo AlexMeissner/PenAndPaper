@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
         services.AddSingleton<ITokenProvider, TokenProvider>();
         
-        services.AddTransient<IRequest, Request>();
+        services.AddTransient<IRequestBuilder, RequestBuilder>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();
         services.AddTransient<ICharacterApi, CharacterApi>();
@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IScriptApi, ScriptApi>();
         services.AddTransient<ISoundApi, SoundApi>();
         services.AddTransient<ITokenApi, TokenApi>();
+        services.AddTransient<IUserApi, UserApi>();
     }
 
     public static void AddGoogleAuthentication(this IServiceCollection services,

@@ -9,15 +9,15 @@ public interface IChatApi
     Task<Response> SendMessageAsync(int campaignId, ChatMessageDto payload);
 }
 
-public class ChatApi(IRequest request) : IChatApi
+public class ChatApi(IRequestBuilder requestBuilder) : IChatApi
 {
     public Task<Response<IEnumerable<ChatUserDto>>> GetUsers(int campaignId)
     {
-        return request.Path("campaigns", campaignId, "chat-users").GetAsync<IEnumerable<ChatUserDto>>();
+        return requestBuilder.Path("campaigns", campaignId, "chat-users").GetAsync<IEnumerable<ChatUserDto>>();
     }
 
     public Task<Response> SendMessageAsync(int campaignId, ChatMessageDto payload)
     {
-        return request.Path("campaigns", campaignId, "chat").PostAsync(payload);
+        return requestBuilder.Path("campaigns", campaignId, "chat").PostAsync(payload);
     }
 }

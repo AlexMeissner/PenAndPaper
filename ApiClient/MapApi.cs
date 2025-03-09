@@ -15,45 +15,45 @@ public interface IMapApi
     Task<Response> UpdateNameAsync(int mapId, NameUpdateDto payload);
 }
 
-public class MapApi(IRequest request) : IMapApi
+public class MapApi(IRequestBuilder requestBuilder) : IMapApi
 {
     public Task<Response<int>> CreateAsync(int campaignId, MapCreationDto payload)
     {
-        return request.Path("campaigns", campaignId, "maps").PostAsync<int>(payload);
+        return requestBuilder.Path("campaigns", campaignId, "maps").PostAsync<int>(payload);
     }
 
     public Task<Response<ActiveMapDto>> GetActiveMapAsync(int campaignId)
     {
-        return request.Path("campaigns", campaignId, "active-map").GetAsync<ActiveMapDto>();
+        return requestBuilder.Path("campaigns", campaignId, "active-map").GetAsync<ActiveMapDto>();
     }
 
     public Task<Response<IEnumerable<MapsDto>>> GetAllAsync(int campaignId)
     {
-        return request.Path("campaigns", campaignId, "maps").GetAsync<IEnumerable<MapsDto>>();
+        return requestBuilder.Path("campaigns", campaignId, "maps").GetAsync<IEnumerable<MapsDto>>();
     }
 
     public Task<Response<MapDto>> GetAsync(int mapId)
     {
-        return request.Path("maps", mapId).GetAsync<MapDto>();
+        return requestBuilder.Path("maps", mapId).GetAsync<MapDto>();
     }
 
     public Task<Response> RemoveAsync(int mapId)
     {
-        return request.Path("maps", mapId).DeleteAsync();
+        return requestBuilder.Path("maps", mapId).DeleteAsync();
     }
 
     public Task<Response> SetActiveMapAsync(int campaignId, ActiveMapUpdateDto payload)
     {
-        return request.Path("campaigns", campaignId, "active-map").PatchAsync(payload);
+        return requestBuilder.Path("campaigns", campaignId, "active-map").PatchAsync(payload);
     }
 
     public Task<Response> UpdateGrid(int mapId, GridUpdateDto payload)
     {
-        return request.Path("maps", mapId).PatchAsync(payload);
+        return requestBuilder.Path("maps", mapId).PatchAsync(payload);
     }
 
     public Task<Response> UpdateNameAsync(int mapId, NameUpdateDto payload)
     {
-        return request.Path("maps", mapId).PatchAsync(payload);
+        return requestBuilder.Path("maps", mapId).PatchAsync(payload);
     }
 }

@@ -5,9 +5,21 @@ using Flurl.Http;
 
 namespace ApiClient;
 
-public interface IRequest
+public interface IRequestBuilder
 {
     IRequest Path(params object[] segments);
+}
+
+public class RequestBuilder(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IRequestBuilder
+{
+    public IRequest Path(params object[] segments)
+    {
+        return new Request(endPointProvider, tokenProvider, segments);
+    }
+}
+
+public interface IRequest
+{
     IRequest Query(string name, object value);
 
     Task<Response> DeleteAsync();
@@ -19,17 +31,13 @@ public interface IRequest
     Task<Response<T>> PutAsync<T>(object payload);
 }
 
-public class Request(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : IRequest
+public class Request(IEndPointProvider endPointProvider, ITokenProvider tokenProvider, params object[] segments)
+    : IRequest
 {
-    private readonly FlurlRequest _request = new FlurlRequest(endPointProvider.BaseUrl)
+    private readonly IFlurlRequest _request = new FlurlRequest(endPointProvider.BaseUrl)
         .WithOAuthBearerToken(tokenProvider.GetToken())
-        .AllowAnyHttpStatus();
-
-    public IRequest Path(params object[] segments)
-    {
-        _request.AppendPathSegments(segments);
-        return this;
-    }
+        .AllowAnyHttpStatus()
+        .AppendPathSegments(segments);
 
     public IRequest Query(string name, object value)
     {
