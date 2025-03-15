@@ -20,7 +20,7 @@ public class CampaignsControllerController(IIdentity identity, ICampaignReposito
         var response = await campaignRepository.CreateAsync(identityClaims, payload);
 
         return response.Match<IActionResult>(
-            campaignId => CreatedAtAction(nameof(GetById), campaignId),
+            campaignId => CreatedAtAction(nameof(GetById), new { campaignId }, campaignId),
             this.StatusCode);
     }
 
