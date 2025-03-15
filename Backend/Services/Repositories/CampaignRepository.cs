@@ -9,15 +9,15 @@ namespace Backend.Services.Repositories;
 
 public interface ICampaignRepository
 {
-    Task<Response<int>> CreateAsync(CampaignCreationDto payload);
+    Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload);
     Task<Response<CampaignDto>> GetAsync(int id);
     Response<IEnumerable<CampaignsDto>> GetAll();
     Task<Response> UpdateAsync(int id, CampaignUpdateDto payload);
 }
 
-public class CampaignRepository(PenAndPaperDatabase dbContext, IIdentity identity) : ICampaignRepository
+public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignRepository
 {
-    public async Task<Response<int>> CreateAsync(CampaignCreationDto payload)
+    public async Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload)
     {
         var campaign = new Campaign()
         {

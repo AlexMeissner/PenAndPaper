@@ -2,17 +2,22 @@ using Backend.Services.Repositories;
 using DataTransfer.Campaign;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Extensions;
+using Backend.Services;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("campaigns")]
-public class CampaignsControllerController(ICampaignRepository campaignRepository) : ControllerBase
+public class CampaignsControllerController(IIdentity identity, ICampaignRepository campaignRepository) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CampaignCreationDto payload)
     {
-        var response = await campaignRepository.CreateAsync(payload);
+        var identityClaims = await identity.FromClaimsPrincipal(User);
+
+        if (identityClaims is null) return Unauthorized();
+
+        var response = await campaignRepository.CreateAsync(identityClaims, payload);
 
         return response.Match<IActionResult>(
             campaignId => CreatedAtAction(nameof(GetById), campaignId),
