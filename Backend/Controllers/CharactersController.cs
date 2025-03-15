@@ -35,7 +35,7 @@ public class CharactersController(ICharacterRepository characterRepository) : Co
         var response = await characterRepository.CreateAsync(campaignId, userId, payload);
 
         return response.Match<IActionResult>(
-            _ => CreatedAtAction(nameof(GetAll), new { campaignId, userId }),
+            _ => CreatedAtAction(nameof(GetAll), new { campaignId, userId }, new { campaignId, userId }),
             this.StatusCode);
     }
 }

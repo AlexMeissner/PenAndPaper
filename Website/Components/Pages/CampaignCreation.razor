@@ -133,7 +133,10 @@
         var response = await CampaignApi.CreateAsync(payload);
 
         response.Match(
-            campaignId => NavigationManager.NavigateTo($"campaign/{campaignId}"),
+            campaignId =>
+            {
+                NavigationManager.NavigateTo($"campaign/{campaignId}");
+            },
             statusCode =>
             {
                 // ToDo: Toast

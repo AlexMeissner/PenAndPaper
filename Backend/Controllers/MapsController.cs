@@ -32,7 +32,7 @@ public class MapsController(IMapRepository mapRepository) : ControllerBase
         var response = await mapRepository.CreateAsync(campaignId, payload);
 
         return response.Match<IActionResult>(
-            mapId => CreatedAtAction(nameof(Get), mapId),
+            mapId => CreatedAtAction(nameof(Get), new { mapId }, mapId),
             this.StatusCode);
     }
 
