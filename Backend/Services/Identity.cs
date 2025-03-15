@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using Backend.Database;
 using Backend.Database.Models;
 using DataTransfer.Response;
@@ -6,44 +7,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
+public record IdentityClaims(User User, string Email, string Name);
+
 public interface IIdentity
 {
-    public User User { get; }
-
-    Task<Response> Login(string email);
-    Task<Response> Register(string email, string name);
+    public Task<IdentityClaims?> FromClaimsPrincipal(ClaimsPrincipal claimsPrincipal);
+    public Task<Response> Register(ClaimsPrincipal claimsPrincipal);
 }
 
 public class Identity(PenAndPaperDatabase dbContext) : IIdentity
 {
-    private User? _user;
-
-    public User User
+    public async Task<IdentityClaims?> FromClaimsPrincipal(ClaimsPrincipal claimsPrincipal)
     {
-        get
-        {
-            if (_user is null)
-            {
-                throw new NullReferenceException("No user is logged in");
-            }
+        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
 
-            return _user;
-        }
+        if (email is null) return null;
+
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (user is null) return null;
+
+        var name = claimsPrincipal.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+
+        return new IdentityClaims(user, email, name);
     }
 
-    public async Task<Response> Login(string email)
+    public async Task<Response> Register(ClaimsPrincipal claimsPrincipal)
     {
-        _user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
 
-        return _user is null ? new Response(HttpStatusCode.Unauthorized) : new Response(HttpStatusCode.OK);
-    }
+        if (email is null) return new Response(HttpStatusCode.Unauthorized);
 
-    public async Task<Response> Register(string email, string name)
-    {
-        if (dbContext.Users.Any(u => u.Email == email))
-        {
-            return new Response(HttpStatusCode.Conflict);
-        }
+        var name = claimsPrincipal.FindFirst(ClaimTypes.GivenName)?.Value ?? "Incognito";
 
         var user = new User()
         {

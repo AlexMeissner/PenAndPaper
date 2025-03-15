@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IMonsterRepository, MonsterRepository>();
         services.AddTransient<IScriptRepository, ScriptRepository>();
         services.AddTransient<ITokenRepository, TokenRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
 
         return services;
     }

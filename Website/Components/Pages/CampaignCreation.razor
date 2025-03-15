@@ -5,9 +5,9 @@
 
 @using ApiClient
 @using DataTransfer.Campaign;
-@using DataTransfer.Response
 
 @inject ICampaignApi CampaignApi
+@inject IUserApi UserApi
 @inject NavigationManager NavigationManager
 
 <PageTitle>Pen & Paper Kampagnenerstellung</PageTitle>
@@ -60,22 +60,40 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var campaignId = CampaignId ?? -1;
+        if (CampaignId is { } campaignId)
+        {
+            var response = await CampaignApi.GetAsync(campaignId);
 
-        var response = await CampaignApi.GetAsync(campaignId);
+            response.Match(
+                campaign =>
+                {
+                    _campaignName = campaign.Name;
+                    _players = campaign.Players.ToList();
+                    _uninvitedUsers = campaign.UninvitedUsers.ToList();
+                },
+                statusCode =>
+                {
+                    // ToDo: Log + Toast
+                }
+            );
+        }
+        else
+        {
+            var response = await UserApi.GetAllAsync();
 
-        response.Match(
-            campaign =>
-            {
-                _campaignName = campaign.Name;
-                _players = campaign.Players.ToList();
-                _uninvitedUsers = campaign.UninvitedUsers.ToList();
-            },
-            statusCode =>
-            {
-                // ToDo: Log + Toast
-            }
-        );
+            response.Match(
+                users =>
+                {
+                    _campaignName = string.Empty;
+                    _players = [];
+                    _uninvitedUsers = users.ToList();
+                },
+                statusCode =>
+                {
+                    // ToDo: Log + Toast
+                }
+            );
+        }
     }
 
     private void OnAddPlayer(CampaignUser user)

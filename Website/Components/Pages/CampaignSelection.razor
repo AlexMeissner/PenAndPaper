@@ -5,6 +5,7 @@
 @using DataTransfer.Campaign
 
 @inject ICampaignApi CampaignApi
+@inject IUserApi UserApi
 @inject NavigationManager NavigationManager
 
 <PageTitle>Pen & Paper Kampagnenauswahl</PageTitle>
@@ -18,7 +19,7 @@
                     <a href="campaign/@campaign.Id" class="campaign-item-link campaign-item-level-0">
                         <div class="campaign-item-icon">
                             <img width="60" height="60" alt=""
-                                 src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png"/>
+                            src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png"/>
                         </div>
                         <div class="campaign-item-level-1">
                             <div class="campaign-item-header">@campaign.Name</div>
@@ -38,7 +39,7 @@
                     @if (campaign.IsGameMaster)
                     {
                         <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button"
-                                @onclick="() => OnEdit(campaign.Id)">
+                        @onclick="() => OnEdit(campaign.Id)">
                             <i class="bi bi-pencil"></i>
                         </button>
                     }
@@ -55,6 +56,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await Login();
+
         var response = await CampaignApi.GetAllAsync();
 
         _campaigns = response.Match<IEnumerable<CampaignsDto>>(
@@ -64,6 +67,28 @@
                 // ToDo: Toast
                 return [];
             });
+    }
+
+    private async Task Login()
+    {
+        var response = await UserApi.Login();
+
+        if (response.IsSuccess) return;
+
+        response = await UserApi.Register();
+
+        if (!response.IsSuccess)
+        {
+            // ToDo: Toast
+            return;
+        }
+
+        response = await UserApi.Login();
+
+        if (!response.IsSuccess)
+        {
+            // ToDo: Toast
+        }
     }
 
     private void OnCreate()

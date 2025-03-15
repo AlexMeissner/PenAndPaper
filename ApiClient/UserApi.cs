@@ -1,3 +1,4 @@
+using DataTransfer.Campaign;
 using DataTransfer.Response;
 using DataTransfer.User;
 
@@ -5,12 +6,18 @@ namespace ApiClient;
 
 public interface IUserApi
 {
+    Task<Response<IEnumerable<CampaignUser>>> GetAllAsync();
     Task<Response> Login();
     Task<Response> Register();
 }
 
 public class UserApi(IRequestBuilder requestBuilder) : IUserApi
 {
+    public Task<Response<IEnumerable<CampaignUser>>> GetAllAsync()
+    {
+        return requestBuilder.Path("users").GetAsync<IEnumerable<CampaignUser>>();
+    }
+
     public Task<Response> Login()
     {
         var payload = new LoginDto();
