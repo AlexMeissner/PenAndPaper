@@ -22,6 +22,9 @@ public class DungeonsAndDragons5EditionController(IMonsterRepository monsterRepo
     public IActionResult GetAll()
     {
         var response = monsterRepository.GetAll();
-        return Ok(response);
+        
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 }
