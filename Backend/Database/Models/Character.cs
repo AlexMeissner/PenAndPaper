@@ -14,6 +14,8 @@ public class Character
     public required User User { get; init; }
 
     public int CampaignId { get; init; }
+    
+    public ICollection<CharacterToken> Tokens { get; set; } = [];
 
     #endregion
 }
