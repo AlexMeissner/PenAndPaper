@@ -11,7 +11,7 @@ public interface ICampaignRepository
 {
     Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload);
     Task<Response<CampaignDto>> GetAsync(int id);
-    Response<IEnumerable<CampaignsDto>> GetAll();
+    Response<IEnumerable<CampaignsDto>> GetAll(IdentityClaims identity);
     Task<Response> UpdateAsync(int id, CampaignUpdateDto payload);
 }
 
@@ -19,10 +19,13 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
 {
     public async Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload)
     {
+        var players = await dbContext.Users.Where(u => payload.PlayerIds.Contains(u.Id)).ToListAsync();
+
         var campaign = new Campaign()
         {
             Name = payload.Name,
             GameMaster = identity.User,
+            Players = players
         };
 
         await dbContext.AddAsync(campaign);
@@ -54,14 +57,13 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
         return new Response<CampaignDto>(HttpStatusCode.OK, payload);
     }
 
-    public Response<IEnumerable<CampaignsDto>> GetAll()
+    public Response<IEnumerable<CampaignsDto>> GetAll(IdentityClaims identity)
     {
         var campaigns = dbContext.Campaigns
             .Include(c => c.GameMaster)
             .Include(c => c.Players)
-            .Select(c =>
-                new CampaignsDto(c.Id, c.Name, c.GameMaster.Username, c.Players.Select(u => u.Username), true));
-        // ToDo: Fill IsGameMaster correctly
+            .Select(c => new CampaignsDto(c.Id, c.Name, c.GameMaster.Username, c.Players.Select(u => u.Username),
+                c.GameMaster == identity.User));
 
         return new Response<IEnumerable<CampaignsDto>>(HttpStatusCode.OK, campaigns);
     }
