@@ -44,7 +44,7 @@
 
 .player-selection {
     display: flex;
-    height: calc(100% - 165px);
+    height: calc(100% - 120px);
 }
 
 .list-group {
