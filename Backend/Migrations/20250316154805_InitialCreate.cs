@@ -71,62 +71,61 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Campaigns",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    GameMasterId = table.Column<int>(type: "integer", nullable: false),
-                    ActiveMapId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Campaigns", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Maps",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Image = table.Column<byte[]>(type: "bytea", nullable: false),
-                    IsGridActive = table.Column<bool>(type: "boolean", nullable: false),
-                    GridSize = table.Column<int>(type: "integer", nullable: false),
-                    Script = table.Column<string>(type: "text", nullable: false),
-                    CampaignId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Maps", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Maps_Campaigns_CampaignId",
-                        column: x => x.CampaignId,
-                        principalTable: "Campaigns",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Email = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Username = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    CampaignId = table.Column<int>(type: "integer", nullable: true)
+                    Username = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Campaigns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    GameMasterId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Campaigns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Campaigns_CampaignId",
-                        column: x => x.CampaignId,
+                        name: "FK_Campaigns_Users_GameMasterId",
+                        column: x => x.GameMasterId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CampaignUser",
+                columns: table => new
+                {
+                    PlayerCampaignsId = table.Column<int>(type: "integer", nullable: false),
+                    PlayersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CampaignUser", x => new { x.PlayerCampaignsId, x.PlayersId });
+                    table.ForeignKey(
+                        name: "FK_CampaignUser_Campaigns_PlayerCampaignsId",
+                        column: x => x.PlayerCampaignsId,
                         principalTable: "Campaigns",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CampaignUser_Users_PlayersId",
+                        column: x => x.PlayersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,6 +152,31 @@ namespace Backend.Migrations
                         name: "FK_Characters_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Maps",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Image = table.Column<byte[]>(type: "bytea", nullable: false),
+                    IsGridActive = table.Column<bool>(type: "boolean", nullable: false),
+                    GridSize = table.Column<int>(type: "integer", nullable: false),
+                    Script = table.Column<string>(type: "text", nullable: false),
+                    CampaignId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Maps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Maps_Campaigns_CampaignId",
+                        column: x => x.CampaignId,
+                        principalTable: "Campaigns",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -195,15 +219,14 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Campaigns_ActiveMapId",
-                table: "Campaigns",
-                column: "ActiveMapId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Campaigns_GameMasterId",
                 table: "Campaigns",
                 column: "GameMasterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CampaignUser_PlayersId",
+                table: "CampaignUser",
+                column: "PlayersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Characters_CampaignId",
@@ -234,39 +257,13 @@ namespace Backend.Migrations
                 name: "IX_Tokens_MonsterId",
                 table: "Tokens",
                 column: "MonsterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_CampaignId",
-                table: "Users",
-                column: "CampaignId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Campaigns_Maps_ActiveMapId",
-                table: "Campaigns",
-                column: "ActiveMapId",
-                principalTable: "Maps",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Campaigns_Users_GameMasterId",
-                table: "Campaigns",
-                column: "GameMasterId",
-                principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Campaigns_Maps_ActiveMapId",
-                table: "Campaigns");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Campaigns_Users_GameMasterId",
-                table: "Campaigns");
+            migrationBuilder.DropTable(
+                name: "CampaignUser");
 
             migrationBuilder.DropTable(
                 name: "Tokens");
@@ -275,16 +272,16 @@ namespace Backend.Migrations
                 name: "Characters");
 
             migrationBuilder.DropTable(
-                name: "Monsters");
-
-            migrationBuilder.DropTable(
                 name: "Maps");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Monsters");
 
             migrationBuilder.DropTable(
                 name: "Campaigns");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

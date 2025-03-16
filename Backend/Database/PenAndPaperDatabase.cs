@@ -13,19 +13,4 @@ public class PenAndPaperDatabase(DbContextOptions<PenAndPaperDatabase> options) 
     public DbSet<CharacterToken> CharacterTokens { get; set; }
     public DbSet<MonsterToken> MonsterTokens { get; set; }
     public DbSet<User> Users { get; set; }
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Campaign>()
-            .HasOne(c => c.ActiveMap)
-            .WithOne()
-            .HasForeignKey<Campaign>(c => c.ActiveMapId)
-            .OnDelete(DeleteBehavior.SetNull);
-
-        modelBuilder.Entity<Campaign>()
-            .HasMany(c => c.Maps)
-            .WithOne()
-            .HasForeignKey(m => m.CampaignId)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
 }

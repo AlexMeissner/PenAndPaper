@@ -4,6 +4,7 @@ using Backend.Database.Models;
 using DataTransfer.Grid;
 using DataTransfer.Map;
 using DataTransfer.Response;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services.Repositories;
 
@@ -55,14 +56,18 @@ public class MapRepository(PenAndPaperDatabase dbContext) : IMapRepository
 
     public async Task<Response<ActiveMapDto>> GetActiveMapAsync(int campaignId)
     {
-        var campaign = await dbContext.Campaigns.FindAsync(campaignId);
+        var campaign = await dbContext.Campaigns
+            .Include(c => c.Maps)
+            .FirstOrDefaultAsync(c => c.Id == campaignId);
 
         if (campaign is null)
         {
             return new Response<ActiveMapDto>(HttpStatusCode.NotFound);
         }
 
-        var activeMapDto = new ActiveMapDto(campaign.ActiveMapId);
+        var activeMapId = campaign.Maps.FirstOrDefault(m => m.IsActive)?.Id;
+
+        var activeMapDto = new ActiveMapDto(activeMapId);
 
         return new Response<ActiveMapDto>(HttpStatusCode.OK, activeMapDto);
     }
@@ -131,14 +136,21 @@ public class MapRepository(PenAndPaperDatabase dbContext) : IMapRepository
 
     public async Task<Response> UpdateActiveMapAsync(int campaignId, ActiveMapUpdateDto payload)
     {
-        var campaign = await dbContext.Campaigns.FindAsync(campaignId);
+        var campaign = await dbContext.Campaigns
+            .Include(c => c.Maps)
+            .FirstOrDefaultAsync(c => c.Id == campaignId);
 
-        if (campaign is null)
+        if (campaign is null) return new Response(HttpStatusCode.NotFound);
+
+        var map = campaign.Maps.FirstOrDefault(m => m.Id == payload.MapId);
+
+        if (map is null) return new Response(HttpStatusCode.NotFound);
+
+        if (campaign.Maps.FirstOrDefault(m => m.IsActive) is { } activeMap)
         {
-            return new Response(HttpStatusCode.NotFound);
+            activeMap.IsActive = false;
+            map.IsActive = true;
         }
-
-        campaign.ActiveMapId = payload.MapId;
 
         await dbContext.SaveChangesAsync();
 
