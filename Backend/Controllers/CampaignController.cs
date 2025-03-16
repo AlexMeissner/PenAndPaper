@@ -25,9 +25,13 @@ public class CampaignsControllerController(IIdentity identity, ICampaignReposito
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var response = campaignRepository.GetAll();
+        var identityClaims = await identity.FromClaimsPrincipal(User);
+
+        if (identityClaims is null) return Unauthorized();
+
+        var response = campaignRepository.GetAll(identityClaims);
 
         return response.Match<IActionResult>(
             Ok,
