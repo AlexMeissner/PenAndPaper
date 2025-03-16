@@ -41,14 +41,18 @@ public class CampaignsControllerController(IIdentity identity, ICampaignReposito
     [HttpGet("{campaignId:int}")]
     public async Task<IActionResult> GetById(int campaignId)
     {
-        var response = await campaignRepository.GetAsync(campaignId);
+        var identityClaims = await identity.FromClaimsPrincipal(User);
+
+        if (identityClaims is null) return Unauthorized();
+
+        var response = await campaignRepository.GetAsync(identityClaims, campaignId);
 
         return response.Match<IActionResult>(
             Ok,
             this.StatusCode);
     }
 
-    [HttpPatch("{campaignId:int}")]
+    [HttpPut("{campaignId:int}")]
     public async Task<IActionResult> Update(int campaignId, CampaignUpdateDto payload)
     {
         var response = await campaignRepository.UpdateAsync(campaignId, payload);

@@ -10,7 +10,7 @@ namespace Backend.Services.Repositories;
 public interface ICampaignRepository
 {
     Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload);
-    Task<Response<CampaignDto>> GetAsync(int id);
+    Task<Response<CampaignDto>> GetAsync(IdentityClaims identity, int id);
     Response<IEnumerable<CampaignsDto>> GetAll(IdentityClaims identity);
     Task<Response> UpdateAsync(int id, CampaignUpdateDto payload);
 }
@@ -34,25 +34,27 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
         return new Response<int>(HttpStatusCode.Created, campaign.Id);
     }
 
-    public async Task<Response<CampaignDto>> GetAsync(int id)
+    public async Task<Response<CampaignDto>> GetAsync(IdentityClaims identity, int id)
     {
-        var campaign = await dbContext.Campaigns.FindAsync(id);
+        var campaign = await dbContext.Campaigns
+            .Include(c => c.GameMaster)
+            .Include(c => c.Players)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (campaign is null)
         {
             return new Response<CampaignDto>(HttpStatusCode.NotFound);
         }
 
-        await dbContext.Entry(campaign).Collection(c => c.Players).LoadAsync();
         var players = campaign.Players.Select(p => new CampaignUser(p.Id, p.Username)).ToList();
 
         var playerIds = players.Select(p => p.Id);
         var uninvitedUsers = dbContext.Users
-            .Where(u => !playerIds.Contains(u.Id))
+            .Where(u => !playerIds.Contains(u.Id) && u != identity.User)
             .Select(u => new CampaignUser(u.Id, u.Username));
 
-        // ToDo: Compute IsGameMaster
-        var payload = new CampaignDto(campaign.Name, players, uninvitedUsers, true);
+        var isGameMaster = campaign.GameMaster == identity.User;
+        var payload = new CampaignDto(campaign.Name, players, uninvitedUsers, isGameMaster);
 
         return new Response<CampaignDto>(HttpStatusCode.OK, payload);
     }
