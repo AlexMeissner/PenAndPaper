@@ -62,6 +62,7 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
         var campaigns = dbContext.Campaigns
             .Include(c => c.GameMaster)
             .Include(c => c.Players)
+            .Where(c => c.GameMaster == identity.User || c.Players.Contains(identity.User))
             .Select(c => new CampaignsDto(c.Id, c.Name, c.GameMaster.Username, c.Players.Select(u => u.Username),
                 c.GameMaster == identity.User));
 
