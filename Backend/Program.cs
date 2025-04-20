@@ -1,4 +1,5 @@
 using Backend.Extensions;
+using Backend.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 using Serilog.Events;
@@ -38,6 +39,7 @@ try
     builder.AddDatabase();
 
     builder.Services.AddScopedServices();
+    builder.Services.AddSingletonServices();
     builder.Services.AddRepositories();
     builder.Services.AddControllers();
     builder.Services.AddOpenApi();
@@ -59,6 +61,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.MapHub<CampaignUpdateHub>("campaign_updates/{campaignId}");
 
     app.Run();
 }
