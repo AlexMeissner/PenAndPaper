@@ -13,6 +13,8 @@ namespace Website.Services;
 
 internal interface ICampaignEvents
 {
+    Task Connect(int campaignId);
+
     event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
     event Func<DiceRolledEventArgs, Task>? DiceRolled;
     event Func<GridChangedEventArgs, Task>? GridChanged;
@@ -26,9 +28,9 @@ internal interface ICampaignEvents
 }
 
 [ScopedService]
-internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
+internal class CampaignEvents(IEndPointProvider endPointProvider) : ICampaignEvents, IAsyncDisposable
 {
-    private readonly HubConnection _hubConnection;
+    private HubConnection? _hubConnection;
 
     public event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
@@ -41,10 +43,11 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
     public event Func<TokenAddedEventArgs, Task>? TokenAdded;
     public event Func<TokenMovedEventArgs, Task>? TokenMoved;
 
-    public CampaignEvents(IEndPointProvider endPointProvider)
+    public async Task Connect(int campaignId)
     {
-        var url = endPointProvider.BaseUrl + "CampaignUpdates";
-        _hubConnection = new HubConnectionBuilder().WithUrl(url).Build();
+        var url = endPointProvider.BaseUrl + "campaign_updates/" + campaignId;
+
+        _hubConnection = new HubConnectionBuilder().WithUrl(url).WithAutomaticReconnect().Build();
         _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
@@ -55,12 +58,16 @@ internal class CampaignEvents : ICampaignEvents, IAsyncDisposable
         _hubConnection.On<SoundStoppedEventArgs>("SoundStopped", OnSoundStopped);
         _hubConnection.On<TokenAddedEventArgs>("TokenAdded", OnTokenAdded);
         _hubConnection.On<TokenMovedEventArgs>("TokenMoved", OnTokenMoved);
-        _hubConnection.StartAsync(); // ToDo: Async in constructor
+
+        await _hubConnection.StartAsync();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _hubConnection.DisposeAsync();
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 
     private async Task OnChatMessageReceived(ChatMessageEventArgs e)
