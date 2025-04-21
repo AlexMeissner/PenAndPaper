@@ -45,7 +45,7 @@ internal class CampaignEvents(IEndPointProvider endPointProvider) : ICampaignEve
 
     public async Task Connect(int campaignId)
     {
-        var url = endPointProvider.BaseUrl + "campaign_updates/" + campaignId;
+        var url = endPointProvider.BaseUrl + "campaign-updates/" + campaignId;
 
         _hubConnection = new HubConnectionBuilder().WithUrl(url).WithAutomaticReconnect().Build();
         _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);

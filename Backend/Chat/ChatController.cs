@@ -5,28 +5,38 @@ using Backend.Services.Repositories;
 using DataTransfer.Chat;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Backend.Controllers;
+namespace Backend.Chat;
 
 [ApiController]
 [Route("campaigns/{campaignId:int}")]
-public class ChatController(IIdentity identity, IUserRepository userRepository, Channel<ChatMessageEventArgs> channel)
+public class ChatController(
+    IIdentity identity,
+    ICampaignRepository campaignRepository,
+    IUserRepository userRepository,
+    Channel<ChatChannelMessage> channel)
     : ControllerBase
 {
     [HttpPost("chat")]
-    public async Task<IActionResult> Post(int campaignId, int userId)
+    public async Task<IActionResult> Post(int campaignId, ChatMessageDto chatMessage)
     {
         var identityClaims = await identity.FromClaimsPrincipal(User);
 
         if (identityClaims is null) return Unauthorized();
-        
-        var payload = new ChatMessageEventArgs(
-            DateTime.UtcNow,
-            ChatMessageType.Message,
-            MessageDirection.Sent,
-            "Sender",
-            "Message",
-            null,
-            false);
+
+        var campaignExists = await campaignRepository.ExistsAsync(campaignId);
+
+        if (campaignExists == false) return NotFound();
+
+        if (chatMessage.ReceiverId is { } receiverId)
+        {
+            var receiverExists = await userRepository.ExistsAsync(receiverId);
+
+            if (!receiverExists) return NotFound();
+        }
+
+        var image = await userRepository.GetAvatar(identityClaims.User.Id, campaignId);
+
+        var payload = new ChatChannelMessage(campaignId, identityClaims.User.Id, identityClaims.User.Username, image, chatMessage);
 
         await channel.Writer.WriteAsync(payload);
 

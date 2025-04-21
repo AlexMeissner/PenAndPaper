@@ -10,8 +10,10 @@ namespace Backend.Services.Repositories;
 public interface ICampaignRepository
 {
     Task<Response<int>> CreateAsync(IdentityClaims identity, CampaignCreationDto payload);
+    Task<bool> ExistsAsync(int campaignId);
     Task<Response<CampaignDto>> GetAsync(IdentityClaims identity, int id);
     Response<IEnumerable<CampaignsDto>> GetAll(IdentityClaims identity);
+    Task<bool> IsGamemaster(int campaignId, int userId);
     Task<Response> UpdateAsync(int id, CampaignUpdateDto payload);
 }
 
@@ -32,6 +34,11 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
         await dbContext.SaveChangesAsync();
 
         return new Response<int>(HttpStatusCode.Created, campaign.Id);
+    }
+
+    public async Task<bool> ExistsAsync(int campaignId)
+    {
+        return await dbContext.Campaigns.FindAsync(campaignId) != null;
     }
 
     public async Task<Response<CampaignDto>> GetAsync(IdentityClaims identity, int id)
@@ -69,6 +76,12 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
                 c.GameMaster == identity.User));
 
         return new Response<IEnumerable<CampaignsDto>>(HttpStatusCode.OK, campaigns);
+    }
+
+    public async Task<bool> IsGamemaster(int campaignId, int userId)
+    {
+        var campaign = await dbContext.Campaigns.FindAsync(campaignId);
+        return campaign?.GameMasterId == userId;
     }
 
     public async Task<Response> UpdateAsync(int id, CampaignUpdateDto payload)

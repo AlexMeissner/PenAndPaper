@@ -9,12 +9,19 @@ namespace Backend.Services.Repositories;
 
 public interface IUserRepository
 {
+    Task<bool> ExistsAsync(int userId);
     Task<Response<IEnumerable<ChatUserDto>>> GetChatUsers(IdentityClaims identity, int campaignId);
     Response<IEnumerable<CampaignUser>> GetAll(IdentityClaims identity);
+    Task<string?> GetAvatar(int userId, int campaignId);
 }
 
 public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
 {
+    public async Task<bool> ExistsAsync(int userId)
+    {
+        return await dbContext.Users.FindAsync(userId) != null;
+    }
+
     public async Task<Response<IEnumerable<ChatUserDto>>> GetChatUsers(IdentityClaims identity, int campaignId)
     {
         var campaign = await dbContext.Campaigns
@@ -31,7 +38,7 @@ public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
             .OrderBy(u => u.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        chatUsers.Insert(0, new ChatUserDto(-1, "Alle"));
+        chatUsers.Insert(0, new ChatUserDto(null, "Alle"));
 
         return new Response<IEnumerable<ChatUserDto>>(HttpStatusCode.OK, chatUsers);
     }
@@ -43,5 +50,14 @@ public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
             .Select(u => new CampaignUser(u.Id, u.Username));
 
         return new Response<IEnumerable<CampaignUser>>(HttpStatusCode.OK, users);
+    }
+
+    public async Task<string?> GetAvatar(int userId, int campaignId)
+    {
+        var character = await dbContext.Characters
+            .OrderBy(c => c.Id)
+            .LastOrDefaultAsync(c => c.UserId == userId && c.CampaignId == campaignId);
+
+        return character is null ? null : $"data:image/png;base64,{Convert.ToBase64String(character.Image)}";
     }
 }

@@ -1,3 +1,3 @@
 namespace DataTransfer.Chat;
 
-public record ChatUserDto(int Id, string Name);
+public record ChatUserDto(int? Id, string Name);
