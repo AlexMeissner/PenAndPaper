@@ -41,7 +41,9 @@ try
     builder.Services.AddScopedServices();
     builder.Services.AddSingletonServices();
     builder.Services.AddRepositories();
+    builder.Services.AddChannels();
     builder.Services.AddControllers();
+    builder.Services.AddBackgroundServices();
     builder.Services.AddOpenApi();
     builder.Services.AddSignalR();
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle(builder.Configuration);
@@ -61,7 +63,7 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
-    app.MapHub<CampaignUpdateHub>("campaign_updates/{campaignId}");
+    app.MapHub<CampaignUpdateHub>("campaign-updates/{campaignId}");
 
     app.Run();
 }

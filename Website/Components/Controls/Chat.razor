@@ -89,7 +89,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private string GetTextStyleClasses(ChatMessageEventArgs e)
+    private static string GetTextStyleClasses(ChatMessageEventArgs e)
     {
         var style = "chat-message-text";
 
@@ -108,7 +108,7 @@
         return style;
     }
 
-    private string GetTimestampStyleClasses(ChatMessageEventArgs e)
+    private static string GetTimestampStyleClasses(ChatMessageEventArgs e)
     {
         var style = "chat-message-timestamp";
         style += e.Direction == MessageDirection.Sent ? " chat-message-timestamp-sent" : " chat-message-timestamp-received";

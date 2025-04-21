@@ -1,7 +1,7 @@
 using System.Threading.Channels;
+using Backend.Chat;
 using Backend.Services;
 using Backend.Services.Repositories;
-using DataTransfer.Chat;
 using DataTransfer.Dice;
 using DataTransfer.Grid;
 using DataTransfer.Map;
@@ -13,6 +13,13 @@ namespace Backend.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+    {
+        services.AddHostedService<ChatMessageRelayService>();
+
+        return services;
+    }
+
     public static IServiceCollection AddChannels(this IServiceCollection services)
     {
         var options = new UnboundedChannelOptions()
@@ -21,26 +28,16 @@ public static class ServiceCollectionExtensions
             AllowSynchronousContinuations = false,
         };
 
-        services.AddSingleton<Channel<ChatMessageEventArgs>>(
-            _ => Channel.CreateUnbounded<ChatMessageEventArgs>(options));
-        services.AddSingleton<Channel<DiceRolledEventArgs>>(
-            _ => Channel.CreateUnbounded<DiceRolledEventArgs>(options));
-        services.AddSingleton<Channel<GridChangedEventArgs>>(
-            _ => Channel.CreateUnbounded<GridChangedEventArgs>(options));
-        services.AddSingleton<Channel<MapChangedEventArgs>>(
-            _ => Channel.CreateUnbounded<MapChangedEventArgs>(options));
-        services.AddSingleton<Channel<MapCollectionChangedEventArgs>>(
-            _ => Channel.CreateUnbounded<MapCollectionChangedEventArgs>(options));
-        services.AddSingleton<Channel<MouseMoveEventArgs>>(
-            _ => Channel.CreateUnbounded<MouseMoveEventArgs>(options));
-        services.AddSingleton<Channel<SoundStartedEventArgs>>(
-            _ => Channel.CreateUnbounded<SoundStartedEventArgs>(options));
-        services.AddSingleton<Channel<SoundStoppedEventArgs>>(
-            _ => Channel.CreateUnbounded<SoundStoppedEventArgs>(options));
-        services.AddSingleton<Channel<TokenAddedEventArgs>>(
-            _ => Channel.CreateUnbounded<TokenAddedEventArgs>(options));
-        services.AddSingleton<Channel<TokenMovedEventArgs>>(
-            _ => Channel.CreateUnbounded<TokenMovedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<ChatChannelMessage>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<DiceRolledEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<GridChangedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<MapChangedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<MapCollectionChangedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<MouseMoveEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<SoundStartedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<SoundStoppedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<TokenAddedEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<TokenMovedEventArgs>(options));
 
         return services;
     }
@@ -64,7 +61,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection AddSingletonServices(this IServiceCollection services)
     {
         services.AddSingleton<IUserConnectionTracker, UserConnectionTracker>();
