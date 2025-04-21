@@ -28,7 +28,7 @@ internal interface ICampaignEvents
 }
 
 [ScopedService]
-internal class CampaignEvents(IEndPointProvider endPointProvider) : ICampaignEvents, IAsyncDisposable
+internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider tokenProvider) : ICampaignEvents, IAsyncDisposable
 {
     private HubConnection? _hubConnection;
 
@@ -47,7 +47,11 @@ internal class CampaignEvents(IEndPointProvider endPointProvider) : ICampaignEve
     {
         var url = endPointProvider.BaseUrl + "campaign-updates/" + campaignId;
 
-        _hubConnection = new HubConnectionBuilder().WithUrl(url).WithAutomaticReconnect().Build();
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(url, options => { options.AccessTokenProvider = () => Task.FromResult<string?>(tokenProvider.GetToken()); })
+            .WithAutomaticReconnect()
+            .Build();
+
         _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
