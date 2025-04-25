@@ -149,8 +149,9 @@ public class MapRepository(PenAndPaperDatabase dbContext) : IMapRepository
         if (campaign.Maps.FirstOrDefault(m => m.IsActive) is { } activeMap)
         {
             activeMap.IsActive = false;
-            map.IsActive = true;
         }
+
+        map.IsActive = true;
 
         await dbContext.SaveChangesAsync();
 
