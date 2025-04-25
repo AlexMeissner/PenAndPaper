@@ -37,11 +37,13 @@ public class MapsController(IMapRepository mapRepository) : ControllerBase
     }
 
     [HttpGet("campaigns/{campaignId:int}/maps")]
-    public IActionResult GetAll(int campaignId)
+    public async Task<IActionResult> GetAll(int campaignId)
     {
-        var response = mapRepository.GetAllAsync(campaignId);
+        var response = await mapRepository.GetAllAsync(campaignId);
 
-        return Ok(response);
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
     }
 
     [HttpDelete("maps/{mapId:int}")]
