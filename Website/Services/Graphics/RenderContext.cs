@@ -90,7 +90,11 @@ public class RenderContext(ILogger<RenderContext> logger, IJSRuntime jsRuntime) 
     {
         if (_renderContext is not null)
         {
-            await _renderContext.InvokeVoidAsync("destroy");
+            try
+            {
+                await _renderContext.InvokeVoidAsync("destroy");
+            }
+            catch (JSDisconnectedException) { }
         }
 
         GC.SuppressFinalize(this);
