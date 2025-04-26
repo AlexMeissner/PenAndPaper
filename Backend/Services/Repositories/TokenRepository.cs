@@ -96,14 +96,16 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
         var characterTokens = dbContext.CharacterTokens
             .Where(t => t.MapId == mapId)
             .Include(t => t.Character)
-            .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Character.Name, t.Character.Image));
+            .Select(t => new { t.Id, t.OwnerId, t.X, t.Y, t.Character.Name, t.Character.Image });
 
         var monsterTokens = dbContext.MonsterTokens
             .Where(t => t.MapId == mapId)
             .Include(t => t.Monster)
-            .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Monster.Name, t.Monster.Image));
+            .Select(t => new { t.Id, t.OwnerId, t.X, t.Y, t.Monster.Name, t.Monster.Image });
 
-        var tokens = characterTokens.Concat(monsterTokens);
+        var tokens = characterTokens
+            .Concat(monsterTokens)
+            .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Name, t.Image));
 
         return new Response<IEnumerable<TokensDto>>(HttpStatusCode.OK, tokens);
     }
