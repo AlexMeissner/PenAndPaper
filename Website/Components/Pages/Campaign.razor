@@ -25,20 +25,20 @@
                 <i class="bi bi-music-note-beamed"></i>
             </button>
             <button class="btn btn-overlay btn-grid" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                 <i class="bi bi-grid-3x3"></i>
             </button>
 
-            <MapSelection CampaignId="@CampaignId" @ref="_mapSelection"/>
-            <Soundboard CampaignId="@CampaignId" @ref="_soundboard"/>
+            <MapSelection CampaignId="@CampaignId" @ref="_mapSelection" />
+            <Soundboard CampaignId="@CampaignId" @ref="_soundboard" />
         }
 
         <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
             <i class="bi bi-dice-6"></i>
         </button>
 
-        <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller"/>
-        <DiceRollVisualizer/>
+        <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
+        <DiceRollVisualizer />
     </div>
     <div class="right-panel">
         <div class="tab">
@@ -46,12 +46,14 @@
 
             @if (_isGameMaster)
             {
-                <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">Skript
+                <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">
+                    Skript
                 </button>
                 <button class="@GetTabStyle(TabIndex.Characters)" @onclick="() => ActiveTab(TabIndex.Characters)">
                     Charaktere
                 </button>
-                <button class="@GetTabStyle(TabIndex.Monsters)" @onclick="() => ActiveTab(TabIndex.Monsters)">Monster
+                <button class="@GetTabStyle(TabIndex.Monsters)" @onclick="() => ActiveTab(TabIndex.Monsters)">
+                    Monster
                 </button>
             }
             else
@@ -142,23 +144,25 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var response = await CampaignApi.GetAsync(CampaignId);
+        if (firstRender)
+        {
+            var response = await CampaignApi.GetAsync(CampaignId);
 
-        response.Match(
-            campaign =>
-            {
-                _title = campaign.Name;
-                _isGameMaster = campaign.IsGameMaster;
-            },
-            statusCode =>
-            {
-                // ToDo: Log + Toast
-            }
-        );
+            response.Match(
+                campaign =>
+                {
+                    _title = campaign.Name;
+                    _isGameMaster = campaign.IsGameMaster;
+                },
+                statusCode =>
+                {
+                    // ToDo: Log + Toast
+                }
+            );
 
-        await CampaignEvents.Connect(CampaignId);
+            await CampaignEvents.Connect(CampaignId);
+        }
     }
-
 }
