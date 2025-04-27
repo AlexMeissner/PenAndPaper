@@ -51,13 +51,19 @@ else
         CampaignEvents.MapChanged -= OnMapChanged;
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         CampaignEvents.MapChanged += OnMapChanged;
+    }
 
-        if (await GetActiveMapId() is { } mapId)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            await UpdateScript(mapId);
+            if (await GetActiveMapId() is { } mapId)
+            {
+                await UpdateScript(mapId);
+            }
         }
     }
 
