@@ -1,12 +1,14 @@
 using Backend.Extensions;
+using Backend.Hubs;
 using Backend.Services.Repositories;
 using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Backend.Controllers;
 
 [ApiController]
-public class MapsController(IMapRepository mapRepository) : ControllerBase
+public class MapsController(IMapRepository mapRepository, IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
 {
     [HttpGet("campaigns/{campaignId:int}/active-map")]
     public async Task<IActionResult> GetActiveMap(int campaignId)
@@ -22,6 +24,12 @@ public class MapsController(IMapRepository mapRepository) : ControllerBase
     public async Task<IActionResult> UpdateActiveMap(int campaignId, ActiveMapUpdateDto payload)
     {
         var response = await mapRepository.UpdateActiveMapAsync(campaignId, payload);
+
+        if (response.IsSuccess)
+        {
+            var eventsArgs = new MapChangedEventArgs(payload.MapId);
+            await campaignUpdateHub.Clients.AllInCampaign(campaignId).MapChanged(eventsArgs);
+        }
 
         return this.StatusCode(response.StatusCode);
     }

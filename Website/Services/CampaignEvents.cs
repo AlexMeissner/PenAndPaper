@@ -19,7 +19,6 @@ internal interface ICampaignEvents
     event Func<DiceRolledEventArgs, Task>? DiceRolled;
     event Func<GridChangedEventArgs, Task>? GridChanged;
     event Func<MapChangedEventArgs, Task>? MapChanged;
-    event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     event Func<MouseMoveEventArgs, Task>? MouseMoved;
     event Func<SoundStartedEventArgs, Task>? SoundStarted;
     event Func<SoundStoppedEventArgs, Task>? SoundStopped;
@@ -36,7 +35,6 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
     public event Func<GridChangedEventArgs, Task>? GridChanged;
     public event Func<MapChangedEventArgs, Task>? MapChanged;
-    public event Func<MapCollectionChangedEventArgs, Task>? MapCollectionChanged;
     public event Func<MouseMoveEventArgs, Task>? MouseMoved;
     public event Func<SoundStartedEventArgs, Task>? SoundStarted;
     public event Func<SoundStoppedEventArgs, Task>? SoundStopped;
@@ -56,7 +54,6 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
-        _hubConnection.On<MapCollectionChangedEventArgs>("MapCollectionChanged", OnMapCollectionChanged);
         _hubConnection.On<MouseMoveEventArgs>("MouseMoved", OnMouseMoved);
         _hubConnection.On<SoundStartedEventArgs>("SoundStarted", OnSoundStarted);
         _hubConnection.On<SoundStoppedEventArgs>("SoundStopped", OnSoundStopped);
@@ -103,14 +100,6 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
         if (MapChanged is not null)
         {
             await MapChanged.Invoke(e);
-        }
-    }
-
-    private async Task OnMapCollectionChanged(MapCollectionChangedEventArgs e)
-    {
-        if (MapCollectionChanged is not null)
-        {
-            await MapCollectionChanged.Invoke(e);
         }
     }
 

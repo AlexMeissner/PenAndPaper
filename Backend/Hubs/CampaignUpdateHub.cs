@@ -16,7 +16,6 @@ public interface ICampaignUpdate
     Task DiceRolled(DiceRolledEventArgs e);
     Task GridChanged(GridChangedEventArgs e);
     Task MapChanged(MapChangedEventArgs e);
-    Task MapCollectionChanged(MapCollectionChangedEventArgs e);
     Task MouseMoved(MouseMoveEventArgs e);
     Task SoundStarted(SoundStartedEventArgs e);
     Task SoundStopped(SoundStoppedEventArgs e);
@@ -66,6 +65,9 @@ public class CampaignUpdateHub(
         }
 
         userConnectionTracker.Add(identityClaims.User.Id, campaignId, Context.ConnectionId);
+
+        var groupId = $"campaign_{campaignId}";
+        await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
 
         await base.OnConnectedAsync();
     }
