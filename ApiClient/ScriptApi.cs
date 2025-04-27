@@ -15,7 +15,7 @@ public class ScriptApi(IRequestBuilder requestBuilder) : IScriptApi
 {
     public Task<Response<ScriptDto>> GetAsync(int mapId)
     {
-        return requestBuilder.Path("maps", mapId, "scripts").GetAsync<ScriptDto>();
+        return requestBuilder.Path("maps", mapId, "script").GetAsync<ScriptDto>();
     }
 
     public Task<Response<IEnumerable<ScriptsDto>>> GetAllAsync(int campaignId)

@@ -1,5 +1,6 @@
 using Backend.Extensions;
 using Backend.Services.Repositories;
+using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers;
@@ -25,5 +26,13 @@ public class ScriptsController(IScriptRepository scriptRepository) : ControllerB
         return response.Match<IActionResult>(
             Ok,
             this.StatusCode);
+    }
+
+    [HttpPatch("maps/{mapId:int}/script")]
+    public async Task<IActionResult> Update(int mapId, ScriptUpdateDto payload)
+    {
+        var response = await scriptRepository.Update(mapId, payload);
+
+        return this.StatusCode(response.StatusCode);
     }
 }
