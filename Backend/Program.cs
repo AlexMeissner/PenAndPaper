@@ -51,7 +51,23 @@ try
 
     var app = builder.Build();
 
-    app.UseSerilogRequestLogging();
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.GetLevel = (httpContext, elapsed, ex) =>
+        {
+            var path = httpContext.Request.Path;
+
+            // Do not log these endpoints
+            if (path.StartsWithSegments("/campaigns") && path.Value is not null && path.Value.Contains("/mouse-indicators"))
+            {
+                return LogEventLevel.Debug;
+            }
+
+            // Log every other endpoint
+            return LogEventLevel.Information;
+        };
+    });
+
     app.MigrateDatabase();
 
     if (app.Environment.IsDevelopment())

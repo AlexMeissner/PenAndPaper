@@ -1,12 +1,12 @@
-using System.Threading.Channels;
 using Backend.Chat;
+using Backend.MouseIndicators;
 using Backend.Services;
 using Backend.Services.Repositories;
 using DataTransfer.Dice;
 using DataTransfer.Grid;
-using DataTransfer.Mouse;
 using DataTransfer.Sound;
 using DataTransfer.Token;
+using System.Threading.Channels;
 
 namespace Backend.Extensions;
 
@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBackgroundServices(this IServiceCollection services)
     {
         services.AddHostedService<ChatMessageRelayService>();
+        services.AddHostedService<MouseIndicatorRelayService>();
 
         return services;
     }
@@ -30,7 +31,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => Channel.CreateUnbounded<ChatChannelMessage>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<DiceRolledEventArgs>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<GridChangedEventArgs>(options));
-        services.AddSingleton(_ => Channel.CreateUnbounded<MouseMoveEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<MouseIndicatorChannelMessage>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<SoundStartedEventArgs>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<SoundStoppedEventArgs>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<TokenAddedEventArgs>(options));
