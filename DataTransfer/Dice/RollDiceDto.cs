@@ -11,5 +11,5 @@
         D100
     }
 
-    public record RollDiceDto(Dice Dice);
+    public record RollDiceDto(Dice Dice, bool IsPrivate);
 }
