@@ -71,7 +71,7 @@
 
     private async Task Roll(Dice dice)
     {
-        var payload = new RollDiceDto(dice);
+        var payload = new RollDiceDto(dice, false);
 
         var response = await RollApi.RollAsync(CampaignId, payload);
 

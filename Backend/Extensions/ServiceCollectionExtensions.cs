@@ -1,8 +1,8 @@
 using Backend.Chat;
 using Backend.MouseIndicators;
+using Backend.Rolls;
 using Backend.Services;
 using Backend.Services.Repositories;
-using DataTransfer.Dice;
 using DataTransfer.Grid;
 using DataTransfer.Sound;
 using DataTransfer.Token;
@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBackgroundServices(this IServiceCollection services)
     {
         services.AddHostedService<ChatMessageRelayService>();
+        services.AddHostedService<RollMessageRelayService>();
         services.AddHostedService<MouseIndicatorRelayService>();
 
         return services;
@@ -29,7 +30,7 @@ public static class ServiceCollectionExtensions
         };
 
         services.AddSingleton(_ => Channel.CreateUnbounded<ChatChannelMessage>(options));
-        services.AddSingleton(_ => Channel.CreateUnbounded<DiceRolledEventArgs>(options));
+        services.AddSingleton(_ => Channel.CreateUnbounded<RollChannelMessage>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<GridChangedEventArgs>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<MouseIndicatorChannelMessage>(options));
         services.AddSingleton(_ => Channel.CreateUnbounded<SoundStartedEventArgs>(options));
@@ -49,6 +50,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IScriptRepository, ScriptRepository>();
         services.AddTransient<ITokenRepository, TokenRepository>();
         services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IDiceRoller, DiceRoller>();
 
         return services;
     }

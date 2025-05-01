@@ -13,6 +13,7 @@ public interface ICampaignRepository
     Task<bool> ExistsAsync(int campaignId);
     Task<Response<CampaignDto>> GetAsync(IdentityClaims identity, int id);
     Response<IEnumerable<CampaignsDto>> GetAll(IdentityClaims identity);
+    Task<int> GetGamemasterId(int campaignId);
     Task<bool> IsGamemaster(int campaignId, int userId);
     Task<Response> UpdateAsync(int id, CampaignUpdateDto payload);
 }
@@ -76,6 +77,12 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
                 c.GameMaster == identity.User));
 
         return new Response<IEnumerable<CampaignsDto>>(HttpStatusCode.OK, campaigns);
+    }
+
+    public async Task<int> GetGamemasterId(int campaignId)
+    {
+        var campaign = await dbContext.Campaigns.FindAsync(campaignId);
+        return campaign!.GameMasterId;
     }
 
     public async Task<bool> IsGamemaster(int campaignId, int userId)
