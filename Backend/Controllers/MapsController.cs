@@ -1,9 +1,11 @@
 using Backend.Extensions;
 using Backend.Hubs;
 using Backend.Services.Repositories;
+using DataTransfer.Grid;
 using DataTransfer.Map;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Net;
 
 namespace Backend.Controllers;
 
@@ -77,8 +79,16 @@ public class MapsController(IMapRepository mapRepository, IHubContext<CampaignUp
     {
         var response = await mapRepository.UpdateAsync(mapId, payload);
 
+        if (response.StatusCode < HttpStatusCode.BadRequest &&
+            payload.Grid is not null &&
+            await mapRepository.GetCampaignId(mapId) is { } campaignId)
+        {
+            var eventArgs = new GridChangedEventArgs(payload.Grid.IsActive, payload.Grid.Size);
+            await campaignUpdateHub.Clients.AllInCampaign(campaignId).GridChanged(eventArgs);
+        }
+
         return response.Match<IActionResult>(
-            Ok,
-            this.StatusCode);
+           Ok,
+           this.StatusCode);
     }
 }

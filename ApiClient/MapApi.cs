@@ -49,11 +49,11 @@ public class MapApi(IRequestBuilder requestBuilder) : IMapApi
 
     public Task<Response> UpdateGrid(int mapId, GridUpdateDto payload)
     {
-        return requestBuilder.Path("maps", mapId).PatchAsync(payload);
+        return requestBuilder.Path("maps", mapId).PatchAsync(new MapUpdateDto(null, null, payload));
     }
 
     public Task<Response> UpdateNameAsync(int mapId, NameUpdateDto payload)
     {
-        return requestBuilder.Path("maps", mapId).PatchAsync(payload);
+        return requestBuilder.Path("maps", mapId).PatchAsync(new MapUpdateDto(payload, null, null));
     }
 }

@@ -15,6 +15,7 @@ public interface IMapRepository
     Task<Response<ActiveMapDto>> GetActiveMapAsync(int campaignId);
     Task<Response<MapDto>> GetAsync(int mapId);
     Task<Response<IEnumerable<MapsDto>>> GetAllAsync(int campaignId);
+    Task<int?> GetCampaignId(int mapId);
     Task<Response<MapDto>> UpdateAsync(int mapId, MapUpdateDto payload);
     Task<Response> UpdateActiveMapAsync(int campaignId, ActiveMapUpdateDto payload);
 }
@@ -102,6 +103,13 @@ public class MapRepository(PenAndPaperDatabase dbContext) : IMapRepository
         return new Response<IEnumerable<MapsDto>>(HttpStatusCode.OK, maps);
     }
 
+    public async Task<int?> GetCampaignId(int mapId)
+    {
+        var map = await dbContext.Maps.FindAsync(mapId);
+
+        return map?.CampaignId;
+    }
+
     public async Task<Response<MapDto>> UpdateAsync(int mapId, MapUpdateDto payload)
     {
         var map = await dbContext.Maps.FindAsync(mapId);
@@ -113,12 +121,12 @@ public class MapRepository(PenAndPaperDatabase dbContext) : IMapRepository
 
         if (payload.Name is not null)
         {
-            map.Name = payload.Name;
+            map.Name = payload.Name.Text;
         }
 
         if (payload.Script is not null)
         {
-            map.Script = payload.Script;
+            map.Script = payload.Script.Text;
         }
 
         if (payload.Grid is not null)

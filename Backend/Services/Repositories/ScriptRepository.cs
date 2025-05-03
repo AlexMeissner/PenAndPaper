@@ -54,7 +54,7 @@ public class ScriptRepository(PenAndPaperDatabase dbContext) : IScriptRepository
             return new Response(HttpStatusCode.NotFound);
         }
 
-        map.Script = payload.Script;
+        map.Script = payload.Text;
 
         await dbContext.SaveChangesAsync();
 

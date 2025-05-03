@@ -21,15 +21,15 @@
 @implements IDisposable
 
 <canvas id="@CanvasId"
-        tabindex="0"
-        class="render-context"
-        @onkeydown="OnKeyDown"
-        @onmousemove="OnMouseMove"
-        @onmousedown="OnMouseButtonChanged"
-        @onmouseup="OnMouseButtonChanged"
-        @onmouseleave="OnMouseLeave"
-        @ondrop="OnDrop"
-        ondragover="event.preventDefault()">
+tabindex="0"
+class="render-context"
+@onkeydown="OnKeyDown"
+@onmousemove="OnMouseMove"
+@onmousedown="OnMouseButtonChanged"
+@onmouseup="OnMouseButtonChanged"
+@onmouseleave="OnMouseLeave"
+@ondrop="OnDrop"
+ondragover="event.preventDefault()">
 </canvas>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
@@ -41,20 +41,20 @@
         <div class="input-group mb-3">
             <span class="input-group-text">Aktiv</span>
             <div class="input-group-text">
-                <input class="form-check-input mt-0" type="checkbox" value="@GridIsActive"
-                       @onchange="OnGridActivityChanged">
+                <input class="form-check-input mt-0" type="checkbox" checked="@GridIsActive"
+                @onchange="OnGridActivityChanged">
             </div>
         </div>
         <!--
         <div class="input-group mb-3">
-            <span class="input-group-text">Farbe</span>
-            <input type="color" class="form-control" value="#000000"/>
+        <span class="input-group-text">Farbe</span>
+        <input type="color" class="form-control" value="#000000"/>
         </div>
         -->
         <div class="input-group mb-3">
             <span class="input-group-text">Größe</span>
             <input type="range" class="form-range form-control" min="0" max="100" step="1.0" value="@GridSize"
-                   @onchange="OnGridSizeChanged">
+            @onchange="OnGridSizeChanged">
             <input type="number" class="form-control" value="@GridSize" @onchange="OnGridSizeChanged">
         </div>
     </div>
@@ -66,8 +66,8 @@
     canvas.height = canvas.clientHeight;
 
     window.addEventListener("resize", () => {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
     });
 </script>
 
@@ -259,6 +259,8 @@
 
         GridIsActive = map.Grid.IsActive;
         GridSize = map.Grid.Size;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task<MouseIndicator> CreateMouseIndicator()
