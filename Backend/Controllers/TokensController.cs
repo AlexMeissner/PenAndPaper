@@ -40,7 +40,7 @@ public class TokensController(ITokenRepository tokenRepository) : ControllerBase
         var response = await tokenRepository.CreateCharacterToken(mapId, characterId, payload);
 
         return response.Match<IActionResult>(
-            _ => CreatedAtAction(nameof(GetAll), new { mapId }, new { mapId }),
+            _ => Created("", mapId), // "" because there is no explicit getter for a token (yet)
             this.StatusCode);
     }
 
@@ -50,7 +50,7 @@ public class TokensController(ITokenRepository tokenRepository) : ControllerBase
         var response = await tokenRepository.CreateMonsterToken(mapId, monsterId, payload);
 
         return response.Match<IActionResult>(
-            _ => CreatedAtAction(nameof(GetAll), new { mapId }, new { mapId }),
+            _ => Created("", mapId), // "" because there is no explicit getter for a token (yet)
             this.StatusCode);
     }
 }
