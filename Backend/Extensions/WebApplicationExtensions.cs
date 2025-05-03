@@ -1,4 +1,5 @@
 using Backend.Database;
+using Backend.DungeonsAndDragons;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Extensions;
@@ -17,5 +18,13 @@ public static class WebApplicationExtensions
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<PenAndPaperDatabase>();
         dbContext.Database.Migrate();
+    }
+
+    public static void LoadDungeonsAndDragonsRules(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var monsterParser = services.GetRequiredService<IMonsterParser>();
+        monsterParser.UpdateFromResources();
     }
 }

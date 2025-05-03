@@ -129,8 +129,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Actions")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Alignment")
                         .IsRequired()
@@ -257,8 +256,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Senses")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Size")
                         .HasColumnType("integer");

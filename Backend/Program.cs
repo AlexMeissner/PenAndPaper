@@ -40,7 +40,7 @@ try
 
     builder.Services.AddScopedServices();
     builder.Services.AddSingletonServices();
-    builder.Services.AddRepositories();
+    builder.Services.AddTransient();
     builder.Services.AddChannels();
     builder.Services.AddControllers();
     builder.Services.AddBackgroundServices();
@@ -69,6 +69,7 @@ try
     });
 
     app.MigrateDatabase();
+    app.LoadDungeonsAndDragonsRules();
 
     if (app.Environment.IsDevelopment())
     {

@@ -47,11 +47,11 @@ public class Monster
     [MaxLength(128)] public required string DamageResistances { get; init; }
     [MaxLength(128)] public required string DamageImmunities { get; init; }
     [MaxLength(128)] public required string ConditionImmunities { get; init; }
-    [MaxLength(256)] public required string Senses { get; init; }
+    public required string Senses { get; init; }
     [MaxLength(128)] public required string Languages { get; init; }
     public double ChallengeRating { get; init; }
     public int Experience { get; init; }
-    [MaxLength(32)] public required string Actions { get; init; }
+    public required string Actions { get; init; }
     public required byte[] Image { get; init; }
 
     #region Relations
