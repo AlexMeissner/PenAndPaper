@@ -58,11 +58,11 @@ namespace Backend.Migrations
                     DamageResistances = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     DamageImmunities = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     ConditionImmunities = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Senses = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Senses = table.Column<string>(type: "text", nullable: false),
                     Languages = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     ChallengeRating = table.Column<double>(type: "double precision", nullable: false),
                     Experience = table.Column<int>(type: "integer", nullable: false),
-                    Actions = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Actions = table.Column<string>(type: "text", nullable: false),
                     Image = table.Column<byte[]>(type: "bytea", nullable: false)
                 },
                 constraints: table =>

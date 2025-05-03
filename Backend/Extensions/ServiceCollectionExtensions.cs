@@ -1,4 +1,5 @@
 using Backend.Chat;
+using Backend.DungeonsAndDragons;
 using Backend.MouseIndicators;
 using Backend.Rolls;
 using Backend.Services;
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    public static IServiceCollection AddTransient(this IServiceCollection services)
     {
         services.AddTransient<ICampaignRepository, CampaignRepository>();
         services.AddTransient<ICharacterRepository, CharacterRepository>();
@@ -51,6 +52,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITokenRepository, TokenRepository>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IDiceRoller, DiceRoller>();
+
+        services.AddTransient<IMonsterParser, MonsterParser>();
 
         return services;
     }
