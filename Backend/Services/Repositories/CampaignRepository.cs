@@ -102,9 +102,9 @@ public class CampaignRepository(PenAndPaperDatabase dbContext) : ICampaignReposi
 
         await dbContext.Entry(campaign).Collection(c => c.Players).LoadAsync();
 
-        var players = campaign.Players.Where(u => payload.PlayerIds.Contains(u.Id));
+        var players = dbContext.Users.Where(u => payload.PlayerIds.Contains(u.Id));
 
-        campaign.Players = players.ToList();
+        campaign.Players = [.. players];
         campaign.Name = payload.Name;
 
         await dbContext.SaveChangesAsync();
