@@ -5,12 +5,12 @@ using DataTransfer.Response;
 using DataTransfer.Token;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Services.Repositories;
+namespace Backend.Tokens;
 
 public interface ITokenRepository
 {
-    Task<Response<int>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto);
-    Task<Response<int>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto);
+    Task<Response<TokenCreationResult>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto);
+    Task<Response<TokenCreationResult>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto);
     Task<Response> DeleteAsync(int tokenId);
     Response<IEnumerable<TokensDto>> GetAllAsync(int mapId);
     Task<Response> UpdateAsync(int tokenId, TokenUpdateDto payload);
@@ -18,13 +18,13 @@ public interface ITokenRepository
 
 public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
 {
-    public async Task<Response<int>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto)
+    public async Task<Response<TokenCreationResult>> CreateMonsterToken(int mapId, int monsterId, TokenCreationDto tokenCreationDto)
     {
         var monster = await dbContext.Monsters.FindAsync(monsterId);
 
         if (monster is null)
         {
-            return new Response<int>(HttpStatusCode.NotFound);
+            return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
         }
 
         var campaign = await dbContext.Campaigns
@@ -33,7 +33,7 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
 
         if (campaign is null)
         {
-            return new Response<int>(HttpStatusCode.NotFound);
+            return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
         }
 
         var token = new MonsterToken()
@@ -48,16 +48,18 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
         await dbContext.AddAsync(token);
         await dbContext.SaveChangesAsync();
 
-        return new Response<int>(HttpStatusCode.Created, token.Id);
+        var result = new TokenCreationResult(token.Id, token.OwnerId, token.X, token.Y, monster.Image);
+
+        return new Response<TokenCreationResult>(HttpStatusCode.Created, result);
     }
 
-    public async Task<Response<int>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto)
+    public async Task<Response<TokenCreationResult>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto)
     {
         var character = await dbContext.Characters.FindAsync(characterId);
 
         if (character is null)
         {
-            return new Response<int>(HttpStatusCode.NotFound);
+            return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
         }
 
         var token = new CharacterToken()
@@ -72,7 +74,9 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
         await dbContext.AddAsync(token);
         await dbContext.SaveChangesAsync();
 
-        return new Response<int>(HttpStatusCode.Created, token.Id);
+        var result = new TokenCreationResult(token.Id, token.OwnerId, token.X, token.Y, character.Image);
+
+        return new Response<TokenCreationResult>(HttpStatusCode.Created, result);
     }
 
     public async Task<Response> DeleteAsync(int tokenId)
