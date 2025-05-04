@@ -13,6 +13,7 @@
 @inject IMapApi MapApi
 @inject IMouseApi MouseApi
 @inject ITokenApi TokenApi
+@inject IUserApi UserApi
 @inject RenderContext RenderContext
 @inject ICampaignEvents CampaignEvents
 @inject IDragAndDrop DragAndDrop
@@ -21,15 +22,15 @@
 @implements IDisposable
 
 <canvas id="@CanvasId"
-tabindex="0"
-class="render-context"
-@onkeydown="OnKeyDown"
-@onmousemove="OnMouseMove"
-@onmousedown="OnMouseButtonChanged"
-@onmouseup="OnMouseButtonChanged"
-@onmouseleave="OnMouseLeave"
-@ondrop="OnDrop"
-ondragover="event.preventDefault()">
+        tabindex="0"
+        class="render-context"
+        @onkeydown="OnKeyDown"
+        @onmousemove="OnMouseMove"
+        @onmousedown="OnMouseButtonChanged"
+        @onmouseup="OnMouseButtonChanged"
+        @onmouseleave="OnMouseLeave"
+        @ondrop="OnDrop"
+        ondragover="event.preventDefault()">
 </canvas>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
@@ -42,7 +43,7 @@ ondragover="event.preventDefault()">
             <span class="input-group-text">Aktiv</span>
             <div class="input-group-text">
                 <input class="form-check-input mt-0" type="checkbox" checked="@GridIsActive"
-                @onchange="OnGridActivityChanged">
+                       @onchange="OnGridActivityChanged">
             </div>
         </div>
         <!--
@@ -54,7 +55,7 @@ ondragover="event.preventDefault()">
         <div class="input-group mb-3">
             <span class="input-group-text">Größe</span>
             <input type="range" class="form-range form-control" min="0" max="100" step="1.0" value="@GridSize"
-            @onchange="OnGridSizeChanged">
+                   @onchange="OnGridSizeChanged">
             <input type="number" class="form-control" value="@GridSize" @onchange="OnGridSizeChanged">
         </div>
     </div>
@@ -79,7 +80,7 @@ ondragover="event.preventDefault()">
     private bool GridIsActive { get; set; }
 
     private int? _mapId;
-    private int _userId;
+    private int? _userId;
     private Vector2D _selectedTokenPosition = new(0, 0);
     private Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
@@ -151,6 +152,18 @@ ondragover="event.preventDefault()">
                 await LoadActiveMap(mapId);
                 await LoadTokens(mapId);
             }
+
+            var userResponse = await UserApi.GetMyId();
+
+            _userId = userResponse.Match<int?>(
+                id => id,
+                statusCode =>
+                {
+                    // ToDo: Toast
+                    Logger.LogError("Failed to get the active map ({statusCode})", statusCode);
+                    return null;
+                }
+            );
         }
     }
 
@@ -225,7 +238,7 @@ ondragover="event.preventDefault()">
         var dimensions = ByteArrayToImageSizeConverter.Convert(map.Image);
 
         float[] vertices =
-        [
+                [
             0.0f, 0.0f,
             dimensions.Width, 0.0f,
             0.0f, -dimensions.Height,
@@ -267,7 +280,7 @@ ondragover="event.preventDefault()">
     {
         const float halfSize = 25.0f;
         float[] vertices =
-        [
+                [
             -halfSize, halfSize,
             halfSize, halfSize,
             -halfSize, -halfSize,
@@ -310,7 +323,7 @@ ondragover="event.preventDefault()">
     private async Task CreateToken(int tokenId, int userId, byte[] image, int x, int y)
     {
         float[] vertices =
-        [
+                [
             0.0f, 0.0f,
             1.0f, 0.0f,
             0.0f, -1.0f,

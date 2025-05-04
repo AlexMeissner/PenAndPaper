@@ -9,6 +9,7 @@ public class Token
     #region Relations
 
     public int MapId { get; init; }
+    public required Map Map { get; init; }
 
     public int OwnerId { get; init; }
 

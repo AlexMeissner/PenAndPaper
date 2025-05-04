@@ -1,6 +1,5 @@
 using Backend.Extensions;
 using Backend.Hubs;
-using Backend.Services.Repositories;
 using DataTransfer.Token;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -10,7 +9,6 @@ namespace Backend.Tokens;
 [ApiController]
 public class TokensController(
     ITokenRepository tokenRepository,
-    IMapRepository mapRepository,
     IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
 {
     [HttpDelete("tokens/{tokenId:int}")]
@@ -25,6 +23,12 @@ public class TokensController(
     public async Task<IActionResult> Update(int tokenId, TokenUpdateDto payload)
     {
         var response = await tokenRepository.UpdateAsync(tokenId, payload);
+
+        if (response.IsSuccess && await tokenRepository.GetCampaignId(tokenId) is { } campaignId)
+        {
+            var eventsArgs = new TokenMovedEventArgs(tokenId, payload.X, payload.Y);
+            await campaignUpdateHub.Clients.AllInCampaign(campaignId).TokenMoved(eventsArgs);
+        }
 
         return this.StatusCode(response.StatusCode);
     }
@@ -54,7 +58,7 @@ public class TokensController(
             },
             this.StatusCode);
 
-        if (tokenCreationResult is { } token && await mapRepository.GetCampaignId(mapId) is { } campaignId)
+        if (tokenCreationResult is { } token && await tokenRepository.GetCampaignId(token.TokenId) is { } campaignId)
         {
             var eventsArgs = new TokenAddedEventArgs(token.TokenId, token.OwnerId, token.Image, token.X, token.Y);
             await campaignUpdateHub.Clients.AllInCampaign(campaignId).TokenAdded(eventsArgs);
@@ -78,7 +82,7 @@ public class TokensController(
             },
             this.StatusCode);
 
-        if (tokenCreationResult is { } token && await mapRepository.GetCampaignId(mapId) is { } campaignId)
+        if (tokenCreationResult is { } token && await tokenRepository.GetCampaignId(token.TokenId) is { } campaignId)
         {
             var eventsArgs = new TokenAddedEventArgs(token.TokenId, token.OwnerId, token.Image, token.X, token.Y);
             await campaignUpdateHub.Clients.AllInCampaign(campaignId).TokenAdded(eventsArgs);
