@@ -6,6 +6,7 @@ namespace ApiClient;
 
 public interface IUserApi
 {
+    Task<Response<int>> GetMyId();
     Task<Response<IEnumerable<CampaignUser>>> GetAllAsync();
     Task<Response> Login();
     Task<Response> Register();
@@ -13,6 +14,11 @@ public interface IUserApi
 
 public class UserApi(IRequestBuilder requestBuilder) : IUserApi
 {
+    public Task<Response<int>> GetMyId()
+    {
+        return requestBuilder.Path("user").GetAsync<int>();
+    }
+
     public Task<Response<IEnumerable<CampaignUser>>> GetAllAsync()
     {
         return requestBuilder.Path("users").GetAsync<IEnumerable<CampaignUser>>();

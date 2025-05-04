@@ -17,6 +17,16 @@ public class UserController(IIdentity identity, IUserRepository userRepository) 
         return identityClaims is null ? Unauthorized() : Ok();
     }
 
+    [HttpGet("user")]
+    public async Task<IActionResult> Get()
+    {
+        var identityClaims = await identity.FromClaimsPrincipal(User);
+
+        if (identityClaims is null) return Unauthorized();
+
+        return Ok(identityClaims.User.Id);
+    }
+
     [HttpGet("users")]
     public async Task<IActionResult> GetAll()
     {

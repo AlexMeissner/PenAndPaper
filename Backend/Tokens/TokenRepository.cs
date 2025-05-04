@@ -13,6 +13,7 @@ public interface ITokenRepository
     Task<Response<TokenCreationResult>> CreateCharacterToken(int mapId, int characterId, TokenCreationDto tokenCreationDto);
     Task<Response> DeleteAsync(int tokenId);
     Response<IEnumerable<TokensDto>> GetAllAsync(int mapId);
+    Task<int?> GetCampaignId(int tokenId);
     Task<Response> UpdateAsync(int tokenId, TokenUpdateDto payload);
 }
 
@@ -36,11 +37,18 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
             return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
         }
 
+        var map = await dbContext.Maps.FindAsync(mapId);
+
+        if (map is null)
+        {
+            return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
+        }
+
         var token = new MonsterToken()
         {
             X = tokenCreationDto.X,
             Y = tokenCreationDto.Y,
-            MapId = mapId,
+            Map = map,
             OwnerId = campaign.GameMasterId,
             Monster = monster
         };
@@ -62,11 +70,18 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
             return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
         }
 
+        var map = await dbContext.Maps.FindAsync(mapId);
+
+        if (map is null)
+        {
+            return new Response<TokenCreationResult>(HttpStatusCode.NotFound);
+        }
+
         var token = new CharacterToken()
         {
             X = tokenCreationDto.X,
             Y = tokenCreationDto.Y,
-            MapId = mapId,
+            Map = map,
             OwnerId = character.UserId,
             Character = character
         };
@@ -112,6 +127,15 @@ public class TokenRepository(PenAndPaperDatabase dbContext) : ITokenRepository
             .Select(t => new TokensDto(t.Id, t.OwnerId, t.X, t.Y, t.Name, t.Image));
 
         return new Response<IEnumerable<TokensDto>>(HttpStatusCode.OK, tokens);
+    }
+
+    public async Task<int?> GetCampaignId(int tokenId)
+    {
+        var token = await dbContext.Tokens
+            .Include(t => t.Map)
+            .FirstOrDefaultAsync(t => t.Id == tokenId);
+
+        return token?.Map.CampaignId;
     }
 
     public async Task<Response> UpdateAsync(int tokenId, TokenUpdateDto payload)
