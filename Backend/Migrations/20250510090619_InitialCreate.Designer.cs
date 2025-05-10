@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(PenAndPaperDatabase))]
-    [Migration("20250503071558_InitialCreate")]
+    [Migration("20250510090619_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,6 +23,20 @@ namespace Backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Backend.AudioMedia.Audio", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Audios");
+                });
 
             modelBuilder.Entity("Backend.Database.Models.Campaign", b =>
                 {
@@ -431,11 +445,13 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Database.Models.Token", b =>
                 {
-                    b.HasOne("Backend.Database.Models.Map", null)
+                    b.HasOne("Backend.Database.Models.Map", "Map")
                         .WithMany("Tokens")
                         .HasForeignKey("MapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Map");
                 });
 
             modelBuilder.Entity("CampaignUser", b =>

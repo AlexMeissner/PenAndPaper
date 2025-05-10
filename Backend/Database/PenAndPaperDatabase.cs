@@ -1,3 +1,4 @@
+using Backend.AudioMedia;
 using Backend.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,6 +6,7 @@ namespace Backend.Database;
 
 public class PenAndPaperDatabase(DbContextOptions<PenAndPaperDatabase> options) : DbContext(options)
 {
+    public DbSet<Audio> Audios { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Character> Characters { get; set; }
     public DbSet<Map> Maps { get; set; }

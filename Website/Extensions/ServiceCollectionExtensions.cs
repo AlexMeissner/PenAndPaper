@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IMouseApi, MouseApi>();
         services.AddTransient<IRollApi, RollApi>();
         services.AddTransient<IScriptApi, ScriptApi>();
-        services.AddTransient<ISoundApi, SoundApi>();
+        services.AddTransient<IAudioApi, AudioApi>();
         services.AddTransient<ITokenApi, TokenApi>();
         services.AddTransient<IUserApi, UserApi>();
     }
