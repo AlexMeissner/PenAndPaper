@@ -3,13 +3,13 @@ using DataTransfer.Sound;
 
 namespace ApiClient;
 
-public interface ISoundApi
+public interface IAudioApi
 {
     Task<Response> Start(int campaignId, int soundId, bool isLooped);
     Task<Response> Stop(int campaignId, int soundId);
 }
 
-public class SoundApi(IRequestBuilder requestBuilder) : ISoundApi
+public class AudioApi(IRequestBuilder requestBuilder) : IAudioApi
 {
     public Task<Response> Start(int campaignId, int soundId, bool isLooped)
     {

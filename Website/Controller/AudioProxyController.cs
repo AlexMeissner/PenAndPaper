@@ -10,7 +10,7 @@ public class AudioProxyController(HttpClient httpClient, IEndPointProvider endPo
     [HttpGet]
     public async Task<IActionResult> Get(string name)
     {
-        var apiUrl = $"{endPointProvider.BaseUrl}Audio?name={name}";
+        var apiUrl = $"{endPointProvider.BaseUrl}audios/{name}";
 
         var response = await httpClient.GetAsync(apiUrl, HttpCompletionOption.ResponseHeadersRead);
 

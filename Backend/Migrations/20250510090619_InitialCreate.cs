@@ -12,6 +12,18 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Audios",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Data = table.Column<byte[]>(type: "bytea", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Audios", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Monsters",
                 columns: table => new
                 {
@@ -262,6 +274,9 @@ namespace Backend.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Audios");
+
             migrationBuilder.DropTable(
                 name: "CampaignUser");
 

@@ -1,3 +1,4 @@
+using Backend.AudioMedia;
 using Backend.Chat;
 using Backend.DungeonsAndDragons;
 using Backend.MouseIndicators;
@@ -45,6 +46,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTransient(this IServiceCollection services)
     {
+        services.AddTransient<IAudioRepository, AudioRepository>();
         services.AddTransient<ICampaignRepository, CampaignRepository>();
         services.AddTransient<ICharacterRepository, CharacterRepository>();
         services.AddTransient<IMapRepository, MapRepository>();
