@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Website.Controller;
 
-[Route("audio")]
 [ApiController]
 public class AudioProxyController(HttpClient httpClient, IEndPointProvider endPointProvider) : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> Get(string name)
+    [HttpGet("audios/{audioId}")]
+    public async Task<IActionResult> Get(string audioId)
     {
-        var apiUrl = $"{endPointProvider.BaseUrl}audios/{name}";
+        var apiUrl = $"{endPointProvider.BaseUrl}audios/{audioId}";
 
         var response = await httpClient.GetAsync(apiUrl, HttpCompletionOption.ResponseHeadersRead);
 
