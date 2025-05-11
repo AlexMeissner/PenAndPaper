@@ -333,15 +333,13 @@
         isPlaying = !isPlaying;
         _buttonStates[identifier] = isPlaying;
 
-        int soundId = 0;
-
         if (isPlaying)
         {
-            await AudioApi.Start(CampaignId, soundId, true);
+            await AudioApi.Start(CampaignId, identifier, true);
         }
         else
         {
-            await AudioApi.Stop(CampaignId, soundId);
+            await AudioApi.Stop(CampaignId, identifier);
         }
 
         // ToDo: Error Handling

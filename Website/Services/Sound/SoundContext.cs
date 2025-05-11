@@ -8,7 +8,7 @@ public class SoundContext(IJSRuntime jsRuntime)
 {
     public async Task<Sound> CreateSound(string fileName, bool isLooped)
     {
-        var url = $"Audio?name={fileName}";
+        var url = $"audio/{fileName}";
         var jsSound = await jsRuntime.InvokeAsync<IJSObjectReference>("createSound", url, isLooped);
         return new Sound(jsSound);
     }

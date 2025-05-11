@@ -1,0 +1,28 @@
+﻿.title {
+    width: 100%;
+    text-align: center;
+}
+
+.table {
+    width: 100%;
+}
+
+.sound-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.button {
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.button:hover {
+    background-color: lightgreen;
+}
+
+img, svg {
+    margin-top: -14px;
+}

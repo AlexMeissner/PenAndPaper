@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Website.Controller;
 
-[Route("Audio")]
+[Route("audio")]
 [ApiController]
 public class AudioProxyController(HttpClient httpClient, IEndPointProvider endPointProvider) : ControllerBase
 {
