@@ -10,6 +10,16 @@ namespace Backend.AudioMedia;
 public class AudioController(IAudioRepository audioRepository,
     IHubContext<CampaignUpdateHub, ICampaignUpdate> campaignUpdateHub) : ControllerBase
 {
+    [HttpPost("audios")]
+    public async Task<IActionResult> Create(AudioCreationDto payload)
+    {
+        var response = await audioRepository.Create(payload.Id, payload.Data);
+
+        return response.Match<IActionResult>(
+            id => Ok(),
+            this.StatusCode);
+    }
+
     [HttpGet("audios/{audioId}")]
     public async Task<IActionResult> Get(string audioId)
     {
@@ -23,6 +33,14 @@ public class AudioController(IAudioRepository audioRepository,
                 return File(stream, "audio/mpeg", true);
             },
             this.StatusCode);
+    }
+
+    [HttpPut("audios/{audioId}")]
+    public async Task<IActionResult> Update(string audioId, AudioUpdateDto payload)
+    {
+        var response = await audioRepository.Update(audioId, payload.Data);
+
+        return response.IsSuccess ? Ok() : this.StatusCode(response.StatusCode);
     }
 
     [HttpDelete("campaigns/{campaignId:int}/audios/{audioId}")]

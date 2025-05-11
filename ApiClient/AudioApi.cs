@@ -5,20 +5,32 @@ namespace ApiClient;
 
 public interface IAudioApi
 {
-    Task<Response> Start(int campaignId, int soundId, bool isLooped);
-    Task<Response> Stop(int campaignId, int soundId);
+    Task<Response> Create(AudioCreationDto payload);
+    Task<Response> Start(int campaignId, string soundId, bool isLooped);
+    Task<Response> Stop(int campaignId, string soundId);
+    Task<Response> Update(string soundId, AudioUpdateDto payload);
 }
 
 public class AudioApi(IRequestBuilder requestBuilder) : IAudioApi
 {
-    public Task<Response> Start(int campaignId, int soundId, bool isLooped)
+    public Task<Response> Create(AudioCreationDto payload)
     {
-        var payload = new SoundStartDto(isLooped);
-        return requestBuilder.Path("campaigns", campaignId, "sounds", soundId).PostAsync(payload);
+        return requestBuilder.Path("audios").PostAsync(payload);
     }
 
-    public Task<Response> Stop(int campaignId, int soundId)
+    public Task<Response> Start(int campaignId, string soundId, bool isLooped)
     {
-        return requestBuilder.Path("campaigns", campaignId, "sounds", soundId).DeleteAsync();
+        var payload = new SoundStartDto(isLooped);
+        return requestBuilder.Path("campaigns", campaignId, "audios", soundId).PostAsync(payload);
+    }
+
+    public Task<Response> Stop(int campaignId, string soundId)
+    {
+        return requestBuilder.Path("campaigns", campaignId, "audios", soundId).DeleteAsync();
+    }
+
+    public Task<Response> Update(string soundId, AudioUpdateDto payload)
+    {
+        return requestBuilder.Path("audios", soundId).PutAsync(payload);
     }
 }
