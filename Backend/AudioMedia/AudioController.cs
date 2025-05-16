@@ -50,8 +50,8 @@ public class AudioController(IAudioRepository audioRepository,
 
         if (!audioExists) return NotFound(audioId);
 
-        var eventArgs = new SoundStartedEventArgs(audioId, true, true);
-        await campaignUpdateHub.Clients.AllInCampaign(campaignId).SoundStarted(eventArgs);
+        var eventArgs = new SoundStoppedEventArgs(audioId, false);
+        await campaignUpdateHub.Clients.AllInCampaign(campaignId).SoundStopped(eventArgs);
 
         return Ok();
     }
@@ -63,8 +63,8 @@ public class AudioController(IAudioRepository audioRepository,
 
         if (!audioExists) return NotFound(audioId);
 
-        var eventArgs = new SoundStoppedEventArgs(audioId, true);
-        await campaignUpdateHub.Clients.AllInCampaign(campaignId).SoundStopped(eventArgs);
+        var eventArgs = new SoundStartedEventArgs(audioId, true, false);
+        await campaignUpdateHub.Clients.AllInCampaign(campaignId).SoundStarted(eventArgs);
 
         return Ok();
     }
