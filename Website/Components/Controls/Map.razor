@@ -90,6 +90,7 @@
     private ShaderProgram? _mouseShaderProgram;
 
     private readonly List<Token> _tokens = [];
+    private readonly object _tokenPositionLock = new();
 
     const long LeftMouseButton = 1;
     private static readonly string CanvasId = "renderCanvas";
@@ -376,29 +377,34 @@
 
     private async Task OnMouseMove(MouseEventArgs e)
     {
-        if (e.Buttons == LeftMouseButton)
+        if (e.Buttons != LeftMouseButton)
         {
-            var position = new Vector2D(e.ClientX, e.ClientY);
-            var transformedPosition = await RenderContext.TransformPosition(position);
+            return;
+        }
 
-            if (_selectedToken is null)
+        var position = new Vector2D(e.ClientX, e.ClientY);
+        var transformedPosition = await RenderContext.TransformPosition(position);
+
+        if (_selectedToken is null)
+        {
+            var payload = new MouseIndicatorDto((int)transformedPosition.X, (int)transformedPosition.Y);
+            await MouseApi.SetIndicatorAsync(CampaignId, payload);
+        }
+        else if (IsGameMaster || _userId == _selectedToken.UserId)
+        {
+            var snapPosition = GetGridSnapPosition(transformedPosition);
+            var hasPositionChanged = false;
+
+            lock (_tokenPositionLock) // multiple instances of 'OnMouseMove' can be evaluated at the same time
             {
-                var payload = new MouseIndicatorDto((int)transformedPosition.X, (int)transformedPosition.Y);
-                await MouseApi.SetIndicatorAsync(CampaignId, payload);
+                hasPositionChanged = snapPosition.X != _selectedTokenPosition.X || snapPosition.Y != _selectedTokenPosition.Y;
+                _selectedTokenPosition = snapPosition;
             }
-            else
+
+            if (hasPositionChanged)
             {
-                var snapPosition = GetGridSnapPosition(transformedPosition);
-
-                var hasPermission = IsGameMaster || _userId == _selectedToken.UserId;
-                var hasPositionChanged = snapPosition.X != _selectedTokenPosition.X || snapPosition.Y != _selectedTokenPosition.Y;
-
-                if (hasPermission && hasPositionChanged)
-                {
-                    var payload = new TokenUpdateDto((int)snapPosition.X, (int)snapPosition.Y);
-                    await TokenApi.MoveAsync(_selectedToken.Id, payload);
-                    _selectedTokenPosition = snapPosition;
-                }
+                var payload = new TokenUpdateDto((int)snapPosition.X, (int)snapPosition.Y);
+                await TokenApi.MoveAsync(_selectedToken.Id, payload);
             }
         }
     }
