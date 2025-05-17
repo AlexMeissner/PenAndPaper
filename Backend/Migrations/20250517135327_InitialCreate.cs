@@ -89,7 +89,8 @@ namespace Backend.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Email = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Username = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
+                    Username = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Color = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {

@@ -6,17 +6,18 @@ namespace ApiClient;
 
 public interface IUserApi
 {
-    Task<Response<int>> GetMyId();
+    Task<Response<UserProperties>> GetMyself();
     Task<Response<IEnumerable<CampaignUser>>> GetAllAsync();
     Task<Response> Login();
     Task<Response> Register();
+    Task<Response> UpdateMyself(UserPropertiesUpdate payload);
 }
 
 public class UserApi(IRequestBuilder requestBuilder) : IUserApi
 {
-    public Task<Response<int>> GetMyId()
+    public Task<Response<UserProperties>> GetMyself()
     {
-        return requestBuilder.Path("user").GetAsync<int>();
+        return requestBuilder.Path("user").GetAsync<UserProperties>();
     }
 
     public Task<Response<IEnumerable<CampaignUser>>> GetAllAsync()
@@ -34,5 +35,10 @@ public class UserApi(IRequestBuilder requestBuilder) : IUserApi
     {
         var payload = new RegisterDto();
         return requestBuilder.Path("users").PostAsync(payload);
+    }
+
+    public Task<Response> UpdateMyself(UserPropertiesUpdate payload)
+    {
+        return requestBuilder.Path("user").PatchAsync(payload);
     }
 }

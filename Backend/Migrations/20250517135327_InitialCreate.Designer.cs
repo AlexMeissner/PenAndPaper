@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(PenAndPaperDatabase))]
-    [Migration("20250510090619_InitialCreate")]
+    [Migration("20250517135327_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -351,6 +351,11 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("Email")
                         .IsRequired()

@@ -40,10 +40,13 @@ public class Identity(PenAndPaperDatabase dbContext) : IIdentity
 
         var name = claimsPrincipal.FindFirst(ClaimTypes.GivenName)?.Value ?? "Incognito";
 
+        const string DefaultColor = "#FF0000";
+
         var user = new User()
         {
             Email = email,
-            Username = name
+            Username = name,
+            Color = DefaultColor
         };
 
         await dbContext.AddAsync(user);

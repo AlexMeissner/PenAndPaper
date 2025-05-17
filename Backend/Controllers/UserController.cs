@@ -24,7 +24,23 @@ public class UserController(IIdentity identity, IUserRepository userRepository) 
 
         if (identityClaims is null) return Unauthorized();
 
-        return Ok(identityClaims.User.Id);
+        var response = await userRepository.GetUserPropeties(identityClaims);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
+    }
+
+    [HttpPatch("user")]
+    public async Task<IActionResult> UpdateUserPropeties(UserPropertiesUpdate payload)
+    {
+        var identityClaims = await identity.FromClaimsPrincipal(User);
+
+        if (identityClaims is null) return Unauthorized();
+
+        var response = await userRepository.UpdateUserPropeties(identityClaims, payload);
+
+        return this.StatusCode(response.StatusCode);
     }
 
     [HttpGet("users")]
