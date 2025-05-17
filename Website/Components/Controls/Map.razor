@@ -18,6 +18,7 @@
 @inject ICampaignEvents CampaignEvents
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Map> Logger
+@inject IJSRuntime JSRuntime
 
 @implements IDisposable
 
@@ -62,14 +63,27 @@
 </div>
 
 <script>
-    const canvas = document.getElementById("renderCanvas");
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    window.renderCanvas = {
+        initialize: function (canvasId) {
+            if (window._canvasResizeHandler) {
+                window.removeEventListener("resize", canvas._resizeHandler);
+                delete window._canvasResizeHandler;
+            }
 
-    window.addEventListener("resize", () => {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    });
+            const canvas = document.getElementById(canvasId);
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            const resizeHandler = () => {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+            };
+
+            window.addEventListener("resize", resizeHandler);
+
+            window._canvasResizeHandler = resizeHandler;
+        }
+    }
 </script>
 
 @code {
@@ -129,6 +143,7 @@
     {
         if (firstRender)
         {
+            await JSRuntime.InvokeVoidAsync("renderCanvas.initialize", CanvasId);
             await RenderContext.Initialize(CanvasId);
             await LoadMapShaderProgram();
             await LoadTokenShaderProgram();
