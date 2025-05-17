@@ -3,6 +3,7 @@ using Backend.Services.Repositories;
 using DataTransfer.Mouse;
 using DataTransfer.Types;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 using System.Threading.Channels;
 
 namespace Backend.MouseIndicators;
@@ -26,11 +27,17 @@ public class MouseIndicatorController(
         if (campaignExists == false) return NotFound();
 
         var position = new Vector2D(payload.X, payload.Y);
-        var color = new Vector3D(1.0, 0, 0);
+        var color = ToRGB(identityClaims.User.Color);
         var message = new MouseIndicatorChannelMessage(campaignId, position, color);
 
         await mouseIndicatorChannel.Writer.WriteAsync(message);
 
         return Ok();
+    }
+
+    private static Vector3D ToRGB(string hexColor)
+    {
+        var color = ColorTranslator.FromHtml(hexColor);
+        return new Vector3D(color.R, color.G, color.B);
     }
 }

@@ -3,6 +3,7 @@ using Backend.Database;
 using DataTransfer.Campaign;
 using DataTransfer.Chat;
 using DataTransfer.Response;
+using DataTransfer.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services.Repositories;
@@ -14,6 +15,8 @@ public interface IUserRepository
     Response<IEnumerable<CampaignUser>> GetAll(IdentityClaims identity);
     Task<string?> GetAvatar(int userId, int campaignId);
     Task<string> GetName(int userId, int campaignId);
+    Task<Response<UserProperties>> GetUserPropeties(IdentityClaims identity);
+    Task<Response> UpdateUserPropeties(IdentityClaims identity, UserPropertiesUpdate properties);
 }
 
 public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
@@ -90,6 +93,37 @@ public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
         var user = await dbContext.Users.FindAsync(userId);
 
         return user is null ? "" : user.Username;
+    }
+
+    public async Task<Response<UserProperties>> GetUserPropeties(IdentityClaims identity)
+    {
+        var user = await dbContext.Users.FindAsync(identity.User.Id);
+
+        if (user is null)
+        {
+            return new Response<UserProperties>(HttpStatusCode.NotFound);
+        }
+
+        var userPropeties = new UserProperties(user.Id, user.Username, user.Color);
+
+        return new Response<UserProperties>(HttpStatusCode.OK, userPropeties);
+    }
+
+    public async Task<Response> UpdateUserPropeties(IdentityClaims identity, UserPropertiesUpdate propeties)
+    {
+        var user = await dbContext.Users.FindAsync(identity.User.Id);
+
+        if (user is null)
+        {
+            return new Response(HttpStatusCode.NotFound);
+        }
+
+        user.Username = propeties.Username;
+        user.Color = propeties.Color;
+
+        await dbContext.SaveChangesAsync();
+
+        return new Response(HttpStatusCode.OK);
     }
 
     // ToDo: Generate new image

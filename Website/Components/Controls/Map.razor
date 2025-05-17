@@ -169,10 +169,10 @@
                 await LoadTokens(mapId);
             }
 
-            var userResponse = await UserApi.GetMyId();
+            var userResponse = await UserApi.GetMyself();
 
             _userId = userResponse.Match<int?>(
-                id => id,
+                userPropeties => userPropeties.Id,
                 statusCode =>
                 {
                     // ToDo: Toast
