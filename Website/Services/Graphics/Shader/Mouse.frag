@@ -3,6 +3,9 @@ precision highp float;
 
 in vec2 texCoord;
 
+uniform float r;
+uniform float g;
+uniform float b;
 uniform float alpha;
 
 out vec4 fragColor;
@@ -19,6 +22,6 @@ void main()
     float ringWidth = 0.5 * (outerRadius - innerRadius);
     float torusEdge = smoothstep(innerRadius, innerRadius + ringWidth, dist) *  (1.0 - smoothstep(outerRadius - ringWidth, outerRadius, dist));
 
-    vec3 color = vec3(1.0, 0.0, 0.0);
-    fragColor = vec4(color, torusEdge*alpha);
+    vec3 color = vec3(r, g, b);
+    fragColor = vec4(color, torusEdge * alpha);
 }

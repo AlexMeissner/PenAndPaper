@@ -426,7 +426,7 @@
 
     private async Task OnMouseMoved(MouseMoveEventArgs e)
     {
-        await _mouseIndicator!.SetPosition(e.Position);
+        await _mouseIndicator!.Update(e.Position, e.Color);
     }
 
     private async Task OnTokenMoved(TokenMovedEventArgs e)

@@ -7,6 +7,7 @@ RUN apk add --no-cache curl nodejs npm
 WORKDIR /src
 
 # Copy source files
+COPY ./ApiClient ./ApiClient
 COPY ./AspireServiceDefaults ./AspireServiceDefaults
 COPY ./DataTransfer ./DataTransfer
 COPY ./Website ./Website

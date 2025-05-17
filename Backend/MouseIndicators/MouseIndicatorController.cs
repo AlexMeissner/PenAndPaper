@@ -38,6 +38,6 @@ public class MouseIndicatorController(
     private static Vector3D ToRGB(string hexColor)
     {
         var color = ColorTranslator.FromHtml(hexColor);
-        return new Vector3D(color.R, color.G, color.B);
+        return new Vector3D(color.R / 255.0, color.G / 255.0, color.B / 255.0);
     }
 }
