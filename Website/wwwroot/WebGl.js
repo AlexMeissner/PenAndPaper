@@ -344,9 +344,12 @@ class MouseIndicator extends TexturedQuad {
         super(gl);
         this.setUniform("alpha", 0.0);
     }
-    setPosition(x, y) {
+    update(x, y, r, g, b) {
         this.setUniform("x", x);
         this.setUniform("y", y);
+        this.setUniform("r", r);
+        this.setUniform("g", g);
+        this.setUniform("b", b);
         this.setUniform("alpha", 1.0);
     }
     render() {

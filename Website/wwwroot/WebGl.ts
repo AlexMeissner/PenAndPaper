@@ -435,9 +435,12 @@ class MouseIndicator extends TexturedQuad {
         this.setUniform("alpha", 0.0);
     }
 
-    public setPosition(x: number, y: number): void {
+    public update(x: number, y: number, r: number, g: number, b: number): void {
         this.setUniform("x", x);
         this.setUniform("y", y);
+        this.setUniform("r", r);
+        this.setUniform("g", g);
+        this.setUniform("b", b);
         this.setUniform("alpha", 1.0);
     }
 
@@ -550,12 +553,12 @@ class RenderContext {
 
     private onMouseChanged(event: MouseEvent): void {
         this.tokens.forEach(token => {
-                const position: number[] = this.transformPosition(event.clientX, event.clientY);
-                token.hover(position[0], position[1], this.grid);
+            const position: number[] = this.transformPosition(event.clientX, event.clientY);
+            token.hover(position[0], position[1], this.grid);
 
-                const isLeftMouseButtonDown: boolean = event.buttons == 1;
-                token.setLeftMouseButtonDown(isLeftMouseButtonDown);
-            }
+            const isLeftMouseButtonDown: boolean = event.buttons == 1;
+            token.setLeftMouseButtonDown(isLeftMouseButtonDown);
+        }
         );
 
         switch (event.buttons) {
