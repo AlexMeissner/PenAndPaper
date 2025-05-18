@@ -69,21 +69,27 @@
                 <Chat CampaignId="@CampaignId"></Chat>
             </div>
 
-            <div class="@GetContentStyle(TabIndex.Script)">
-                <Script CampaignId="@CampaignId"></Script>
-            </div>
+            @if(_isGameMaster)
+            {
+               <div class="@GetContentStyle(TabIndex.Script)">
+                   <Script CampaignId="@CampaignId"></Script>
+               </div> 
+            }            
 
             <div class="@GetContentStyle(TabIndex.Character)">
                 <Character CampaignId="@CampaignId"></Character>
             </div>
 
-            <div class="@GetContentStyle(TabIndex.Characters)">
-                <Characters CampaignId="@CampaignId"></Characters>
-            </div>
-
-            <div class="@GetContentStyle(TabIndex.Monsters)">
-                <Monsters></Monsters>
-            </div>
+            @if(_isGameMaster)
+            {
+               <div class="@GetContentStyle(TabIndex.Characters)">
+                   <Characters CampaignId="@CampaignId"></Characters>
+               </div>
+               
+               <div class="@GetContentStyle(TabIndex.Monsters)">
+                   <Monsters></Monsters>
+               </div> 
+            }
         </div>
     </div>
 </div>
