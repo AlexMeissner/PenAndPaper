@@ -45,6 +45,7 @@ else
         if (firstRender)
         {
             await UpdateCharacterList();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -62,6 +63,7 @@ else
     {
         await UpdateCharacterList();
         _isCreatingCharacter = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task UpdateCharacterList()
