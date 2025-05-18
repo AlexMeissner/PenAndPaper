@@ -7,6 +7,7 @@ public interface ICharacterApi
 {
     Task<Response<int>> CreateAsync(int campaignId, CharacterCreationDto payload);
     Task<Response<IEnumerable<CharactersDto>>> GetAllAsync(int campaignId);
+    Task<Response<IEnumerable<CharactersDto>>> GetAllFromUserAsync(int campaignId);
 }
 
 public class CharacterApi(IRequestBuilder requestBuilder) : ICharacterApi
@@ -19,5 +20,10 @@ public class CharacterApi(IRequestBuilder requestBuilder) : ICharacterApi
     public Task<Response<IEnumerable<CharactersDto>>> GetAllAsync(int campaignId)
     {
         return requestBuilder.Path("campaigns", campaignId, "characters").GetAsync<IEnumerable<CharactersDto>>();
+    }
+
+    public Task<Response<IEnumerable<CharactersDto>>> GetAllFromUserAsync(int campaignId)
+    {
+        return requestBuilder.Path("campaigns", campaignId, "user-characters").GetAsync<IEnumerable<CharactersDto>>();
     }
 }
