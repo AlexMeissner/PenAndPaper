@@ -1,5 +1,0 @@
-* If a new sound effect is downloaded and played (should not be in cahce yet) while another sound effect is played, the app crashes
-* TokenCreationDto has monsterId and characterId & there is a TokenType enum. The enum should be part of the DTO instead.
-* Move Dice related stuff from Map to Dice control
-* Event Handler must be registered in Loaded, because if they are registered in ctor they will bot be deregistered when the user control never was loaded (visible)
-* Monsters can have "Schadenempfindlichkeit" which is not covered, yet
