@@ -20,7 +20,7 @@ public class DiceRoller(ICampaignRepository campaignRepository, IUserRepository 
         var image = await userRepository.GetAvatar(senderId, campaignId);
 
         var result = rollMessage.Result.Count(x => x == true);
-        var text = $"Würfelergebnis: {result}";
+        var text = $"Würfelergebnis ({rollMessage.Dice}): {result}";
         var chatMessage = new ChatMessageDto(rollMessage.ReceiverId, text);
 
         return new ChatChannelMessage(rollMessage.CampaignId, senderId, rollMessage.Name, image, chatMessage);
