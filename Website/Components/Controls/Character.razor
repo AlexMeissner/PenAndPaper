@@ -39,6 +39,7 @@ else
         if (firstRender)
         {
             await Update();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
