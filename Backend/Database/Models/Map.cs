@@ -1,4 +1,6 @@
+using Backend.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Models;
 
@@ -15,6 +17,10 @@ public class Map
     #region Relations
 
     public int CampaignId { get; init; }
+
+    public int? ActingTokenId { get; set; }
+    [ForeignKey(nameof(ActingTokenId))]
+    public Token? ActingToken { get; set; }
 
     public ICollection<Token> Tokens { get; set; } = [];
 

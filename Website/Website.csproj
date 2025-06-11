@@ -56,6 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\fontawesome\" />
     <Folder Include="wwwroot\sounds\effects\dice\" />
   </ItemGroup>
 

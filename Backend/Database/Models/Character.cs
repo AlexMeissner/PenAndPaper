@@ -1,3 +1,4 @@
+using Backend.Tokens;
 using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Database.Models;

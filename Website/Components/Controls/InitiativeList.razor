@@ -1,0 +1,212 @@
+﻿@using ApiClient
+@using DataTransfer.Initiative
+@using DataTransfer.Map
+@using Website.Services
+
+@rendermode InteractiveServer
+
+@inject IInitiativeApi InitiativeApi
+@inject ICampaignEvents CampaignEvents
+@inject IMapApi MapApi
+
+@implements IDisposable
+
+<div class="initiative-list">
+    @foreach (var combatant in _combatants)
+    {
+        <div class="@GetCombatantClasses(combatant)" style="@GetCombatantStyle(combatant)" @onclick="() => OnCombatantClicked(combatant)">
+            <img class="image" src="data:image/png;base64,@combatant.Image" />
+            @if (IsGameMaster)
+            {
+                <input type="number" min="1" max="30" class="initiative-input" value=@combatant.Initiative @onchange="(e => OnInitiativeChanged(e, combatant))" />
+                <button type="button" class="remove-button" @onclick="() => OnRemove(combatant)">
+                    <span class="fa-solid fa-trash"></span>
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    // ToDo:
+    // Add combatants -> @onkeydown on map canvas
+
+    [Parameter] public int CampaignId { get; set; }
+    [Parameter] public bool IsGameMaster { get; set; }
+
+    internal class Combatant
+    {
+        public int TokenId { get; init; }
+        public uint Initiative { get; set; }
+        public required string Image { get; set; }
+        public required string Color { get; set; }
+    }
+
+    private int? _mapId;
+    private List<Combatant> _combatants = [];
+    private Combatant? _actingCombatant;
+
+    public void Dispose()
+    {
+        CampaignEvents.CombatantAdded -= OnCombatantAdded;
+        CampaignEvents.CombatantRemoved -= OnCombatantRemoved;
+        CampaignEvents.CombatantUpdated -= OnCombatantUpdated;
+        CampaignEvents.TurnChanged -= OnTurnChanged;
+        CampaignEvents.MapChanged -= OnMapChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        CampaignEvents.CombatantAdded += OnCombatantAdded;
+        CampaignEvents.CombatantRemoved += OnCombatantRemoved;
+        CampaignEvents.CombatantUpdated += OnCombatantUpdated;
+        CampaignEvents.TurnChanged += OnTurnChanged;
+        CampaignEvents.MapChanged += OnMapChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var mapResponse = await MapApi.GetActiveMapAsync(CampaignId);
+
+            _mapId = mapResponse.Match<int?>(
+                map => map.MapId,
+                _ => null
+            );
+
+            if (_mapId is { } mapId)
+            {
+                _mapId = mapId;
+                await UpdateCombatants(mapId);
+            }
+        }
+    }
+
+    private async Task UpdateCombatants(int mapId)
+    {
+        var response = await InitiativeApi.GetCombatants(mapId);
+
+        var combatants = response.Match(
+            combatants => combatants,
+            statusCode => []
+        );
+
+        _combatants = combatants.Select(c => new Combatant
+        {
+            Initiative = 1,
+            Image = c.Image,
+            Color = c.Color
+        }).ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnInitiativeChanged(ChangeEventArgs e, Combatant combatant)
+    {
+        if (e.Value is string value && uint.Parse(value) is uint initiative && _mapId is { } mapId)
+        {
+            var payload = new CombatantUpdateDto(initiative);
+
+            var response = await InitiativeApi.UpdateCombatant(CampaignId, mapId, combatant.TokenId, payload);
+
+            if (response.IsSuccess)
+            {
+                combatant.Initiative = initiative;
+                _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async Task OnRemove(Combatant combatant)
+    {
+        if (_mapId is { } mapId)
+        {
+            await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
+        }
+    }
+
+    private async Task OnMapChanged(MapChangedEventArgs e)
+    {
+        _mapId = e.MapId;
+        await UpdateCombatants(e.MapId);
+    }
+
+    private async Task OnCombatantAdded(CombatantAddedEventArgs e)
+    {
+        var combatant = new Combatant
+        {
+            TokenId = e.TokenId,
+            Initiative = e.Initiative,
+            Image = e.Image,
+            Color = e.Color
+        };
+
+        _combatants.Add(combatant);
+        _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnCombatantRemoved(CombatantRemovedEventArgs e)
+    {
+        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+        {
+            if (_actingCombatant == combatant)
+            {
+                _actingCombatant = null;
+            }
+
+            _combatants.Remove(combatant);
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task OnCombatantUpdated(CombatantUpdatedEventArgs e)
+    {
+        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+        {
+            combatant.Initiative = e.Initiative;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task OnTurnChanged(TurnChangedEventArgs e)
+    {
+        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+        {
+            _actingCombatant = combatant;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task OnCombatantClicked(Combatant combatant)
+    {
+        if (IsGameMaster && _mapId is { } mapId)
+        {
+            var payload = new CombatantsUpdateDto(combatant.TokenId);
+            await InitiativeApi.UpdateTurn(CampaignId, mapId, payload);
+        }
+    }
+
+    private string GetCombatantClasses(Combatant combatant)
+    {
+        var classes = "combatant";
+
+        if (IsGameMaster)
+        {
+            classes += " combatant-gamemaster";
+        }
+
+        if (combatant == _actingCombatant)
+        {
+            classes += " acting-combatant";
+        }
+
+        return classes;
+    }
+
+    private string GetCombatantStyle(Combatant combatant) => $"border-color: {combatant.Color}";
+}

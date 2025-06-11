@@ -2,6 +2,7 @@
 using DataTransfer.Chat;
 using DataTransfer.Dice;
 using DataTransfer.Grid;
+using DataTransfer.Initiative;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
 using DataTransfer.Sound;
@@ -16,6 +17,9 @@ internal interface ICampaignEvents
     Task Connect(int campaignId);
 
     event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
+    event Func<CombatantAddedEventArgs, Task>? CombatantAdded;
+    event Func<CombatantRemovedEventArgs, Task>? CombatantRemoved;
+    event Func<CombatantUpdatedEventArgs, Task>? CombatantUpdated;
     event Func<DiceRolledEventArgs, Task>? DiceRolled;
     event Func<GridChangedEventArgs, Task>? GridChanged;
     event Func<MapChangedEventArgs, Task>? MapChanged;
@@ -24,6 +28,7 @@ internal interface ICampaignEvents
     event Func<SoundStoppedEventArgs, Task>? SoundStopped;
     event Func<TokenAddedEventArgs, Task>? TokenAdded;
     event Func<TokenMovedEventArgs, Task>? TokenMoved;
+    event Func<TurnChangedEventArgs, Task>? TurnChanged;
 }
 
 [ScopedService]
@@ -32,6 +37,9 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
     private HubConnection? _hubConnection;
 
     public event Func<ChatMessageEventArgs, Task>? ChatMessageReceived;
+    public event Func<CombatantAddedEventArgs, Task>? CombatantAdded;
+    public event Func<CombatantRemovedEventArgs, Task>? CombatantRemoved;
+    public event Func<CombatantUpdatedEventArgs, Task>? CombatantUpdated;
     public event Func<DiceRolledEventArgs, Task>? DiceRolled;
     public event Func<GridChangedEventArgs, Task>? GridChanged;
     public event Func<MapChangedEventArgs, Task>? MapChanged;
@@ -40,6 +48,7 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
     public event Func<SoundStoppedEventArgs, Task>? SoundStopped;
     public event Func<TokenAddedEventArgs, Task>? TokenAdded;
     public event Func<TokenMovedEventArgs, Task>? TokenMoved;
+    public event Func<TurnChangedEventArgs, Task>? TurnChanged;
 
     public async Task Connect(int campaignId)
     {
@@ -51,6 +60,9 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
             .Build();
 
         _hubConnection.On<ChatMessageEventArgs>("ChatMessageReceived", OnChatMessageReceived);
+        _hubConnection.On<CombatantAddedEventArgs>("CombatantAdded", OnCombatantAdded);
+        _hubConnection.On<CombatantRemovedEventArgs>("CombatantRemoved", OnCombatantRemoved);
+        _hubConnection.On<CombatantUpdatedEventArgs>("CombatantUpdated", OnCombatantUpdated);
         _hubConnection.On<DiceRolledEventArgs>("DiceRolled", OnDiceRolled);
         _hubConnection.On<GridChangedEventArgs>("GridChanged", OnGridChanged);
         _hubConnection.On<MapChangedEventArgs>("MapChanged", OnMapChanged);
@@ -59,6 +71,7 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
         _hubConnection.On<SoundStoppedEventArgs>("SoundStopped", OnSoundStopped);
         _hubConnection.On<TokenAddedEventArgs>("TokenAdded", OnTokenAdded);
         _hubConnection.On<TokenMovedEventArgs>("TokenMoved", OnTokenMoved);
+        _hubConnection.On<TurnChangedEventArgs>("TurnChanged", OnTurnChanged);
 
         await _hubConnection.StartAsync();
     }
@@ -76,6 +89,30 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
         if (ChatMessageReceived is not null)
         {
             await ChatMessageReceived.Invoke(e);
+        }
+    }
+
+    private async Task OnCombatantAdded(CombatantAddedEventArgs e)
+    {
+        if (CombatantAdded is not null)
+        {
+            await CombatantAdded.Invoke(e);
+        }
+    }
+
+    private async Task OnCombatantRemoved(CombatantRemovedEventArgs e)
+    {
+        if (CombatantRemoved is not null)
+        {
+            await CombatantRemoved.Invoke(e);
+        }
+    }
+
+    private async Task OnCombatantUpdated(CombatantUpdatedEventArgs e)
+    {
+        if (CombatantUpdated is not null)
+        {
+            await CombatantUpdated.Invoke(e);
         }
     }
 
@@ -140,6 +177,14 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
         if (TokenMoved is not null)
         {
             await TokenMoved.Invoke(e);
+        }
+    }
+
+    private async Task OnTurnChanged(TurnChangedEventArgs e)
+    {
+        if (TurnChanged is not null)
+        {
+            await TurnChanged.Invoke(e);
         }
     }
 }

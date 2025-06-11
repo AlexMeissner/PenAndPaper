@@ -15,7 +15,7 @@
 
 <div class="master-panel">
     <div class="left-panel">
-        <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster"></Map>
+        <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" @ref="_map"></Map>
         @if (_isGameMaster)
         {
             <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
@@ -39,6 +39,7 @@
 
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
         <DiceRollVisualizer />
+        <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" />
     </div>
     <div class="right-panel">
         <div class="tab">
@@ -101,6 +102,7 @@
     private bool _isGameMaster;
     private TabIndex _activeTabIndex = TabIndex.Chat;
 
+    private Map? _map;
     private MapSelection? _mapSelection;
     private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;

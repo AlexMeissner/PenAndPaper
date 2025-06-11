@@ -13,12 +13,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
         services.AddSingleton<ITokenProvider, TokenProvider>();
-        
+
         services.AddTransient<IRequestBuilder, RequestBuilder>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();
         services.AddTransient<ICharacterApi, CharacterApi>();
         services.AddTransient<IChatApi, ChatApi>();
+        services.AddTransient<IInitiativeApi, InitiativeApi>();
         services.AddTransient<IMapApi, MapApi>();
         services.AddTransient<IMonsterApi, MonsterApi>();
         services.AddTransient<IMouseApi, MouseApi>();

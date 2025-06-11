@@ -2,6 +2,7 @@ using Backend.Services;
 using DataTransfer.Chat;
 using DataTransfer.Dice;
 using DataTransfer.Grid;
+using DataTransfer.Initiative;
 using DataTransfer.Map;
 using DataTransfer.Mouse;
 using DataTransfer.Sound;
@@ -13,6 +14,9 @@ namespace Backend.Hubs;
 public interface ICampaignUpdate
 {
     Task ChatMessageReceived(ChatMessageEventArgs e);
+    Task CombatantAdded(CombatantAddedEventArgs e);
+    Task CombatantRemoved(CombatantRemovedEventArgs e);
+    Task CombatantUpdated(CombatantUpdatedEventArgs e);
     Task DiceRolled(DiceRolledEventArgs e);
     Task GridChanged(GridChangedEventArgs e);
     Task MapChanged(MapChangedEventArgs e);
@@ -21,6 +25,7 @@ public interface ICampaignUpdate
     Task SoundStopped(SoundStoppedEventArgs e);
     Task TokenAdded(TokenAddedEventArgs e);
     Task TokenMoved(TokenMovedEventArgs e);
+    Task TurnChanged(TurnChangedEventArgs e);
 }
 
 public class CampaignUpdateHub(

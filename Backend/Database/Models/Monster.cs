@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Backend.Tokens;
 using DataTransfer.Monster;
 
 namespace Backend.Database.Models;
