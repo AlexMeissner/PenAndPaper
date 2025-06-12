@@ -28,9 +28,6 @@
 </div>
 
 @code {
-    // ToDo:
-    // Add combatants -> @onkeydown on map canvas
-
     [Parameter] public int CampaignId { get; set; }
     [Parameter] public bool IsGameMaster { get; set; }
 
@@ -94,10 +91,11 @@
 
         _combatants = combatants.Select(c => new Combatant
         {
-            Initiative = 1,
+            Initiative = c.Initiative,
+            TokenId = c.TokenId,
             Image = c.Image,
             Color = c.Color
-        }).ToList();
+        }).OrderByDescending(c => c.Initiative).ToList();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -123,7 +121,13 @@
     {
         if (_mapId is { } mapId)
         {
-            await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
+            var response = await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
+
+            if (!response.IsSuccess)
+            {
+                // ToDo: Toast
+                Console.WriteLine("Could not remove token");
+            }
         }
     }
 
