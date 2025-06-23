@@ -11,6 +11,7 @@ namespace Backend.Services.Repositories;
 public interface IUserRepository
 {
     Task<bool> ExistsAsync(int userId);
+    Task<bool> ExistsAsync(string email);
     Task<Response<IEnumerable<ChatUserDto>>> GetChatUsers(IdentityClaims identity, int campaignId);
     Response<IEnumerable<CampaignUser>> GetAll(IdentityClaims identity);
     Task<string?> GetAvatar(int userId, int campaignId);
@@ -24,6 +25,11 @@ public class UserRepository(PenAndPaperDatabase dbContext) : IUserRepository
     public async Task<bool> ExistsAsync(int userId)
     {
         return await dbContext.Users.FindAsync(userId) != null;
+    }
+
+    public async Task<bool> ExistsAsync(string email)
+    {
+        return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email) != null;
     }
 
     public async Task<Response<IEnumerable<ChatUserDto>>> GetChatUsers(IdentityClaims identity, int campaignId)

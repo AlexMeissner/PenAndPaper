@@ -8,8 +8,8 @@ public interface IUserApi
 {
     Task<Response<UserProperties>> GetMyself();
     Task<Response<IEnumerable<CampaignUser>>> GetAllAsync();
-    Task<Response> Login();
-    Task<Response> Register();
+    Task<Response<AuthenticationTokenDto>> Login(string email, string name);
+    Task<Response> Register(string email, string name);
     Task<Response> UpdateMyself(UserPropertiesUpdate payload);
 }
 
@@ -25,15 +25,15 @@ public class UserApi(IRequestBuilder requestBuilder) : IUserApi
         return requestBuilder.Path("users").GetAsync<IEnumerable<CampaignUser>>();
     }
 
-    public Task<Response> Login()
+    public Task<Response<AuthenticationTokenDto>> Login(string email, string name)
     {
-        var payload = new LoginDto();
-        return requestBuilder.Path("sessions").PostAsync(payload);
+        var payload = new LoginDto(email, name);
+        return requestBuilder.Path("sessions").PostAsync<AuthenticationTokenDto>(payload);
     }
 
-    public Task<Response> Register()
+    public Task<Response> Register(string email, string name)
     {
-        var payload = new RegisterDto();
+        var payload = new RegisterDto(email, name);
         return requestBuilder.Path("users").PostAsync(payload);
     }
 

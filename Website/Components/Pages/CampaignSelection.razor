@@ -3,9 +3,13 @@
 
 @using ApiClient
 @using DataTransfer.Campaign
+@using System.Security.Claims
+@using Website.Services
 
 @inject ICampaignApi CampaignApi
 @inject IUserApi UserApi
+@inject ITokenProvider TokenProvider
+@inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 
 <PageTitle>Pen & Paper Kampagnenauswahl</PageTitle>
@@ -19,7 +23,7 @@
                     <a href="campaign/@campaign.Id" class="campaign-item-link campaign-item-level-0">
                         <div class="campaign-item-icon">
                             <img width="60" height="60" alt=""
-                            src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png"/>
+                                 src="https://pnghq.com/wp-content/uploads/dnd-dungeons-dragons-logo-transparent-background-png.png" />
                         </div>
                         <div class="campaign-item-level-1">
                             <div class="campaign-item-header">@campaign.Name</div>
@@ -39,7 +43,7 @@
                     @if (campaign.IsGameMaster)
                     {
                         <button type="button" class="btn btn-outline-primary btn-edit campaign-item-button"
-                        @onclick="() => OnEdit(campaign.Id)">
+                                @onclick="() => OnEdit(campaign.Id)">
                             <i class="bi bi-pencil"></i>
                         </button>
                     }
@@ -71,23 +75,39 @@
 
     private async Task Login()
     {
-        var response = await UserApi.Login();
-
-        if (response.IsSuccess) return;
-
-        response = await UserApi.Register();
-
-        if (!response.IsSuccess)
+        if (HttpContextAccessor.HttpContext is { User.Identity.IsAuthenticated: true } httpContext &&
+             httpContext.User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value is { } email &&
+             httpContext.User.FindFirst(c => c.Type == ClaimTypes.GivenName)?.Value is { } name)
         {
-            // ToDo: Toast
-            return;
-        }
+            var loginResponse = await UserApi.Login(email, name);
 
-        response = await UserApi.Login();
+            var token = loginResponse.Match(
+                token => token.Value,
+                statusCode => string.Empty
+            );
 
-        if (!response.IsSuccess)
-        {
-            // ToDo: Toast
+            if (string.IsNullOrEmpty(token))
+            {
+                var registerResponse = await UserApi.Register(email, name);
+
+                if (!registerResponse.IsSuccess)
+                {
+                    // ToDo: Toast
+                    return;
+                }
+
+                loginResponse = await UserApi.Login(email, name);
+
+                token = loginResponse.Match(
+                    token => token.Value,
+                    statusCode => string.Empty
+                );
+            }
+
+            if (TokenProvider is TokenProvider tokenProvider)
+            {
+                tokenProvider.SetToken(token);
+            }
         }
     }
 

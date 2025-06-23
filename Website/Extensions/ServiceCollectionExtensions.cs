@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using ApiClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Security.Claims;
 using Website.Services;
 
 namespace Website.Extensions;
@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
                 configureOptions.ClientSecret = configuration["Google:ClientSecret"] ??
                                                 throw new Exception("ClientSecret not found");
                 configureOptions.SaveTokens = true;
+                configureOptions.AccessType = "offline";
                 configureOptions.Scope.Add("openid");
                 configureOptions.Scope.Add("profile");
                 configureOptions.Scope.Add("email");
