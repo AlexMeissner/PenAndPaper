@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
 
         services.AddTransient<IRequestBuilder, RequestBuilder>();
-        services.AddTransient<ITokenProvider, TokenProvider>();
+        services.AddScoped<ITokenProvider, TokenProvider>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();
         services.AddTransient<ICharacterApi, CharacterApi>();
