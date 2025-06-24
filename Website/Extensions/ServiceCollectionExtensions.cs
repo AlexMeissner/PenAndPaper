@@ -12,9 +12,9 @@ public static class ServiceCollectionExtensions
     public static void AddApis(this IServiceCollection services)
     {
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
-        services.AddSingleton<ITokenProvider, TokenProvider>();
 
         services.AddTransient<IRequestBuilder, RequestBuilder>();
+        services.AddTransient<ITokenProvider, TokenProvider>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();
         services.AddTransient<ICharacterApi, CharacterApi>();
