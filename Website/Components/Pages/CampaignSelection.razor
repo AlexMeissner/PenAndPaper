@@ -58,19 +58,24 @@
 @code {
     private IEnumerable<CampaignsDto> _campaigns = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Login();
+        if (firstRender)
+        {
+            await Login();
 
-        var response = await CampaignApi.GetAllAsync();
+            var response = await CampaignApi.GetAllAsync();
 
-        _campaigns = response.Match<IEnumerable<CampaignsDto>>(
-            cam => cam,
-            statusCode =>
-            {
-                // ToDo: Toast
-                return [];
-            });
+            _campaigns = response.Match<IEnumerable<CampaignsDto>>(
+                campaigns => campaigns,
+                statusCode =>
+                {
+                    // ToDo: Toast
+                    return [];
+                });
+
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task Login()
@@ -106,7 +111,7 @@
 
             if (TokenProvider is TokenProvider tokenProvider)
             {
-                tokenProvider.SetToken(token);
+                await tokenProvider.SetToken(token);
             }
         }
     }

@@ -2,6 +2,7 @@ using ApiClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
 using Website.Services;
 
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
 
         services.AddTransient<IRequestBuilder, RequestBuilder>();
+        services.AddScoped<ProtectedSessionStorage>();
         services.AddScoped<ITokenProvider, TokenProvider>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();

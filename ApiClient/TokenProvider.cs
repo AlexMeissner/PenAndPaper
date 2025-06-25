@@ -2,5 +2,5 @@ namespace ApiClient;
 
 public interface ITokenProvider
 {
-    public string GetToken();
+    public Task<string> GetToken();
 }

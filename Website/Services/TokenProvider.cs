@@ -1,18 +1,20 @@
 using ApiClient;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Website.Services;
 
-internal class TokenProvider : ITokenProvider
+internal class TokenProvider(ProtectedSessionStorage sessionStorage) : ITokenProvider
 {
-    private string token = string.Empty;
+    private const string TokenKey = "penAndPaperBackendApiToken";
 
-    public string GetToken()
+    public async Task<string> GetToken()
     {
-        return token;
+        var result = await sessionStorage.GetAsync<string>(TokenKey);
+        return result.Success && result.Value is { } token ? token : string.Empty;
     }
 
-    public void SetToken(string token)
+    public async Task SetToken(string token)
     {
-        this.token = token;
+        await sessionStorage.SetAsync(TokenKey, token);
     }
 }

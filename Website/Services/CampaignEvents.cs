@@ -53,9 +53,10 @@ internal class CampaignEvents(IEndPointProvider endPointProvider, ITokenProvider
     public async Task Connect(int campaignId)
     {
         var url = endPointProvider.BaseUrl + "campaign-updates/" + campaignId;
+        var token = await tokenProvider.GetToken();
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(url, options => { options.AccessTokenProvider = () => Task.FromResult<string?>(tokenProvider.GetToken()); })
+            .WithUrl(url, options => { options.AccessTokenProvider = () => Task.FromResult<string?>(token); })
             .WithAutomaticReconnect()
             .Build();
 
