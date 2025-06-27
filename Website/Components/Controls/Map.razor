@@ -497,6 +497,8 @@
 
     private async Task OnKeyDown(KeyboardEventArgs e)
     {
+        if (!IsGameMaster) return;
+
         if (e.Key.Equals("Delete", StringComparison.OrdinalIgnoreCase) && _selectedToken is not null)
         {
             await TokenApi.RemoveAsync(_selectedToken.Id);
