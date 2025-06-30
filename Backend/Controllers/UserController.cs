@@ -3,18 +3,42 @@ using Backend.Services;
 using Backend.Services.Repositories;
 using DataTransfer.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Backend.Controllers;
 
 [ApiController]
-public class UserController(IIdentity identity, IUserRepository userRepository) : ControllerBase
+public class UserController(IIdentity identity, IUserRepository userRepository, IConfiguration configuration) : ControllerBase
 {
     [HttpPost("sessions")]
-    public async Task<IActionResult> Login(LoginDto _)
+    public async Task<IActionResult> Login(LoginDto payload)
     {
-        var identityClaims = await identity.FromClaimsPrincipal(User);
+        if (await userRepository.ExistsAsync(payload.Email))
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Name, payload.Name),
+                new Claim(JwtRegisteredClaimNames.Email, payload.Email),
+            };
 
-        return identityClaims is null ? Unauthorized() : Ok();
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["JWT:Key"] ?? throw new NullReferenceException("JWT key not found")));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: configuration["JWT:Issuer"],
+                audience: configuration["JWT:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(12),
+                signingCredentials: credentials);
+
+            var a = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new AuthenticationTokenDto(a));
+        }
+
+        return Unauthorized();
     }
 
     [HttpGet("user")]
@@ -58,9 +82,9 @@ public class UserController(IIdentity identity, IUserRepository userRepository) 
     }
 
     [HttpPost("users")]
-    public async Task<IActionResult> Register(RegisterDto _)
+    public async Task<IActionResult> Register(RegisterDto payload)
     {
-        var response = await identity.Register(User);
+        var response = await identity.Register(payload);
 
         return this.StatusCode(response.StatusCode);
     }

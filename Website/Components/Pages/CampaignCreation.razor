@@ -28,7 +28,9 @@
                     @foreach (var user in _uninvitedUsers)
                     {
                         <button type="button" class="list-group-item"
-                                @onclick="() => OnAddPlayer(user)">@user.Name</button>
+                                @onclick="() => OnAddPlayer(user)">
+                            @user.Name
+                        </button>
                     }
                 </ul>
             </div>
@@ -58,41 +60,46 @@
     private ICollection<CampaignUser> _players = [];
     private ICollection<CampaignUser> _uninvitedUsers = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (CampaignId is { } campaignId)
+        if (firstRender)
         {
-            var response = await CampaignApi.GetAsync(campaignId);
+            if (CampaignId is { } campaignId)
+            {
+                var response = await CampaignApi.GetAsync(campaignId);
 
-            response.Match(
-                campaign =>
-                {
-                    _campaignName = campaign.Name;
-                    _players = campaign.Players.ToList();
-                    _uninvitedUsers = campaign.UninvitedUsers.ToList();
-                },
-                statusCode =>
-                {
-                    // ToDo: Log + Toast
-                }
-            );
-        }
-        else
-        {
-            var response = await UserApi.GetAllAsync();
+                response.Match(
+                    campaign =>
+                    {
+                        _campaignName = campaign.Name;
+                        _players = campaign.Players.ToList();
+                        _uninvitedUsers = campaign.UninvitedUsers.ToList();
+                    },
+                    statusCode =>
+                    {
+                        // ToDo: Log + Toast
+                    }
+                );
+            }
+            else
+            {
+                var response = await UserApi.GetAllAsync();
 
-            response.Match(
-                users =>
-                {
-                    _campaignName = string.Empty;
-                    _players = [];
-                    _uninvitedUsers = users.ToList();
-                },
-                statusCode =>
-                {
-                    // ToDo: Log + Toast
-                }
-            );
+                response.Match(
+                    users =>
+                    {
+                        _campaignName = string.Empty;
+                        _players = [];
+                        _uninvitedUsers = users.ToList();
+                    },
+                    statusCode =>
+                    {
+                        // ToDo: Log + Toast
+                    }
+                );
+            }
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 

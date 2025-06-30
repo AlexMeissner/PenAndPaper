@@ -18,7 +18,7 @@ else
         {
             <div class="character" draggable="true" @ondragstart="() => OnDragStart(character)">
                 <img class="character-image" src="data:image/png;base64,@Convert.ToBase64String(character.Image)"
-                     alt="Icon"/>
+                     alt="Icon" />
                 <div class="character-texts">
                     <div class="character-text-row">
                         <div class="character-text-title">Spieler</div>
@@ -40,9 +40,13 @@ else
     private IEnumerable<CharactersDto> _characters = [];
     private bool _isCreatingCharacter = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await UpdateCharacterList();
+        if (firstRender)
+        {
+            await UpdateCharacterList();
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private void OnDragStart(CharactersDto character)
@@ -59,6 +63,7 @@ else
     {
         await UpdateCharacterList();
         _isCreatingCharacter = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task UpdateCharacterList()

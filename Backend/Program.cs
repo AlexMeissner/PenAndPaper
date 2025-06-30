@@ -46,7 +46,7 @@ try
     builder.Services.AddBackgroundServices();
     builder.Services.AddOpenApi();
     builder.Services.AddSignalR();
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddGoogle(builder.Configuration);
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddCustomJwt(builder.Configuration);
     builder.Services.AddAuthorization();
 
     var app = builder.Build();

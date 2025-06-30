@@ -17,7 +17,7 @@
                 <div class="chat-message-container">
                     @if (chatMessage.Direction == MessageDirection.Received)
                     {
-                        <img class="chat-message-image" alt="" title="@chatMessage.Sender" src="@chatMessage.Image"/>
+                        <img class="chat-message-image" alt="" title="@chatMessage.Sender" src="@chatMessage.Image" />
                     }
                     <div class="@GetTextStyleClasses(chatMessage)">@chatMessage.Text</div>
                 </div>
@@ -66,21 +66,29 @@
         CampaignEvents.ChatMessageReceived -= OnReceivedChatMessage;
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var response = await ChatApi.GetUsers(CampaignId);
-
-        _chatUsers = response.Match<IEnumerable<ChatUserDto>>(
-            chatUsers => chatUsers,
-            statusCode =>
-            {
-                // ToDo: Toast
-                return [];
-            });
-
-        _target = _chatUsers.First();
-
         CampaignEvents.ChatMessageReceived += OnReceivedChatMessage;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var response = await ChatApi.GetUsers(CampaignId);
+
+            _chatUsers = response.Match<IEnumerable<ChatUserDto>>(
+                chatUsers => chatUsers,
+                statusCode =>
+                {
+                    // ToDo: Toast
+                    return [];
+                });
+
+            _target = _chatUsers.First();
+
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task OnReceivedChatMessage(ChatMessageEventArgs e)

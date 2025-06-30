@@ -1,9 +1,10 @@
-using System.Net;
-using System.Security.Claims;
 using Backend.Database;
 using Backend.Database.Models;
 using DataTransfer.Response;
+using DataTransfer.User;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Security.Claims;
 
 namespace Backend.Services;
 
@@ -12,7 +13,7 @@ public record IdentityClaims(User User, string Email, string Name);
 public interface IIdentity
 {
     public Task<IdentityClaims?> FromClaimsPrincipal(ClaimsPrincipal claimsPrincipal);
-    public Task<Response> Register(ClaimsPrincipal claimsPrincipal);
+    public Task<Response> Register(RegisterDto payload);
 }
 
 public class Identity(PenAndPaperDatabase dbContext) : IIdentity
@@ -32,20 +33,19 @@ public class Identity(PenAndPaperDatabase dbContext) : IIdentity
         return new IdentityClaims(user, email, name);
     }
 
-    public async Task<Response> Register(ClaimsPrincipal claimsPrincipal)
+    public async Task<Response> Register(RegisterDto payload)
     {
-        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
-
-        if (email is null) return new Response(HttpStatusCode.Unauthorized);
-
-        var name = claimsPrincipal.FindFirst(ClaimTypes.GivenName)?.Value ?? "Incognito";
+        if (await dbContext.Users.FirstOrDefaultAsync(u => u.Email == payload.Email) != null)
+        {
+            return new Response(HttpStatusCode.BadRequest);
+        }
 
         const string DefaultColor = "#FF0000";
 
         var user = new User()
         {
-            Email = email,
-            Username = name,
+            Email = payload.Email,
+            Username = payload.Name,
             Color = DefaultColor
         };
 

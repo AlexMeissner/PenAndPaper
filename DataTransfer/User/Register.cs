@@ -1,3 +1,3 @@
 namespace DataTransfer.User;
 
-public record RegisterDto();
+public record RegisterDto(string Email, string Name);

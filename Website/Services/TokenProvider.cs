@@ -1,17 +1,20 @@
 using ApiClient;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Website.Services;
 
-public class TokenProvider(IHttpContextAccessor httpContextAccessor) : ITokenProvider
+internal class TokenProvider(ProtectedSessionStorage sessionStorage) : ITokenProvider
 {
-    public string GetToken()
-    {
-        if (httpContextAccessor.HttpContext is { User.Identity.IsAuthenticated: true } httpContext)
-        {
-            return httpContext.User.FindFirst(c => c.Type == "id_token")?.Value
-                   ?? throw new Exception("Access token could not be retrieved");
-        }
+    private const string TokenKey = "penAndPaperBackendApiToken";
 
-        throw new NullReferenceException("Http Context could not be instantiated");
+    public async Task<string> GetToken()
+    {
+        var result = await sessionStorage.GetAsync<string>(TokenKey);
+        return result.Success && result.Value is { } token ? token : string.Empty;
+    }
+
+    public async Task SetToken(string token)
+    {
+        await sessionStorage.SetAsync(TokenKey, token);
     }
 }

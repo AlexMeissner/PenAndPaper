@@ -1,7 +1,7 @@
-using System.Net;
-using System.Text.Json;
 using DataTransfer.Response;
 using Flurl.Http;
+using System.Net;
+using System.Text.Json;
 
 namespace ApiClient;
 
@@ -20,7 +20,7 @@ public class RequestBuilder(IEndPointProvider endPointProvider, ITokenProvider t
 
 public interface IRequest
 {
-    IRequest Query(string name, object value);
+    Task<IRequest> Query(string name, object value);
 
     Task<Response> DeleteAsync();
     Task<Response<T>> GetAsync<T>();
@@ -34,56 +34,59 @@ public interface IRequest
 public class Request(IEndPointProvider endPointProvider, ITokenProvider tokenProvider, params object[] segments)
     : IRequest
 {
-    private readonly IFlurlRequest _request = new FlurlRequest(endPointProvider.BaseUrl)
-        .WithOAuthBearerToken(tokenProvider.GetToken())
-        .AllowAnyHttpStatus()
-        .AppendPathSegments(segments);
-
-    public IRequest Query(string name, object value)
+    public async Task<IRequest> Query(string name, object value)
     {
-        _request.AppendQueryParam(name, value);
+        var request = await CreateRequest();
+        request.AppendQueryParam(name, value);
         return this;
     }
 
     public async Task<Response> DeleteAsync()
     {
-        var response = await _request.DeleteAsync().ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.DeleteAsync().ConfigureAwait(false);
         return new Response(response.ResponseMessage.StatusCode);
     }
 
     public async Task<Response<T>> GetAsync<T>()
     {
-        var response = await _request.GetAsync().ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.GetAsync().ConfigureAwait(false);
         return await DeserializeBodyAsync<T>(response.ResponseMessage).ConfigureAwait(false);
     }
 
     public async Task<Response> PatchAsync(object payload)
     {
-        var response = await _request.PatchJsonAsync(payload).ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.PatchJsonAsync(payload).ConfigureAwait(false);
         return new Response(response.ResponseMessage.StatusCode);
     }
 
     public async Task<Response> PostAsync(object payload)
     {
-        var response = await _request.PostJsonAsync(payload).ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.PostJsonAsync(payload).ConfigureAwait(false);
         return new Response(response.ResponseMessage.StatusCode);
     }
 
     public async Task<Response<T>> PostAsync<T>(object payload)
     {
-        var response = await _request.PostJsonAsync(payload).ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.PostJsonAsync(payload).ConfigureAwait(false);
         return await DeserializeBodyAsync<T>(response.ResponseMessage).ConfigureAwait(false);
     }
 
     public async Task<Response> PutAsync(object payload)
     {
-        var response = await _request.PutJsonAsync(payload).ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.PutJsonAsync(payload).ConfigureAwait(false);
         return new Response(response.ResponseMessage.StatusCode);
     }
 
     public async Task<Response<T>> PutAsync<T>(object payload)
     {
-        var response = await _request.PutJsonAsync(payload).ConfigureAwait(false);
+        var request = await CreateRequest();
+        var response = await request.PutJsonAsync(payload).ConfigureAwait(false);
         return await DeserializeBodyAsync<T>(response.ResponseMessage).ConfigureAwait(false);
     }
 
@@ -104,5 +107,15 @@ public class Request(IEndPointProvider endPointProvider, ITokenProvider tokenPro
         var value = await JsonSerializer.DeserializeAsync<T>(stream, SerializerOptions).ConfigureAwait(false);
 
         return new Response<T>(response.StatusCode, value!);
+    }
+
+    private async Task<IFlurlRequest> CreateRequest()
+    {
+        var token = await tokenProvider.GetToken();
+
+        return new FlurlRequest(endPointProvider.BaseUrl)
+            .WithOAuthBearerToken(token)
+            .AllowAnyHttpStatus()
+            .AppendPathSegments(segments);
     }
 }

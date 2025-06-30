@@ -1,8 +1,9 @@
-using System.Security.Claims;
 using ApiClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System.Security.Claims;
 using Website.Services;
 
 namespace Website.Extensions;
@@ -12,13 +13,15 @@ public static class ServiceCollectionExtensions
     public static void AddApis(this IServiceCollection services)
     {
         services.AddSingleton<IEndPointProvider, EndPointProvider>();
-        services.AddSingleton<ITokenProvider, TokenProvider>();
-        
+
         services.AddTransient<IRequestBuilder, RequestBuilder>();
+        services.AddScoped<ProtectedSessionStorage>();
+        services.AddScoped<ITokenProvider, TokenProvider>();
 
         services.AddTransient<ICampaignApi, CampaignApi>();
         services.AddTransient<ICharacterApi, CharacterApi>();
         services.AddTransient<IChatApi, ChatApi>();
+        services.AddTransient<IInitiativeApi, InitiativeApi>();
         services.AddTransient<IMapApi, MapApi>();
         services.AddTransient<IMonsterApi, MonsterApi>();
         services.AddTransient<IMouseApi, MouseApi>();
@@ -46,6 +49,7 @@ public static class ServiceCollectionExtensions
                 configureOptions.ClientSecret = configuration["Google:ClientSecret"] ??
                                                 throw new Exception("ClientSecret not found");
                 configureOptions.SaveTokens = true;
+                configureOptions.AccessType = "offline";
                 configureOptions.Scope.Add("openid");
                 configureOptions.Scope.Add("profile");
                 configureOptions.Scope.Add("email");

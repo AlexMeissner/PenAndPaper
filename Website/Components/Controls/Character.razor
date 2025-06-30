@@ -10,7 +10,7 @@
     @foreach (var character in _characters)
     {
         <div>
-            <img class="character-image" alt="" src="data:image/png;base64,@Convert.ToBase64String(character.Image)"/>
+            <img class="character-image" alt="" src="data:image/png;base64,@Convert.ToBase64String(character.Image)" />
 
             <div class="input-group mb-3">
                 <span class="input-group-text">Name</span>
@@ -34,9 +34,13 @@ else
 
     private IEnumerable<CharactersDto> _characters = [];
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Update();
+        if (firstRender)
+        {
+            await Update();
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task OnCreated(CharacterCreationDto character)
@@ -47,7 +51,7 @@ else
 
     private async Task Update()
     {
-        var response = await CharacterApi.GetAllAsync(CampaignId);
+        var response = await CharacterApi.GetAllFromUserAsync(CampaignId);
 
         _characters = response.Match<IEnumerable<CharactersDto>>(
             characters => characters,
