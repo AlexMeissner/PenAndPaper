@@ -1,0 +1,192 @@
+﻿@rendermode InteractiveServer
+
+<div>
+    <input type="text" class="filter-box" placeholder="Filter..." @bind-value="filter" @bind-value:event="oninput">
+    <ul class="tree">
+        <li>
+            <details open>
+                <summary>
+                    <h5>Charaktere</h5>
+                    <button class="tree-icon-button" type="button" @onclick="OnCharactersIconClick" aria-label="Charaktere action">
+                        <svg class="tree-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path fill="white" d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z" />
+                        </svg>
+                    </button>
+                </summary>
+                <ul>
+                    @foreach (var character in FilteredCharacters)
+                    {
+                        <li class="tree-content-item"><span class="tree-content-label">@character.Name</span></li>
+                    }
+                </ul>
+            </details>
+        </li>
+    </ul>
+
+    <ul class="tree">
+        <li>
+            <details open>
+                <summary>
+                    <h5>Welt</h5>
+                    <button class="tree-icon-button" type="button" @onclick="OnLocationsIconClick" aria-label="Welt action">
+                        <svg class="tree-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path fill="white" d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z" />
+                        </svg>
+                    </button>
+                </summary>
+                <ul>
+                    @foreach (var location in FilteredLocations)
+                    {
+                        @RenderLocation(location)
+                    }
+                </ul>
+            </details>
+        </li>
+    </ul>
+
+    <ul class="tree">
+        <li>
+            <details open>
+                <summary>
+                    <h5>Monsters</h5>
+                    <button class="tree-icon-button" type="button" @onclick="OnMonstersIconClick" aria-label="Monsters action">
+                        <svg class="tree-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path fill="white" d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z" />
+                        </svg>
+                    </button>
+                </summary>
+                <ul>
+                    @foreach (var monster in FilteredMonsters)
+                    {
+                        <li class="tree-content-item"><span class="tree-content-label">@monster.Name</span></li>
+                    }
+                </ul>
+            </details>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private string filter = "";
+
+    private record CharacterItem(int Id, string Name);
+    private record LocationItem(int Id, string Name, LocationItem[] SubLocations);
+    private record MonsterItem(int Id, string Name);
+
+    private List<CharacterItem> characters =
+    [
+        new(1, "Azamir"),
+        new(2, "Dilly Flitzpfeif"),
+        new(3, "Flint Feuerschmiede"),
+        new(4, "Glasstab"),
+        new(5, "Grinbald"),
+        new(6, "Gundren Felssucher")
+    ];
+
+    private IEnumerable<CharacterItem> FilteredCharacters => string.IsNullOrWhiteSpace(filter)
+            ? characters
+            : characters.Where(c => c.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
+
+    private List<LocationItem> locations =
+    [
+        new(1, "Schwertküste", []),
+        new(2, "Golinpfeile",
+        [
+            new(3, "Cragmaw Versteck", []),
+            new(4, "Hinterhalt", []),
+        ]),
+        new(5, "Phandalin",
+        [
+            new(6, "Taverne",[]),
+            new(7, "Versteck der Rotbrenner",[]),
+        ]),
+        new(8, "Das Netz der Spinne",
+        [
+            new(9, "Agatha's Behausung",[]),
+            new(10, "Alter Eulenbrunnen",[]),
+            new(11, "Burg Crawmaw",[]),
+            new(12, "Ruinen von Donenerbaum",[]),
+            new(13, "Wyvernkuppe",
+            [
+                new(14, "Test", []),
+            ]),
+        ]),
+    ];
+
+    private IEnumerable<LocationItem> FilteredLocations
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(filter))
+                return locations;
+
+            LocationItem? Filter(LocationItem item)
+            {
+                var filteredChildren = item.SubLocations
+                    .Select(Filter)
+                    .Where(x => x is not null)
+                    .Cast<LocationItem>()
+                    .ToArray();
+
+                if (item.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) || filteredChildren.Length > 0)
+                {
+                    return new LocationItem(item.Id, item.Name, filteredChildren);
+                }
+
+                return null;
+            }
+
+            return locations.Select(Filter).Where(x => x is not null)!.Cast<LocationItem>();
+        }
+    }
+
+    private List<MonsterItem> monsters =
+    [
+        new(1, "Beobachter"),
+        new(2, "Blutmücke"),
+        new(3, "Doppelgänger"),
+        new(4, "Eulenbär"),
+        new(5, "Flammenschädel")
+    ];
+
+    private IEnumerable<MonsterItem> FilteredMonsters => string.IsNullOrWhiteSpace(filter)
+            ? monsters
+            : monsters.Where(m => m.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
+
+    private RenderFragment RenderLocation(LocationItem item)
+    {
+        return @<li class="tree-content-item">
+        @if (item.SubLocations.Length > 0)
+        {
+                <details open>
+                    <summary><span class="tree-content-label">@item.Name</span></summary>
+                    <ul>
+                        @foreach (var child in item.SubLocations)
+                        {
+                            @RenderLocation(child)
+                        }
+                    </ul>
+                </details>
+        }
+        else
+        {
+                <span class="tree-content-label">@item.Name</span>
+        }
+        </li>;
+    }
+
+    private void OnCharactersIconClick()
+    {
+        // TODO: implement behavior for Characters icon
+    }
+
+    private void OnLocationsIconClick()
+    {
+        // TODO: implement behavior for Locations icon
+    }
+
+    private void OnMonstersIconClick()
+    {
+        // TODO: implement behavior for Monsters icon
+    }
+}

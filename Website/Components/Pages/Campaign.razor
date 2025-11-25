@@ -14,28 +14,53 @@
 <PageTitle>@_title</PageTitle>
 
 <div class="master-panel">
+    <div class="overlay-trigger @(isVisible ? "disabled" : "")"
+         @onmouseenter="ShowOverlay"
+         aria-hidden="true">
+    </div>
+
+    <div class="overlay-left @(isVisible ? "visible" : "")" @onmouseleave="HideOverlay">
+        <SideMenu />
+    </div>
+
+    <div class="overlay-right @(isVisible ? "shifted" : "")">
+        <!-- right panel content (always visible, starts at left edge) -->
+        <div class="right-content">
+            Right panel content
+        </div>
+        <!--
+            <DynamicComponent Type="_contentType" Parameters="_contentParameters" />
+        -->
+    </div>
     <div class="left-panel">
         <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" @ref="_map"></Map>
+
+        <div class="micro-menu">
+            <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
+                <i class="bi bi-dice-6"></i>
+            </button>
+            @if (_isGameMaster)
+            {
+                <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
+                    <i class="bi bi-map"></i>
+                </button>
+
+                <button class="btn btn-overlay btn-sound" @onclick="ToggleSoundSelection">
+                    <i class="bi bi-music-note-beamed"></i>
+                </button>
+
+                <button class="btn btn-overlay btn-grid" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    <i class="bi bi-grid-3x3"></i>
+                </button>
+            }
+        </div>
+
         @if (_isGameMaster)
         {
-            <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
-                <i class="bi bi-map"></i>
-            </button>
-            <button class="btn btn-overlay btn-sound" @onclick="ToggleSoundSelection">
-                <i class="bi bi-music-note-beamed"></i>
-            </button>
-            <button class="btn btn-overlay btn-grid" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                <i class="bi bi-grid-3x3"></i>
-            </button>
-
             <MapSelection CampaignId="@CampaignId" @ref="_mapSelection" />
             <Soundboard CampaignId="@CampaignId" @ref="_soundboard" />
         }
-
-        <button class="btn btn-overlay btn-dice" @onclick="ToggleDiceRoller">
-            <i class="bi bi-dice-6"></i>
-        </button>
 
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
         <DiceRollVisualizer />
@@ -70,26 +95,26 @@
                 <Chat CampaignId="@CampaignId"></Chat>
             </div>
 
-            @if(_isGameMaster)
+            @if (_isGameMaster)
             {
-               <div class="@GetContentStyle(TabIndex.Script)">
-                   <Script CampaignId="@CampaignId"></Script>
-               </div> 
-            }            
+                <div class="@GetContentStyle(TabIndex.Script)">
+                    <Script CampaignId="@CampaignId"></Script>
+                </div>
+            }
 
             <div class="@GetContentStyle(TabIndex.Character)">
                 <Character CampaignId="@CampaignId"></Character>
             </div>
 
-            @if(_isGameMaster)
+            @if (_isGameMaster)
             {
-               <div class="@GetContentStyle(TabIndex.Characters)">
-                   <Characters CampaignId="@CampaignId"></Characters>
-               </div>
-               
-               <div class="@GetContentStyle(TabIndex.Monsters)">
-                   <Monsters></Monsters>
-               </div> 
+                <div class="@GetContentStyle(TabIndex.Characters)">
+                    <Characters CampaignId="@CampaignId"></Characters>
+                </div>
+
+                <div class="@GetContentStyle(TabIndex.Monsters)">
+                    <Monsters></Monsters>
+                </div>
             }
         </div>
     </div>
@@ -106,6 +131,24 @@
     private MapSelection? _mapSelection;
     private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;
+
+    private Type _contentType = typeof(Chat);
+    private Dictionary<string, object> _contentParameters = new();
+
+    private void SetContent()
+    {
+        _contentType = typeof(MapSelection);
+
+        _contentParameters = new Dictionary<string, object>
+        {
+            { "CampaignId", CampaignId }
+        };
+    }
+
+    private bool isVisible;
+
+    private void ShowOverlay() => isVisible = true;
+    private void HideOverlay() => isVisible = false;
 
     private enum TabIndex
     {

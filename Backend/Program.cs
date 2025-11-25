@@ -28,11 +28,8 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.AddServiceDefaults();
-
     Log.Logger = new LoggerConfiguration()
         .ReadFrom.Configuration(builder.Configuration)
-        .WriteToAspire(builder.Configuration)
         .CreateLogger();
     builder.Host.UseSerilog(Log.Logger);
 

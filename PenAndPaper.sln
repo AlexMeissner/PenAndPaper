@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32819.101
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11123.170
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransfer", "DataTransfer\DataTransfer.csproj", "{B218BBF6-DA5D-4458-AA12-750AE0EEEB4B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterManager", "MonsterManager\MonsterManager.csproj", "{220F2542-1B57-4F16-B813-7AAA9444AF41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Website", "Website\Website.csproj", "{199802F7-162A-42E1-8DD0-A23E6C46782A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireServiceDefaults", "AspireServiceDefaults\AspireServiceDefaults.csproj", "{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.csproj", "{C79EF5DE-E44A-47B3-9B5E-A061C2355FFF}"
 EndProject
@@ -35,10 +33,6 @@ Global
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{199802F7-162A-42E1-8DD0-A23E6C46782A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DFCC66A-0375-42C0-B1AE-9A50C87130C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C79EF5DE-E44A-47B3-9B5E-A061C2355FFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C79EF5DE-E44A-47B3-9B5E-A061C2355FFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C79EF5DE-E44A-47B3-9B5E-A061C2355FFF}.Release|Any CPU.ActiveCfg = Release|Any CPU

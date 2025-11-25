@@ -16,7 +16,6 @@ try
 
     Log.Logger = new LoggerConfiguration()
         .ReadFrom.Configuration(builder.Configuration)
-        .WriteToAspire(builder.Configuration)
         .CreateLogger();
     builder.Host.UseSerilog(Log.Logger);
 
@@ -27,7 +26,6 @@ try
     builder.Services.AddControllers();
     builder.Services.RegisterServicesFromAttributes();
     builder.Services.AddApis();
-    builder.AddServiceDefaults();
     builder.Services.AddGoogleAuthentication(builder.Configuration);
     builder.Services.AddAuthorization(configure => configure.FallbackPolicy = configure.DefaultPolicy);
 
@@ -52,7 +50,6 @@ try
         .AddInteractiveServerRenderMode();
 
     app.MapControllers();
-    app.MapDefaultEndpoints();
 
     app.Run();
 }
