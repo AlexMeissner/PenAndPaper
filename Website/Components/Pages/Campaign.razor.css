@@ -132,3 +132,12 @@
     .overlay-right.shifted {
         transform: translateX(300px);
     }
+
+.top-menu {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 0px 8px;
+}

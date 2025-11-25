@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Components\Controls\SideMenu.razor.css" />
     <None Remove="Components\Pages\Campaign.razor.css" />
     <None Remove="Components\Pages\CampaignCreation.razor.css" />
     <None Remove="Components\Pages\CampaignSelection.razor.css" />
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Components\Controls\SideMenu.razor.css" />
     <Content Include="Components\Pages\Campaign.razor.css" />
     <Content Include="Components\Pages\CampaignCreation.razor.css" />
     <Content Include="Components\Pages\CampaignSelection.razor.css" />

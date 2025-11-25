@@ -101,10 +101,10 @@
     margin: 2px 5px auto auto;
 }
 
-.tree-icon-button:focus {
-    outline: 2px solid rgba(255,255,255,0.2);
-    border-radius: 3px;
-}
+    .tree-icon-button:focus {
+        outline: 2px solid rgba(255,255,255,0.2);
+        border-radius: 3px;
+    }
 
 .tree-icon {
     width: 16px;
