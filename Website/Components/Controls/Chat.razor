@@ -85,7 +85,7 @@
                     return [];
                 });
 
-            _target = _chatUsers.First();
+            _target = _chatUsers.FirstOrDefault();
 
             await InvokeAsync(StateHasChanged);
         }

@@ -22,6 +22,7 @@ try
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
+    builder.Services.AddHttpClient();
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddControllers();
     builder.Services.RegisterServicesFromAttributes();
