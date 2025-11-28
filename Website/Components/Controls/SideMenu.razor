@@ -1,5 +1,10 @@
 ﻿@rendermode InteractiveServer
 
+@using ApiClient
+@using DataTransfer.Monster
+
+@inject IMonsterApi MonsterApi
+
 <div>
     <input type="text" class="filter-box" placeholder="Filter..." @bind-value="filter" @bind-value:event="oninput">
     <ul class="tree">
@@ -58,7 +63,7 @@
                 <ul>
                     @foreach (var monster in FilteredMonsters)
                     {
-                        <li class="tree-content-item"><span class="tree-content-label">@monster.Name</span></li>
+                        <li class="tree-content-item"><span class="tree-content-label" @onclick="() => OnMonsterClick(monster)">@monster.Name</span></li>
                     }
                 </ul>
             </details>
@@ -71,7 +76,6 @@
 
     private record CharacterItem(int Id, string Name);
     private record LocationItem(int Id, string Name, LocationItem[] SubLocations);
-    private record MonsterItem(int Id, string Name);
 
     private List<CharacterItem> characters =
     [
@@ -140,16 +144,9 @@
         }
     }
 
-    private List<MonsterItem> monsters =
-    [
-        new(1, "Beobachter"),
-        new(2, "Blutmücke"),
-        new(3, "Doppelgänger"),
-        new(4, "Eulenbär"),
-        new(5, "Flammenschädel")
-    ];
+    private List<MonstersDto> monsters = [];
 
-    private IEnumerable<MonsterItem> FilteredMonsters => string.IsNullOrWhiteSpace(filter)
+    private IEnumerable<MonstersDto> FilteredMonsters => string.IsNullOrWhiteSpace(filter)
             ? monsters
             : monsters.Where(m => m.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
@@ -172,7 +169,23 @@
         {
                 <span class="tree-content-label">@item.Name</span>
         }
-        </li>;
+        </li>
+    ;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var response = await MonsterApi.GetAllAsync();
+
+            monsters = response.Match(
+                monsters => monsters.ToList(),
+                statusCode => [] // ToDo: Toast
+                );
+
+            StateHasChanged();
+        }
     }
 
     private void OnCharactersIconClick()
@@ -189,4 +202,13 @@
     {
         // TODO: implement behavior for Monsters icon
     }
+
+    private void OnMonsterClick(MonstersDto monster)
+    {
+        //_activeContent = typeof(Monster);
+        StateHasChanged();
+    }
+
+    // TODO:
+    // Monster Drag & Drop
 }
