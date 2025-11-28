@@ -28,10 +28,10 @@
             <button class="btn btn-overlay">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" /></svg>
             </button>
-            <button class="btn btn-overlay">
+            <button class="btn btn-overlay" @onclick="OnOpenChat">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
             </button>
-            <button class="btn btn-overlay">
+            <button class="btn btn-overlay" @onclick="OnOpenGrid">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 640 640"><path d="M96 128C96 110.3 110.3 96 128 96L176 96C193.7 96 208 110.3 208 128L208 176C208 193.7 193.7 208 176 208L128 208C110.3 208 96 193.7 96 176L96 128zM96 296C96 278.3 110.3 264 128 264L176 264C193.7 264 208 278.3 208 296L208 344C208 361.7 193.7 376 176 376L128 376C110.3 376 96 361.7 96 344L96 296zM208 464L208 512C208 529.7 193.7 544 176 544L128 544C110.3 544 96 529.7 96 512L96 464C96 446.3 110.3 432 128 432L176 432C193.7 432 208 446.3 208 464zM264 128C264 110.3 278.3 96 296 96L344 96C361.7 96 376 110.3 376 128L376 176C376 193.7 361.7 208 344 208L296 208C278.3 208 264 193.7 264 176L264 128zM376 296L376 344C376 361.7 361.7 376 344 376L296 376C278.3 376 264 361.7 264 344L264 296C264 278.3 278.3 264 296 264L344 264C361.7 264 376 278.3 376 296zM264 464C264 446.3 278.3 432 296 432L344 432C361.7 432 376 446.3 376 464L376 512C376 529.7 361.7 544 344 544L296 544C278.3 544 264 529.7 264 512L264 464zM544 128L544 176C544 193.7 529.7 208 512 208L464 208C446.3 208 432 193.7 432 176L432 128C432 110.3 446.3 96 464 96L512 96C529.7 96 544 110.3 544 128zM432 296C432 278.3 446.3 264 464 264L512 264C529.7 264 544 278.3 544 296L544 344C544 361.7 529.7 376 512 376L464 376C446.3 376 432 361.7 432 344L432 296zM544 464L544 512C544 529.7 529.7 544 512 544L464 544C446.3 544 432 529.7 432 512L432 464C432 446.3 446.3 432 464 432L512 432C529.7 432 544 446.3 544 464z" /></svg>
             </button>
             <button class="btn btn-overlay" @onclick="ToggleSoundSelection">
@@ -43,7 +43,12 @@
         </div>
 
         <div class="overlay-content">
-            <DynamicComponent Type="_contentType" Parameters="_contentParameters" />
+            <div class="@VisibilityClass(typeof(Chat))">
+                <Chat CampaignId="@CampaignId" />
+            </div>
+            <div class="@VisibilityClass(typeof(Grid))">
+                <Grid CampaignId="@CampaignId" Map="_map" />
+            </div>
         </div>
     </div>
     <div class="left-panel">
@@ -138,8 +143,8 @@
     private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;
 
-    private Type _contentType = typeof(Chat);
-    private Dictionary<string, object> _contentParameters = new();
+    private Type _activeContent = typeof(Chat);
+    private string VisibilityClass(Type contentType) => _activeContent == contentType ? "content-visible" : "content-hidden";
 
     private bool isVisible;
 
@@ -211,12 +216,19 @@
 
             await CampaignEvents.Connect(CampaignId);
 
-            _contentParameters = new Dictionary<string, object>
-            {
-                { "CampaignId", CampaignId }
-            };
-
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private void OnOpenChat(MouseEventArgs args)
+    {
+        _activeContent = typeof(Chat);
+        StateHasChanged();
+    }
+
+    private void OnOpenGrid(MouseEventArgs args)
+    {
+        _activeContent = typeof(Grid);
+        StateHasChanged();
     }
 }

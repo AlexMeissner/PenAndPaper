@@ -1,0 +1,54 @@
+﻿@using ApiClient
+@using DataTransfer.Map
+
+@inject IMapApi MapApi
+
+@if (Map is null)
+{
+    <div>Kein Karte aktiv</div>
+}
+else
+{
+    <div>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Aktiv</span>
+            <div class="input-group-text">
+                <input class="form-check-input mt-0" type="checkbox" checked="@Map.GridIsActive"
+                       @onchange="OnGridActivityChanged">
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Größe</span>
+            <input type="range" class="form-range form-control" min="0" max="100" step="1.0" value="@Map.GridSize"
+                   @onchange="OnGridSizeChanged">
+            <input type="number" class="form-control" value="@Map.GridSize" @onchange="OnGridSizeChanged">
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int CampaignId { get; set; }
+    [Parameter] public Map? Map { get; set; }
+
+    private async Task OnGridActivityChanged(ChangeEventArgs e)
+    {
+        if (Map != null && Map.MapId is { } mapId && e.Value is bool isActive)
+        {
+            Map.GridIsActive = isActive;
+
+            var payload = new GridUpdateDto(Map.GridIsActive, Map.GridSize);
+            await MapApi.UpdateGrid(mapId, payload);
+        }
+    }
+
+    private async Task OnGridSizeChanged(ChangeEventArgs e)
+    {
+        if (Map != null && Map.MapId is { } mapId && e.Value is { } value && value.ToString() is { } valueText)
+        {
+            Map.GridSize = int.Parse(valueText);
+
+            var payload = new GridUpdateDto(Map.GridIsActive, Map.GridSize);
+            await MapApi.UpdateGrid(mapId, payload);
+        }
+    }
+}
