@@ -2,50 +2,43 @@
 @using DataTransfer.Monster
 @using Website.Services
 
-@inject IMonsterApi MonsterApi
 @inject IDragAndDrop DragAndDrop
-@inject ILogger<Monsters> Logger
 
-<div class="monsters">
-    @foreach (var monster in _monsters)
-    {
-        <div class="monsters-item" draggable="true" @ondragstart="() => OnDragStart(monster)">
-            <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(monster.Image)" alt="Icon"/>
+@if (_monster is null)
+{
+    <div>Kein Monster is ausgewählt</div>
+}
+else
+{
+    <div class="monsters">
+        <div class="monsters-item" draggable="true" @ondragstart="() => OnDragStart(_monster)">
+            <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(_monster.Image)" alt="Icon" />
             <div class="monster-texts">
-                <div class="monster-name">@monster.Name</div>
+                <div class="monster-name">@_monster.Name</div>
                 <div class="monster-details">
-                    <div class="monster-detail">@monster.SizeCategory</div>
-                    <div class="monster-detail">@monster.Type</div>
-                    <div class="monster-detail">@monster.Alignment</div>
+                    <div class="monster-detail">@_monster.SizeCategory</div>
+                    <div class="monster-detail">@_monster.Type</div>
+                    <div class="monster-detail">@_monster.Alignment</div>
                 </div>
             </div>
             <div class="diamond">
-                <div class="monster-challenge-rating">@monster.ChallengeRating</div>
+                <div class="monster-challenge-rating">@_monster.ChallengeRating</div>
             </div>
         </div>
-    }
-</div>
+    </div>
+}
 
 @code {
-    private IEnumerable<MonstersDto> _monsters = [];
+    private MonstersDto? _monster;
 
-    protected override async Task OnInitializedAsync()
+    public void SetMonster(MonstersDto monster)
     {
-        var response = await MonsterApi.GetAllAsync();
-
-        _monsters = response.Match<IEnumerable<MonstersDto>>(
-            monsters => monsters,
-            statusCode =>
-            {
-                // ToDo: Toast
-                Logger.LogError("Failed to get all monsters {statusCode}", statusCode);
-                return [];
-            });
+        _monster = monster;
+        StateHasChanged();
     }
 
     private void OnDragStart(MonstersDto monster)
     {
         DragAndDrop.Data = monster;
     }
-
 }
