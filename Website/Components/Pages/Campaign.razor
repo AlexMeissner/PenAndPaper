@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 
 @using ApiClient
+@using DataTransfer.Character
 @using DataTransfer.Monster
 @using Website.Components.Controls
 @using Website.Services
@@ -10,6 +11,7 @@
 
 @inject ICampaignEvents CampaignEvents
 @inject ICampaignApi CampaignApi
+@inject ICharacterApi CharacterApi
 @inject IMonsterApi MonsterApi
 @inject AudioPlayer AudioPlayer
 
@@ -37,7 +39,7 @@
                     <ul>
                         @foreach (var character in FilteredCharacters)
                         {
-                            <li class="tree-content-item"><span class="tree-content-label">@character.Name</span></li>
+                            <li class="tree-content-item"><span class="tree-content-label">@character.CharacterName</span></li>
                         }
                     </ul>
                 </details>
@@ -89,7 +91,7 @@
 
     <div class="overlay-right @(isVisible ? "shifted" : "")">
         <div class="top-menu">
-            <button class="btn btn-overlay">
+            <button class="btn btn-overlay" @onclick="OnOpenCharacter">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" /></svg>
             </button>
             <button class="btn btn-overlay" @onclick="OnOpenChat">
@@ -115,6 +117,12 @@
             </div>
             <div class="@VisibilityClass(typeof(Monsters))">
                 <Monsters @ref="_monsters" />
+            </div>
+            <div class="@VisibilityClass(typeof(CharacterCreation))">
+                <CharacterCreation CampaignId="@CampaignId" OnCreated="OnCharacterCreated" />
+            </div>
+            <div class="@VisibilityClass(typeof(Character))">
+                <Character CampaignId="@CampaignId" />
             </div>
         </div>
     </div>
@@ -217,22 +225,13 @@
 
     private string filter = "";
 
-    private record CharacterItem(int Id, string Name);
     private record LocationItem(int Id, string Name, LocationItem[] SubLocations);
 
-    private List<CharacterItem> characters =
-    [
-        new(1, "Azamir"),
-        new(2, "Dilly Flitzpfeif"),
-        new(3, "Flint Feuerschmiede"),
-        new(4, "Glasstab"),
-        new(5, "Grinbald"),
-        new(6, "Gundren Felssucher")
-    ];
+    private List<CharactersDto> characters = [];
 
-    private IEnumerable<CharacterItem> FilteredCharacters => string.IsNullOrWhiteSpace(filter)
+    private IEnumerable<CharactersDto> FilteredCharacters => string.IsNullOrWhiteSpace(filter)
             ? characters
-            : characters.Where(c => c.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
+            : characters.Where(c => c.CharacterName.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
     private List<LocationItem> locations =
     [
@@ -383,6 +382,16 @@
                 await CampaignEvents.Connect(CampaignId);
             }
 
+
+            {
+                var response = await CharacterApi.GetAllAsync(CampaignId);
+
+                characters = response.Match(
+                    characters => characters.ToList(),
+                    statusCode => []  // ToDo: Toast
+                );
+            }
+
             {
                 var response = await MonsterApi.GetAllAsync();
 
@@ -398,7 +407,14 @@
 
     private void OnCharactersIconClick()
     {
-        // TODO: implement behavior for Characters icon
+        _activeContent = typeof(CharacterCreation);
+        StateHasChanged();
+    }
+
+    private void OnCharacterCreated(CharacterCreationDto args)
+    {
+        _activeContent = typeof(Character);
+        StateHasChanged();
     }
 
     private void OnLocationsIconClick()
@@ -420,6 +436,12 @@
             _monsters.SetMonster(monster);
         }
 
+        StateHasChanged();
+    }
+
+    private void OnOpenCharacter(MouseEventArgs args)
+    {
+        _activeContent = typeof(Character);
         StateHasChanged();
     }
 
