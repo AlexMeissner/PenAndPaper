@@ -4,6 +4,7 @@
 
 @using ApiClient
 @using DataTransfer.Character
+@using DataTransfer.Map
 @using DataTransfer.Monster
 @using Website.Components.Controls
 @using Website.Services
@@ -12,6 +13,7 @@
 @inject ICampaignEvents CampaignEvents
 @inject ICampaignApi CampaignApi
 @inject ICharacterApi CharacterApi
+@inject IMapApi MapApi
 @inject IMonsterApi MonsterApi
 @inject AudioPlayer AudioPlayer
 
@@ -115,6 +117,9 @@
             <div class="@VisibilityClass(typeof(Grid))">
                 <Grid CampaignId="@CampaignId" Map="_map" />
             </div>
+            <div class="@VisibilityClass(typeof(Location))">
+                <Location @ref="_location" />
+            </div>
             <div class="@VisibilityClass(typeof(Monsters))">
                 <Monsters @ref="_monsters" />
             </div>
@@ -213,6 +218,7 @@
     private MapSelection? _mapSelection;
     private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;
+    private Location? _location;
     private Monsters? _monsters;
 
     private Type _activeContent = typeof(Chat);
@@ -233,31 +239,7 @@
             ? characters
             : characters.Where(c => c.CharacterName.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
-    private List<LocationItem> locations =
-    [
-        new(1, "Schwertküste", []),
-        new(2, "Golinpfeile",
-        [
-            new(3, "Cragmaw Versteck", []),
-            new(4, "Hinterhalt", []),
-        ]),
-        new(5, "Phandalin",
-        [
-            new(6, "Taverne",[]),
-            new(7, "Versteck der Rotbrenner",[]),
-        ]),
-        new(8, "Das Netz der Spinne",
-        [
-            new(9, "Agatha's Behausung",[]),
-            new(10, "Alter Eulenbrunnen",[]),
-            new(11, "Burg Crawmaw",[]),
-            new(12, "Ruinen von Donenerbaum",[]),
-            new(13, "Wyvernkuppe",
-            [
-                new(14, "Test", []),
-            ]),
-        ]),
-    ];
+    private List<LocationItem> locations = [];
 
     private IEnumerable<LocationItem> FilteredLocations
     {
@@ -298,7 +280,7 @@
         @if (item.SubLocations.Length > 0)
         {
                 <details open>
-                    <summary><span class="tree-content-label">@item.Name</span></summary>
+                    <summary><span class="tree-content-label" @onclick="() => OnLocationClick(item.Id)">@item.Name</span></summary>
                     <ul>
                         @foreach (var child in item.SubLocations)
                         {
@@ -309,7 +291,7 @@
         }
         else
         {
-                <span class="tree-content-label">@item.Name</span>
+                <span class="tree-content-label" @onclick="() => OnLocationClick(item.Id)">@item.Name</span>
         }
         </li>
     ;
@@ -382,6 +364,7 @@
                 await CampaignEvents.Connect(CampaignId);
             }
 
+            await LoadLocations();
 
             {
                 var response = await CharacterApi.GetAllAsync(CampaignId);
@@ -405,6 +388,18 @@
         }
     }
 
+    private async Task LoadLocations()
+    {
+        var response = await MapApi.GetAllAsync(CampaignId);
+
+        locations = response.Match(
+            maps => maps.Select(m => new LocationItem(m.Id, m.Name, [])).ToList(),
+            _ => [] // ToDo: Log + Toast
+        );
+
+        StateHasChanged();
+    }
+
     private void OnCharactersIconClick()
     {
         _activeContent = typeof(CharacterCreation);
@@ -425,6 +420,18 @@
     private void OnMonstersIconClick()
     {
         // TODO: implement behavior for Monsters icon
+    }
+
+    private void OnLocationClick(int mapId)
+    {
+        _activeContent = typeof(Location);
+
+        if (_location != null)
+        {
+            _location.SetMap(mapId);
+        }
+
+        StateHasChanged();
     }
 
     private void OnMonsterClick(MonstersDto monster)
