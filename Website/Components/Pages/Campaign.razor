@@ -139,18 +139,8 @@
     <div class="left-panel">
         <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" @ref="_map"></Map>
 
-        <div class="micro-menu">
-            @if (_isGameMaster)
-            {
-                <button class="btn btn-overlay btn-map" @onclick="ToggleMapSelection">
-                    <i class="bi bi-map"></i>
-                </button>
-            }
-        </div>
-
         @if (_isGameMaster)
         {
-            <MapSelection CampaignId="@CampaignId" @ref="_mapSelection" />
             <Soundboard CampaignId="@CampaignId" @ref="_soundboard" />
         }
 
@@ -220,7 +210,6 @@
     private TabIndex _activeTabIndex = TabIndex.Chat;
 
     private Map? _map;
-    private MapSelection? _mapSelection;
     private Soundboard? _soundboard;
     private DiceRoller? _diceRoller;
     private Location? _location;
@@ -329,14 +318,6 @@
     private void ToggleDiceRoller()
     {
         _diceRoller?.Toggle();
-    }
-
-    private async Task ToggleMapSelection()
-    {
-        if (_mapSelection is not null)
-        {
-            await _mapSelection.Toggle();
-        }
     }
 
     private async Task ToggleSoundSelection()
