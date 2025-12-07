@@ -1,11 +1,221 @@
-﻿<h3>@mapId</h3>
+﻿@using ApiClient
+@using DataTransfer.Map
+@using Markdig
+@using System.Threading.Tasks
+@using Website.Services
+
+@inject ILogger<Location> Logger
+@inject IMapApi MapApi
+@inject IScriptApi ScriptApi
+@inject ICampaignEvents CampaignEvents
+
+<div class="location-root">
+    <div class="top-area">
+        <div class="left-side">
+            <div class="buttons-row">
+                <button type="button" class="btn btn-primary" @onclick="OnOpen">Öffnen</button>
+                <button type="button" class="btn btn-danger" @onclick="OnDelete">Löschen</button>
+            </div>
+            @if (_locationNameEdit is null)
+            {
+                <h3 @onclick="OnEditName">@_locationName</h3>
+            }
+            else
+            {
+                <form @onsubmit="OnSubmitName" @onkeydown="OnKeyDown" @onblur="OnBlur">
+                    <input type="text" class="location-input form-control" @bind="_locationNameEdit" />
+                </form>
+            }
+        </div>
+        <div class="right-side">
+            <img src="data:image/png;base64, @Convert.ToBase64String(_image)" alt="Map" />
+        </div>
+    </div>
+
+    <div class="script-area">
+        @if (_isEditMode)
+        {
+            <div class="edit-view">
+                <textarea @bind="_script" class="form-control" style="min-height:160px"></textarea>
+                <div class="edit-buttons">
+                    <button type="button" class="btn btn-outline-danger cancel-button" @onclick="OnCancel">
+                        <i class="bi bi-x-circle">
+                            <span class="button-text">Cancel</span>
+                        </i>
+                    </button>
+                    <button type="button" class="btn btn-success save-button" @onclick="OnSave">
+                        <i class="bi bi-cloud-download">
+                            <span class="button-text">Save</span>
+                        </i>
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="markdown-view">
+                <div>@_scriptHtml</div>
+                <button type="button" class="btn btn-outline-primary edit-button" @onclick="OnEdit">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
 
 @code {
-    private int? mapId;
+    [Parameter]
+    public int CampaignId { get; set; }
 
-    public void SetMap(int id)
+    [Parameter]
+    public EventCallback<int> OnMapChanged { get; set; }
+
+    private int? mapId;
+    private string _locationName = string.Empty;
+    private string? _locationNameEdit;
+    private byte[] _image = [];
+
+    private bool _isEditMode = false;
+    private string _script = string.Empty;
+    private string _scriptBackup = string.Empty;
+    private MarkupString _scriptHtml = new(string.Empty);
+
+    private async Task OnCancel()
+    {
+        _script = _scriptBackup;
+        _isEditMode = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnEdit()
+    {
+        _scriptBackup = _script;
+        _isEditMode = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnSave()
+    {
+        if (mapId is { } id)
+        {
+            var payload = new ScriptUpdateDto(_script);
+            var response = await ScriptApi.Update(id, payload);
+
+            if (response.IsSuccess)
+            {
+                _scriptHtml = new MarkupString(Markdown.ToHtml(_script));
+                _isEditMode = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async Task UpdateScript(int mapId)
+    {
+        var response = await ScriptApi.GetAsync(mapId);
+
+        response.Match(
+            script =>
+            {
+                _script = script.Text;
+                _scriptHtml = new MarkupString(Markdown.ToHtml(script.Text));
+            },
+            statusCode =>
+            {
+                // ToDo: Toast
+                Logger.LogError("Failed to retrieve the script for map {mapId} ({statusCode})", mapId, statusCode);
+            });
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateHeader(int mapId)
+    {
+        var response = await MapApi.GetAsync(mapId);
+
+        response.Match(
+            map =>
+            {
+                _locationName = map.Name;
+                _image = map.Image;
+            },
+            statusCode =>
+            {
+                // ToDo: Toast
+                Logger.LogError("Failed to retrieve the map information for map {mapId} ({statusCode})", mapId, statusCode);
+            }
+        );
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task SetMap(int id)
     {
         mapId = id;
+        await UpdateHeader(id);
+        await UpdateScript(id);
+        StateHasChanged();
+    }
+
+    private async Task OnOpen()
+    {
+        if (mapId is { } id)
+        {
+            var payload = new ActiveMapUpdateDto(id);
+            await MapApi.SetActiveMapAsync(CampaignId, payload);
+        }
+    }
+
+    private async Task OnDelete()
+    {
+        if (mapId is { } id)
+        {
+            var response = await MapApi.RemoveAsync(id);
+
+            if (response.IsSuccess)
+            {
+                await OnMapChanged.InvokeAsync(id);
+            }
+        }
+    }
+
+    private void OnEditName(MouseEventArgs args)
+    {
+        _locationNameEdit = _locationName;
+        StateHasChanged();
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("Escape", StringComparison.OrdinalIgnoreCase))
+        {
+            _locationNameEdit = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSubmitName(EventArgs args)
+    {
+        if (mapId is { } id && _locationNameEdit is not null)
+        {
+            var payload = new NameUpdateDto(_locationNameEdit);
+            var response = await MapApi.UpdateNameAsync(id, payload);
+
+            if (response.IsSuccess)
+            {
+                await OnMapChanged.InvokeAsync(id);
+            }
+
+            _locationName = _locationNameEdit;
+            _locationNameEdit = null;
+
+            StateHasChanged();
+        }
+    }
+
+    private void OnBlur(FocusEventArgs args)
+    {
+        _locationNameEdit = null;
         StateHasChanged();
     }
 }

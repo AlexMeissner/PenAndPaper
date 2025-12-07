@@ -123,7 +123,7 @@
                 <Grid CampaignId="@CampaignId" Map="_map" />
             </div>
             <div class="@VisibilityClass(typeof(Location))">
-                <Location @ref="_location" />
+                <Location CampaignId="@CampaignId" @ref="_location" OnMapChanged="OnMapChanged" />
             </div>
             <div class="@VisibilityClass(typeof(Monsters))">
                 <Monsters @ref="_monsters" />
@@ -455,13 +455,13 @@
         // TODO: implement behavior for Monsters icon
     }
 
-    private void OnLocationClick(int mapId)
+    private async Task OnLocationClick(int mapId)
     {
         _activeContent = typeof(Location);
 
         if (_location != null)
         {
-            _location.SetMap(mapId);
+            await _location.SetMap(mapId);
         }
 
         StateHasChanged();
@@ -494,6 +494,12 @@
     private void OnOpenGrid(MouseEventArgs args)
     {
         _activeContent = typeof(Grid);
+        StateHasChanged();
+    }
+
+    private async Task OnMapChanged(int mapId)
+    {
+        await LoadLocations();
         StateHasChanged();
     }
 }
