@@ -304,7 +304,7 @@
                 var response = await CharacterApi.GetAllAsync(CampaignId);
 
                 characters = response.Match(
-                    characters => characters.ToList(),
+                    characters => characters.OrderBy(c => c.CharacterName).ToList(),
                     statusCode => []  // ToDo: Toast
                 );
             }
@@ -313,7 +313,7 @@
                 var response = await MonsterApi.GetAllAsync();
 
                 monsters = response.Match(
-                    monsters => monsters.ToList(),
+                    monsters => monsters.OrderBy(m => m.Name).ToList(),
                     statusCode => [] // ToDo: Toast
                     );
             }
@@ -327,7 +327,7 @@
         var response = await MapApi.GetAllAsync(CampaignId);
 
         locations = response.Match(
-            maps => maps.Select(m => new LocationItem(m.Id, m.Name, [])).ToList(),
+            maps => maps.Select(m => new LocationItem(m.Id, m.Name, [])).OrderBy(l => l.Name).ToList(),
             _ => [] // ToDo: Log + Toast
         );
 
