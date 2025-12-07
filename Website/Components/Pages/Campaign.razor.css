@@ -115,42 +115,6 @@
         pointer-events: none;
     }
 
-.tab {
-    overflow: hidden;
-    border-bottom: 1px solid #1f222b;
-}
-
-    .tab button {
-        color: #ffffff;
-        background-color: inherit;
-        float: left;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 5px 20px;
-        transition: 0.3s;
-        border-radius: 5px;
-        margin: 5px;
-    }
-
-        .tab button.active {
-            background-color: #1f222b;
-        }
-
-        .tab button:hover {
-            background-color: #43485c;
-        }
-
-.tab-content {
-    height: calc(100% - 69px);
-    color: #ffffff;
-    margin: 10px;
-}
-
-.tab-content-element {
-    height: 100%;
-}
-
 .top-menu {
     height: 60px;
     display: flex;
