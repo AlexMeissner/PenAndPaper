@@ -136,7 +136,7 @@
             </div>
         </div>
     </div>
-    <div class="left-panel">
+    <div class="map-panel">
         <Map CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" @ref="_map"></Map>
 
         @if (_isGameMaster)
@@ -147,58 +147,6 @@
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
         <DiceRollVisualizer />
         <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" />
-    </div>
-    <div class="right-panel">
-        <div class="tab">
-            <button class="@GetTabStyle(TabIndex.Chat)" @onclick="() => ActiveTab(TabIndex.Chat)">Chat</button>
-
-            @if (_isGameMaster)
-            {
-                <button class="@GetTabStyle(TabIndex.Script)" @onclick="() => ActiveTab(TabIndex.Script)">
-                    Skript
-                </button>
-                <button class="@GetTabStyle(TabIndex.Characters)" @onclick="() => ActiveTab(TabIndex.Characters)">
-                    Charaktere
-                </button>
-                <button class="@GetTabStyle(TabIndex.Monsters)" @onclick="() => ActiveTab(TabIndex.Monsters)">
-                    Monster
-                </button>
-            }
-            else
-            {
-                <button class="@GetTabStyle(TabIndex.Character)" @onclick="() => ActiveTab(TabIndex.Character)">
-                    Charakter
-                </button>
-            }
-        </div>
-
-        <div class="tab-content">
-            <div class="@GetContentStyle(TabIndex.Chat)">
-                <Chat CampaignId="@CampaignId"></Chat>
-            </div>
-
-            @if (_isGameMaster)
-            {
-                <div class="@GetContentStyle(TabIndex.Script)">
-                    <Script CampaignId="@CampaignId"></Script>
-                </div>
-            }
-
-            <div class="@GetContentStyle(TabIndex.Character)">
-                <Character CampaignId="@CampaignId"></Character>
-            </div>
-
-            @if (_isGameMaster)
-            {
-                <div class="@GetContentStyle(TabIndex.Characters)">
-                    <Characters CampaignId="@CampaignId"></Characters>
-                </div>
-
-                <div class="@GetContentStyle(TabIndex.Monsters)">
-                    <Monsters></Monsters>
-                </div>
-            }
-        </div>
     </div>
 </div>
 
