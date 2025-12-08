@@ -47,7 +47,7 @@ namespace MonsterManager.ViewModels
         public string ConditionImmunities { get; set; } = string.Empty;
         public string Senses { get; set; } = string.Empty;
         public string Languages { get; set; } = string.Empty;
-        public double ChallangeRating { get; set; }
+        public double ChallengeRating { get; set; }
         public int Experience { get; set; }
         public string Actions { get; set; } = string.Empty;
         public byte[] Image { get; set; } = [];

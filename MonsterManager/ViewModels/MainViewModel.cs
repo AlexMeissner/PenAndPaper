@@ -31,7 +31,7 @@ namespace MonsterManager.ViewModels
             }
         }
 
-        private static readonly string _filePath = Assembly.GetEntryAssembly()!.Location + "../../../../../../Server/Resources/Monsters.json";
+        private static readonly string _filePath = Assembly.GetEntryAssembly()!.Location + "../../../../../../Backend/DungeonsAndDragons/Monsters.json";
 
         public MainViewModel()
         {
