@@ -1,44 +1,255 @@
 @using ApiClient
 @using DataTransfer.Monster
+@using System.Threading.Tasks
+@using Markdig
 @using Website.Services
 
+@inject IMonsterApi MonsterApi
 @inject IDragAndDrop DragAndDrop
 
-@if (_monster is null)
+@if (_monsters is null || _monster is null)
 {
     <div>Kein Monster is ausgewählt</div>
 }
 else
 {
     <div class="monsters">
-        <div class="monsters-item" draggable="true" @ondragstart="() => OnDragStart(_monster)">
-            <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(_monster.Image)" alt="Icon" />
-            <div class="monster-texts">
-                <div class="monster-name">@_monster.Name</div>
-                <div class="monster-details">
-                    <div class="monster-detail">@_monster.SizeCategory</div>
-                    <div class="monster-detail">@_monster.Type</div>
-                    <div class="monster-detail">@_monster.Alignment</div>
+        <div class="monsters-top">
+            <!-- Left: two stacked rows -->
+            <div class="monsters-left">
+                <!-- First row: challenge rating, name, details -->
+                <div class="monsters-top-row">
+                    <div class="challenger-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="rebeccapurple"><path d="M81 279L279 81C289.9 70.1 304.6 64 320 64C335.4 64 350.1 70.1 361 81L559 279C569.9 289.9 576 304.6 576 320C576 335.4 569.9 350.1 559 361L361 559C350.1 569.9 335.4 576 320 576C304.6 576 289.9 569.9 279 559L81 361C70.1 350.1 64 335.4 64 320C64 304.6 70.1 289.9 81 279z" /></svg>
+                        <div class="challenger-value">@_monster.ChallengeRating</div>
+                    </div>
+
+                    <div class="monster-title">
+                        <h3>@_monster.Name</h3>
+                    </div>
+
+                    <div class="monster-details">
+                        <span class="monster-detail">@_monster.Size</span>
+                        <span class="monster-detail">@_monster.Type</span>
+                        <span class="monster-detail">@_monster.Alignment</span>
+                    </div>
+                </div>
+
+                <!-- Second row: three stat boxes -->
+                <div class="stat-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Rüstungsklasse</div>
+                        <div class="stat-value">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="#ffffff"><path d="M320 64C324.6 64 329.2 65 333.4 66.9L521.8 146.8C543.8 156.1 560.2 177.8 560.1 204C559.6 303.2 518.8 484.7 346.5 567.2C329.8 575.2 310.4 575.2 293.7 567.2C121.3 484.7 80.6 303.2 80.1 204C80 177.8 96.4 156.1 118.4 146.8L306.7 66.9C310.9 65 315.4 64 320 64z" /></svg>
+                            <div>@_monster.ArmorClass</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-label">Bewegungsrate</div>
+                        <div class="stat-value">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="#ffffff"><path d="M352.5 32C383.4 32 408.5 57.1 408.5 88C408.5 118.9 383.4 144 352.5 144C321.6 144 296.5 118.9 296.5 88C296.5 57.1 321.6 32 352.5 32zM219.6 240C216.3 240 213.4 242 212.2 245L190.2 299.9C183.6 316.3 165 324.3 148.6 317.7C132.2 311.1 124.2 292.5 130.8 276.1L152.7 221.2C163.7 193.9 190.1 176 219.6 176L316.9 176C345.4 176 371.7 191.1 386 215.7L418.8 272L480.4 272C498.1 272 512.4 286.3 512.4 304C512.4 321.7 498.1 336 480.4 336L418.8 336C396 336 375 323.9 363.5 304.2L353.5 287.1L332.8 357.5L408.2 380.1C435.9 388.4 450 419.1 438.3 445.6L381.7 573C374.5 589.2 355.6 596.4 339.5 589.2C323.4 582 316.1 563.1 323.3 547L372.5 436.2L276.6 407.4C243.9 397.6 224.6 363.7 232.9 330.6L255.6 240L219.7 240zM211.6 421C224.9 435.9 242.3 447.3 262.8 453.4L267.5 454.8L260.6 474.1C254.8 490.4 244.6 504.9 231.3 515.9L148.9 583.8C135.3 595 115.1 593.1 103.9 579.5C92.7 565.9 94.6 545.7 108.2 534.5L190.6 466.6C195.1 462.9 198.4 458.1 200.4 452.7L211.6 421z" /></svg>
+                            <div>@_monster.Speed</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-box">
+                        <div class="stat-label">Trefferpunkte</div>
+                        <div class="stat-value">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="#ffffff"><path d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z" /></svg>
+                            <div>@_monster.HitPoints</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="diamond">
-                <div class="monster-challenge-rating">@_monster.ChallengeRating</div>
+
+            <!-- Right: monster item that spans both rows -->
+            <div class="monsters-item monsters-item-large" draggable="true" @ondragstart="() => OnDragStart(_monsters)">
+                <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(_monster.Image)" alt="Icon" />
             </div>
         </div>
+        <h3>Attribute</h3>
+        <div class="attributes">
+            <div class="attribute-box">
+                <div class="attribute-name">STÄRKE</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Strength))</div>
+                    <div class="ability-score">@_monster.Strength</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">GESCHICKLICHKEIT</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Dexterity))</div>
+                    <div class="ability-score">@_monster.Dexterity</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">KONSTITUTION</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Constitution))</div>
+                    <div class="ability-score">@_monster.Constitution</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">INTELLIGENZ</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Intelligence))</div>
+                    <div class="ability-score">@_monster.Intelligence</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">WEISHEIT</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Wisdom))</div>
+                    <div class="ability-score">@_monster.Wisdom</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">CHARISMA</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(AbilityModifier(_monster.Charisma))</div>
+                    <div class="ability-score">@_monster.Charisma</div>
+                </div>
+            </div>
+        </div>
+        <h3>Rettungswürfe</h3>
+        <div class="attributes">
+            <div class="attribute-box">
+                <div class="attribute-name">STÄRKE</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowStrength)</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">GESCHICKLICHKEIT</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowDexterity)</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">KONSTITUTION</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowConstitution)</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">INTELLIGENZ</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowIntelligence)</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">WEISHEIT</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowWisdom)</div>
+                </div>
+            </div>
+            <div class="attribute-box">
+                <div class="attribute-name">CHARISMA</div>
+                <div class="attribute-visuals">
+                    <div class="modifier-oval">@FormatSkill(_monster.SavingThrowCharisma)</div>
+                </div>
+            </div>
+        </div>
+        <h3>Immunitäten</h3>
+        <div class="immunities">
+            <div>
+                <div>Schadens-Resistanzen</div>
+                <div>@_monster.DamageResistances</div>
+            </div>
+            <div>
+                <div>Schadens-Immunitäten</div>
+                <div>@_monster.DamageImmunities</div>
+            </div>
+            <div>
+                <div>Zustands-Immunitäten</div>
+                <div>@_monster.ConditionImmunities</div>
+            </div>
+        </div>        
+        <h3>Fertigkeiten</h3>
+        <div class="skills">
+            <div class="skills-column">
+                <div class="skill-item"><span>Akrobatik</span><span class="skill-value">@FormatSkill(_monster.Acrobatics)</span></div>
+                <div class="skill-item"><span>Arkane Kunde</span><span class="skill-value">@FormatSkill(_monster.Arcana)</span></div>
+                <div class="skill-item"><span>Athletik</span><span class="skill-value">@FormatSkill(_monster.Athletics)</span></div>
+                <div class="skill-item"><span>Auftreten</span><span class="skill-value">@FormatSkill(_monster.Performance)</span></div>
+                <div class="skill-item"><span>Einschüchtern</span><span class="skill-value">@FormatSkill(_monster.Intimidation)</span></div>
+                <div class="skill-item"><span>Fingerfertigkeit</span><span class="skill-value">@FormatSkill(_monster.SlightOfHand)</span></div>
+            </div>
+            <div class="skills-column">
+                <div class="skill-item"><span>Geschichte</span><span class="skill-value">@FormatSkill(_monster.History)</span></div>
+                <div class="skill-item"><span>Heilkunde</span><span class="skill-value">@FormatSkill(_monster.Medicine)</span></div>
+                <div class="skill-item"><span>Heimlichkeit</span><span class="skill-value">@FormatSkill(_monster.Stealth)</span></div>
+                <div class="skill-item"><span>Mit Tieren umgehen</span><span class="skill-value">@FormatSkill(_monster.AnimalHandling)</span></div>
+                <div class="skill-item"><span>Motiv erkennen</span><span class="skill-value">@FormatSkill(_monster.Insight)</span></div>
+                <div class="skill-item"><span>Nachforschungen</span><span class="skill-value">@FormatSkill(_monster.Investigation)</span></div>
+            </div>
+            <div class="skills-column">
+                <div class="skill-item"><span>Naturkunde</span><span class="skill-value">@FormatSkill(_monster.Nature)</span></div>
+                <div class="skill-item"><span>Religion</span><span class="skill-value">@FormatSkill(_monster.Religion)</span></div>
+                <div class="skill-item"><span>Täuschen</span><span class="skill-value">@FormatSkill(_monster.Deception)</span></div>
+                <div class="skill-item"><span>Überlebenskunst</span><span class="skill-value">@FormatSkill(_monster.Survival)</span></div>
+                <div class="skill-item"><span>Überzeugen</span><span class="skill-value">@FormatSkill(_monster.Persuasion)</span></div>
+                <div class="skill-item"><span>Wahrnehmung</span><span class="skill-value">@FormatSkill(_monster.Perception)</span></div>
+            </div>
+        </div>
+        <div>
+            <h3>Aktionen</h3>
+            <div>@_actions</div>
+        </div>
+        <h3>Sinne</h3>
+        <div>@_senses</div>
+        <h3>Sprachen</h3>
+        <div>@_languages</div>
     </div>
 }
 
 @code {
-    private MonstersDto? _monster;
+    private MonstersDto? _monsters;
+    private MonsterDto? _monster;
+    private MarkupString _actions => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Actions));
+    private MarkupString _senses => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Senses));
+    private MarkupString _languages => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Languages));
 
-    public void SetMonster(MonstersDto monster)
+    public async Task SetMonster(int monsterId)
     {
-        _monster = monster;
+        var response = await MonsterApi.GetAsync(monsterId);
+
+        _monster = response.Match<MonsterDto?>(
+            monster => monster,
+            statusCode => null
+        );
+
+        // ToDo: This is a dirty fix to make drag and drop still work
+        if (_monster is not null)
+        {
+            _monsters = new MonstersDto(
+                monsterId,
+                _monster.Name,
+                _monster.Image,
+                _monster.Size,
+                _monster.Type,
+                _monster.Alignment,
+                _monster.ChallengeRating);
+        }
+
         StateHasChanged();
     }
 
     private void OnDragStart(MonstersDto monster)
     {
         DragAndDrop.Data = monster;
+    }
+
+    private static string FormatSkill(int value)
+    {
+        return value > 0 ? $"+{value}" : value.ToString();
+    }
+
+    private static int AbilityModifier(int score)
+    {
+        // D&D 5e modifier formula: floor((score - 10) / 2)
+        return (int)Math.Floor((score - 10) / 2.0);
     }
 }
