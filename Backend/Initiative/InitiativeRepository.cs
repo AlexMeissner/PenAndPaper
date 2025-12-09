@@ -38,19 +38,21 @@ public class InitiativeRepository(PenAndPaperDatabase dbContext) : IInitiativeRe
 
         await dbContext.SaveChangesAsync();
 
-        var combatant = token switch
+        CombatantDto combatant = token switch
         {
-            CharacterToken characterToken => new CombatantDto(
+            CharacterToken characterToken => new CharacterCombatantDto(
                 characterToken.Id,
                 DefaultInitiative,
                 Convert.ToBase64String(characterToken.Character.Image),
-                characterToken.Character.User.Color),
+                characterToken.Character.User.Color,
+                characterToken.CharacterId),
 
-            MonsterToken monsterToken => new CombatantDto(
+            MonsterToken monsterToken => new MonsterCombatantDto(
                 monsterToken.Id,
                 DefaultInitiative,
                 Convert.ToBase64String(monsterToken.Monster.Image),
-                "#d00000"),
+                "#d00000",
+                monsterToken.MonsterId),
 
             _ => throw new Exception("Unknown token type")
         };
@@ -72,23 +74,26 @@ public class InitiativeRepository(PenAndPaperDatabase dbContext) : IInitiativeRe
             .Include(t => (t as MonsterToken)!.Monster)
             .ToListAsync();
 
-        var combatants = tokens.Select(token =>
+        var combatants = tokens.Select<Token, CombatantDto>(token =>
         {
-            var image = token switch
+            return token switch
             {
-                CharacterToken characterToken => characterToken.Character.Image,
-                MonsterToken monsterToken => monsterToken.Monster.Image,
-                _ => []
-            };
+                CharacterToken characterToken => new CharacterCombatantDto(
+                                        characterToken.Id,
+                                        characterToken.Initiative ?? DefaultInitiative,
+                                        Convert.ToBase64String(characterToken.Character.Image),
+                                        characterToken.Character.User.Color,
+                                        characterToken.CharacterId),
 
-            var color = token switch
-            {
-                CharacterToken characterToken => characterToken.Character.User.Color,
-                MonsterToken monsterToken => "#d00000",
-                _ => ""
-            };
+                MonsterToken monsterToken => new MonsterCombatantDto(
+                                        monsterToken.Id,
+                                        monsterToken.Initiative ?? DefaultInitiative,
+                                        Convert.ToBase64String(monsterToken.Monster.Image),
+                                        "#d00000",
+                                        monsterToken.MonsterId),
 
-            return new CombatantDto(token.Id, token.Initiative ?? DefaultInitiative, Convert.ToBase64String(image), color);
+                _ => throw new Exception("Unknown token type"),
+            };
         });
 
         return new Response<IEnumerable<CombatantDto>>(HttpStatusCode.OK, combatants);

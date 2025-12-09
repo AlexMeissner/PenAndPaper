@@ -151,7 +151,7 @@
 
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
         <DiceRollVisualizer />
-        <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" />
+        <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" OnMiddleMouseUp="OnCombatantClicked" />
     </div>
 </div>
 
@@ -405,5 +405,24 @@
     {
         await LoadLocations();
         StateHasChanged();
+    }
+
+    private async Task OnCombatantClicked(Combatant combatant)
+    {
+        if (combatant is CharacterCombatant characterCombatant)
+        {
+            _activeContent = typeof(Character);
+        }
+        else if(combatant is MonsterCombatant monsterCombatant)
+        {
+            _activeContent = typeof(Monsters);
+            
+            if (_monsters != null)
+            {
+                await _monsters.SetMonster(monsterCombatant.MonsterId);
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }

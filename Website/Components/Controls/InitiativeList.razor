@@ -1,6 +1,7 @@
 ﻿@using ApiClient
 @using DataTransfer.Initiative
 @using DataTransfer.Map
+@using System.Threading.Tasks
 @using Website.Services
 
 @rendermode InteractiveServer
@@ -15,7 +16,7 @@
 <div class="initiative-list">
     @foreach (var combatant in _combatants)
     {
-        <div class="@GetCombatantClasses(combatant)" style="@GetCombatantStyle(combatant)" @onclick="() => OnCombatantClicked(combatant)">
+        <div class="@GetCombatantClasses(combatant)" style="@GetCombatantStyle(combatant)" @onclick="() => OnCombatantClicked(combatant)" @onmouseup="(args) => OnMouseUp(args, combatant)">
             <img class="image" src="data:image/png;base64,@combatant.Image" />
             @if (IsGameMaster)
             {
@@ -32,13 +33,7 @@
     [Parameter] public int CampaignId { get; set; }
     [Parameter] public bool IsGameMaster { get; set; }
 
-    internal class Combatant
-    {
-        public int TokenId { get; init; }
-        public uint Initiative { get; set; }
-        public required string Image { get; set; }
-        public required string Color { get; set; }
-    }
+    [Parameter] public EventCallback<Combatant> OnMiddleMouseUp { get; set; }
 
     private int? _mapId;
     private List<Combatant> _combatants = [];
@@ -90,13 +85,28 @@
             statusCode => []
         );
 
-        _combatants = combatants.Select(c => new Combatant
+        _combatants = combatants.Select<CombatantDto, Combatant>(c => c switch
         {
-            Initiative = c.Initiative,
-            TokenId = c.TokenId,
-            Image = c.Image,
-            Color = c.Color
-        }).OrderByDescending(c => c.Initiative).ToList();
+            CharacterCombatantDto characterDto => new CharacterCombatant
+            {
+                Initiative = characterDto.Initiative,
+                TokenId = characterDto.TokenId,
+                Image = characterDto.Image,
+                Color = characterDto.Color,
+                CharacterId = characterDto.CharacterId
+            },
+            MonsterCombatantDto monsterDto => new MonsterCombatant
+            {
+                Initiative = monsterDto.Initiative,
+                TokenId = monsterDto.TokenId,
+                Image = monsterDto.Image,
+                Color = monsterDto.Color,
+                MonsterId = monsterDto.MonsterId
+            },
+            _ => throw new Exception("Unknown type")
+        })
+        .OrderByDescending(c => c.Initiative)
+        .ToList();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -147,15 +157,33 @@
 
     private async Task OnCombatantAdded(CombatantAddedEventArgs e)
     {
-        var combatant = new Combatant
+        if (e.CharacterId is { } characterId)
         {
-            TokenId = e.TokenId,
-            Initiative = e.Initiative,
-            Image = e.Image,
-            Color = e.Color
-        };
+            var combatant = new CharacterCombatant
+            {
+                TokenId = e.TokenId,
+                Initiative = e.Initiative,
+                Image = e.Image,
+                Color = e.Color,
+                CharacterId = characterId
+            };
 
-        _combatants.Add(combatant);
+            _combatants.Add(combatant);
+        }
+        else if (e.MonsterId is { } monsterId)
+        {
+            var combatant = new MonsterCombatant
+            {
+                TokenId = e.TokenId,
+                Initiative = e.Initiative,
+                Image = e.Image,
+                Color = e.Color,
+                MonsterId = monsterId
+            };
+
+            _combatants.Add(combatant);
+        }
+
         _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
 
         await InvokeAsync(StateHasChanged);
@@ -200,6 +228,14 @@
         {
             var payload = new CombatantsUpdateDto(combatant.TokenId);
             await InitiativeApi.UpdateTurn(CampaignId, mapId, payload);
+        }
+    }
+
+    private async Task OnMouseUp(MouseEventArgs args, Combatant combatant)
+    {
+        if (args.Button == 1) // Middle-mouse button
+        {
+            await OnMiddleMouseUp.InvokeAsync(combatant);
         }
     }
 

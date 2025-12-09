@@ -21,7 +21,10 @@ public class InitiativeController(IInitiativeRepository initiativeRepository,
 
         if (combatant is not null)
         {
-            var eventArgs = new CombatantAddedEventArgs(combatant.TokenId, combatant.Initiative, combatant.Image, combatant.Color);
+            int? characterId = combatant is CharacterCombatantDto characterCombatant ? characterCombatant.CharacterId : null;
+            int? monsterId = combatant is MonsterCombatantDto monsterCombatant ? monsterCombatant.MonsterId : null;
+
+            var eventArgs = new CombatantAddedEventArgs(combatant.TokenId, combatant.Initiative, combatant.Image, combatant.Color, characterId, monsterId);
             await campaignUpdateHub.Clients.AllInCampaign(campaignId).CombatantAdded(eventArgs);
         }
 
