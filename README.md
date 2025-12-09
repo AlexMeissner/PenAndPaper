@@ -1,7 +1,7 @@
 # PenAndPaper
 
-[![Publish Client](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/publish-client.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/publish-client.yml)
-[![Update Server](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/update-server.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/update-server.yml)
+[![Deploy Backend](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-backend.yml)
+[![Deploy Frontend](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-frontend.yml)
 
 
 # Postgres

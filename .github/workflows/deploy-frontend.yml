@@ -1,0 +1,61 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build frontend Docker image
+      run: |
+        docker build -t pen-and-paper-frontend:latest -f Frontend.Dockerfile .
+
+    - name: Save image to tar
+      run: |
+        IMAGE_FILE=/tmp/frontend.tar
+        docker save pen-and-paper-frontend:latest -o $IMAGE_FILE
+        
+    - name: Prepare SSH
+      env:
+        HOST: ${{ secrets.DEPLOY_HOST }}
+        SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "${SSH_KEY}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        # add remote host key to known_hosts to avoid interactive prompt (default port 22)
+        ssh-keyscan "$HOST" >> ~/.ssh/known_hosts || true
+
+    - name: Upload image and deploy on server
+      env:
+        HOST: ${{ secrets.DEPLOY_HOST }}
+        USER: ${{ secrets.DEPLOY_USER }}
+      run: |
+        DEST=/tmp
+        IMAGE_FILE=/tmp/frontend.tar
+
+        scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
+
+        ssh ${USER}@${HOST} "set -e
+          TAR=$DEST/$(basename $IMAGE_FILE)
+          docker load -i \"$TAR\"
+          rm -f \"$TAR\" || true
+          docker stop PenAndPaperFrontend || true
+          docker rm -f PenAndPaperFrontend || true
+          docker images pen-and-paper-frontend -q | xargs -r docker rmi -f || true
+          docker run --name PenAndPaperFrontend --network caddy-net -d --restart unless-stopped \
+            -p 7070:7070 \
+            -e \"ApiHost=http://PenAndPaperBackend:8080/\" \
+            -e \"Google__ClientId=${{ secrets.GOOGLE_CLIENT_ID }}\" \
+            -e \"Google__ClientSecret=${{ secrets.GOOGLE_CLIENT_SECRET }}\" \
+            pen-and-paper-frontend:latest
+          docker image prune -af || true"
