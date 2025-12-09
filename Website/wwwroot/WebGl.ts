@@ -553,7 +553,7 @@ class RenderContext {
 
     private onMouseChanged(event: MouseEvent): void {
         this.tokens.forEach(token => {
-            const position: number[] = this.transformPosition(event.clientX, event.clientY);
+            const position: number[] = this.transformPosition(event.offsetX, event.offsetY);
             token.hover(position[0], position[1], this.grid);
 
             const isLeftMouseButtonDown: boolean = event.buttons == 1;
@@ -581,7 +581,7 @@ class RenderContext {
     }
 
     private onMouseWheel(event: WheelEvent): void {
-        this.camera.zoom(event.clientX, event.clientY, event.deltaY);
+        this.camera.zoom(event.offsetX, event.offsetY, event.deltaY);
     }
 
     private render(timeStamp: DOMHighResTimeStamp) {

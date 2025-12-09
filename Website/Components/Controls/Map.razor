@@ -269,9 +269,9 @@
 
     private async Task<MouseIndicator> CreateMouseIndicator()
     {
-        const float halfSize = 25.0f;
+        const float halfSize = 10.0f;
         float[] vertices =
-                [
+        [
             -halfSize, halfSize,
             halfSize, halfSize,
             -halfSize, -halfSize,
@@ -350,7 +350,7 @@
             {
                 if (await token.GetUniform("isMouseOver") == 1.0f)
                 {
-                    var position = new Vector2D(e.ClientX, e.ClientY);
+                    var position = new Vector2D(e.OffsetX, e.OffsetY);
                     var transformedPosition = await RenderContext.TransformPosition(position);
                     _selectedTokenPosition = GetGridSnapPosition(transformedPosition);
                     _selectedToken = token;
@@ -372,7 +372,7 @@
             return;
         }
 
-        var position = new Vector2D(e.ClientX, e.ClientY);
+        var position = new Vector2D(e.OffsetX, e.OffsetY);
         var transformedPosition = await RenderContext.TransformPosition(position);
 
         if (_selectedToken is null)
@@ -443,8 +443,8 @@
     {
         if (MapId is { } mapId)
         {
-            var clientPosition = new Vector2D(e.ClientX, e.ClientY);
-            var transformedPosition = await RenderContext.TransformPosition(clientPosition);
+            var offset = new Vector2D(e.OffsetX, e.OffsetY);
+            var transformedPosition = await RenderContext.TransformPosition(offset);
             var snapPosition = GetGridSnapPosition(transformedPosition);
 
             var payload = new TokenCreationDto((int)snapPosition.X, (int)snapPosition.Y);
