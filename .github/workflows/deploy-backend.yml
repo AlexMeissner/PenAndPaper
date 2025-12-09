@@ -61,11 +61,13 @@ jobs:
           # quick checks on remote file before loading
           file '$REMOTE_TAR' || true
           tar -tf '$REMOTE_TAR' | head -n 5 || true
-          docker load -i '$REMOTE_TAR'
-          rm -f \"$TAR\" || true
+          # stop and remove existing container, then remove old images
           docker stop PenAndPaperBackend || true
           docker rm -f PenAndPaperBackend || true
           docker images pen-and-paper-backend -q | xargs -r docker rmi -f || true
+          # load the new image and start container
+          docker load -i '$REMOTE_TAR'
+          rm -f '$REMOTE_TAR' || true
           docker run --name PenAndPaperBackend --network caddy-net -d --restart unless-stopped \
             -e \"ConnectionStrings__PostgresDb=${{ secrets.POSTGRES_CONNECTION }}\" \
             -e \"Google__AccessTokenEndpoint=https://oauth2.googleapis.com/tokeninfo\" \

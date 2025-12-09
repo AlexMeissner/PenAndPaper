@@ -58,11 +58,13 @@ jobs:
           echo Remote file: '$REMOTE_TAR'
           file '$REMOTE_TAR' || true
           tar -tf '$REMOTE_TAR' | head -n 5 || true
-          docker load -i '$REMOTE_TAR'
-          rm -f \"$TAR\" || true
+          # stop and remove existing container, then remove old images
           docker stop PenAndPaperFrontend || true
           docker rm -f PenAndPaperFrontend || true
           docker images pen-and-paper-frontend -q | xargs -r docker rmi -f || true
+          # load the new image and start container
+          docker load -i '$REMOTE_TAR'
+          rm -f '$REMOTE_TAR' || true
           docker run --name PenAndPaperFrontend --network caddy-net -d --restart unless-stopped \
             -p 7070:7070 \
             -e \"ApiHost=http://PenAndPaperBackend:8080/\" \
