@@ -8,6 +8,7 @@
 @inject IInitiativeApi InitiativeApi
 @inject ICampaignEvents CampaignEvents
 @inject IMapApi MapApi
+@inject IJSRuntime JSRuntime
 
 @implements IDisposable
 
@@ -119,15 +120,22 @@
 
     private async Task OnRemove(Combatant combatant)
     {
-        if (_mapId is { } mapId)
+        try
         {
-            var response = await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
-
-            if (!response.IsSuccess)
+            if (_mapId is { } mapId)
             {
-                // ToDo: Toast
-                Console.WriteLine("Could not remove token");
+                var response = await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
+
+                if (!response.IsSuccess)
+                {
+                    // ToDo: Toast
+                    await JSRuntime.InvokeVoidAsync("console.error", "Could not remove token");
+                }
             }
+        }
+        catch (Exception exception)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", exception.ToString());
         }
     }
 
