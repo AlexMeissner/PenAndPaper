@@ -50,13 +50,14 @@ jobs:
         DEST=/tmp
         IMAGE_FILE=/tmp/frontend.tar
 
+        BASENAME=$(basename "$IMAGE_FILE")
         scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
 
         ssh ${USER}@${HOST} "set -e
-          TAR=$DEST/$(basename $IMAGE_FILE)
-            echo Remote file: \"$TAR\"
-            file \"$TAR\" || true
-            tar -tf \"$TAR\" | head -n 5 || true
+          TAR=$DEST/$BASENAME
+          echo Remote file: \"$TAR\"
+          file \"$TAR\" || true
+          tar -tf \"$TAR\" | head -n 5 || true
           docker load -i \"$TAR\"
           rm -f \"$TAR\" || true
           docker stop PenAndPaperFrontend || true

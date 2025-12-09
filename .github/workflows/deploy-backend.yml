@@ -52,10 +52,11 @@ jobs:
         DEST=/tmp
         IMAGE_FILE=/tmp/backend.tar
 
+        BASENAME=$(basename "$IMAGE_FILE")
         scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
 
         ssh ${USER}@${HOST} "set -e
-          TAR=$DEST/$(basename $IMAGE_FILE)
+          TAR=$DEST/$BASENAME
           echo Remote file: \"$TAR\"
           # quick checks on remote file before loading
           file \"$TAR\" || true
