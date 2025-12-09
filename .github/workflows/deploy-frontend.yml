@@ -23,6 +23,13 @@ jobs:
       run: |
         IMAGE_FILE=/tmp/frontend.tar
         docker save pen-and-paper-frontend:latest -o $IMAGE_FILE
+      - name: Check image file locally
+        run: |
+          IMAGE_FILE=/tmp/frontend.tar
+          echo "Local image file:" $IMAGE_FILE
+          ls -l $IMAGE_FILE || true
+          sha256sum $IMAGE_FILE || true
+          tar -tf $IMAGE_FILE | head -n 5 || true
         
     - name: Prepare SSH
       env:
@@ -47,6 +54,9 @@ jobs:
 
         ssh ${USER}@${HOST} "set -e
           TAR=$DEST/$(basename $IMAGE_FILE)
+            echo Remote file: \"$TAR\"
+            file \"$TAR\" || true
+            tar -tf \"$TAR\" | head -n 5 || true
           docker load -i \"$TAR\"
           rm -f \"$TAR\" || true
           docker stop PenAndPaperFrontend || true
