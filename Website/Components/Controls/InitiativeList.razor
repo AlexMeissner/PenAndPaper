@@ -209,6 +209,7 @@
         if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
         {
             combatant.Initiative = e.Initiative;
+            _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
             await InvokeAsync(StateHasChanged);
         }
     }
