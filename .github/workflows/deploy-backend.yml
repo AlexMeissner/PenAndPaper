@@ -53,15 +53,15 @@ jobs:
         IMAGE_FILE=/tmp/backend.tar
 
         BASENAME=$(basename "$IMAGE_FILE")
+        REMOTE_TAR="$DEST/$BASENAME"
         scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
 
         ssh ${USER}@${HOST} "set -e
-          TAR=$DEST/$BASENAME
-          echo Remote file: \"$TAR\"
+          echo Remote file: '$REMOTE_TAR'
           # quick checks on remote file before loading
-          file \"$TAR\" || true
-          tar -tf \"$TAR\" | head -n 5 || true
-          docker load -i \"$TAR\"
+          file '$REMOTE_TAR' || true
+          tar -tf '$REMOTE_TAR' | head -n 5 || true
+          docker load -i '$REMOTE_TAR'
           rm -f \"$TAR\" || true
           docker stop PenAndPaperBackend || true
           docker rm -f PenAndPaperBackend || true
