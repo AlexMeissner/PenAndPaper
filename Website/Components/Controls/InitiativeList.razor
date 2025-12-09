@@ -21,7 +21,7 @@
             @if (IsGameMaster)
             {
                 <input type="number" min="1" max="30" class="initiative-input" value=@combatant.Initiative @onchange="(e => OnInitiativeChanged(e, combatant))" />
-                <button type="button" class="remove-button" @onclick="() => OnRemove(combatant)">
+                <button type="button" class="remove-button" @onclick="() => OnRemove(combatant)" @onclick:stopPropagation="true" @onmouseup:stopPropagation="true">
                     <span class="fa-solid fa-trash"></span>
                 </button>
             }
