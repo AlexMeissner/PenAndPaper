@@ -24,16 +24,6 @@ jobs:
         IMAGE_FILE=/tmp/backend.tar
         docker save pen-and-paper-backend:latest -o $IMAGE_FILE
 
-    - name: Check image file locally
-      run: |
-        IMAGE_FILE=/tmp/backend.tar
-        echo "Local image file:" $IMAGE_FILE
-        ls -l $IMAGE_FILE || true
-        # show sha256 to detect corruption
-        sha256sum $IMAGE_FILE || true
-        # list first entries of tar to check manifest presence
-        tar -tf $IMAGE_FILE | head -n 5 || true
-        
     - name: Prepare SSH
       env:
         HOST: ${{ secrets.DEPLOY_HOST }}
@@ -57,10 +47,6 @@ jobs:
         scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
 
         ssh ${USER}@${HOST} "set -e
-          echo Remote file: '$REMOTE_TAR'
-          # quick checks on remote file before loading
-          file '$REMOTE_TAR' || true
-          tar -tf '$REMOTE_TAR' | head -n 5 || true
           # stop and remove existing container, then remove old images
           docker stop PenAndPaperBackend || true
           docker rm -f PenAndPaperBackend || true

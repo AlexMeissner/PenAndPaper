@@ -24,14 +24,6 @@ jobs:
         IMAGE_FILE=/tmp/frontend.tar
         docker save pen-and-paper-frontend:latest -o $IMAGE_FILE
       
-    - name: Check image file locally
-      run: |
-        IMAGE_FILE=/tmp/frontend.tar
-        echo "Local image file:" $IMAGE_FILE
-        ls -l $IMAGE_FILE || true
-        sha256sum $IMAGE_FILE || true
-        tar -tf $IMAGE_FILE | head -n 5 || true
-        
     - name: Prepare SSH
       env:
         HOST: ${{ secrets.DEPLOY_HOST }}
@@ -56,9 +48,6 @@ jobs:
         scp $IMAGE_FILE ${USER}@${HOST}:$DEST/
 
         ssh ${USER}@${HOST} "set -e
-          echo Remote file: '$REMOTE_TAR'
-          file '$REMOTE_TAR' || true
-          tar -tf '$REMOTE_TAR' | head -n 5 || true
           # stop and remove existing container, then remove old images
           docker stop PenAndPaperFrontend || true
           docker rm -f PenAndPaperFrontend || true
