@@ -19,6 +19,22 @@ public class CharactersController(IIdentity identity, ICharacterRepository chara
             this.StatusCode);
     }
 
+    [HttpPatch("characters/{characterId:int}")]
+    public async Task<IActionResult> Patch(int characterId, CharacterPatchDto payload)
+    {
+        var response = await characterRepository.PatchAsync(characterId, payload);
+
+        return this.StatusCode(response.StatusCode);
+    }
+
+    [HttpPut("characters/{characterId:int}")]
+    public async Task<IActionResult> Update(int characterId, CharacterUpdateDto payload)
+    {
+        var response = await characterRepository.UpdateAsync(characterId, payload);
+
+        return this.StatusCode(response.StatusCode);
+    }
+
     [HttpGet("campaigns/{campaignId:int}/characters")]
     public async Task<IActionResult> GetAll(int campaignId)
     {

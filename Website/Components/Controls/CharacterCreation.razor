@@ -6,7 +6,7 @@
 
 <div>
     <input type="image" class="character-image" alt="Bild auswählen"
-           src="data:image/png;base64,@Convert.ToBase64String(_image)" @onclick="OnLoadImage"/>
+           src="data:image/png;base64,@Convert.ToBase64String(_image)" @onclick="OnLoadImage" />
     <InputFile id="characterCreationInputFile" OnChange="LoadCharacterImage" accept="image/png, image/jpeg, image/jpg"
                style="display: none"></InputFile>
 
@@ -34,7 +34,9 @@
         // ToDo: Add user feedback
         if (_image.Length == 0) return;
 
-        var character = new CharacterCreationDto(Name, _image);
+        var character = new CharacterCreationDto(Name, _image, 0, "", 0, "", "", "", 0, "", "", "", "",
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        new(0, 0), new(0, 0), new(0, 0), new(0, 0), new(0, 0), new(0, 0), new(0, 0), new(0, 0), new(0, 0));
 
         await CharacterApi.CreateAsync(CampaignId, character);
         await OnCreated.InvokeAsync(character);

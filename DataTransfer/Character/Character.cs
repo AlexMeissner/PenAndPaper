@@ -4,11 +4,9 @@ namespace DataTransfer.Character;
 
 public record CharacterDto(
     string Name,
-    SizeCategory Size,
-    string Type,
-    string Alignment,
     int ArmorClass,
     int HitPoints,
+    int CurrentHitPoints,
     string HitDice,
     string Speed,
     int Strength,

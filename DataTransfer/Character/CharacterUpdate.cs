@@ -1,10 +1,10 @@
-namespace DataTransfer.Character;
+﻿namespace DataTransfer.Character;
 
-public record DnDClass(string Name, int Level);
+public record CharacterHealthUpdate(int CurrentHitPoints);
+public record CharacterSpellSlotUpdate(int Level, int Used);
+public record CharacterPatchDto(CharacterHealthUpdate? Health, CharacterSpellSlotUpdate? SpellSlot);
 
-public record SpellSlot(int Total, int Used);
-
-public record CharacterCreationDto(
+public record CharacterUpdateDto(
     string Name,
     byte[] Image,
     int HitPoints,
@@ -56,5 +56,4 @@ public record CharacterCreationDto(
     SpellSlot SixthLevelSpellSlot,
     SpellSlot SeventhLevelSpellSlot,
     SpellSlot EighthLevelSpellSlot,
-    SpellSlot NinthLevelSpellSlot
-);
+    SpellSlot NinthLevelSpellSlot);
