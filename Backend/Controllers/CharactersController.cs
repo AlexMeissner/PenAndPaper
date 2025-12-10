@@ -7,10 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers;
 
 [ApiController]
-[Route("campaigns/{campaignId:int}")]
 public class CharactersController(IIdentity identity, ICharacterRepository characterRepository) : ControllerBase
 {
-    [HttpGet("characters")]
+    [HttpGet("characters/{characterId:int}")]
+    public async Task<IActionResult> Get(int characterId)
+    {
+        var response = await characterRepository.GetAsync(characterId);
+
+        return response.Match<IActionResult>(
+            Ok,
+            this.StatusCode);
+    }
+
+    [HttpGet("campaigns/{campaignId:int}/characters")]
     public async Task<IActionResult> GetAll(int campaignId)
     {
         var response = await characterRepository.GetAllAsync(campaignId);
@@ -20,7 +29,7 @@ public class CharactersController(IIdentity identity, ICharacterRepository chara
             this.StatusCode);
     }
 
-    [HttpGet("user-characters")]
+    [HttpGet("campaigns/{campaignId:int}/user-characters")]
     public async Task<IActionResult> GetAllForUser(int campaignId)
     {
         var identityClaims = await identity.FromClaimsPrincipal(User);
@@ -34,7 +43,7 @@ public class CharactersController(IIdentity identity, ICharacterRepository chara
             this.StatusCode);
     }
 
-    [HttpPost("characters")]
+    [HttpPost("campaigns/{campaignId:int}/characters")]
     public async Task<IActionResult> Post(int campaignId, CharacterCreationDto payload)
     {
         var identityClaims = await identity.FromClaimsPrincipal(User);
@@ -44,7 +53,7 @@ public class CharactersController(IIdentity identity, ICharacterRepository chara
         var response = await characterRepository.CreateAsync(campaignId, identityClaims.User.Id, payload);
 
         return response.Match<IActionResult>(
-            id => CreatedAtAction(nameof(GetAll), new { campaignId }, id),
+            id => CreatedAtAction(nameof(Get), new { id }, id),
             this.StatusCode);
     }
 }

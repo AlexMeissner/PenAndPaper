@@ -32,6 +32,8 @@ else
 @code {
     [Parameter] public int CampaignId { get; set; }
 
+    private CharacterDto? _character;
+
     private IEnumerable<CharactersDto> _characters = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -39,8 +41,23 @@ else
         if (firstRender)
         {
             await Update();
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
+    }
+
+    public async Task SetCharacter(int characterId)
+    {
+        var response = await CharacterApi.GetAsync(characterId);
+
+        response.Match(
+            character => _character = character,
+            statusCode =>
+            {
+                Logger.LogError("Failed to load character with id {CharacterId}. Status code: {StatusCode}", characterId, statusCode);
+            }
+        );
+
+        StateHasChanged();
     }
 
     private async Task OnCreated(CharacterCreationDto character)
