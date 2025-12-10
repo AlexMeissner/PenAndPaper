@@ -5,32 +5,184 @@
 @inject ICharacterApi CharacterApi
 @inject ILogger<Character> Logger
 
-@if (_characters.Any())
-{
-    @foreach (var character in _characters)
+<div class="character-root">
+    @if (_isEditMode)
     {
-        <div>
-            <img class="character-image" alt="" src="data:image/png;base64,@Convert.ToBase64String(character.Image)" />
-
-            <div class="input-group mb-3">
-                <span class="input-group-text">Name</span>
-                <span class="input-group-text">@character.CharacterName</span>
-            </div>
-
-            <div class="input-group mb-3">
-                <span class="input-group-text">Spieler</span>
-                <span class="input-group-text">@character.PlayerName</span>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text">Charaktername</span>
+                <input class="form-control" type="text" @bind="_characterName" />
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Trefferpunkte</span>
+                    <input class="form-control" type="number" min="1" @bind="_hitPoints" />
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Rüstungsklasse</span>
+                    <input class="form-control" type="number" min="1" @bind="_armorClass" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Bewegungsrate</label>
+                    <textarea class="form-control" rows="2" @bind="_speed"></textarea>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Volk</span>
+                    <select class="form-select" @bind="_race">
+                        <option>Elf</option>
+                        <option>Halblinge</option>
+                        <option>Menschen</option>
+                        <option>Zwerge</option>
+                        <option>Drachenblütige</option>
+                        <option>Gnome</option>
+                        <option>Halborks</option>
+                        <option>Tieflinge</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="stats-grid mb-3">
+                    <div class="attribute-box">
+                        <div class="attr-upper">STÄRKE</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_strength" />
+                        </div>
+                    </div>
+                    <div class="attribute-box">
+                        <div class="attr-upper">GESCHICKLICHKEIT</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_dexterity" />
+                        </div>
+                    </div>
+                    <div class="attribute-box">
+                        <div class="attr-upper">KONSTITUTION</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_constitution" />
+                        </div>
+                    </div>
+                    <div class="attribute-box">
+                        <div class="attr-upper">INTELLIGENZ</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_intelligence" />
+                        </div>
+                    </div>
+                    <div class="attribute-box">
+                        <div class="attr-upper">WEISEHEIT</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_wisdom" />
+                        </div>
+                    </div>
+                    <div class="attribute-box">
+                        <div class="attr-upper">CHARISMA</div>
+                        <div class="attr-lower">
+                            <input class="form-control" type="number" min="1" max="20" step="1" @bind="_charisma" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="classes-area mb-3">
+            <label class="form-label">Klasse(n)</label>
+            @foreach (var classItem in _classes)
+            {
+                <div class="d-flex align-items-center mb-2 class-item">
+                    <select class="form-select me-2" style="max-width: 300px;" @bind="classItem.ClassName">
+                        <option>Barbar</option>
+                        <option>Barde</option>
+                        <option>Druide</option>
+                        <option>Hexenmeister</option>
+                        <option>Kämpfer</option>
+                        <option>Kleriker</option>
+                        <option>Magier</option>
+                        <option>Mönch</option>
+                        <option>Paladin</option>
+                        <option>Schurke</option>
+                        <option>Waldläufer</option>
+                        <option>Zauberer</option>
+                    </select>
+                    <input class="form-control me-2" type="number" min="1" max="20" style="width:100px;" @bind="classItem.Level" />
+                </div>
+            }
+            <button class="btn btn-primary" type="button" @onclick="AddClass">Hinzufügen</button>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hintergrund</label>
+            <select class="form-select" @bind="_background">
+                <option>Adeliger</option>
+                <option>Ritter</option>
+                <option>Einsidler</option>
+                <option>Zufthandwerker</option>
+                <option>Gildenkaufmann</option>
+                <option>Krimineller</option>
+                <option>Spion</option>
+                <option>Scharlatan</option>
+                <option>Seemann</option>
+                <option>Pirat</option>
+                <option>Soldat</option>
+                <option>Sonderling</option>
+                <option>Strassenkind</option>
+                <option>Tempeldiener</option>
+                <option>Unterhaltungskünstler</option>
+                <option>Gladiator</option>
+                <option>Volksheld</option>
+                <option>Weiser</option>
+            </select>
+        </div>
+
+        <div class="mb-3 traits-area">
+            <label class="form-label">Merkmale</label>
+            <textarea class="form-control" style="min-height:300px;" @bind="_traits"></textarea>
+        </div>
+
+        <div class="mb-3 traits-area">
+            <label class="form-label">Angriff</label>
+            <textarea class="form-control" style="min-height:300px;" @bind="_attacks"></textarea>
+        </div>
+
+        <div class="mb-3 traits-area">
+            <label class="form-label">Zauber</label>
+            <textarea class="form-control" style="min-height:300px;" @bind="_spells"></textarea>
+        </div>
+
+        <div class="mb-3 traits-area">
+            <label class="form-label">Inventar</label>
+            <textarea class="form-control" style="min-height:300px;" @bind="_inventory"></textarea>
+        </div>
     }
-}
-else
-{
-    <CharacterCreation CampaignId="CampaignId" OnCreated="OnCreated"></CharacterCreation>
-}
+    else
+    {
+        @foreach (var character in _characters)
+        {
+            <div>
+                <img class="character-image" alt="" src="data:image/png;base64,@Convert.ToBase64String(character.Image)" />
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Name</span>
+                    <span class="input-group-text">@character.CharacterName</span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Spieler</span>
+                    <span class="input-group-text">@character.PlayerName</span>
+                </div>
+            </div>
+        }
+    }
+</div>
 
 @code {
     [Parameter] public int CampaignId { get; set; }
+
+    private bool _isEditMode = true;
 
     private CharacterDto? _character;
 
@@ -78,6 +230,39 @@ else
                 return [];
             }
         );
+    }
+
+    // Backing fields for edit mode
+    private string _characterName = string.Empty;
+    private int _hitPoints = 1;
+    private int _armorClass = 1;
+    private string _speed = string.Empty;
+    private string _race = "Menschen";
+
+    private int _strength = 1;
+    private int _dexterity = 1;
+    private int _constitution = 1;
+    private int _intelligence = 1;
+    private int _wisdom = 1;
+    private int _charisma = 1;
+
+    private List<CharacterClassItem> _classes = new() { new CharacterClassItem() };
+
+    private string _background = "Adeliger";
+    private string _traits = string.Empty;
+    private string _attacks = string.Empty;
+    private string _spells = string.Empty;
+    private string _inventory = string.Empty;    
+
+    private void AddClass()
+    {
+        _classes.Add(new CharacterClassItem());
+    }
+
+    private class CharacterClassItem
+    {
+        public string ClassName { get; set; } = "Barbar";
+        public int Level { get; set; } = 1;
     }
 
 }

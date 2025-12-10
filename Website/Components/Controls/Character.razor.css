@@ -9,3 +9,111 @@
     text-align: center;
     color: white;
 }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.attribute-box {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.attr-upper {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.attr-lower input {
+    width: 100%;
+}
+
+.classes-area .class-item select {
+    min-width: 150px;
+}
+
+.traits-area textarea {
+    min-height: 300px;
+}
+
+.character-root {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.character-root .row,
+.character-root .col-md-6,
+.character-root .classes-area,
+.character-root .stats-grid {
+    box-sizing: border-box;
+}
+
+.stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .character-root .d-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .character-root .class-item select,
+    .character-root .class-item input {
+        width: 100% !important;
+        margin-bottom: 6px;
+    }
+}
+
+/* Prevent images and form controls from overflowing container */
+.character-root img,
+.character-root .character-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.character-root .form-control,
+.character-root .form-select,
+.character-root .input-group-text {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Allow grid items to shrink to avoid overflow */
+.attribute-box {
+    min-width: 0;
+}
+
+.attr-upper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.class-item {
+    flex-wrap: wrap;
+}
+
+.class-item select,
+.class-item input {
+    min-width: 0; /* allow flex items to shrink */
+}
