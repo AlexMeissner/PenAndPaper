@@ -40,6 +40,7 @@ public class CharacterRepository(PenAndPaperDatabase dbContext) : ICharacterRepo
             Race = payload.Race,
             Class = payload.Class,
             Level = payload.Level,
+            Background = payload.Background,
             Traits = payload.Traits,
             Attacks = payload.Attacks,
             Spells = payload.Spells,
@@ -118,6 +119,14 @@ public class CharacterRepository(PenAndPaperDatabase dbContext) : ICharacterRepo
             character.CurrentHitPoints,
             character.HitDice,
             character.Speed,
+            character.Race,
+            character.Class,
+            character.Level,
+            character.Background,
+            character.Traits,
+            character.Attacks,
+            character.Spells,
+            character.Inventory,
             character.Strength,
             character.Dexterity,
             character.Constitution,
@@ -148,6 +157,24 @@ public class CharacterRepository(PenAndPaperDatabase dbContext) : ICharacterRepo
             character.SlightOfHand,
             character.Stealth,
             character.Survival,
+            character.FirstLevelSpellSlotTotal,
+            character.FirstLevelSpellSlotUsed,
+            character.SecondLevelSpellSlotTotal,
+            character.SecondLevelSpellSlotUsed,
+            character.ThirdLevelSpellSlotTotal,
+            character.ThirdLevelSpellSlotUsed,
+            character.FourthLevelSpellSlotTotal,
+            character.FourthLevelSpellSlotUsed,
+            character.FifthLevelSpellSlotTotal,
+            character.FifthLevelSpellSlotUsed,
+            character.SixthLevelSpellSlotTotal,
+            character.SixthLevelSpellSlotUsed,
+            character.SeventhLevelSpellSlotTotal,
+            character.SeventhLevelSpellSlotUsed,
+            character.EighthLevelSpellSlotTotal,
+            character.EighthLevelSpellSlotUsed,
+            character.NinthLevelSpellSlotTotal,
+            character.NinthLevelSpellSlotUsed,
             character.Image);
 
         return new Response<CharacterDto>(HttpStatusCode.OK, payload);
@@ -259,6 +286,7 @@ public class CharacterRepository(PenAndPaperDatabase dbContext) : ICharacterRepo
         character.Race = payload.Race;
         character.Class = payload.Class;
         character.Level = payload.Level;
+        character.Background = payload.Background;
         character.Traits = payload.Traits;
         character.Attacks = payload.Attacks;
         character.Spells = payload.Spells;

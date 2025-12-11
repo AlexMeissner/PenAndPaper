@@ -43,7 +43,7 @@
                     <ul>
                         @foreach (var character in FilteredCharacters)
                         {
-                            <li class="tree-content-item"><span class="tree-content-label">@character.CharacterName</span></li>
+                            <li class="tree-content-item"><span class="tree-content-label" @onclick="() => OnCharacterClick(character)">@character.CharacterName</span></li>
                         }
                     </ul>
                 </details>
@@ -100,7 +100,7 @@
     <div class="overlay-right @(isVisible ? "shifted" : "")">
         <div class="top-menu">
             <!-- ToDo: Hide for Gamemasters? -->
-            <button class="btn btn-overlay" @onclick="OnOpenCharacter">
+            <button class="btn btn-overlay" @onclick="OnOpenLastCharacter">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 640 640"><path d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" /></svg>
             </button>
             <button class="btn btn-overlay" @onclick="OnOpenChat">
@@ -133,11 +133,8 @@
             <div class="@VisibilityClass(typeof(Monsters))">
                 <Monsters @ref="_monsters" />
             </div>
-            <div class="@VisibilityClass(typeof(CharacterCreation))">
-                <CharacterCreation CampaignId="@CampaignId" OnCreated="OnCharacterCreated" />
-            </div>
             <div class="@VisibilityClass(typeof(Character))">
-                <Character CampaignId="@CampaignId" />
+                <Character CampaignId="@CampaignId" @ref="_character" />
             </div>
         </div>
     </div>
@@ -166,6 +163,7 @@
     private DiceRoller? _diceRoller;
     private Location? _location;
     private Monsters? _monsters;
+    private Character? _character;
 
     private Type _activeContent = typeof(Chat);
     private string VisibilityClass(Type contentType) => _activeContent == contentType ? "content-visible" : "content-hidden";
@@ -280,9 +278,19 @@
 
             await LoadLocations();
 
+            if(_isGameMaster)
             {
                 var response = await CharacterApi.GetAllAsync(CampaignId);
 
+                characters = response.Match(
+                    characters => characters.OrderBy(c => c.CharacterName).ToList(),
+                    statusCode => []  // ToDo: Toast
+                );
+            }
+            else
+            {
+                var response = await CharacterApi.GetAllFromUserAsync(CampaignId);
+                
                 characters = response.Match(
                     characters => characters.OrderBy(c => c.CharacterName).ToList(),
                     statusCode => []  // ToDo: Toast
@@ -316,13 +324,13 @@
 
     private void OnCharactersIconClick()
     {
-        _activeContent = typeof(CharacterCreation);
-        StateHasChanged();
-    }
+         _activeContent = typeof(Character);
+       
+        if (_character != null)
+        {
+            _character.CreateNewCharacter();
+        }
 
-    private void OnCharacterCreated(CharacterCreationDto args)
-    {
-        _activeContent = typeof(Character);
         StateHasChanged();
     }
 
@@ -383,10 +391,32 @@
         StateHasChanged();
     }
 
-    private void OnOpenCharacter(MouseEventArgs args)
+    private async Task OnCharacterClick(CharactersDto character)
     {
         _activeContent = typeof(Character);
+
+        if (_character != null)
+        {
+            await _character.SetCharacter(character.Id);
+        }
+
         StateHasChanged();
+    }
+
+    private async Task OnOpenLastCharacter(MouseEventArgs args)
+    {
+        if (characters.Any())
+        {
+            _activeContent = typeof(Character);
+        
+            if (_character != null)
+            {
+                var lastCharacter = characters.Aggregate((c1,c2) => c1.Id > c2.Id ? c1 : c2);
+                await _character.SetCharacter(lastCharacter.Id);
+            }
+        
+            StateHasChanged();
+        }
     }
 
     private void OnOpenChat(MouseEventArgs args)
@@ -412,6 +442,11 @@
         if (combatant is CharacterCombatant characterCombatant)
         {
             _activeContent = typeof(Character);
+
+            if (_character != null)
+            {
+                await _character.SetCharacter(characterCombatant.CharacterId);
+            }
         }
         else if(combatant is MonsterCombatant monsterCombatant)
         {

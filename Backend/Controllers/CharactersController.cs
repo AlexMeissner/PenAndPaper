@@ -1,3 +1,4 @@
+using Backend.Database.Models;
 using Backend.Extensions;
 using Backend.Services;
 using Backend.Services.Repositories;
@@ -69,7 +70,7 @@ public class CharactersController(IIdentity identity, ICharacterRepository chara
         var response = await characterRepository.CreateAsync(campaignId, identityClaims.User.Id, payload);
 
         return response.Match<IActionResult>(
-            id => CreatedAtAction(nameof(Get), new { id }, id),
+            id => CreatedAtAction(nameof(Get), new { characterId = id }, id),
             this.StatusCode);
     }
 }

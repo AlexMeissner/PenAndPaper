@@ -1,6 +1,4 @@
-﻿using DataTransfer.Monster;
-
-namespace DataTransfer.Character;
+﻿namespace DataTransfer.Character;
 
 public record CharacterDto(
     string Name,
@@ -9,6 +7,14 @@ public record CharacterDto(
     int CurrentHitPoints,
     string HitDice,
     string Speed,
+    string Race,
+    string Class,
+    int Level,
+    string Background,
+    string Traits,
+    string Attacks,
+    string Spells,
+    string Inventory,
     int Strength,
     int Dexterity,
     int Constitution,
@@ -39,4 +45,23 @@ public record CharacterDto(
     int SlightOfHand,
     int Stealth,
     int Survival,
-    byte[] Image);
+    int FirstLevelSpellSlotTotal,
+    int FirstLevelSpellSlotUsed,
+    int SecondLevelSpellSlotTotal,
+    int SecondLevelSpellSlotUsed,
+    int ThirdLevelSpellSlotTotal,
+    int ThirdLevelSpellSlotUsed,
+    int FourthLevelSpellSlotTotal,
+    int FourthLevelSpellSlotUsed,
+    int FifthLevelSpellSlotTotal,
+    int FifthLevelSpellSlotUsed,
+    int SixthLevelSpellSlotTotal,
+    int SixthLevelSpellSlotUsed,
+    int SeventhLevelSpellSlotTotal,
+    int SeventhLevelSpellSlotUsed,
+    int EighthLevelSpellSlotTotal,
+    int EighthLevelSpellSlotUsed,
+    int NinthLevelSpellSlotTotal,
+    int NinthLevelSpellSlotUsed,
+    byte[] Image
+);

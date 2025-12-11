@@ -51,12 +51,12 @@
     overflow-y: scroll;
 }
 
-.character-root .row,
-.character-root .col-md-6,
-.character-root .classes-area,
-.character-root .stats-grid {
-    box-sizing: border-box;
-}
+    .character-root .row,
+    .character-root .col-md-6,
+    .character-root .classes-area,
+    .character-root .stats-grid {
+        box-sizing: border-box;
+    }
 
 .stats-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -72,10 +72,12 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
+
     .character-root .d-flex {
         flex-direction: column;
         align-items: stretch;
     }
+
     .character-root .class-item select,
     .character-root .class-item input {
         width: 100% !important;
@@ -113,7 +115,227 @@
     flex-wrap: wrap;
 }
 
-.class-item select,
-.class-item input {
-    min-width: 0; /* allow flex items to shrink */
+    .class-item select,
+    .class-item input {
+        min-width: 0; /* allow flex items to shrink */
+    }
+
+.characters {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.characters-item {
+    cursor: pointer;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+    .characters-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+.character-texts {
+    margin-left: 10px;
+}
+
+.character-name {
+    height: 50%;
+    font-weight: bold;
+    align-items: center;
+}
+
+.character-details {
+    font-style: italic;
+}
+
+.character-detail {
+    margin-right: 20px;
+}
+
+.character-icon {
+    width: 100px;
+    height: 100px;
+}
+
+.skills {
+    display: flex;
+    gap: 20px;
+}
+
+.skills-column {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-value {
+    text-align: right;
+    min-width: 30px;
+}
+
+.attributes {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+
+.attribute-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 0px 20px; /* extra bottom padding to make room for overlapping score */
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background-color: rgba(255,255,255,0.02);
+    position: relative; /* for absolute positioning of ability-score */
+    box-sizing: border-box;
+    flex: 1 1 0; /* each attribute-box shares available width equally */
+    min-width: 0; /* allow flex items to shrink below content width */
+}
+
+.attribute-name {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.attribute-visuals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.modifier-oval {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.2);
+    font-weight: bold;
+    background-color: rgba(0,0,0,0.06);
+}
+
+.ability-score {
+    position: absolute;
+    left: 50%;
+    bottom: 0; /* place at bottom border */
+    transform: translate(-50%, 50%); /* center vertically over the bottom border */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    padding: 2px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background-color: #373B4A;
+}
+
+.icon {
+    height: 50px;
+}
+
+/* Layout for the top two rows and the large character item */
+.characters-top {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    align-items: stretch; /* allow right item to span the combined height */
+}
+
+.characters-left {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.characters-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.character-title h3 {
+    margin: 0;
+}
+
+.stat-row {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-box {
+    flex: 1 1 0;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.stat-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .stat-value svg {
+        width: 28px;
+        height: 28px;
+    }
+
+.characters-item-large {
+    width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch; /* span the height of the left two rows */
+}
+
+    .characters-item-large .character-icon {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+
+.edit-button {
+    border: none;
+    background-color: transparent;
+    transition: transform 100ms ease-in-out;
+}
+
+    .edit-button:hover {
+        transform: scale(1.1);
+    }
+
+    .edit-button > svg {
+        width: 20px;
+    }
+
+.edit-image {
+    justify-content: center;
+    display: flex;
+    height: 250px;
+    align-items: center;
+}
+
+.form-label {
+    font-weight: bold;
 }

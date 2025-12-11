@@ -441,7 +441,7 @@
 
     private async Task OnDrop(DragEventArgs e)
     {
-        if (MapId is { } mapId)
+        if (MapId is { } mapId && IsGameMaster)
         {
             var offset = new Vector2D(e.OffsetX, e.OffsetY);
             var transformedPosition = await RenderContext.TransformPosition(offset);

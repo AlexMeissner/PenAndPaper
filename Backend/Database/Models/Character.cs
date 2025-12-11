@@ -17,6 +17,7 @@ public class Character
     public required string Race { get; set; }
     public required string Class { get; set; }
     public int Level { get; set; }
+    public required string Background { get; set; }
     public required string Traits { get; set; }
     public required string Attacks { get; set; }
     public required string Spells { get; set; }

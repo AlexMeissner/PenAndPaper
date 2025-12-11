@@ -14,6 +14,7 @@ public record CharacterUpdateDto(
     string Race,
     string Class,
     int Level,
+    string Background,
     string Traits,
     string Attacks,
     string Spells,
