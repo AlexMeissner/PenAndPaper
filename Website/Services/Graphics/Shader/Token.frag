@@ -4,6 +4,7 @@ precision highp float;
 uniform sampler2D sampler;
 uniform float isMouseOver;
 uniform float isLeftMouseButtonDown;
+uniform float isMouseOverInitiative;
 
 in vec2 texCoord;
 
@@ -18,7 +19,7 @@ void main()
     float selectionFactor = isMouseOver * isLeftMouseButtonDown;
     vec2 uv = mix(texCoord, center + (texCoord - center) * selectionScalingFactor, selectionFactor);
 
-    float highlightColor = highlightIntensity * isMouseOver;
+    float highlightColor = highlightIntensity * max(isMouseOver, isMouseOverInitiative);
     vec4 highlight = vec4(highlightColor, highlightColor, highlightColor, 0.0);
 
     vec4 textureColor = texture(sampler, uv);

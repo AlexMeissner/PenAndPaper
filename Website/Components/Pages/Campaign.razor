@@ -148,7 +148,7 @@
 
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
         <DiceRollVisualizer />
-        <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" OnMiddleMouseUp="OnCombatantClicked" />
+        <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" Map="@_map" OnMiddleMouseUp="OnCombatantClicked" />
     </div>
 </div>
 
@@ -218,6 +218,7 @@
             ? monsters
             : monsters.Where(m => m.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
+    // ToDo: This break syntax highlighting, auto formatting and more. Replace it with a component.
     private RenderFragment RenderLocation(LocationItem item)
     {
         return @<li class="tree-content-item">

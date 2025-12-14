@@ -3,6 +3,7 @@
 @using DataTransfer.Map
 @using System.Threading.Tasks
 @using Website.Services
+@using Website.Services.Graphics
 
 @rendermode InteractiveServer
 
@@ -16,7 +17,7 @@
 <div class="initiative-list">
     @foreach (var combatant in _combatants)
     {
-        <div class="@GetCombatantClasses(combatant)" style="@GetCombatantStyle(combatant)" @onclick="() => OnCombatantClicked(combatant)" @onmouseup="(args) => OnMouseUp(args, combatant)">
+        <div class="@GetCombatantClasses(combatant)" style="@GetCombatantStyle(combatant)" @onclick="() => OnCombatantClicked(combatant)" @onmouseup="(args) => OnMouseUp(args, combatant)" @onmouseenter="async () => await OnMouseEnter(combatant)" @onmouseleave="async () => await OnMouseLeave()">
             <img class="image" src="data:image/png;base64,@combatant.Image" />
             @if (IsGameMaster)
             {
@@ -32,6 +33,7 @@
 @code {
     [Parameter] public int CampaignId { get; set; }
     [Parameter] public bool IsGameMaster { get; set; }
+    [Parameter] public Map? Map { get; set; }
 
     [Parameter] public EventCallback<Combatant> OnMiddleMouseUp { get; set; }
 
@@ -237,6 +239,29 @@
         if (args.Button == 1) // Middle-mouse button
         {
             await OnMiddleMouseUp.InvokeAsync(combatant);
+        }
+    }
+
+    private async Task OnMouseEnter(Combatant combatant)
+    {
+        if (Map is { } map)
+        {
+            foreach (var token in map.Tokens)
+            {
+                var alpha = token.Id == combatant.TokenId ? 1.0f : 0.0f;
+                await token.SetUniform("isMouseOverInitiative", alpha);
+            }
+        }
+    }
+
+    private async Task OnMouseLeave()
+    {
+        if (Map is { } map)
+        {
+            foreach (var token in map.Tokens)
+            {
+                await token.SetUniform("isMouseOverInitiative", 0.0f);
+            }
         }
     }
 

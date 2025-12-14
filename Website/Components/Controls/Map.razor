@@ -78,7 +78,7 @@
     private ShaderProgram? _tokenShaderProgram;
     private ShaderProgram? _mouseShaderProgram;
 
-    private readonly List<Token> _tokens = [];
+    public List<Token> Tokens { get; private set; } = [];
     private readonly object _tokenPositionLock = new();
 
     const long LeftMouseButton = 1;
@@ -303,7 +303,7 @@
             });
 
         await RenderContext.ClearTokens();
-        _tokens.Clear();
+        Tokens.Clear();
 
         foreach (var tokenItem in tokens)
         {
@@ -337,7 +337,7 @@
         await token.SetUniform("y", y);
 
         await RenderContext.AddToken(token);
-        _tokens.Add(token);
+        Tokens.Add(token);
     }
 
     private async Task OnMouseButtonChanged(MouseEventArgs e)
@@ -346,7 +346,7 @@
 
         if (e.Buttons == LeftMouseButton)
         {
-            foreach (var token in _tokens)
+            foreach (var token in Tokens)
             {
                 if (await token.GetUniform("isMouseOver") == 1.0f)
                 {
@@ -406,7 +406,7 @@
 
     private async Task OnTokenMoved(TokenMovedEventArgs e)
     {
-        if (_tokens.Find(x => x.Id == e.TokenId) is { } token)
+        if (Tokens.Find(x => x.Id == e.TokenId) is { } token)
         {
             await token.SetUniform("x", e.X);
             await token.SetUniform("y", e.Y);
@@ -478,7 +478,7 @@
         }
         else if (e.Key.Equals("i", StringComparison.OrdinalIgnoreCase) && MapId is { } mapId)
         {
-            foreach (var token in _tokens)
+            foreach (var token in Tokens)
             {
                 var combatant = new AddCombatantDto(token.Id);
                 await InitiativeApi.AddCombatant(CampaignId, mapId, combatant);
