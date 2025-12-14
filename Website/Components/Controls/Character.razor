@@ -43,7 +43,7 @@
                         <option>Halblinge</option>
                         <option>Menschen</option>
                         <option>Zwerge</option>
-                        <option>Drachenblütige</option>
+                        <option>Drachenbl&uuml;tige</option>
                         <option>Gnome</option>
                         <option>Halborks</option>
                         <option>Tieflinge</option>
@@ -53,7 +53,7 @@
 
             <div class="col-md-6">
                 <div class="characters-item edit-image">
-                    <img src="data:image/png;base64,@Convert.ToBase64String(_character.Image)" @onclick="OnLoadImage" alt="Auf diesen Text klicken, um ein Bild zu wählen" />
+                    <img src="data:image/png;base64,@Convert.ToBase64String(_character.Image)" @onclick="OnLoadImage" alt="Auf diesen Text klicken, um ein Bild zu w&auml;hlen" />
                     <InputFile id="characterCreationInputFile" OnChange="async (e) => { await LoadCharacterImage(e, _character); StateHasChanged(); }" accept="image/png, image/jpeg, image/jpg"
                                style="display: none"></InputFile>
                 </div>
@@ -152,13 +152,13 @@
                     <option>Barde</option>
                     <option>Druide</option>
                     <option>Hexenmeister</option>
-                    <option>Kämpfer</option>
+                    <option>K&auml;mpfer</option>
                     <option>Kleriker</option>
                     <option>Magier</option>
-                    <option>Mönch</option>
+                    <option>M&ouml;nch</option>
                     <option>Paladin</option>
                     <option>Schurke</option>
-                    <option>Waldläufer</option>
+                    <option>Waldl&auml;ufer</option>
                     <option>Zauberer</option>
                 </select>
                 <input class="form-control me-2" type="number" min="1" max="20" style="width:100px;" @bind="_character.Level" />
@@ -182,7 +182,7 @@
                 <option>Sonderling</option>
                 <option>Strassenkind</option>
                 <option>Tempeldiener</option>
-                <option>Unterhaltungskünstler</option>
+                <option>Unterhaltungsk&uuml;nstler</option>
                 <option>Gladiator</option>
                 <option>Volksheld</option>
                 <option>Weiser</option>
@@ -190,7 +190,7 @@
         </div>
 
         <div class="mb-3 traits-area">
-            <label class="form-label">Fähigkeiten</label>
+            <label class="form-label">F&auml;higkeiten</label>
             <div class="skills">
                 <div class="skills-column">
                     <div class="skill-item"><span>Akrobatik</span><input type="number" min="1" max="20" @bind="_character.Acrobatics" /></div>
@@ -232,39 +232,39 @@
         <div class="mb-3 traits-area">
             <label class="form-label">Zauber</label>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 1 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 1 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.FirstLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 2 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 2 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.SecondLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 3 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 3 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.ThirdLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 4 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 4 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.FourthLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 5 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 5 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.FifthLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 6 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 6 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.SixthLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 7 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 7 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.SeventhLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 8 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 8 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.EighthLevelSpellSlotTotal">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text">Verfügbare Rang 9 Zauberslots</span>
+                <span class="input-group-text">Verf&uuml;gbare Rang 9 Zauberslots</span>
                 <input type="number" class="form-control" @bind="_character.NinthLevelSpellSlotTotal">
             </div>
             <textarea class="form-control" style="min-height:300px;" @bind="_character.Spells"></textarea>
@@ -303,7 +303,7 @@
 
                     <div class="stat-row">
                         <div class="stat-box">
-                            <div class="stat-label">Rüstungsklasse</div>
+                            <div class="stat-label">R&uuml;stungsklasse</div>
                             <div class="stat-value">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="#ffffff"><path d="M320 64C324.6 64 329.2 65 333.4 66.9L521.8 146.8C543.8 156.1 560.2 177.8 560.1 204C559.6 303.2 518.8 484.7 346.5 567.2C329.8 575.2 310.4 575.2 293.7 567.2C121.3 484.7 80.6 303.2 80.1 204C80 177.8 96.4 156.1 118.4 146.8L306.7 66.9C310.9 65 315.4 64 320 64z" /></svg>
                                 <div>@_character.ArmorClass</div>
@@ -336,7 +336,7 @@
             <h3>Attribute</h3>
             <div class="attributes">
                 <div class="attribute-box">
-                    <div class="attribute-name">STÄRKE</div>
+                    <div class="attribute-name">ST&Auml;RKE</div>
                     <div class="attribute-visuals">
                         <div class="modifier-oval">@FormatSkill(AbilityModifier(_character.Strength))</div>
                         <div class="ability-score">@_character.Strength</div>
@@ -378,10 +378,10 @@
                     </div>
                 </div>
             </div>
-            <h3>Rettungswürfe</h3>
+            <h3>Rettungsw&uuml;rfe</h3>
             <div class="attributes">
                 <div class="attribute-box">
-                    <div class="attribute-name">STÄRKE</div>
+                    <div class="attribute-name">ST&Auml;RKE</div>
                     <div class="attribute-visuals">
                         <div class="modifier-oval">@FormatSkill(_character.SavingThrowStrength)</div>
                     </div>
@@ -424,7 +424,7 @@
                     <div class="skill-item"><span>Arkane Kunde</span><span class="skill-value">@FormatSkill(_character.Arcana)</span></div>
                     <div class="skill-item"><span>Athletik</span><span class="skill-value">@FormatSkill(_character.Athletics)</span></div>
                     <div class="skill-item"><span>Auftreten</span><span class="skill-value">@FormatSkill(_character.Performance)</span></div>
-                    <div class="skill-item"><span>Einschüchtern</span><span class="skill-value">@FormatSkill(_character.Intimidation)</span></div>
+                    <div class="skill-item"><span>Einsch&uuml;chtern</span><span class="skill-value">@FormatSkill(_character.Intimidation)</span></div>
                     <div class="skill-item"><span>Fingerfertigkeit</span><span class="skill-value">@FormatSkill(_character.SlightOfHand)</span></div>
                 </div>
                 <div class="skills-column">
@@ -438,9 +438,9 @@
                 <div class="skills-column">
                     <div class="skill-item"><span>Naturkunde</span><span class="skill-value">@FormatSkill(_character.Nature)</span></div>
                     <div class="skill-item"><span>Religion</span><span class="skill-value">@FormatSkill(_character.Religion)</span></div>
-                    <div class="skill-item"><span>Täuschen</span><span class="skill-value">@FormatSkill(_character.Deception)</span></div>
-                    <div class="skill-item"><span>Überlebenskunst</span><span class="skill-value">@FormatSkill(_character.Survival)</span></div>
-                    <div class="skill-item"><span>Überzeugen</span><span class="skill-value">@FormatSkill(_character.Persuasion)</span></div>
+                    <div class="skill-item"><span>T&auml;uschen</span><span class="skill-value">@FormatSkill(_character.Deception)</span></div>
+                    <div class="skill-item"><span>&Uuml;berlebenskunst</span><span class="skill-value">@FormatSkill(_character.Survival)</span></div>
+                    <div class="skill-item"><span>&Uuml;berzeugen</span><span class="skill-value">@FormatSkill(_character.Persuasion)</span></div>
                     <div class="skill-item"><span>Wahrnehmung</span><span class="skill-value">@FormatSkill(_character.Perception)</span></div>
                 </div>
             </div>
