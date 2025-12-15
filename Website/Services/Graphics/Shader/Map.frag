@@ -26,7 +26,10 @@ void main()
         return;
     }
 
-    if (grid.size / zoomFactor  < 10.0)
+    float gridScale = grid.size / zoomFactor;
+    float gridFade = smoothstep(5.0, 10.0, gridScale);
+
+    if (gridFade <= 0.0)
     {
         return;
     }
@@ -36,7 +39,7 @@ void main()
     vec2 minimalOffset = min(offset, grid.size - offset);
 
     float minDistance = min(minimalOffset.x, minimalOffset.y);
-    float gridAlpha = smoothstep(zoomFactor, 0.0, minDistance);
+    float gridAlpha = smoothstep(zoomFactor, 0.0, minDistance) * gridFade;
 
     fragColor = mix(fragColor, grid.color, gridAlpha);
 }
