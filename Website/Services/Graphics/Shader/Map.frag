@@ -5,6 +5,7 @@ uniform sampler2D sampler;
 
 in vec2 screenPosition;
 in vec2 texCoord;
+in float zoomFactor;
 
 out vec4 fragColor;
 
@@ -25,12 +26,17 @@ void main()
         return;
     }
 
+    if (grid.size / zoomFactor  < 10.0)
+    {
+        return;
+    }
+
     vec2 gridPosition = vec2(screenPosition.x, -screenPosition.y);
     vec2 offset = mod(gridPosition, grid.size);
     vec2 minimalOffset = min(offset, grid.size - offset);
 
     float minDistance = min(minimalOffset.x, minimalOffset.y);
-    float gridAlpha = smoothstep(lineThickness, 0.0, minDistance);
+    float gridAlpha = smoothstep(zoomFactor, 0.0, minDistance);
 
     fragColor = mix(fragColor, grid.color, gridAlpha);
 }

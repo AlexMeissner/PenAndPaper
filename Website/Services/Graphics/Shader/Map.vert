@@ -6,10 +6,12 @@ in vec2 uv;
 
 out vec2 screenPosition;
 out vec2 texCoord;
+out float zoomFactor;
 
 layout(std140) uniform CameraBuffer {
     mat4 projection;
     mat4 viewProjection;
+    float zoomFactor;
 } camera;
 
 void main()
@@ -17,4 +19,5 @@ void main()
     gl_Position = camera.viewProjection * vec4(position, -0.5, 1.0);
     screenPosition = position;
     texCoord = uv;
+    zoomFactor = camera.zoomFactor;
 }

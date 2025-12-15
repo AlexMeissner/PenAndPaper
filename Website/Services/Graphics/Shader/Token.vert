@@ -12,6 +12,7 @@ uniform float y;
 layout(std140) uniform CameraBuffer {
     mat4 projection;
     mat4 viewProjection;
+    float zoomFactor;
 } camera;
 
 layout(std140) uniform GridBuffer {

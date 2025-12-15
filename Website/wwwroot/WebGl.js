@@ -17,7 +17,8 @@ class Camera extends UniformBuffer {
         this.BINDING_POINT_NUMBER = 0;
         this.gl.bindBufferBase(this.gl.UNIFORM_BUFFER, this.BINDING_POINT_NUMBER, this.buffer);
         const matrix = this.createViewProjectionMatrix(1.0, 1.0);
-        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength * 2, this.gl.DYNAMIC_DRAW);
+        // Size = 2x matrix size + std140 size of zoom data (16)
+        this.gl.bufferData(this.gl.UNIFORM_BUFFER, matrix.byteLength * 2 + 16, this.gl.DYNAMIC_DRAW);
     }
     GetBindingPoint() {
         return this.BINDING_POINT_NUMBER;
@@ -96,8 +97,10 @@ class Camera extends UniformBuffer {
         this.gl.bindBuffer(this.gl.UNIFORM_BUFFER, this.buffer);
         const projectionMatrix = this.createProjectionMatrix(width, height);
         const viewProjectionMatrix = this.createViewProjectionMatrix(width, height);
+        const zoomData = new Float32Array([this.zoomFactor, 0.0, 0.0, 0.0]);
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, 0, projectionMatrix);
         this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, projectionMatrix.byteLength, viewProjectionMatrix);
+        this.gl.bufferSubData(this.gl.UNIFORM_BUFFER, projectionMatrix.byteLength + viewProjectionMatrix.byteLength, zoomData);
     }
     zoom(cursorX, cursorY, direction) {
         const offsetX = cursorX * this.zoomFactor - this.x;
