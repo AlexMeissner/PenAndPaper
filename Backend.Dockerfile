@@ -1,10 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 
 # Set working directory inside the container
 WORKDIR /src
 
 # Copy source files
-COPY ./AspireServiceDefaults ./AspireServiceDefaults
 COPY ./DataTransfer ./DataTransfer
 COPY ./Backend ./Backend
 
@@ -17,8 +16,8 @@ RUN dotnet build Backend/Backend.csproj -c Release -o /app/build
 # Publish the project
 RUN dotnet publish Backend/Backend.csproj -c Release -o /app/publish
 
-# Use an official .NET 9 runtime image for running
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
+# Use an official .NET 10 runtime image for running
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 
 # Set working directory inside the container
 WORKDIR /app
