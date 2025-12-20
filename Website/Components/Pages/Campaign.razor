@@ -19,7 +19,7 @@
 @inject IJSRuntime JsRuntime
 @inject AudioPlayer AudioPlayer
 
-<PageTitle>@_title</PageTitle>
+<PageTitle>Kampagne</PageTitle>
 
 <div class="master-panel">
     <div class="overlay-trigger @(isVisible ? "disabled" : "")"
@@ -152,10 +152,15 @@
     </div>
 </div>
 
+<script>
+    window.setTitle = function (title) {
+        document.title = title;
+    };
+</script>
+
 @code {
     [Parameter] public int CampaignId { get; set; }
 
-    private string _title = "Unbekannte Kampagne";
     private bool _isGameMaster;
 
     private Map? _map;
@@ -262,10 +267,12 @@
             {
                 var response = await CampaignApi.GetAsync(CampaignId);
 
+                var title = "Kampagne";
+
                 response.Match(
                     campaign =>
                     {
-                        _title = campaign.Name;
+                        title = campaign.Name;
                         _isGameMaster = campaign.IsGameMaster;
                     },
                     statusCode =>
@@ -273,6 +280,10 @@
                         // ToDo: Log + Toast
                     }
                 );
+
+                // '<PageTitle>@_title</PageTitle>' does not work, because '_title' needs to be set in 'OnInitializedAsync' for that to work.
+                // We cannot do that because 'CampaignApi.GetAsync' uses Java interop which is not available duríng 'OnInitializedAsync'.
+                await JsRuntime.InvokeVoidAsync("setTitle", title);
 
                 await CampaignEvents.Connect(CampaignId);
             }
