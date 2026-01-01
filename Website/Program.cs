@@ -36,6 +36,7 @@ try
     var app = builder.Build();
 
     app.MigrateDatabase();
+    app.LoadDungeonsAndDragonsRules();
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())

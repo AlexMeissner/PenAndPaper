@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Database\Rules\Monsters.json" />
     <Content Remove="wwwroot\WebGl.ts" />
   </ItemGroup>
 
@@ -30,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Database\Rules\Monsters.json" />
     <EmbeddedResource Include="Services\Graphics\Shader\Map.frag" />
     <EmbeddedResource Include="Services\Graphics\Shader\Map.vert" />
     <EmbeddedResource Include="Services\Graphics\Shader\Mouse.frag" />

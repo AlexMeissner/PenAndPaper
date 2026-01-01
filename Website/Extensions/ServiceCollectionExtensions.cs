@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using System.Security.Claims;
+using Website.Database.Rules;
 using Website.Events;
 using Website.Services;
 using Website.Services.Repositories;
@@ -24,9 +25,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
+        services.AddScoped<IMonsterParser, MonsterParser>();
         services.AddScoped<IUserClaims, UserClaims>();
         services.AddScoped<CircuitHandler, UserClaimsCircuitHandler>();
-        services.AddScoped<ICampaignRepository, CampaignRepository>();
 
         services.AddSingleton<ICampaignEventHub, CampaignEventHub>();
     }

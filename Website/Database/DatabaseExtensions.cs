@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Website.Database.Rules;
 
 namespace Website.Database;
 
@@ -17,5 +18,13 @@ public static class DatabaseExtensions
         var factory = services.GetRequiredService<IDbContextFactory<PenAndPaperDatabase>>();
         using var dbContext = factory.CreateDbContext();
         dbContext.Database.Migrate();
+    }
+
+    public static void LoadDungeonsAndDragonsRules(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var monsterParser = services.GetRequiredService<IMonsterParser>();
+        monsterParser.UpdateFromResources();
     }
 }
