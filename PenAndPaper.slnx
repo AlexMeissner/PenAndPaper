@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="Backend/Backend.csproj" />
   <Project Path="DataTransfer/DataTransfer.csproj" />
   <Project Path="MonsterManager/MonsterManager.csproj" />
   <Project Path="Website/Website.csproj" />

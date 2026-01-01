@@ -1,6 +1,5 @@
 # PenAndPaper
 
-[![Deploy Backend](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-backend.yml)
 [![Deploy Frontend](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/AlexMeissner/PenAndPaper/actions/workflows/deploy-frontend.yml)
 
 
