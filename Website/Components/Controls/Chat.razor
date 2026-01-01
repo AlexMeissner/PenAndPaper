@@ -1,11 +1,12 @@
-@using ApiClient
-@using DataTransfer.Chat
+@using Website.Events
 @using Website.Services
+@using Website.Services.Repositories
 
 @rendermode InteractiveServer
 
-@inject IChatApi ChatApi
-@inject ICampaignEvents CampaignEvents
+@inject IUserClaims Claims
+@inject ICampaignEventHub CampaignEventHub
+@inject IChatRepository ChatRepository
 
 @implements IDisposable
 
@@ -15,7 +16,7 @@
         {
             <div class="chat-message">
                 <div class="chat-message-container">
-                    @if (chatMessage.Direction == MessageDirection.Received)
+                    @if (chatMessage.SenderId != Claims.UserId)
                     {
                         <img class="chat-message-image" alt="" title="@chatMessage.Sender" src="@chatMessage.Image" />
                     }
@@ -56,55 +57,48 @@
 
     private string _inputText = string.Empty;
 
-    private readonly List<ChatMessageEventArgs> _chatMessages = [];
+    private readonly List<ChatMessageEvent> _chatMessages = [];
 
-    private IEnumerable<ChatUserDto> _chatUsers = [];
-    private ChatUserDto? _target;
+    private IEnumerable<ChatUser> _chatUsers = [];
+    private ChatUser? _target;
+
+    private ICampaignSubscription? subscription;
 
     public void Dispose()
     {
-        CampaignEvents.ChatMessageReceived -= OnReceivedChatMessage;
+        subscription?.Dispose();
     }
 
     protected override void OnInitialized()
     {
-        CampaignEvents.ChatMessageReceived += OnReceivedChatMessage;
+        subscription = CampaignEventHub.ForCampaign(CampaignId).Subscribe<ChatMessageEvent>(OnReceivedChatMessage);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var response = await ChatApi.GetUsers(CampaignId);
-
-            _chatUsers = response.Match<IEnumerable<ChatUserDto>>(
-                chatUsers => chatUsers,
-                statusCode =>
-                {
-                    // ToDo: Toast
-                    return [];
-                });
-
+            _chatUsers = await ChatRepository.GetUsers(CampaignId);
             _target = _chatUsers.FirstOrDefault();
 
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
     }
 
-    private async Task OnReceivedChatMessage(ChatMessageEventArgs e)
+    private async ValueTask OnReceivedChatMessage(ChatMessageEvent e)
     {
         _chatMessages.Add(e);
         await InvokeAsync(StateHasChanged);
     }
 
-    private static string GetTextStyleClasses(ChatMessageEventArgs e)
+    private string GetTextStyleClasses(ChatMessageEvent e)
     {
         var style = "chat-message-text";
 
         style += e.Type switch
         {
-            ChatMessageType.DiceRoll => e.Direction == MessageDirection.Sent ? " chat-message-dice-roll-sent" : " chat-message-dice-roll-received",
-            ChatMessageType.Message => e.Direction == MessageDirection.Sent ? " chat-message-sent" : " chat-message-received",
+            ChatMessageType.DiceRoll => e.SenderId == Claims.UserId ? " chat-message-dice-roll-sent" : " chat-message-dice-roll-received",
+            ChatMessageType.Message => e.SenderId == Claims.UserId ? " chat-message-sent" : " chat-message-received",
             _ => throw new Exception("Unhandled chat message type")
         };
 
@@ -116,10 +110,10 @@
         return style;
     }
 
-    private static string GetTimestampStyleClasses(ChatMessageEventArgs e)
+    private string GetTimestampStyleClasses(ChatMessageEvent e)
     {
         var style = "chat-message-timestamp";
-        style += e.Direction == MessageDirection.Sent ? " chat-message-timestamp-sent" : " chat-message-timestamp-received";
+        style += e.SenderId == Claims.UserId ? " chat-message-timestamp-sent" : " chat-message-timestamp-received";
         return style;
     }
 
@@ -145,14 +139,13 @@
 
         if (e.Code is "Enter" or "NumpadEnter")
         {
-            var payload = new ChatMessageDto(_target.Id, _inputText);
-            await ChatApi.SendMessageAsync(CampaignId, payload);
+            await ChatRepository.SendMessage(CampaignId, _target.UserId, _inputText);
             _inputText = "";
             await InvokeAsync(StateHasChanged);
         }
     }
 
-    private async Task OnSelectTarget(ChatUserDto character)
+    private async Task OnSelectTarget(ChatUser character)
     {
         _target = character;
         await InvokeAsync(StateHasChanged);

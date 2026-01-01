@@ -1,5 +1,4 @@
-﻿@using ApiClient
-@using DataTransfer.Character
+﻿@using DataTransfer.Character
 @using DataTransfer.Grid
 @using DataTransfer.Initiative
 @using DataTransfer.Map
@@ -7,17 +6,20 @@
 @using DataTransfer.Mouse
 @using DataTransfer.Token
 @using DataTransfer.Types
+@using System.Drawing
 @using Website.Converter
+@using Website.Database.Models
+@using Website.Events
 @using Website.Services
 @using Website.Services.Graphics
+@using Website.Services.Repositories
 
-@inject IMapApi MapApi
-@inject IMouseApi MouseApi
-@inject ITokenApi TokenApi
-@inject IUserApi UserApi
-@inject IInitiativeApi InitiativeApi
+@inject IMapRepository MapRepository
+@inject IUserClaims Claims
 @inject RenderContext RenderContext
-@inject ICampaignEvents CampaignEvents
+@inject ICampaignEventHub CampaignEventHub
+@inject IInitiativeRepository InitiativeRepository
+@inject ITokenRepository TokenRepository
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Map> Logger
 @inject IJSRuntime JSRuntime
@@ -69,46 +71,53 @@
     public int GridSize { get; set; }
     public bool GridIsActive { get; set; }
 
-    private int? _userId;
     private Vector2D _selectedTokenPosition = new(0, 0);
-    private Token? _selectedToken;
+    private Website.Services.Graphics.Token? _selectedToken;
     private TexturedQuad? _texturedQuad;
     private MouseIndicator? _mouseIndicator;
     private ShaderProgram? _mapShaderProgram;
     private ShaderProgram? _tokenShaderProgram;
     private ShaderProgram? _mouseShaderProgram;
 
-    public List<Token> Tokens { get; private set; } = [];
+    public List<Website.Services.Graphics.Token> Tokens { get; private set; } = [];
     private readonly object _tokenPositionLock = new();
 
     const long LeftMouseButton = 1;
     private static readonly string CanvasId = "renderCanvas";
 
+    private CampaignDispatcher? campaignDispatcher;
+    private ICampaignSubscription? gridChanged;
+    private ICampaignSubscription? mapChanged;
+    private ICampaignSubscription? mouseMoved;
+    private ICampaignSubscription? tokenAdded;
+    private ICampaignSubscription? tokenMoved;
+
     public void Dispose()
     {
-        CampaignEvents.GridChanged -= OnGridChanged;
-        CampaignEvents.MapChanged -= OnMapChanged;
-        CampaignEvents.MouseMoved -= OnMouseMoved;
-        CampaignEvents.TokenAdded -= OnTokenAdded;
-        CampaignEvents.TokenMoved -= OnTokenMoved;
+        gridChanged?.Dispose();
+        mapChanged?.Dispose();
+        mouseMoved?.Dispose();
+        tokenAdded?.Dispose();
+        tokenMoved?.Dispose();
     }
 
     protected override void OnInitialized()
     {
-        CampaignEvents.GridChanged += OnGridChanged;
-        CampaignEvents.MapChanged += OnMapChanged;
-        CampaignEvents.MouseMoved += OnMouseMoved;
-        CampaignEvents.TokenAdded += OnTokenAdded;
-        CampaignEvents.TokenMoved += OnTokenMoved;
+        campaignDispatcher = CampaignEventHub.ForCampaign(CampaignId);
+        gridChanged = campaignDispatcher.Subscribe<GridChangedEvent>(OnGridChanged);
+        mapChanged = campaignDispatcher.Subscribe<MapChangedEvent>(OnMapChanged);
+        mouseMoved = campaignDispatcher.Subscribe<MouseMovedEvent>(OnMouseMoved);
+        tokenAdded = campaignDispatcher.Subscribe<TokenAddedEvent>(OnTokenAdded);
+        tokenMoved = campaignDispatcher.Subscribe<TokenMovedEvent>(OnTokenMoved);
     }
 
-    private async Task OnGridChanged(GridChangedEventArgs e)
+    private async ValueTask OnGridChanged(GridChangedEvent e)
     {
         float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
         await RenderContext.UpdateGrid(e.IsActive, e.Size, color);
     }
 
-    private async Task OnMapChanged(MapChangedEventArgs e)
+    private async ValueTask OnMapChanged(MapChangedEvent e)
     {
         await LoadActiveMap(e.MapId);
         await LoadTokens(e.MapId);
@@ -127,34 +136,13 @@
             _mouseIndicator = await CreateMouseIndicator();
             await RenderContext.AddMouseIndicator(_mouseIndicator);
 
-            var response = await MapApi.GetActiveMapAsync(CampaignId);
-
-            MapId = response.Match(
-                activeMap => activeMap.MapId,
-                statusCode =>
-                {
-                    // ToDo: Toast
-                    Logger.LogError("Failed to get the active map ({statusCode})", statusCode);
-                    return null;
-                });
+            MapId = await MapRepository.GetActiveMapIdAsync(CampaignId);
 
             if (MapId is { } mapId)
             {
                 await LoadActiveMap(mapId);
                 await LoadTokens(mapId);
             }
-
-            var userResponse = await UserApi.GetMyself();
-
-            _userId = userResponse.Match<int?>(
-                userPropeties => userPropeties.Id,
-                statusCode =>
-                {
-                    // ToDo: Toast
-                    Logger.LogError("Failed to get the active map ({statusCode})", statusCode);
-                    return null;
-                }
-            );
         }
     }
 
@@ -220,13 +208,13 @@
 
     private async Task LoadActiveMap(int mapId)
     {
-        var map = await GetMapData(mapId);
+        var image = await MapRepository.GetImage(mapId);
 
-        if (map is null) return;
+        if (image is null) return;
 
         MapId = mapId;
 
-        var dimensions = ByteArrayToImageSizeConverter.Convert(map.Image);
+        var dimensions = ByteArrayToImageSizeConverter.Convert(image);
 
         float[] vertices =
                 [
@@ -246,9 +234,9 @@
             await _texturedQuad.UpdateVertices(vertices);
         }
 
-        if (map.Image.Length > 0)
+        if (image.Length > 0)
         {
-            await _texturedQuad.SetTexture(map.Image);
+            await _texturedQuad.SetTexture(image);
         }
 
         if (_mapShaderProgram is not null)
@@ -258,13 +246,16 @@
 
         await RenderContext.SetMap(_texturedQuad);
 
-        float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
-        await RenderContext.UpdateGrid(map.Grid.IsActive, map.Grid.Size, color);
+        if (await MapRepository.GetGrid(mapId) is { } grid)
+        {
+            float[] color = [0.0f, 0.0f, 0.0f, 1.0f];
+            await RenderContext.UpdateGrid(grid.IsActive, grid.Size, color);
 
-        GridIsActive = map.Grid.IsActive;
-        GridSize = map.Grid.Size;
+            GridIsActive = grid.IsActive;
+            GridSize = grid.Size;
+        }
 
-        await InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
     private async Task<MouseIndicator> CreateMouseIndicator()
@@ -291,16 +282,7 @@
 
     private async Task LoadTokens(int mapId)
     {
-        var response = await TokenApi.GetAllAsync(mapId);
-
-        var tokens = response.Match<IEnumerable<TokensDto>>(
-            tokens => tokens,
-            statusCode =>
-            {
-                // ToDo: Toast
-                Logger.LogError("Failed to get the tokens for map {mapId} ({statusCode})", mapId, statusCode);
-                return [];
-            });
+        var tokens = await TokenRepository.GetAllAsync(mapId);
 
         await RenderContext.ClearTokens();
         Tokens.Clear();
@@ -377,10 +359,11 @@
 
         if (_selectedToken is null)
         {
-            var payload = new MouseIndicatorDto((int)transformedPosition.X, (int)transformedPosition.Y);
-            await MouseApi.SetIndicatorAsync(CampaignId, payload);
+            var me = await Claims.GetUserAsync();
+            var color = ToRGB(me.Color);
+            campaignDispatcher?.Publish(new MouseMovedEvent(transformedPosition, color));
         }
-        else if (IsGameMaster || _userId == _selectedToken.UserId)
+        else if (IsGameMaster || Claims.UserId == _selectedToken.UserId)
         {
             var snapPosition = GetGridSnapPosition(transformedPosition);
             var hasPositionChanged = false;
@@ -393,18 +376,17 @@
 
             if (hasPositionChanged)
             {
-                var payload = new TokenUpdateDto((int)snapPosition.X, (int)snapPosition.Y);
-                await TokenApi.MoveAsync(_selectedToken.Id, payload);
+                await TokenRepository.MoveAsync(CampaignId, _selectedToken.Id, (int)snapPosition.X, (int)snapPosition.Y);
             }
         }
     }
 
-    private async Task OnMouseMoved(MouseMoveEventArgs e)
+    private async ValueTask OnMouseMoved(MouseMovedEvent e)
     {
         await _mouseIndicator!.Update(e.Position, e.Color);
     }
 
-    private async Task OnTokenMoved(TokenMovedEventArgs e)
+    private async ValueTask OnTokenMoved(TokenMovedEvent e)
     {
         if (Tokens.Find(x => x.Id == e.TokenId) is { } token)
         {
@@ -413,9 +395,9 @@
         }
     }
 
-    private async Task OnTokenAdded(TokenAddedEventArgs e)
+    private async ValueTask OnTokenAdded(TokenAddedEvent e)
     {
-        await CreateToken(e.Id, e.UserId, e.Image, e.X, e.Y);
+        await CreateToken(e.TokenId, e.UserId, e.Image, e.X, e.Y);
     }
 
     private Vector2D GetGridSnapPosition(Vector2D position)
@@ -423,20 +405,6 @@
         var x = (int)position.X / GridSize * GridSize;
         var y = (int)position.Y / GridSize * GridSize;
         return new Vector2D(x, y);
-    }
-
-    private async Task<MapDto?> GetMapData(int mapId)
-    {
-        var response = await MapApi.GetAsync(mapId);
-
-        return response.Match<MapDto?>(
-            map => map,
-            statusCode =>
-            {
-                // ToDo: Toast
-                Logger.LogError("Failed to get map data ({statusCode})", statusCode);
-                return null;
-            });
     }
 
     private async Task OnDrop(DragEventArgs e)
@@ -451,19 +419,14 @@
 
             switch (DragAndDrop.Data)
             {
-                case MonstersDto monster:
-                    await TokenApi.CreateMonster(mapId, monster.Id, payload);
+                case Monster monster:
+                    await TokenRepository.CreateMonsterAsync(CampaignId, mapId, monster.Id, (int)snapPosition.X, (int)snapPosition.Y);
                     break;
 
                 case CharactersDto character:
-                    await TokenApi.CreateCharacter(mapId, character.Id, payload);
+                    await TokenRepository.CreateCharacterAsync(CampaignId, mapId, character.Id, (int)snapPosition.X, (int)snapPosition.Y);
                     break;
             }
-        }
-        else
-        {
-            // ToDo: Error Handling
-            return;
         }
     }
 
@@ -473,16 +436,21 @@
 
         if (e.Key.Equals("Delete", StringComparison.OrdinalIgnoreCase) && _selectedToken is not null)
         {
-            await TokenApi.RemoveAsync(_selectedToken.Id);
+            await TokenRepository.DeleteAsync(_selectedToken.Id);
             _selectedToken = null;
         }
         else if (e.Key.Equals("i", StringComparison.OrdinalIgnoreCase) && MapId is { } mapId)
         {
             foreach (var token in Tokens)
             {
-                var combatant = new AddCombatantDto(token.Id);
-                await InitiativeApi.AddCombatant(CampaignId, mapId, combatant);
+                await InitiativeRepository.AddCombatant(CampaignId, mapId, token.Id);
             }
         }
+    }
+
+    private static Vector3D ToRGB(string hexColor)
+    {
+        var color = ColorTranslator.FromHtml(hexColor);
+        return new Vector3D(color.R / 255.0, color.G / 255.0, color.B / 255.0);
     }
 }

@@ -1,11 +1,13 @@
 ﻿@page "/user"
 
-@using ApiClient
 @using DataTransfer.User
+@using Website.Services
+@using Website.Services.Repositories
 
 @rendermode InteractiveServer
 
-@inject IUserApi UserApi
+@inject IUserClaims Claims
+@inject IUserRepository UserRepository
 @inject NavigationManager NavigationManager
 
 <div class="user">
@@ -41,34 +43,16 @@
     {
         if (firstRender)
         {
-            var response = await UserApi.GetMyself();
-
-            response.Match(
-                properties =>
-                {
-                    _username = properties.Username;
-                    _color = properties.Color;
-                },
-                statusCode =>
-                {
-                    Console.WriteLine($"Failed to get user properties {statusCode}");
-                    // ToDo: Toast
-                }
-            );
-
-            await InvokeAsync(StateHasChanged);
+            var user = await Claims.GetUserAsync();
+            _color = user.Color;
+            _username = user.Username;
+            StateHasChanged();
         }
     }
 
     private async Task OnUpdateUser(MouseEventArgs args)
     {
-        var userPropeties = new UserPropertiesUpdate(_username, _color);
-
-        var response = await UserApi.UpdateMyself(userPropeties);
-
-        if (response.IsSuccess)
-        {
-            NavigationManager.NavigateTo("/");
-        }
+        await UserRepository.UpdateProperties(_username, _color);
+        NavigationManager.NavigateTo("/");
     }
 }

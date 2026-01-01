@@ -1,15 +1,16 @@
-﻿@using ApiClient
-@using DataTransfer.Initiative
+﻿@using DataTransfer.Initiative
 @using DataTransfer.Map
 @using System.Threading.Tasks
+@using Website.Events
 @using Website.Services
 @using Website.Services.Graphics
+@using Website.Services.Repositories
 
 @rendermode InteractiveServer
 
-@inject IInitiativeApi InitiativeApi
-@inject ICampaignEvents CampaignEvents
-@inject IMapApi MapApi
+@inject ICampaignEventHub CampaignEventHub
+@inject IMapRepository MapRepository
+@inject IInitiativeRepository InitiativeRepository
 @inject IJSRuntime JSRuntime
 
 @implements IDisposable
@@ -41,34 +42,37 @@
     private List<Combatant> _combatants = [];
     private Combatant? _actingCombatant;
 
+    private ICampaignSubscription? combatantAddedSubscription;
+    private ICampaignSubscription? combatantRemovedSubscription;
+    private ICampaignSubscription? combatantMovedSubscription;
+    private ICampaignSubscription? turnChangedSubscription;
+    private ICampaignSubscription? mapChangedSubscription;
+
     public void Dispose()
     {
-        CampaignEvents.CombatantAdded -= OnCombatantAdded;
-        CampaignEvents.CombatantRemoved -= OnCombatantRemoved;
-        CampaignEvents.CombatantUpdated -= OnCombatantUpdated;
-        CampaignEvents.TurnChanged -= OnTurnChanged;
-        CampaignEvents.MapChanged -= OnMapChanged;
+        combatantAddedSubscription?.Dispose();
+        combatantRemovedSubscription?.Dispose();
+        combatantMovedSubscription?.Dispose();
+        turnChangedSubscription?.Dispose();
+        mapChangedSubscription?.Dispose();
     }
 
     protected override void OnInitialized()
     {
-        CampaignEvents.CombatantAdded += OnCombatantAdded;
-        CampaignEvents.CombatantRemoved += OnCombatantRemoved;
-        CampaignEvents.CombatantUpdated += OnCombatantUpdated;
-        CampaignEvents.TurnChanged += OnTurnChanged;
-        CampaignEvents.MapChanged += OnMapChanged;
+        var campaignDispatcher = CampaignEventHub.ForCampaign(CampaignId);
+
+        combatantAddedSubscription = campaignDispatcher.Subscribe<CombatantAddedEvent>(OnCombatantAdded);
+        combatantRemovedSubscription = campaignDispatcher.Subscribe<CombatantRemovedEvent>(OnCombatantRemoved);
+        combatantMovedSubscription = campaignDispatcher.Subscribe<CombatantUpdatedEvent>(OnCombatantUpdated);
+        turnChangedSubscription = campaignDispatcher.Subscribe<TurnChangedEvent>(OnTurnChanged);
+        mapChangedSubscription = campaignDispatcher.Subscribe<MapChangedEvent>(OnMapChanged);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var mapResponse = await MapApi.GetActiveMapAsync(CampaignId);
-
-            _mapId = mapResponse.Match<int?>(
-                map => map.MapId,
-                _ => null
-            );
+            _mapId = await MapRepository.GetActiveMapIdAsync(CampaignId);
 
             if (_mapId is { } mapId)
             {
@@ -80,36 +84,7 @@
 
     private async Task UpdateCombatants(int mapId)
     {
-        var response = await InitiativeApi.GetCombatants(mapId);
-
-        var combatants = response.Match(
-            combatants => combatants,
-            statusCode => []
-        );
-
-        _combatants = combatants.Select<CombatantDto, Combatant>(c => c switch
-        {
-            CharacterCombatantDto characterDto => new CharacterCombatant
-            {
-                Initiative = characterDto.Initiative,
-                TokenId = characterDto.TokenId,
-                Image = characterDto.Image,
-                Color = characterDto.Color,
-                CharacterId = characterDto.CharacterId
-            },
-            MonsterCombatantDto monsterDto => new MonsterCombatant
-            {
-                Initiative = monsterDto.Initiative,
-                TokenId = monsterDto.TokenId,
-                Image = monsterDto.Image,
-                Color = monsterDto.Color,
-                MonsterId = monsterDto.MonsterId
-            },
-            _ => throw new Exception("Unknown type")
-        })
-        .OrderByDescending(c => c.Initiative)
-        .ToList();
-
+        _combatants = await InitiativeRepository.GetCombatants(mapId);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -117,16 +92,11 @@
     {
         if (e.Value is string value && uint.Parse(value) is uint initiative && _mapId is { } mapId)
         {
-            var payload = new CombatantUpdateDto(initiative);
+            await InitiativeRepository.UpdateCombatant(CampaignId, mapId, combatant.TokenId, initiative);
 
-            var response = await InitiativeApi.UpdateCombatant(CampaignId, mapId, combatant.TokenId, payload);
-
-            if (response.IsSuccess)
-            {
-                combatant.Initiative = initiative;
-                _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
-                await InvokeAsync(StateHasChanged);
-            }
+            combatant.Initiative = initiative;
+            _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -136,13 +106,7 @@
         {
             if (_mapId is { } mapId)
             {
-                var response = await InitiativeApi.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
-
-                if (!response.IsSuccess)
-                {
-                    // ToDo: Toast
-                    await JSRuntime.InvokeVoidAsync("console.error", "Could not remove token");
-                }
+                await InitiativeRepository.RemoveCombatant(CampaignId, mapId, combatant.TokenId);
             }
         }
         catch (Exception exception)
@@ -151,86 +115,99 @@
         }
     }
 
-    private async Task OnMapChanged(MapChangedEventArgs e)
+    private async ValueTask OnMapChanged(MapChangedEvent e)
     {
-        _mapId = e.MapId;
-        await UpdateCombatants(e.MapId);
+        // Marshal to the Blazor renderer synchronization context to avoid concurrent mutations during render
+        await InvokeAsync(async () =>
+        {
+            _mapId = e.MapId;
+            await UpdateCombatants(e.MapId);
+        });
     }
 
-    private async Task OnCombatantAdded(CombatantAddedEventArgs e)
+    private async ValueTask OnCombatantAdded(CombatantAddedEvent e)
     {
-        if (e.CharacterId is { } characterId)
+        await InvokeAsync(() =>
         {
-            var combatant = new CharacterCombatant
+            if (e.CharacterId is { } characterId)
             {
-                TokenId = e.TokenId,
-                Initiative = e.Initiative,
-                Image = e.Image,
-                Color = e.Color,
-                CharacterId = characterId
-            };
+                var combatant = new CharacterCombatant
+                {
+                    TokenId = e.TokenId,
+                    Initiative = e.Initiative,
+                    Image = e.Image,
+                    Color = e.Color,
+                    CharacterId = characterId
+                };
 
-            _combatants.Add(combatant);
-        }
-        else if (e.MonsterId is { } monsterId)
-        {
-            var combatant = new MonsterCombatant
+                _combatants.Add(combatant);
+            }
+            else if (e.MonsterId is { } monsterId)
             {
-                TokenId = e.TokenId,
-                Initiative = e.Initiative,
-                Image = e.Image,
-                Color = e.Color,
-                MonsterId = monsterId
-            };
+                var combatant = new MonsterCombatant
+                {
+                    TokenId = e.TokenId,
+                    Initiative = e.Initiative,
+                    Image = e.Image,
+                    Color = e.Color,
+                    MonsterId = monsterId
+                };
 
-            _combatants.Add(combatant);
-        }
-
-        _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task OnCombatantRemoved(CombatantRemovedEventArgs e)
-    {
-        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
-        {
-            if (_actingCombatant == combatant)
-            {
-                _actingCombatant = null;
+                _combatants.Add(combatant);
             }
 
-            _combatants.Remove(combatant);
-
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task OnCombatantUpdated(CombatantUpdatedEventArgs e)
-    {
-        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
-        {
-            combatant.Initiative = e.Initiative;
             _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
-            await InvokeAsync(StateHasChanged);
-        }
+            StateHasChanged();
+        });
     }
 
-    private async Task OnTurnChanged(TurnChangedEventArgs e)
+    private async ValueTask OnCombatantRemoved(CombatantRemovedEvent e)
     {
-        if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+        await InvokeAsync(() =>
         {
-            _actingCombatant = combatant;
-            await InvokeAsync(StateHasChanged);
-        }
+            if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+            {
+                if (_actingCombatant == combatant)
+                {
+                    _actingCombatant = null;
+                }
+
+                _combatants.Remove(combatant);
+                StateHasChanged();
+            }
+        });
+    }
+
+    private async ValueTask OnCombatantUpdated(CombatantUpdatedEvent e)
+    {
+        await InvokeAsync(() =>
+        {
+            if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+            {
+                combatant.Initiative = e.Initiative;
+                _combatants = _combatants.OrderByDescending(c => c.Initiative).ToList();
+                StateHasChanged();
+            }
+        });
+    }
+
+    private async ValueTask OnTurnChanged(TurnChangedEvent e)
+    {
+        await InvokeAsync(() =>
+        {
+            if (_combatants.FirstOrDefault(c => c.TokenId == e.TokenId) is Combatant combatant)
+            {
+                _actingCombatant = combatant;
+                StateHasChanged();
+            }
+        });
     }
 
     private async Task OnCombatantClicked(Combatant combatant)
     {
         if (IsGameMaster && _mapId is { } mapId)
         {
-            var payload = new CombatantsUpdateDto(combatant.TokenId);
-            await InitiativeApi.UpdateTurn(CampaignId, mapId, payload);
+            await InitiativeRepository.UpdateTurn(CampaignId, mapId, combatant.TokenId);
         }
     }
 

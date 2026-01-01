@@ -2,20 +2,20 @@
 
 @rendermode InteractiveServer
 
-@using ApiClient
 @using DataTransfer.Character
 @using DataTransfer.Grid
 @using DataTransfer.Map
 @using DataTransfer.Monster
 @using Website.Components.Controls
 @using Website.Services
+@using Website.Services.Repositories
 @using Website.Services.Sound
 
-@inject ICampaignEvents CampaignEvents
-@inject ICampaignApi CampaignApi
-@inject ICharacterApi CharacterApi
-@inject IMapApi MapApi
-@inject IMonsterApi MonsterApi
+@inject ICampaignRepository CampaignRepository
+@inject ICharacterRepository CharacterRepository
+@inject IMapRepository MapRepository
+@inject IMonsterRepository MonsterRepository
+@inject IUserClaims Claims
 @inject IJSRuntime JsRuntime
 @inject AudioPlayer AudioPlayer
 
@@ -43,7 +43,7 @@
                     <ul>
                         @foreach (var character in FilteredCharacters)
                         {
-                            <li class="tree-content-item"><span class="tree-content-label" @onclick="() => OnCharacterClick(character)">@character.CharacterName</span></li>
+                            <li class="tree-content-item"><span class="tree-content-label" @onclick="() => OnCharacterClick(character)">@character.Name</span></li>
                         }
                     </ul>
                 </details>
@@ -147,7 +147,7 @@
         }
 
         <DiceRoller CampaignId="@CampaignId" @ref="_diceRoller" />
-        <DiceRollVisualizer />
+        <DiceRollVisualizer CampaignId="@CampaignId" />
         <InitiativeList CampaignId="@CampaignId" IsGameMaster="@_isGameMaster" Map="@_map" OnMiddleMouseUp="OnCombatantClicked" />
     </div>
 </div>
@@ -180,13 +180,11 @@
 
     private string filter = "";
 
-    private record LocationItem(int Id, string Name, LocationItem[] SubLocations);
+    private List<CharacterItem> characters = [];
 
-    private List<CharactersDto> characters = [];
-
-    private IEnumerable<CharactersDto> FilteredCharacters => string.IsNullOrWhiteSpace(filter)
+    private IEnumerable<CharacterItem> FilteredCharacters => string.IsNullOrWhiteSpace(filter)
             ? characters
-            : characters.Where(c => c.CharacterName.Contains(filter, StringComparison.OrdinalIgnoreCase));
+            : characters.Where(c => c.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
     private List<LocationItem> locations = [];
 
@@ -217,9 +215,9 @@
         }
     }
 
-    private List<MonstersDto> monsters = [];
+    private List<MonsterItem> monsters = [];
 
-    private IEnumerable<MonstersDto> FilteredMonsters => string.IsNullOrWhiteSpace(filter)
+    private IEnumerable<MonsterItem> FilteredMonsters => string.IsNullOrWhiteSpace(filter)
             ? monsters
             : monsters.Where(m => m.Name.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
@@ -264,59 +262,30 @@
     {
         if (firstRender)
         {
+            AudioPlayer.Initialize(CampaignId);
+
             {
-                var response = await CampaignApi.GetAsync(CampaignId);
+                var campaign = await CampaignRepository.GetAsync(CampaignId);
 
-                var title = "Kampagne";
-
-                response.Match(
-                    campaign =>
-                    {
-                        title = campaign.Name;
-                        _isGameMaster = campaign.IsGameMaster;
-                    },
-                    statusCode =>
-                    {
-                        // ToDo: Log + Toast
-                    }
-                );
+                _isGameMaster = campaign.GameMasterId == Claims.UserId;
 
                 // '<PageTitle>@_title</PageTitle>' does not work, because '_title' needs to be set in 'OnInitializedAsync' for that to work.
                 // We cannot do that because 'CampaignApi.GetAsync' uses Java interop which is not available duríng 'OnInitializedAsync'.
-                await JsRuntime.InvokeVoidAsync("setTitle", title);
-
-                await CampaignEvents.Connect(CampaignId);
+                await JsRuntime.InvokeVoidAsync("setTitle", campaign.Name);
             }
 
             await LoadLocations();
 
             if(_isGameMaster)
             {
-                var response = await CharacterApi.GetAllAsync(CampaignId);
-
-                characters = response.Match(
-                    characters => characters.OrderBy(c => c.CharacterName).ToList(),
-                    statusCode => []  // ToDo: Toast
-                );
+                characters = await CharacterRepository.GetAllAsync(CampaignId);
             }
             else
             {
-                var response = await CharacterApi.GetAllFromUserAsync(CampaignId);
-                
-                characters = response.Match(
-                    characters => characters.OrderBy(c => c.CharacterName).ToList(),
-                    statusCode => []  // ToDo: Toast
-                );
+                characters = await CharacterRepository.GetAllForUserAsync(CampaignId);
             }
 
-            {
-                var response = await MonsterApi.GetAllAsync();
-
-                monsters = response.Match(
-                    monsters => monsters.OrderBy(m => m.Name).ToList(),
-                    statusCode => [] // ToDo: Toast
-                    );
-            }
+            monsters = MonsterRepository.GetAllAsync();
 
             StateHasChanged();
         }
@@ -324,13 +293,7 @@
 
     private async Task LoadLocations()
     {
-        var response = await MapApi.GetAllAsync(CampaignId);
-
-        locations = response.Match(
-            maps => maps.Select(m => new LocationItem(m.Id, m.Name, [])).OrderBy(l => l.Name).ToList(),
-            _ => [] // ToDo: Log + Toast
-        );
-
+        locations = await MapRepository.GetLocationItems(CampaignId);
         StateHasChanged();
     }
 
@@ -371,12 +334,9 @@
         var grid = new GridDto(false, 10);
         var payload = new MapCreationDto(name, imageBuffer, grid);
 
-        var response = await MapApi.CreateAsync(CampaignId, payload);
+        await MapRepository.CreateAsync(CampaignId, name, imageBuffer);
 
-        if (response.Match(_ => true, _ => false))
-        {
-            await LoadLocations();
-        }
+        await LoadLocations();
     }
 
     private async Task OnLocationClick(int mapId)
@@ -391,7 +351,7 @@
         StateHasChanged();
     }
 
-    private async Task OnMonsterClick(MonstersDto monster)
+    private async Task OnMonsterClick(MonsterItem monster)
     {
         _activeContent = typeof(Monsters);
 
@@ -403,7 +363,7 @@
         StateHasChanged();
     }
 
-    private async Task OnCharacterClick(CharactersDto character)
+    private async Task OnCharacterClick(CharacterItem character)
     {
         _activeContent = typeof(Character);
 

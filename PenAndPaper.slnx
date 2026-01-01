@@ -1,6 +1,4 @@
 <Solution>
-  <Project Path="ApiClient/ApiClient.csproj" />
-  <Project Path="Backend.Tests/Backend.Tests.csproj" />
   <Project Path="Backend/Backend.csproj" />
   <Project Path="DataTransfer/DataTransfer.csproj" />
   <Project Path="MonsterManager/MonsterManager.csproj" />

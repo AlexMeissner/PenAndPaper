@@ -1,26 +1,20 @@
-using ApiClient;
 using Microsoft.AspNetCore.Mvc;
+using Website.Database;
 
 namespace Website.Controller;
 
 [ApiController]
-public class AudioProxyController(HttpClient httpClient, IEndPointProvider endPointProvider) : ControllerBase
+public class AudioProxyController(PenAndPaperDatabase dbContext) : ControllerBase
 {
     [HttpGet("audios/{audioId}")]
     public async Task<IActionResult> Get(string audioId)
     {
-        var apiUrl = $"{endPointProvider.BaseUrl}audios/{audioId}";
+        var audio = await dbContext.Audios.FindAsync(audioId);
 
-        var response = await httpClient.GetAsync(apiUrl, HttpCompletionOption.ResponseHeadersRead);
+        if (audio is null) return NotFound();
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
-        }
+        var stream = new MemoryStream(audio.Data);
 
-        var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-        var stream = await response.Content.ReadAsStreamAsync();
-
-        return File(stream, contentType);
+        return File(stream, "audio/mpeg", true);
     }
 }

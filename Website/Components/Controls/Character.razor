@@ -1,10 +1,10 @@
 @using System.Net
-@using ApiClient
 @using DataTransfer.Character
 @using Markdig
 @using Website.Services
+@using Website.Services.Repositories
 
-@inject ICharacterApi CharacterApi
+@inject ICharacterRepository Characters
 @inject IDragAndDrop DragAndDrop
 @inject ILogger<Character> Logger
 @inject IJSRuntime JsRuntime
@@ -445,9 +445,9 @@
                 </div>
             </div>
             <h3>Merkmale</h3>
-            <div>@_character.TraitsHtml</div>
+            <div>@(new MarkupString(Markdown.ToHtml(_character.Traits)))</div>
             <h3>Angriff</h3>
-            <div>@_character.AttacksHtml</div>
+            <div>@(new MarkupString(Markdown.ToHtml(_character.Attacks)))</div>
             <h3>Zauber</h3>
             <div>
                 <span>Rang 1</span>
@@ -494,9 +494,9 @@
                 <input type="range" min="0" max="@_character.NinthLevelSpellSlotTotal" @bind="_character.NinthLevelSpellSlotUsed" @bind:after="async () => await OnSpellSlotChanged(9, _character.NinthLevelSpellSlotUsed)" step="1" />
                 <span>@_character.NinthLevelSpellSlotUsed / @_character.NinthLevelSpellSlotTotal</span>
             </div>
-            <div>@_character.SpellsHtml</div>
+            <div>@(new MarkupString(Markdown.ToHtml(_character.Spells)))</div>
             <h3>Inventar</h3>
-            <div>@_character.InventoryHtml</div>
+            <div>@(new MarkupString(Markdown.ToHtml(_character.Inventory)))</div>
         </div>
     }
 </div>
@@ -518,105 +518,19 @@
 
     public async Task SetCharacter(int characterId)
     {
-        var response = await CharacterApi.GetAsync(characterId);
+        if (await Characters.GetStatsAsync(characterId) is { } stats)
+        {
+            _character = stats;
+            _isEditMode = false;
+            _characterId = characterId;
 
-        response.Match(
-            character =>
-            {
-                _isEditMode = false;
-                _character = GenerateCharacterInformation(character);
-                _characterId = characterId;
-            },
-            statusCode =>
-            {
-                Logger.LogError("Failed to load character with id {CharacterId}. Status code: {StatusCode}", characterId, statusCode);
-            }
-        );
-
-        StateHasChanged();
+            StateHasChanged();
+        }
     }
 
-    private class CharacterInformation
-    {
-        public required string Name { get; set; }
-        public int ArmorClass { get; set; }
-        public int HitPoints { get; set; }
-        public int CurrentPoints { get; set; }
-        public required string HitDice { get; set; }
-        public required string Speed { get; set; }
-        public required string Race { get; set; }
-        public required string Class { get; set; }
-        public int Level { get; set; }
+    private CharacterStats _character = GenerateEmptyCharacterInformation();
 
-        public int Strength { get; set; }
-        public int Dexterity { get; set; }
-        public int Constitution { get; set; }
-        public int Intelligence { get; set; }
-        public int Wisdom { get; set; }
-        public int Charisma { get; set; }
-
-        public int SavingThrowStrength { get; set; }
-        public int SavingThrowDexterity { get; set; }
-        public int SavingThrowConstitution { get; set; }
-        public int SavingThrowIntelligence { get; set; }
-        public int SavingThrowWisdom { get; set; }
-        public int SavingThrowCharisma { get; set; }
-        public int Acrobatics { get; set; }
-        public int AnimalHandling { get; set; }
-        public int Arcana { get; set; }
-        public int Athletics { get; set; }
-        public int Deception { get; set; }
-        public int History { get; set; }
-        public int Insight { get; set; }
-        public int Intimidation { get; set; }
-        public int Investigation { get; set; }
-        public int Medicine { get; set; }
-        public int Nature { get; set; }
-        public int Perception { get; set; }
-        public int Performance { get; set; }
-        public int Persuasion { get; set; }
-        public int Religion { get; set; }
-        public int SlightOfHand { get; set; }
-        public int Stealth { get; set; }
-        public int Survival { get; set; }
-
-        public int FirstLevelSpellSlotTotal { get; set; }
-        public int FirstLevelSpellSlotUsed { get; set; }
-        public int SecondLevelSpellSlotTotal { get; set; }
-        public int SecondLevelSpellSlotUsed { get; set; }
-        public int ThirdLevelSpellSlotTotal { get; set; }
-        public int ThirdLevelSpellSlotUsed { get; set; }
-        public int FourthLevelSpellSlotTotal { get; set; }
-        public int FourthLevelSpellSlotUsed { get; set; }
-        public int FifthLevelSpellSlotTotal { get; set; }
-        public int FifthLevelSpellSlotUsed { get; set; }
-        public int SixthLevelSpellSlotTotal { get; set; }
-        public int SixthLevelSpellSlotUsed { get; set; }
-        public int SeventhLevelSpellSlotTotal { get; set; }
-        public int SeventhLevelSpellSlotUsed { get; set; }
-        public int EighthLevelSpellSlotTotal { get; set; }
-        public int EighthLevelSpellSlotUsed { get; set; }
-        public int NinthLevelSpellSlotTotal { get; set; }
-        public int NinthLevelSpellSlotUsed { get; set; }
-
-        public required byte[] Image { get; set; }
-
-        public required string Background { get; set; }
-        public required string Traits { get; set; }
-        public required string Attacks { get; set; }
-        public required string Spells { get; set; }
-        public required string Inventory { get; set; }
-
-        public MarkupString TraitsHtml => new MarkupString(Markdown.ToHtml(Traits));
-        public MarkupString AttacksHtml => new MarkupString(Markdown.ToHtml(Attacks));
-        public MarkupString SpellsHtml => new MarkupString(Markdown.ToHtml(Spells));
-        public MarkupString InventoryHtml => new MarkupString(Markdown.ToHtml(Inventory));
-
-    }
-
-    private CharacterInformation _character = GenerateEmptyCharacterInformation();
-
-    private static CharacterInformation GenerateEmptyCharacterInformation()
+    private static CharacterStats GenerateEmptyCharacterInformation()
     {
         return new()
         {
@@ -634,217 +548,26 @@
         };
     }
 
-    private static CharacterInformation GenerateCharacterInformation(CharacterDto payload)
-    {
-        return new()
-        {
-            Name = payload.Name,
-            ArmorClass = payload.ArmorClass,
-            HitPoints = payload.HitPoints,
-            CurrentPoints = payload.CurrentHitPoints,
-            HitDice = payload.HitDice,
-            Speed = payload.Speed,
-            Race = payload.Race,
-            Class = payload.Class,
-            Level = payload.Level,
-            Strength = payload.Strength,
-            Dexterity = payload.Dexterity,
-            Constitution = payload.Constitution,
-            Intelligence = payload.Intelligence,
-            Wisdom = payload.Wisdom,
-            Charisma = payload.Charisma,
-            SavingThrowStrength = payload.SavingThrowStrength,
-            SavingThrowDexterity = payload.SavingThrowDexterity,
-            SavingThrowConstitution = payload.SavingThrowConstitution,
-            SavingThrowIntelligence = payload.SavingThrowIntelligence,
-            SavingThrowWisdom = payload.SavingThrowWisdom,
-            SavingThrowCharisma = payload.SavingThrowCharisma,
-            Acrobatics = payload.Acrobatics,
-            AnimalHandling = payload.AnimalHandling,
-            Arcana = payload.Arcana,
-            Athletics = payload.Athletics,
-            Deception = payload.Deception,
-            History = payload.History,
-            Insight = payload.Insight,
-            Intimidation = payload.Intimidation,
-            Investigation = payload.Investigation,
-            Medicine = payload.Medicine,
-            Nature = payload.Nature,
-            Perception = payload.Perception,
-            Performance = payload.Performance,
-            Persuasion = payload.Persuasion,
-            Religion = payload.Religion,
-            SlightOfHand = payload.SlightOfHand,
-            Stealth = payload.Stealth,
-            Survival = payload.Survival,
-            FirstLevelSpellSlotTotal = payload.FirstLevelSpellSlotTotal,
-            FirstLevelSpellSlotUsed = payload.FirstLevelSpellSlotUsed,
-            SecondLevelSpellSlotTotal = payload.SecondLevelSpellSlotTotal,
-            SecondLevelSpellSlotUsed = payload.SecondLevelSpellSlotUsed,
-            ThirdLevelSpellSlotTotal = payload.ThirdLevelSpellSlotTotal,
-            ThirdLevelSpellSlotUsed = payload.ThirdLevelSpellSlotUsed,
-            FourthLevelSpellSlotTotal = payload.FourthLevelSpellSlotTotal,
-            FourthLevelSpellSlotUsed = payload.FourthLevelSpellSlotUsed,
-            FifthLevelSpellSlotTotal = payload.FifthLevelSpellSlotTotal,
-            FifthLevelSpellSlotUsed = payload.FifthLevelSpellSlotUsed,
-            SixthLevelSpellSlotTotal = payload.SixthLevelSpellSlotTotal,
-            SixthLevelSpellSlotUsed = payload.SixthLevelSpellSlotUsed,
-            SeventhLevelSpellSlotTotal = payload.SeventhLevelSpellSlotTotal,
-            SeventhLevelSpellSlotUsed = payload.SeventhLevelSpellSlotUsed,
-            EighthLevelSpellSlotTotal = payload.EighthLevelSpellSlotTotal,
-            EighthLevelSpellSlotUsed = payload.EighthLevelSpellSlotUsed,
-            NinthLevelSpellSlotTotal = payload.NinthLevelSpellSlotTotal,
-            NinthLevelSpellSlotUsed = payload.NinthLevelSpellSlotUsed,
-            Image = payload.Image,
-            Background = payload.Background,
-            Traits = payload.Traits,
-            Attacks = payload.Attacks,
-            Spells = payload.Spells,
-            Inventory = payload.Inventory
-        };
-    }
-
     private async Task OnSave(MouseEventArgs args)
     {
         // ToDo: Add user feedback
         if (_character.Image.Length == 0) return;
 
-        bool success = false;
-
-        if (_characterId is { } characterId)
+        if (_characterId is { } characterId) // edit
         {
-            var payload = new CharacterUpdateDto(
-                _character.Name,
-                _character.Image,
-                _character.HitPoints,
-                _character.HitDice,
-                _character.ArmorClass,
-                _character.Speed,
-                _character.Race,
-                _character.Class,
-                _character.Level,
-                _character.Background,
-                _character.Traits,
-                _character.Attacks,
-                _character.Spells,
-                _character.Inventory,
-                _character.Strength,
-                _character.Dexterity,
-                _character.Constitution,
-                _character.Intelligence,
-                _character.Wisdom,
-                _character.Charisma,
-                _character.SavingThrowStrength,
-                _character.SavingThrowDexterity,
-                _character.SavingThrowConstitution,
-                _character.SavingThrowIntelligence,
-                _character.SavingThrowWisdom,
-                _character.SavingThrowCharisma,
-                _character.Acrobatics,
-                _character.AnimalHandling,
-                _character.Arcana,
-                _character.Athletics,
-                _character.Deception,
-                _character.History,
-                _character.Insight,
-                _character.Intimidation,
-                _character.Investigation,
-                _character.Medicine,
-                _character.Nature,
-                _character.Perception,
-                _character.Performance,
-                _character.Persuasion,
-                _character.Religion,
-                _character.SlightOfHand,
-                _character.Stealth,
-                _character.Survival,
-                new(_character.FirstLevelSpellSlotTotal, _character.FirstLevelSpellSlotUsed),
-                new(_character.SecondLevelSpellSlotTotal, _character.SecondLevelSpellSlotUsed),
-                new(_character.ThirdLevelSpellSlotTotal, _character.ThirdLevelSpellSlotUsed),
-                new(_character.FourthLevelSpellSlotTotal, _character.FourthLevelSpellSlotUsed),
-                new(_character.FifthLevelSpellSlotTotal, _character.FifthLevelSpellSlotUsed),
-                new(_character.SixthLevelSpellSlotTotal, _character.SixthLevelSpellSlotUsed),
-                new(_character.SeventhLevelSpellSlotTotal, _character.SeventhLevelSpellSlotUsed),
-                new(_character.EighthLevelSpellSlotTotal, _character.EighthLevelSpellSlotUsed),
-                new(_character.NinthLevelSpellSlotTotal, _character.NinthLevelSpellSlotUsed)
-            );
-
-            var response = await CharacterApi.UpdateAsync(characterId, payload);
-            success = response.IsSuccess;
+            await Characters.UpdateAsync(characterId, _character);
         }
         else // New character
         {
-            var character = new CharacterCreationDto(
-                _character.Name,
-                _character.Image,
-                _character.HitPoints,
-                _character.HitDice,
-                _character.ArmorClass,
-                _character.Speed,
-                _character.Race,
-                _character.Class,
-                _character.Level,
-                _character.Background,
-                _character.Traits,
-                _character.Attacks,
-                _character.Spells,
-                _character.Inventory,
-                _character.Strength,
-                _character.Dexterity,
-                _character.Constitution,
-                _character.Intelligence,
-                _character.Wisdom,
-                _character.Charisma,
-                _character.SavingThrowStrength,
-                _character.SavingThrowDexterity,
-                _character.SavingThrowConstitution,
-                _character.SavingThrowIntelligence,
-                _character.SavingThrowWisdom,
-                _character.SavingThrowCharisma,
-                _character.Acrobatics,
-                _character.AnimalHandling,
-                _character.Arcana,
-                _character.Athletics,
-                _character.Deception,
-                _character.History,
-                _character.Insight,
-                _character.Intimidation,
-                _character.Investigation,
-                _character.Medicine,
-                _character.Nature,
-                _character.Perception,
-                _character.Performance,
-                _character.Persuasion,
-                _character.Religion,
-                _character.SlightOfHand,
-                _character.Stealth,
-                _character.Survival,
-                new(_character.FirstLevelSpellSlotTotal, _character.FirstLevelSpellSlotUsed),
-                new(_character.SecondLevelSpellSlotTotal, _character.SecondLevelSpellSlotUsed),
-                new(_character.ThirdLevelSpellSlotTotal, _character.ThirdLevelSpellSlotUsed),
-                new(_character.FourthLevelSpellSlotTotal, _character.FourthLevelSpellSlotUsed),
-                new(_character.FifthLevelSpellSlotTotal, _character.FifthLevelSpellSlotUsed),
-                new(_character.SixthLevelSpellSlotTotal, _character.SixthLevelSpellSlotUsed),
-                new(_character.SeventhLevelSpellSlotTotal, _character.SeventhLevelSpellSlotUsed),
-                new(_character.EighthLevelSpellSlotTotal, _character.EighthLevelSpellSlotUsed),
-                new(_character.NinthLevelSpellSlotTotal, _character.NinthLevelSpellSlotUsed)
-            );
-
+            _characterId = await Characters.CreateAsync(CampaignId, _character);
             _character.CurrentPoints = _character.HitPoints;
-
-            var response = await CharacterApi.CreateAsync(CampaignId, character);
-
-            success = response.Match(_ => true, _ => false);
         }
 
-        if (success)
-        {
-            _isEditMode = false;
-            StateHasChanged();
-        }
+        _isEditMode = false;
+        StateHasChanged();
     }
 
-    private void OnDragStart(CharacterInformation character)
+    private void OnDragStart(CharacterStats character)
     {
         if (_characterId is { } characterId)
         {
@@ -875,7 +598,7 @@
         if (_characterId is { } characterId)
         {
             var payload = new CharacterSpellSlotUpdate(level, used);
-            await CharacterApi.UpdateSpellSlotsAsync(characterId, payload);
+            await Characters.UpdateSpellSlotAsync(characterId, level, used);
         }
     }
 
@@ -883,8 +606,7 @@
     {
         if (_characterId is { } characterId)
         {
-            var payload = new CharacterHealthUpdate(hitPoints);
-            await CharacterApi.UpdateHealthAsync(characterId, payload);
+            await Characters.UpdateHealthAsync(characterId, hitPoints);
         }
     }
 
@@ -893,7 +615,7 @@
         await JsRuntime.InvokeVoidAsync("triggerClick", "characterCreationInputFile");
     }
 
-    private async Task LoadCharacterImage(InputFileChangeEventArgs e, CharacterInformation character)
+    private async Task LoadCharacterImage(InputFileChangeEventArgs e, CharacterStats character)
     {
         try
         {

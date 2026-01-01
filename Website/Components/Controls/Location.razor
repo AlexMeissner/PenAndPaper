@@ -1,13 +1,11 @@
-﻿@using ApiClient
-@using DataTransfer.Map
-@using Markdig
+﻿@using Markdig
 @using System.Threading.Tasks
 @using Website.Services
+@using Website.Services.Repositories
 
 @inject ILogger<Location> Logger
-@inject IMapApi MapApi
-@inject IScriptApi ScriptApi
-@inject ICampaignEvents CampaignEvents
+
+@inject IMapRepository MapRepository
 
 <div class="location-root">
     <div class="top-area">
@@ -98,62 +96,26 @@
     {
         if (mapId is { } id)
         {
-            var payload = new ScriptUpdateDto(_script);
-            var response = await ScriptApi.Update(id, payload);
+            await MapRepository.SetScriptAsync(id, _script);
 
-            if (response.IsSuccess)
-            {
-                _scriptHtml = new MarkupString(Markdown.ToHtml(_script));
-                _isEditMode = false;
-                await InvokeAsync(StateHasChanged);
-            }
+            _scriptHtml = new MarkupString(Markdown.ToHtml(_script));
+            _isEditMode = false;
+
+            StateHasChanged();
         }
-    }
-
-    private async Task UpdateScript(int mapId)
-    {
-        var response = await ScriptApi.GetAsync(mapId);
-
-        response.Match(
-            script =>
-            {
-                _script = script.Text;
-                _scriptHtml = new MarkupString(Markdown.ToHtml(script.Text));
-            },
-            statusCode =>
-            {
-                // ToDo: Toast
-                Logger.LogError("Failed to retrieve the script for map {mapId} ({statusCode})", mapId, statusCode);
-            });
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task UpdateHeader(int mapId)
-    {
-        var response = await MapApi.GetAsync(mapId);
-
-        response.Match(
-            map =>
-            {
-                _locationName = map.Name;
-                _image = map.Image;
-            },
-            statusCode =>
-            {
-                // ToDo: Toast
-                Logger.LogError("Failed to retrieve the map information for map {mapId} ({statusCode})", mapId, statusCode);
-            }
-        );
-
-        await InvokeAsync(StateHasChanged);
     }
 
     public async Task SetMap(int id)
     {
         mapId = id;
-        await UpdateHeader(id);
-        await UpdateScript(id);
+
+        var map = await MapRepository.GetAsync(id);
+
+        _locationName = map.Name;
+        _image = map.Image;
+        _script = map.Script;
+        _scriptHtml = new MarkupString(Markdown.ToHtml(_script));
+
         StateHasChanged();
     }
 
@@ -161,8 +123,7 @@
     {
         if (mapId is { } id)
         {
-            var payload = new ActiveMapUpdateDto(id);
-            await MapApi.SetActiveMapAsync(CampaignId, payload);
+            await MapRepository.SetActiveAsync(CampaignId, id);
         }
     }
 
@@ -170,12 +131,8 @@
     {
         if (mapId is { } id)
         {
-            var response = await MapApi.RemoveAsync(id);
-
-            if (response.IsSuccess)
-            {
-                await OnMapChanged.InvokeAsync(id);
-            }
+            await MapRepository.DeleteAsync(id);
+            await OnMapChanged.InvokeAsync(id);
         }
     }
 
@@ -198,13 +155,8 @@
     {
         if (mapId is { } id && _locationNameEdit is not null)
         {
-            var payload = new NameUpdateDto(_locationNameEdit);
-            var response = await MapApi.UpdateNameAsync(id, payload);
-
-            if (response.IsSuccess)
-            {
-                await OnMapChanged.InvokeAsync(id);
-            }
+            await MapRepository.SetNameAsync(id, _locationNameEdit);
+            await OnMapChanged.InvokeAsync(id);
 
             _locationName = _locationNameEdit;
             _locationNameEdit = null;

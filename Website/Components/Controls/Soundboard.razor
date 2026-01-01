@@ -1,7 +1,6 @@
-@using ApiClient
-@using DataTransfer.Sound
+@using Website.Events
 
-@inject IAudioApi AudioApi
+@inject ICampaignEventHub CampaignEventHub
 
 <div class="backdrop" style="display: @_display">
     <div class="input-group">
@@ -333,13 +332,15 @@
         isPlaying = !isPlaying;
         _buttonStates[identifier] = isPlaying;
 
+        const bool isFaded = false;
+
         if (isPlaying)
         {
-            await AudioApi.Start(CampaignId, identifier, true);
+            CampaignEventHub.ForCampaign(CampaignId).Publish(new SoundStartedEvent(identifier, true, isFaded));
         }
         else
         {
-            await AudioApi.Stop(CampaignId, identifier);
+            CampaignEventHub.ForCampaign(CampaignId).Publish(new SoundStoppedEvent(identifier, isFaded));
         }
 
         // ToDo: Error Handling

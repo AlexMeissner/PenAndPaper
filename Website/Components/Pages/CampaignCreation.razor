@@ -3,11 +3,11 @@
 
 @rendermode InteractiveServer
 
-@using ApiClient
 @using DataTransfer.Campaign;
+@using Website.Services.Repositories
 
-@inject ICampaignApi CampaignApi
-@inject IUserApi UserApi
+@inject ICampaignRepository CampaignRepository
+@inject IUserRepository UserRepository
 @inject NavigationManager NavigationManager
 
 <PageTitle>Kampagnenerstellung</PageTitle>
@@ -29,7 +29,7 @@
                     {
                         <button type="button" class="list-group-item"
                                 @onclick="() => OnAddPlayer(user)">
-                            @user.Name
+                            @user.Username
                         </button>
                     }
                 </ul>
@@ -39,7 +39,7 @@
                 <ul class="list-group">
                     @foreach (var user in _players)
                     {
-                        <button class="list-group-item" @onclick="() => OnRemovePlayer(user)">@user.Name</button>
+                        <button class="list-group-item" @onclick="() => OnRemovePlayer(user)">@user.Username</button>
                     }
                 </ul>
             </div>
@@ -57,59 +57,41 @@
     private string ButtonText => CampaignId is null ? "Erstellen" : "Aktualisieren";
 
     private string _campaignName = string.Empty;
-    private ICollection<CampaignUser> _players = [];
-    private ICollection<CampaignUser> _uninvitedUsers = [];
+    private ICollection<Website.Database.Models.User> _players = [];
+    private ICollection<Website.Database.Models.User> _uninvitedUsers = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            var allUsers = await UserRepository.GetAllAsync();
+
             if (CampaignId is { } campaignId)
             {
-                var response = await CampaignApi.GetAsync(campaignId);
+                var campaign = await CampaignRepository.GetAsync(campaignId);
 
-                response.Match(
-                    campaign =>
-                    {
-                        _campaignName = campaign.Name;
-                        _players = campaign.Players.ToList();
-                        _uninvitedUsers = campaign.UninvitedUsers.ToList();
-                    },
-                    statusCode =>
-                    {
-                        // ToDo: Log + Toast
-                    }
-                );
+                _campaignName = campaign.Name;
+                _players = campaign.Players;
+                _uninvitedUsers = allUsers.Except(_players).ToList();
             }
             else
             {
-                var response = await UserApi.GetAllAsync();
-
-                response.Match(
-                    users =>
-                    {
-                        _campaignName = string.Empty;
-                        _players = [];
-                        _uninvitedUsers = users.ToList();
-                    },
-                    statusCode =>
-                    {
-                        // ToDo: Log + Toast
-                    }
-                );
+                _campaignName = string.Empty;
+                _players = [];
+                _uninvitedUsers = allUsers.ToList();
             }
 
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
     }
 
-    private void OnAddPlayer(CampaignUser user)
+    private void OnAddPlayer(Website.Database.Models.User user)
     {
         _uninvitedUsers.Remove(user);
         _players.Add(user);
     }
 
-    private void OnRemovePlayer(CampaignUser user)
+    private void OnRemovePlayer(Website.Database.Models.User user)
     {
         _players.Remove(user);
         _uninvitedUsers.Add(user);
@@ -136,34 +118,13 @@
 
     private async Task CreateCampaign(IEnumerable<int> players)
     {
-        var payload = new CampaignCreationDto(_campaignName, players);
-        var response = await CampaignApi.CreateAsync(payload);
-
-        response.Match(
-            campaignId =>
-            {
-                NavigationManager.NavigateTo($"campaign/{campaignId}");
-            },
-            statusCode =>
-            {
-                // ToDo: Toast
-            });
+        var campaignId = await CampaignRepository.CreateAsync(_campaignName, players);
+        NavigationManager.NavigateTo($"campaign/{campaignId}");
     }
 
     private async Task ModifyCampaign(int campaignId, IEnumerable<int> players)
     {
-        var payload = new CampaignUpdateDto(_campaignName, players);
-        var response = await CampaignApi.ModifyAsync(campaignId, payload);
-
-        if (response.IsSuccess)
-        {
-            NavigationManager.NavigateTo($"campaign/{campaignId}");
-        }
-        else
-        {
-            // ToDo: Toast
-        }
+        await CampaignRepository.UpdateAsync(campaignId, _campaignName, players);
+        NavigationManager.NavigateTo($"campaign/{campaignId}");
     }
-
 }
-

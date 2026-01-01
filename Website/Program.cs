@@ -1,6 +1,7 @@
 using Serilog;
 using Serilog.Events;
 using Website.Components;
+using Website.Database;
 using Website.Extensions;
 using Website.Services;
 
@@ -19,6 +20,8 @@ try
         .CreateLogger();
     builder.Host.UseSerilog(Log.Logger);
 
+    builder.AddDatabase();
+
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
@@ -31,6 +34,8 @@ try
     builder.Services.AddAuthorization(configure => configure.FallbackPolicy = configure.DefaultPolicy);
 
     var app = builder.Build();
+
+    app.MigrateDatabase();
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())

@@ -1,8 +1,9 @@
 ﻿@using DataTransfer.Dice
+@using Website.Events
 @using Website.Services
 @using Website.Services.Sound
 
-@inject ICampaignEvents CampaignEvents
+@inject ICampaignEventHub CampaignEventHub
 @inject SoundContext SoundContext
 
 @implements IAsyncDisposable
@@ -57,11 +58,13 @@
 }
 
 @code {
+    [Parameter] public int CampaignId { get; set; }
+
     private static readonly string NeutralClass = "dice-neutral";
     private static readonly string SuccessClass = "dice-success";
     private static readonly string FailedClass = "dice-failed";
 
-    internal class RollResult(DiceRolledEventArgs args)
+    internal class RollResult(DiceRolledEvent args)
     {
         public string Name => args.Name;
         public DiceType DiceType => ToDiceType(args.Successes);
@@ -92,9 +95,11 @@
 
     private List<RollResult> _results = [];
 
+    private ICampaignSubscription? rollSubscription;
+
     public async ValueTask DisposeAsync()
     {
-        CampaignEvents.DiceRolled -= OnDiceRolled;
+        rollSubscription?.Dispose();
 
         try
         {
@@ -115,11 +120,11 @@
             _rollMin = await SoundContext.CreateSound("RollMin", false);
             _rollMax = await SoundContext.CreateSound("RollMax", false);
 
-            CampaignEvents.DiceRolled += OnDiceRolled;
+            rollSubscription = CampaignEventHub.ForCampaign(CampaignId).Subscribe<DiceRolledEvent>(OnDiceRolled);
         }
     }
 
-    private async Task OnDiceRolled(DiceRolledEventArgs e)
+    private async ValueTask OnDiceRolled(DiceRolledEvent e)
     {
         var result = new RollResult(e);
         _results.Add(result);

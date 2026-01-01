@@ -1,7 +1,7 @@
-﻿@using ApiClient
-@using DataTransfer.Map
+﻿@using DataTransfer.Map
+@using Website.Services.Repositories
 
-@inject IMapApi MapApi
+@inject IMapRepository MapRepository
 
 @if (Map is null)
 {
@@ -35,9 +35,7 @@ else
         if (Map != null && Map.MapId is { } mapId && e.Value is bool isActive)
         {
             Map.GridIsActive = isActive;
-
-            var payload = new GridUpdateDto(Map.GridIsActive, Map.GridSize);
-            await MapApi.UpdateGrid(mapId, payload);
+            await MapRepository.SetGridActiveAsync(CampaignId, mapId, Map.GridIsActive);
         }
     }
 
@@ -46,9 +44,7 @@ else
         if (Map != null && Map.MapId is { } mapId && e.Value is { } value && value.ToString() is { } valueText)
         {
             Map.GridSize = int.Parse(valueText);
-
-            var payload = new GridUpdateDto(Map.GridIsActive, Map.GridSize);
-            await MapApi.UpdateGrid(mapId, payload);
+            await MapRepository.SetGridSizeAsync(CampaignId, mapId, Map.GridSize);
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
-@using ApiClient
 @using DataTransfer.Campaign
-@using System.Security.Claims
 @using Website.Services
+@using Website.Services.Repositories
 
-@inject ICampaignApi CampaignApi
-@inject IUserApi UserApi
-@inject ITokenProvider TokenProvider
+@inject ICampaignRepository CampaignRepository
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 
@@ -56,63 +53,14 @@
 </div>
 
 @code {
-    private IEnumerable<CampaignsDto> _campaigns = [];
+    private IEnumerable<CampaignItem> _campaigns = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await Login();
-
-            var response = await CampaignApi.GetAllAsync();
-
-            _campaigns = response.Match<IEnumerable<CampaignsDto>>(
-                campaigns => campaigns,
-                statusCode =>
-                {
-                    // ToDo: Toast
-                    return [];
-                });
-
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private async Task Login()
-    {
-        if (HttpContextAccessor.HttpContext is { User.Identity.IsAuthenticated: true } httpContext &&
-             httpContext.User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value is { } email &&
-             httpContext.User.FindFirst(c => c.Type == ClaimTypes.GivenName)?.Value is { } name)
-        {
-            var loginResponse = await UserApi.Login(email, name);
-
-            var token = loginResponse.Match(
-                token => token.Value,
-                statusCode => string.Empty
-            );
-
-            if (string.IsNullOrEmpty(token))
-            {
-                var registerResponse = await UserApi.Register(email, name);
-
-                if (!registerResponse.IsSuccess)
-                {
-                    // ToDo: Toast
-                    return;
-                }
-
-                loginResponse = await UserApi.Login(email, name);
-
-                token = loginResponse.Match(
-                    token => token.Value,
-                    statusCode => string.Empty
-                );
-            }
-
-            if (TokenProvider is TokenProvider tokenProvider)
-            {
-                await tokenProvider.SetToken(token);
-            }
+            _campaigns = await CampaignRepository.GetAllAsync();
+            StateHasChanged();
         }
     }
 

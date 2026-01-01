@@ -1,10 +1,11 @@
-using ApiClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using System.Security.Claims;
+using Website.Events;
 using Website.Services;
+using Website.Services.Repositories;
 
 namespace Website.Extensions;
 
@@ -12,24 +13,22 @@ public static class ServiceCollectionExtensions
 {
     public static void AddApis(this IServiceCollection services)
     {
-        services.AddSingleton<IEndPointProvider, EndPointProvider>();
+        services.AddScoped<IAudioRepository, AudioRepository>();
+        services.AddScoped<ICampaignRepository, CampaignRepository>();
+        services.AddScoped<ICharacterRepository, CharacterRepository>();
+        services.AddScoped<IChatRepository, ChatRepository>();
+        services.AddScoped<IDiceRepository, DiceRepository>();
+        services.AddScoped<IInitiativeRepository, InitiativeRepository>();
+        services.AddScoped<IMapRepository, MapRepository>();
+        services.AddScoped<IMonsterRepository, MonsterRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
-        services.AddTransient<IRequestBuilder, RequestBuilder>();
-        services.AddScoped<ProtectedSessionStorage>();
-        services.AddScoped<ITokenProvider, TokenProvider>();
+        services.AddScoped<IUserClaims, UserClaims>();
+        services.AddScoped<CircuitHandler, UserClaimsCircuitHandler>();
+        services.AddScoped<ICampaignRepository, CampaignRepository>();
 
-        services.AddTransient<ICampaignApi, CampaignApi>();
-        services.AddTransient<ICharacterApi, CharacterApi>();
-        services.AddTransient<IChatApi, ChatApi>();
-        services.AddTransient<IInitiativeApi, InitiativeApi>();
-        services.AddTransient<IMapApi, MapApi>();
-        services.AddTransient<IMonsterApi, MonsterApi>();
-        services.AddTransient<IMouseApi, MouseApi>();
-        services.AddTransient<IRollApi, RollApi>();
-        services.AddTransient<IScriptApi, ScriptApi>();
-        services.AddTransient<IAudioApi, AudioApi>();
-        services.AddTransient<ITokenApi, TokenApi>();
-        services.AddTransient<IUserApi, UserApi>();
+        services.AddSingleton<ICampaignEventHub, CampaignEventHub>();
     }
 
     public static void AddGoogleAuthentication(this IServiceCollection services,

@@ -1,12 +1,13 @@
 ﻿@page "/audio-manager"
-@using ApiClient
+
 @using DataTransfer.Sound
+@using Website.Services.Repositories
 @using Website.Services.Sound
 
 @rendermode InteractiveServer
 
 @inject IJSRuntime JSRuntime
-@inject IAudioApi AudioApi
+@inject IAudioRepository AudioRepository
 @inject SoundContext SoundContext
 
 <h3 class="title">Audio Manager</h3>
@@ -727,12 +728,12 @@
                 var data = memoryStream.ToArray();
                 var creationPayload = new AudioCreationDto(id, data);
 
-                var response = await AudioApi.Create(creationPayload);
+                var response = await AudioRepository.Create(id, data);
 
-                if (!response.IsSuccess)
+                if (response == null) // Id already exists
                 {
                     var updatePayload = new AudioUpdateDto(data);
-                    await AudioApi.Update(id, updatePayload);
+                    await AudioRepository.Update(id, data);
                 }
             }
             catch (Exception exception)

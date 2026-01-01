@@ -1,13 +1,13 @@
-@using ApiClient
-@using DataTransfer.Monster
 @using System.Threading.Tasks
 @using Markdig
+@using Website.Database.Models
 @using Website.Services
+@using Website.Services.Repositories
 
-@inject IMonsterApi MonsterApi
+@inject IMonsterRepository MonsterRepository
 @inject IDragAndDrop DragAndDrop
 
-@if (_monsters is null || _monster is null)
+@if (_monster is null)
 {
     <div>Kein Monster is ausgewählt</div>
 }
@@ -64,7 +64,7 @@ else
             </div>
 
             <!-- Right: monster item that spans both rows -->
-            <div class="monsters-item monsters-item-large" draggable="true" @ondragstart="() => OnDragStart(_monsters)">
+            <div class="monsters-item monsters-item-large" draggable="true" @ondragstart="() => OnDragStart(_monster)">
                 <img class="monster-icon" src="data:image/png;base64,@Convert.ToBase64String(_monster.Image)" alt="Icon" />
             </div>
         </div>
@@ -166,7 +166,7 @@ else
                 <div>Zustands-Immunitäten</div>
                 <div>@_monster.ConditionImmunities</div>
             </div>
-        </div>        
+        </div>
         <h3>Fertigkeiten</h3>
         <div class="skills">
             <div class="skills-column">
@@ -206,38 +206,18 @@ else
 }
 
 @code {
-    private MonstersDto? _monsters;
-    private MonsterDto? _monster;
+    private Monster? _monster;
     private MarkupString _actions => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Actions));
     private MarkupString _senses => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Senses));
     private MarkupString _languages => _monster is null ? new MarkupString("") : new MarkupString(Markdown.ToHtml(_monster.Languages));
 
     public async Task SetMonster(int monsterId)
     {
-        var response = await MonsterApi.GetAsync(monsterId);
-
-        _monster = response.Match<MonsterDto?>(
-            monster => monster,
-            statusCode => null
-        );
-
-        // ToDo: This is a dirty fix to make drag and drop still work
-        if (_monster is not null)
-        {
-            _monsters = new MonstersDto(
-                monsterId,
-                _monster.Name,
-                _monster.Image,
-                _monster.Size,
-                _monster.Type,
-                _monster.Alignment,
-                _monster.ChallengeRating);
-        }
-
+        _monster = await MonsterRepository.GetAsync(monsterId);
         StateHasChanged();
     }
 
-    private void OnDragStart(MonstersDto monster)
+    private void OnDragStart(Monster monster)
     {
         DragAndDrop.Data = monster;
     }

@@ -1,30 +1,29 @@
-using DataTransfer.Sound;
+using Website.Events;
 
 namespace Website.Services.Sound;
 
 [ServiceExtension.ScopedService]
-internal sealed class AudioPlayer : IAsyncDisposable
+internal sealed class AudioPlayer(ICampaignEventHub campaignEventHub, SoundContext soundContext) : IAsyncDisposable
 {
-    private readonly ICampaignEvents _campaignEvents;
-    private readonly SoundContext _soundContext;
-
-    private readonly Dictionary<string, Sound> _sounds = new();
+    private readonly Dictionary<string, Sound> _sounds = [];
 
     private const double FadeDuration = 1.0;
     private const double FadeVolume = 0.0;
 
-    public AudioPlayer(ICampaignEvents campaignEvents, SoundContext soundContext)
+    private ICampaignSubscription? soundStartedSubscription;
+    private ICampaignSubscription? soundStoppedSubscription;
+
+    public void Initialize(int campaignId)
     {
-        _soundContext = soundContext;
-        _campaignEvents = campaignEvents;
-        _campaignEvents.SoundStarted += OnSoundStarted;
-        _campaignEvents.SoundStopped += OnSoundStopped;
+        var campaignDispathcer = campaignEventHub.ForCampaign(campaignId);
+        soundStartedSubscription = campaignDispathcer.Subscribe<SoundStartedEvent>(OnSoundStarted);
+        soundStoppedSubscription = campaignDispathcer.Subscribe<SoundStoppedEvent>(OnSoundStopped);
     }
 
     public async ValueTask DisposeAsync()
     {
-        _campaignEvents.SoundStarted -= OnSoundStarted;
-        _campaignEvents.SoundStopped -= OnSoundStopped;
+        soundStartedSubscription?.Dispose();
+        soundStoppedSubscription?.Dispose();
 
         foreach (var sound in _sounds.Values)
         {
@@ -34,11 +33,11 @@ internal sealed class AudioPlayer : IAsyncDisposable
         _sounds.Clear();
     }
 
-    private async Task OnSoundStarted(SoundStartedEventArgs e)
+    private async ValueTask OnSoundStarted(SoundStartedEvent e)
     {
         if (!_sounds.TryGetValue(e.Identifier, out var sound))
         {
-            sound = await _soundContext.CreateSound(e.Identifier, e.IsLooped);
+            sound = await soundContext.CreateSound(e.Identifier, e.IsLooped);
             _sounds.Add(e.Identifier, sound);
         }
 
@@ -52,7 +51,7 @@ internal sealed class AudioPlayer : IAsyncDisposable
         }
     }
 
-    private async Task OnSoundStopped(SoundStoppedEventArgs e)
+    private async ValueTask OnSoundStopped(SoundStoppedEvent e)
     {
         if (!_sounds.TryGetValue(e.Identifier, out var sound))
         {
