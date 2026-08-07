@@ -1,0 +1,6 @@
+@PenAndPaper.Server_HostAddress = http://localhost:5018
+
+GET {{PenAndPaper.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
