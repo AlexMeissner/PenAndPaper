@@ -1,25 +1,46 @@
-var builder = WebApplication.CreateBuilder(args);
+using Serilog;
 
-// Add services to the container.
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .WriteTo.Console()
+    .Enrich.FromLogContext()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-
-var app = builder.Build();
-
-if (app.Environment.IsProduction())
+try
 {
-    app.UseDefaultFiles();
-    app.MapStaticAssets();
+    var builder = WebApplication.CreateBuilder(args);
+
+    Log.Logger = new LoggerConfiguration()
+        .ReadFrom.Configuration(builder.Configuration)
+        .CreateLogger();
+    builder.Host.UseSerilog(Log.Logger);
+
+    builder.Services.AddControllers();
+
+    var app = builder.Build();
+
+    if (app.Environment.IsProduction())
+    {
+        app.UseDefaultFiles();
+        app.MapStaticAssets();
+    }
+
+    app.UseSerilogRequestLogging();
+    app.UseAuthorization();
+    app.MapControllers();
+
+    if (app.Environment.IsProduction())
+    {
+        app.MapFallbackToFile("/index.html");
+    }
+
+    app.Run();
 }
-
-// Configure the HTTP request pipeline.
-
-app.UseAuthorization();
-app.MapControllers();
-
-if (app.Environment.IsProduction())
+catch (Exception exception)
 {
-    app.MapFallbackToFile("/index.html");
+    Log.Fatal(exception, "An error occurred while starting the application.");
 }
-
-app.Run();
+finally
+{
+    Log.CloseAndFlush();
+}
