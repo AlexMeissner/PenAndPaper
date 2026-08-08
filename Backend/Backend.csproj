@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SpaRoot>..\penandpaper.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:60105</SpaProxyServerUrl>
+    <SpaProxyServerUrl>http://localhost:59351</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
