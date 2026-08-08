@@ -13,6 +13,7 @@ jobs:
       CONTAINER_NAME: testcontainer
       HOST_PORT: 5112
       CONTAINER_PORT: 5112
+      DOCKER_NETWORK: caddy-net
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_USER: ${{ secrets.SERVER_USER }}
 
@@ -60,6 +61,6 @@ jobs:
           fi
 
           # Run new container with automatic restart
-          docker run -d --restart unless-stopped --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:${IMAGE_TAG}
+          docker run -d --restart unless-stopped --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:${IMAGE_TAG}
 
           EOF
