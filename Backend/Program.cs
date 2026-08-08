@@ -29,9 +29,15 @@ try
 
     if (app.Environment.IsProduction())
     {
+        Log.Information("Using production environment");
+
         app.UseDefaultFiles();
         app.UseStaticFiles();
         app.MapStaticAssets();
+    }
+    else
+    {
+        Log.Information("Using development environment");
     }
 
     app.UseSerilogRequestLogging();
