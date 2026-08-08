@@ -1,0 +1,65 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: penandpapertestimage
+      IMAGE_TAG: latest
+      CONTAINER_NAME: testcontainer
+      HOST_PORT: 5112
+      CONTAINER_PORT: 5112
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USER: ${{ secrets.SERVER_USER }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+
+      - name: Save image to tarball
+        run: docker save $IMAGE_NAME:$IMAGE_TAG | gzip > image.tar.gz
+
+      - name: Start ssh-agent and add key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
+
+      - name: Copy image to server
+        run: scp image.tar.gz $SERVER_USER@$SERVER_HOST:/tmp/image.tar.gz
+
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=yes $SERVER_USER@$SERVER_HOST "bash -s" <<EOF
+          set -e
+
+          # Load image
+          if [ -f /tmp/image.tar.gz ]; then
+            gunzip -c /tmp/image.tar.gz | docker load
+            rm /tmp/image.tar.gz
+          else
+            echo "image file not found"
+            exit 1
+          fi
+
+          # Stop and remove existing container (if any)
+          if [ "$(docker ps -aq -f name=${CONTAINER_NAME})" ]; then
+            docker stop ${CONTAINER_NAME} || true
+            docker rm ${CONTAINER_NAME} || true
+          fi
+
+          # Run new container with automatic restart
+          docker run -d --restart unless-stopped --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:${IMAGE_TAG}
+
+          EOF
