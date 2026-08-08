@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -18,6 +19,13 @@ try
     builder.Services.AddControllers();
 
     var app = builder.Build();
+
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders =
+            ForwardedHeaders.XForwardedFor | // Update the remote ip address with the ip address of the external client instead of caddy's internal ip
+            ForwardedHeaders.XForwardedProto // Match the original protocol (https) used by the user instead of server internal protocol (http)
+    });
 
     if (app.Environment.IsProduction())
     {
