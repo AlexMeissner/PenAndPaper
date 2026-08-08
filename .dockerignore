@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/.git/
+**/.vs/
+**/.idea/
+**/node_modules/
+**/Frontend/node_modules/
+**/Frontend/dist/
+Dockerfile
+*.md
+*.slnx
+*.sln
+.vscode/
+**/*.user
+**/*.lock.json
