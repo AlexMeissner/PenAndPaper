@@ -144,6 +144,7 @@ try
     });
 
     app.UseDefaultFiles();
+    app.UseStaticFiles();
 
     app.UseRouting();
 
