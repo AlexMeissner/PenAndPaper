@@ -11,8 +11,8 @@ jobs:
       IMAGE_NAME: penandpapertestimage
       IMAGE_TAG: latest
       CONTAINER_NAME: testcontainer
-      HOST_PORT: 5112
-      CONTAINER_PORT: 5112
+      HOST_PORT: 7287
+      CONTAINER_PORT: 7287
       DOCKER_NETWORK: caddy-net
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_USER: ${{ secrets.SERVER_USER }}

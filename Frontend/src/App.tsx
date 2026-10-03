@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { apiFetch } from './auth/api';
+import { UserInfo } from './components/UserInfo';
 
 interface Forecast {
     date: string;
@@ -40,6 +42,7 @@ function App() {
 
     return (
         <div>
+            <UserInfo />
             <h1 id="tableLabel">Weather forecast</h1>
             <p>This component demonstrates fetching data from the server.</p>
             {contents}
@@ -47,7 +50,7 @@ function App() {
     );
 
     async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
+        const response = await apiFetch('/api/weatherforecast');
         if (response.ok) {
             const data = await response.json();
             setForecasts(data);

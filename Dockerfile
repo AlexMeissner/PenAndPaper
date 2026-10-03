@@ -39,7 +39,7 @@ COPY --from=build /app/publish .
 # Copy built frontend into wwwroot so Kestrel will serve it
 COPY --from=node_builder /app/frontend/dist ./wwwroot
 
-ENV ASPNETCORE_URLS=http://+:5112
-EXPOSE 5112
+ENV ASPNETCORE_URLS=http://+:7287
+EXPOSE 7287
 
 ENTRYPOINT ["dotnet", "Backend.dll"]
