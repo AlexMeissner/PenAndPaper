@@ -41,6 +41,9 @@ jobs:
         run: scp image.tar.gz $SERVER_USER@$SERVER_HOST:/tmp/image.tar.gz
 
       - name: Deploy on server
+        env:
+          CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
           ssh -o StrictHostKeyChecking=yes $SERVER_USER@$SERVER_HOST "bash -s" <<EOF
           set -e
@@ -58,6 +61,6 @@ jobs:
           docker rm -f ${CONTAINER_NAME} || true
 
           # Run new container with automatic restart
-          docker run -d --restart unless-stopped --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}:${IMAGE_TAG}
+          docker run -d --restart unless-stopped --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} -p ${HOST_PORT}:${CONTAINER_PORT} -e "Google__ClientId=$CLIENT_ID" -e "Google__ClientSecret=$CLIENT_SECRET" ${IMAGE_NAME}:${IMAGE_TAG}
 
           EOF
