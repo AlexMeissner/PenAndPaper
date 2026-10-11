@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { AuthContext, type User } from './AuthContext';
+import { AuthenticationContext, type User } from './AuthenticationContext';
 import { redirectToLogin } from './api';
 
 type AuthState =
@@ -8,7 +8,7 @@ type AuthState =
     | { status: 'redirecting' }
     | { status: 'error'; message: string };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthenticationProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<AuthState>({ status: 'loading' });
 
     useEffect(() => {
@@ -63,5 +63,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return <p><em>Signing in...</em></p>;
     }
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return <AuthenticationContext.Provider value={value}>{children}</AuthenticationContext.Provider>;
 }

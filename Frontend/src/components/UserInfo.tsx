@@ -1,7 +1,7 @@
-import { useAuth } from '../auth/useAuth';
+import { useAuthenticationContext } from '../authentication/useAuthenticationContext';
 
 export function UserInfo() {
-    const { user, logout } = useAuth();
+    const { user, logout } = useAuthenticationContext();
 
     return (
         <div className="user-info">

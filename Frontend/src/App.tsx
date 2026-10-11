@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { apiFetch } from './auth/api';
+import { apiFetch } from './authentication/api';
 import { UserInfo } from './components/UserInfo';
 
 interface Forecast {

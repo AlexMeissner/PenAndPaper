@@ -43,8 +43,11 @@ try
 
     app.UseCsrfProtection();
 
-    app.UseDefaultFiles();
-    app.UseStaticFiles();
+    if (app.Environment.IsProduction())
+    {
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+    }
 
     app.UseRouting();
 

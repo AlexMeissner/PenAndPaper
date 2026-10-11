@@ -6,9 +6,9 @@ export interface User {
     picture: string | null;
 }
 
-export interface AuthContextValue {
+export interface AuthenticationContextValue {
     user: User;
     logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthenticationContext = createContext<AuthenticationContextValue | undefined>(undefined);
