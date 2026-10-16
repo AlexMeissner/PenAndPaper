@@ -120,7 +120,12 @@
     font-weight: 700;
     color: var(--accent-color);
     font-size: 18px;
-    margin-left: 40px;
+    margin-left: 15px;
+}
+
+.brandIcon {
+    height: 30px;
+    width: auto;
 }
 
 .navLinks {

@@ -61,7 +61,10 @@ const Landing: React.FC = () => {
       <div className={styles.backgroundFull} style={{ backgroundImage: `url(${hero})` }} />
       <div className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className={styles.brand}>Pen and Paper</div>
+          <div className={styles.brand}>
+            <img className={styles.brandIcon} src="/favicon.svg" alt="" />
+            Pen and Paper
+          </div>
         </div>
         <div className={styles.headerRight}>
           <UserInfo />
