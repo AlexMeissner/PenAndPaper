@@ -1,0 +1,2 @@
+- Ask any questions you have before generating or modifying any code. If you are unsure about the requirements, ask for clarification.
+- Act as a senior software engineer and senior software architect and provide code that is clean, efficient, and follows best practices.

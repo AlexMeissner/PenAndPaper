@@ -1,0 +1,444 @@
+:root {
+    --card-gap: 20px;
+}
+
+/* full-bleed background behind the entire page */
+.backgroundFull {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    /* sit behind content but above the page background */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    pointer-events: none;
+}
+
+/* center the main content with generous side gutters like the provided design */
+.container {
+    width: 100%;
+    height: 100dvh;
+    color: var(--text-color-primary);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 0 0;
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, 0.7) 0%,
+            rgba(0, 0, 0, 0.0) 100%);
+    padding-bottom: 8px;
+    flex-shrink: 0;
+
+    /*border-bottom: 1px solid var(--accent-color);*/
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-image: linear-gradient(to right, var(--accent-color), rgba(0, 0, 0, 0)) 1;
+
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contentArea {
+    display: flex;
+    position: relative;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    background: radial-gradient(circle at 0% 0%,
+            rgba(0, 0, 0, 0.7) 0%,
+            rgba(0, 0, 0, 0.0) 50%);
+    border-width: 0 0 0 1px;
+    border-style: solid;
+    border-image:
+        linear-gradient(to bottom,
+            var(--accent-color),
+            rgba(0, 0, 0, 0)) 1 100%;
+}
+
+.leftColumn {
+    width: 100%;
+    max-width: none;
+    /* full width so hero sits above */
+}
+
+.rightColumn {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.rightColumn .paper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0;
+}
+
+/* style the provided global UserInfo markup (Google info) */
+:global(.user-info) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted-color);
+}
+
+:global(.user-info img) {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+}
+
+:global(.user-info span) {
+    font-size: 14px;
+}
+
+:global(.user-info button) {
+    display: none;
+    /* hide logout button to match header look */
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    color: var(--accent-color);
+    font-size: 18px;
+    margin-left: 40px;
+}
+
+.navLinks {
+    display: flex;
+    gap: 18px;
+    color: var(--muted-color);
+    font-size: 14px;
+}
+
+.heroOverlay {
+    position: absolute;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+    max-width: 980px;
+    padding: 40px;
+}
+
+.title {
+    font-size: 44px;
+    color: #f7efe1;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--muted-color);
+    margin-bottom: 18px;
+    max-width: 720px;
+}
+
+.heroButtons {
+    display: flex;
+    gap: 12px;
+}
+
+/* parchment paper section */
+.paper {
+    /* use parchment image instead of gradient and stretch it vertically to the bottom */
+    background-image: url('./perchament.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    /* stretch to fill the paper container vertically and horizontally */
+    background-position: center top;
+    padding: 60px;
+    filter: drop-shadow(5px 5px 5px #000);
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.sectionTitle {
+    font-weight: 700;
+    color: #3c3023;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.sectionTitleGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.compassRose {
+    flex: 0 0 30px;
+    height: 30px;
+    background-color: #3c3023;
+    -webkit-mask: url('./compassRose.svg') center / contain no-repeat;
+    mask: url('./compassRose.svg') center / contain no-repeat;
+}
+
+.viewAll {
+    color: var(--muted-color);
+    font-size: 14px;
+}
+
+.campaignsWrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    /* the inline styles allow sclaing cards outside of this wrapper on hover */
+    margin-inline: -12px;
+    padding-inline: 12px;
+    --fade-size: 30px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-size), #000 calc(100% - var(--fade-size)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-size), #000 calc(100% - var(--fade-size)), transparent 100%);
+}
+
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--card-gap);
+}
+
+.card {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color-primary);
+    min-height: 180px;
+    position: relative;
+    filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.8));
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.thumb {
+    position: relative;
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+.thumbOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* place title at the bottom */
+    pointer-events: none;
+    /* allow clicks to pass through unless on avatars */
+    padding: 0;
+    /* titleBar handles its own padding so its background can reach edges */
+}
+
+.titleBar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-weight: 700;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.7);
+    /* subtle dark transparent background behind title */
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    pointer-events: none;
+    /* don't block underlying clicks; avatars are pointer-events auto */
+}
+
+.gmOverlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    /* allow hover/tooltip */
+}
+
+.playersOverlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+    flex-direction: row-reverse;
+    /* grow to the left */
+    align-items: center;
+    pointer-events: auto;
+    /* allow hover/tooltip */
+}
+
+.playersOverlay img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.extraCount {
+    color: var(--muted-color);
+    font-size: 12px;
+    align-self: center;
+    padding-left: 6px;
+}
+
+/* make the dark info panel overlap the bottom of the thumbnail */
+.cardBody {
+    margin-top: -48px;
+    background: rgba(12, 12, 12, 0.88);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1 1 auto;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    color: var(--text-color-primary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    padding: 6px 10px;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.metaRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    color: var(--muted-color);
+    font-size: 13px;
+}
+
+.metaLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gmAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.06);
+}
+
+.playerStack {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.playerStack>img {
+    margin: 0;
+    border: 2px solid rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+}
+
+.playerAvatar {
+    width: 28px;
+    height: 28px;
+}
+
+/* small utility styles added for icons */
+.iconButton {
+    background: transparent;
+    border: none;
+    color: var(--muted-color);
+    cursor: pointer;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+.iconButton:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ddIcon {
+    width: 18px;
+    height: 18px;
+    fill: #fff;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note {
+    text-align: center;
+    color: #6b5a45;
+    font-style: italic;
+    margin-top: 14px;
+}
+
+@media (max-width: 1000px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding: 24px;
+    }
+}
