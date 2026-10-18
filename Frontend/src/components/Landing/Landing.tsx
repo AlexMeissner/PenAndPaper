@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './Landing.module.css';
 import theme from '../../Theme.module.css';
-import hero from './hero-bg.jpg';
-import { UserInfo } from '../UserInfo/UserInfo';
+import { useNavigate } from 'react-router-dom';
+import AppShell from '../AppShell/AppShell';
 
 type Campaign = {
   id: number;
@@ -55,29 +55,16 @@ function makeMockCampaigns(count = 15): Campaign[] {
 
 const Landing: React.FC = () => {
   const campaigns = React.useMemo(() => makeMockCampaigns(15), []);
+  const navigate = useNavigate();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.backgroundFull} />
-      <div className={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className={styles.brand}>
-            <img className={styles.brandIcon} src="/favicon.svg" alt="" />
-            Pen and Paper
-          </div>
-        </div>
-        <div className={styles.headerRight}>
-          <UserInfo />
-        </div>
-      </div>
-
-      <div className={styles.contentArea}>
+    <AppShell>
         <div className={styles.hero}>
           <div className={styles.heroContent}>
             <h1 className={styles.title}>Wilkommen zur&uuml;ck, Reisender</h1>
             <div className={styles.subtitle}>Neue Welten erwarten dich. Schlie&szlig;e dich einer Gruppe an, hole die W&uuml;rfel aus dem Schrank und erlebe dein n&auml;chstes legend&auml;res Abenteuer.</div>
             <div className={styles.heroButtons}>
-              <button className={theme.buttonPrimary}>+ Kampagne erstellen</button>
+              <button className={theme.buttonPrimary} onClick={() => navigate('/campaign-setup')}>+ Kampagne erstellen</button>
             </div>
           </div>
         </div>
@@ -126,8 +113,7 @@ const Landing: React.FC = () => {
             <div className={styles.note}>Nicht alle, die umherwandern, sind verloren</div>
           </div>
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 };
 
