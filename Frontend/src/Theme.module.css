@@ -1,25 +1,16 @@
 :global(:root) {
     --background-color-primary: #1e1e1e;
-    --background-color-primary: #1e1e1e;
+    --background-color-secondary: #1e1e1e;
     --background-color-accent: #c9a76a;
     --text-color-primary: #ffffff;
-    --text-color-secondary: #ffffff;
+    --text-color-secondary: #bfb7aa;
     --text-color-accent: #c9a76a;
     --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --accent-color: #c9a76a;
-    --muted-color: #bfb7aa;
-    --card-bg: rgba(12, 12, 12, 0.6);
-}
-
-:global(html, body, #root) {
-    height: 100%;
 }
 
 :global(body) {
     font-family: var(--font-stack);
     color: var(--text-color-primary);
-    background-color: transparent;
-    /* allow full-bleed background image to show */
     margin: 0;
 }
 
@@ -34,7 +25,7 @@ button {
 }
 
 .buttonPrimary {
-    background: linear-gradient(180deg, #c9a76a, #ab8d57);
+    background: linear-gradient(to bottom, #c9a76a, #ab8d57);
     font-weight: 600;
 }
 
