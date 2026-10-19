@@ -19,17 +19,17 @@ button {
     border-radius: 10px;
     border: none;
     color: var(--text-color-primary);
+    font-weight: bold;
     cursor: pointer;
     box-shadow: 4px 4px 4px black;
     transition: all 0.15s ease-in-out;
 }
 
-.buttonPrimary {
-    background: linear-gradient(to bottom, #c9a76a, #ab8d57);
-    font-weight: 600;
+.buttonAccent {
+    background: linear-gradient(to bottom, #c9a76a, #ab8d57);    
 }
 
-.buttonPrimary:hover {
+.buttonAccent:hover {
     transform: scale(1.05);
     box-shadow: 0 0 10px var(--background-color-accent);
 }

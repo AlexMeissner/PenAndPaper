@@ -14,30 +14,6 @@
     margin-bottom: 0;
 }
 
-.heroContent {
-    position: relative;
-    z-index: 2;
-    max-width: 980px;
-    padding: 40px;
-}
-
-.title {
-    font-size: 44px;
-    color: #f7efe1;
-    font-weight: 700;
-}
-
-.subtitle {
-    color: var(--text-color-secondary);
-    margin-bottom: 18px;
-    max-width: 720px;
-}
-
-.heroButtons {
-    display: flex;
-    gap: 12px;
-}
-
 .paper {
     background-image: url('./perchament.png');
     background-repeat: no-repeat;
@@ -225,4 +201,18 @@
     color: #6b5a45;
     font-style: italic;
     margin-top: 15px;
+}
+
+.welcome {
+    padding: 40px;
+}
+
+.welcomeSubtitle {
+    color: var(--text-color-secondary);
+    margin-bottom: 20px;
+    max-width: 700px;
+}
+
+.welcomeTitle {
+    color: var(--text-color-primary);
 }

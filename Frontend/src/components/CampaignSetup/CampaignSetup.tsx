@@ -1,10 +1,10 @@
-import AppShell from '../AppShell/AppShell';
+import HomeTemplate from '../HomeTemplate/HomeTemplate';
 import styles from './CampaignSetup.module.css';
 
 export default function CampaignSetup() {
     return (
-        <AppShell>
+        <HomeTemplate>
             <div className={styles.content}>hello world</div>
-        </AppShell>
+        </HomeTemplate>
     );
 }
