@@ -1,0 +1,94 @@
+.card {
+    border-radius: 10px;
+    filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.8));
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.thumb {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+.thumbOverlay {
+    inset: 0;
+}
+
+.titleBar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.7);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    pointer-events: none;
+}
+
+.campaignTitle {
+    font-weight: bold;
+    color: var(--text-color-primary);
+}
+
+.gmOverlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+}
+
+.gmAvatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.playersOverlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+    flex-direction: row-reverse;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.playersOverlay img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.extraCount {
+    color: var(--text-color-secondary);
+    font-size: 12px;
+    align-self: center;
+    padding-left: 6px;
+}
+
+.playerAvatar {
+    width: 28px;
+    height: 28px;
+}
