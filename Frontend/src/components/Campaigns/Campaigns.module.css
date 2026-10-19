@@ -1,0 +1,70 @@
+.campaignCards {
+    overflow-y: auto;
+    --fade-size: 30px;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-size), #000 calc(100% - var(--fade-size)), transparent 100%);
+    /* the inline properties allow the cards to grow outside this container so they do not get cut */
+    margin-inline: -12px;
+    padding-inline: 12px;
+}
+
+.campaigns {
+    display: flex;
+    min-height: 0;
+    padding: 60px;
+    flex: 1;
+    flex-direction: column;
+    filter: drop-shadow(5px 5px 5px #000);
+    background-image: url('./parchment.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center top;
+}
+
+.compassRose {
+    flex: 0 0 30px;
+    height: 30px;
+    background-color: var(--text-color-dark);
+    -webkit-mask: url('./compassRose.svg') center / contain no-repeat;
+    mask: url('./compassRose.svg') center / contain no-repeat;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.headerTitle {
+    font-weight: bold;
+    color: var(--text-color-dark);
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.note {
+    text-align: center;
+    color: var(--text-color-dark);
+    font-style: italic;
+    margin-top: 15px;
+}
+
+.welcome {
+    padding: 40px;
+}
+
+.welcomeSubtitle {
+    color: var(--text-color-secondary);
+    margin-bottom: 20px;
+    max-width: 700px;
+}
+
+.welcomeTitle {
+    color: var(--text-color-primary);
+}

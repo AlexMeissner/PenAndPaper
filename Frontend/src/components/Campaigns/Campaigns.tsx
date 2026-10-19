@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Landing.module.css';
+import styles from './Campaigns.module.css';
 import theme from '../../Theme.module.css';
 import { useNavigate } from 'react-router-dom';
 import HomeTemplate from '../HomeTemplate/HomeTemplate';
@@ -51,7 +51,7 @@ function makeMockCampaigns(count = 15): Campaign[] {
   });
 }
 
-const Landing: React.FC = () => {
+const Campaigns: React.FC = () => {
   const campaigns = React.useMemo(() => makeMockCampaigns(15), []);
   const navigate = useNavigate();
 
@@ -63,27 +63,23 @@ const Landing: React.FC = () => {
         <button className={theme.buttonAccent} onClick={() => navigate('/campaign-setup')}>+ Kampagne erstellen</button>
       </div>
 
-      <div className={styles.rightColumn}>
-        <div className={styles.paper}>
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionTitleGroup}>
-              <span className={styles.compassRose} aria-hidden="true" />
-              <div className={styles.sectionTitle}>Kampagnen</div>
-            </div>
-          </div>
-          <div className={styles.campaignsWrapper}>
-            <div className={styles.grid}>
-              {campaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.note}>Nicht alle, die umherwandern, sind verloren</div>
+      <div className={styles.campaigns}>
+        <div className={styles.header}>
+            <span className={styles.compassRose} aria-hidden="true" />
+            <div className={styles.headerTitle}>Kampagnen</div>
         </div>
+        <div className={styles.campaignCards}>
+          <div className={styles.grid}>
+            {campaigns.map((campaign) => (
+              <CampaignCard key={campaign.id} campaign={campaign} />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.note}>Nicht alle, die umherwandern, sind verloren</div>
       </div>
     </HomeTemplate>
   );
 };
 
-export default Landing;
+export default Campaigns;
