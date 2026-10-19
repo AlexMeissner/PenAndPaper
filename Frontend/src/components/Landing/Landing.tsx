@@ -32,12 +32,14 @@ function makeMockCampaigns(count = 15): Campaign[] {
     { name: 'Cleo', avatar: 'https://i.pravatar.cc/40?img=4' },
     { name: 'Diego', avatar: 'https://i.pravatar.cc/40?img=6' },
     { name: 'Eve', avatar: 'https://i.pravatar.cc/40?img=7' },
-    { name: 'Finn', avatar: 'https://i.pravatar.cc/40?img=9' }
+    { name: 'Finn', avatar: 'https://i.pravatar.cc/40?img=9' },
+    { name: 'Grace', avatar: 'https://i.pravatar.cc/40?img=11' },
+    { name: 'Hugo', avatar: 'https://i.pravatar.cc/40?img=13' }
   ];
 
   return Array.from({ length: count }).map((_, i) => {
     const gm = gms[i % gms.length];
-    const playerCount = 3 + (i % 4);
+    const playerCount = i < 4 ? 6 + (i % 3) : 3 + (i % 4);
     const players = Array.from({ length: playerCount }).map((__, idx) => playersPool[(i + idx) % playersPool.length]);
     return {
       id: i + 1,
