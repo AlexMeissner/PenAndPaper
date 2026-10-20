@@ -34,3 +34,13 @@ button {
     transform: scale(1.05);
     box-shadow: 0 0 10px var(--background-color-accent);
 }
+
+.buttonSecondary {
+    background: linear-gradient(to bottom, #45413a, #292722);
+    color: #f4ead8;
+}
+
+.buttonSecondary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgb(201 167 106 / 45%);
+}
