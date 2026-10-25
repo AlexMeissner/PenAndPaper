@@ -27,7 +27,7 @@ button {
 }
 
 .buttonAccent {
-    background: linear-gradient(to bottom, #c9a76a, #ab8d57);    
+    background: linear-gradient(to bottom, var(--background-color-accent), #ab8d57);    
 }
 
 .buttonAccent:hover {
@@ -36,8 +36,7 @@ button {
 }
 
 .buttonSecondary {
-    background: linear-gradient(to bottom, #45413a, #292722);
-    color: #f4ead8;
+    background: linear-gradient(to bottom, var(--background-color-secondary), #3d3b34);
 }
 
 .buttonSecondary:hover {

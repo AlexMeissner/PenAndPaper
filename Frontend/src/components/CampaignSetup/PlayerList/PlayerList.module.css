@@ -1,0 +1,134 @@
+.avatar {
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--text-color-dark);
+    border-radius: 50%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.header h4 {
+    margin: 0;
+    color: var(--text-color-dark);
+}
+
+.player {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    width: 100%;
+    min-height: 43px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+    padding: 4px 7px;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid rgb(82 61 34 / 17%);
+    border-radius: 0;
+    color: inherit;
+    background: transparent;
+    box-shadow: none;
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+}
+
+.player:last-child {
+    border-bottom: 0;
+}
+
+.player::before {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    width: 90%;
+    content: '';
+    transition: transform 320ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+.playerAdd::before {
+    left: 0;
+    background: rgb(94 139 63 / 74%);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+    transform: translateX(-101%);
+}
+
+.playerRemove::before {
+    right: 0;
+    background: rgb(170 67 50 / 72%);
+    clip-path: polygon(100% 0, 16px 0, 0 50%, 16px 100%, 100% 100%);
+    transform: translateX(101%);
+}
+
+.playerAdd:hover::before,
+.playerAdd:focus-visible::before,
+.playerRemove:hover::before,
+.playerRemove:focus-visible::before {
+    transform: translateX(0);
+}
+
+.playerName {
+    color: var(--text-color-dark);
+}
+
+.players {
+    max-height: 175px;    
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+    overflow-y: auto;
+    border: 1px solid var(--text-color-dark);
+    border-radius: 5px;
+    background: #fff7e333;
+}
+
+.playersEmpty {
+    margin: auto;
+    padding: 10px;
+    color: var(--text-color-dark);
+}
+
+.searchBox {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    gap: 10px;
+    padding-left: 10px;
+    border: 1px solid var(--text-color-dark);
+    border-radius: 5px;
+    color: var(--text-color-dark);
+    background: #fff7e333;
+}
+
+.searchBox:focus-within {
+    outline: 2px solid var(--text-color-dark);
+}
+
+.searchBox input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    color: var(--text-color-dark);
+    background: transparent;
+}
+
+.userCount {
+    margin-left: auto;
+    color: var(--text-color-dark);
+}
+
+.userIcon {
+    width: 15px;
+    height: 15px;
+    fill: var(--text-color-dark);
+}

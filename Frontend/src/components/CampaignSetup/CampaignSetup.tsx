@@ -1,135 +1,51 @@
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import theme from '../../Theme.module.css';
 import HomeTemplate from '../HomeTemplate/HomeTemplate';
+import PlayerList, { type Player } from './PlayerList/PlayerList';
 import styles from './CampaignSetup.module.css';
-
-type Player = {
-    id: string;
-    name: string;
-    role: string;
-    initials: string;
-    isGameMaster?: boolean;
-};
 
 type CampaignRule = {
     id: string;
     name: string;
-    description: string;
-    symbol: string;
 };
 
 const players: Player[] = [
-    { id: 'alex-carter', name: 'Alex Carter', role: 'Game Master', initials: 'AC', isGameMaster: true },
-    { id: 'morgan-reed', name: 'Morgan Reed', role: 'Player', initials: 'MR' },
-    { id: 'taylor-smith', name: 'Taylor Smith', role: 'Player', initials: 'TS' },
-    { id: 'dana-brooks', name: 'Dana Brooks', role: 'Player', initials: 'DB' },
-    { id: 'taylor-kim', name: 'Taylor Kim', role: 'Player', initials: 'TK' },
-    { id: 'jordan-ellis', name: 'Jordan Ellis', role: 'Player', initials: 'JE' },
-    { id: 'casey-morgan', name: 'Casey Morgan', role: 'Player', initials: 'CM' },
-    { id: 'riley-patel', name: 'Riley Patel', role: 'Player', initials: 'RP' },
-    { id: 'avery-chen', name: 'Avery Chen', role: 'Player', initials: 'AC' },
-    { id: 'sam-rivera', name: 'Sam Rivera', role: 'Player', initials: 'SR' },
+    { id: 'alex-carter', name: 'Alex Carter', initials: 'AC', picture: 'https://i.pravatar.cc/80?img=3' },
+    { id: 'morgan-reed', name: 'Morgan Reed', initials: 'MR', picture: 'https://i.pravatar.cc/80?img=12' },
+    { id: 'taylor-smith', name: 'Taylor Smith', initials: 'TS', picture: 'https://i.pravatar.cc/80?img=5' },
+    { id: 'dana-brooks', name: 'Dana Brooks', initials: 'DB', picture: 'https://i.pravatar.cc/80?img=10' },
+    { id: 'taylor-kim', name: 'Taylor Kim', initials: 'TK', picture: 'https://i.pravatar.cc/80?img=8' },
+    { id: 'jordan-ellis', name: 'Jordan Ellis', initials: 'JE', picture: 'https://i.pravatar.cc/80?img=6' },
+    { id: 'casey-morgan', name: 'Casey Morgan', initials: 'CM', picture: 'https://i.pravatar.cc/80?img=4' },
+    { id: 'riley-patel', name: 'Riley Patel', initials: 'RP', picture: 'https://i.pravatar.cc/80?img=9' },
+    { id: 'avery-chen', name: 'Avery Chen', initials: 'AC', picture: 'https://i.pravatar.cc/80?img=11' },
+    { id: 'sam-rivera', name: 'Sam Rivera', initials: 'SR', picture: 'https://i.pravatar.cc/80?img=13' },
 ];
 
 const campaignRules: CampaignRule[] = [
-    { id: 'dnd-5e', name: 'D&D 5e', description: "The world's most popular roleplaying game.", symbol: '◇' },
-    { id: 'pathfinder-2e', name: 'Pathfinder 2e', description: 'Deep rules. Rich character options.', symbol: '✥' },
-    { id: 'call-of-cthulhu', name: 'Call of Cthulhu', description: 'Horror and investigation.', symbol: '✹' },
-    { id: 'starfinder', name: 'Starfinder', description: 'Sci-fi adventures in the far reaches.', symbol: '✧' },
-    { id: 'savage-worlds', name: 'Savage Worlds', description: 'Fast, furious, and flexible.', symbol: '☼' },
+    { id: 'spieler-handbuch', name: 'Spieler Handbuch' },
+    { id: 'eberron-schmiede-des-magierschmieds', name: 'Eberron: Schmiede des Magierschmieds' },
+    { id: 'tashas-kessel-mit-allem', name: 'Tashas Kessel mit Allem' },
+    { id: 'revolverheld', name: 'Revolverheld' },
+    { id: 'vampire-die-maskerade', name: 'Vampire: Die Maskerade' },
+    { id: 'grim-hollow', name: 'Grim Hollow' },
+    { id: 'magus', name: 'Magus' },
+    { id: 'faustkaempfer', name: 'Faustkämpfer' },
+    { id: 'herr-der-ringe', name: 'Herr der Ringe' },
+    { id: 'blutjaeger', name: 'Blutjäger' },
+    { id: 'hoellenritter', name: 'Höllenritter' },
+    { id: 'world-of-warcraft', name: 'World of Warcraft' },
 ];
-
-function PlayerList({
-    title,
-    description,
-    players: listedPlayers,
-    search,
-    onSearchChange,
-    onDropPlayer,
-    onMovePlayer,
-    emptyMessage,
-}: {
-    title: string;
-    description: string;
-    players: Player[];
-    search: string;
-    onSearchChange: (value: string) => void;
-    onDropPlayer: (event: DragEvent<HTMLDivElement>) => void;
-    onMovePlayer: (player: Player) => void;
-    emptyMessage: string;
-}) {
-    const filteredPlayers = listedPlayers.filter((player) =>
-        player.name.toLowerCase().includes(search.toLowerCase()),
-    );
-
-    return (
-        <section className={styles.playerSection}>
-            <div className={styles.listHeading}>
-                <span className={styles.peopleIcon} aria-hidden="true">♟</span>
-                <h2>{title}</h2>
-                <span className={styles.playerCount}>{listedPlayers.length}</span>
-            </div>
-            <p className={styles.listDescription}>{description}</p>
-            <label className={styles.searchBox}>
-                <span aria-hidden="true">⌕</span>
-                <span className={styles.visuallyHidden}>Search {title.toLowerCase()}</span>
-                <input
-                    type="search"
-                    placeholder={`Search ${title.toLowerCase()}...`}
-                    value={search}
-                    onChange={(event) => onSearchChange(event.target.value)}
-                />
-            </label>
-            <div
-                className={styles.playerList}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={onDropPlayer}
-                aria-label={`${title}. Drag players here to move them.`}
-            >
-                {filteredPlayers.length > 0 ? filteredPlayers.map((player) => (
-                    <div
-                        className={`${styles.playerRow} ${player.isGameMaster ? styles.gameMasterRow : ''}`}
-                        key={player.id}
-                        draggable={!player.isGameMaster}
-                        onDragStart={(event) => {
-                            event.dataTransfer.setData('text/plain', player.id);
-                            event.dataTransfer.effectAllowed = 'move';
-                        }}
-                    >
-                        <span className={styles.dragHandle} aria-hidden="true">⠿</span>
-                        <span className={styles.avatar} aria-hidden="true">{player.initials}</span>
-                        <span className={styles.playerInfo}>
-                            <span className={styles.playerName}>{player.name}</span>
-                            <span className={styles.playerRole}>{player.role}</span>
-                        </span>
-                        {player.isGameMaster ? (
-                            <span className={styles.masterMark} aria-label="Game master">♛</span>
-                        ) : (
-                            <button
-                                type="button"
-                                className={styles.moveButton}
-                                aria-label={`${title === 'Available Users' ? 'Add' : 'Remove'} ${player.name} ${title === 'Available Users' ? 'to' : 'from'} campaign`}
-                                onClick={() => onMovePlayer(player)}
-                            >
-                                {title === 'Available Users' ? '+' : '×'}
-                            </button>
-                        )}
-                    </div>
-                )) : (
-                    <p className={styles.emptyList}>{search ? 'No players match your search.' : emptyMessage}</p>
-                )}
-            </div>
-        </section>
-    );
-}
 
 export default function CampaignSetup() {
     const navigate = useNavigate();
+    const { id } = useParams();
     const imageInputRef = useRef<HTMLInputElement>(null);
-    const [campaignName, setCampaignName] = useState('The Lost Kingdom');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [selectedRules, setSelectedRules] = useState<string[]>(['dnd-5e', 'pathfinder-2e', 'call-of-cthulhu']);
+    const [selectedRules, setSelectedRules] = useState<string[]>([
+        'spieler-handbuch', 'eberron-schmiede-des-magierschmieds', 'tashas-kessel-mit-allem',
+    ]);
     const [campaignPlayerIds, setCampaignPlayerIds] = useState<string[]>([
         'alex-carter', 'morgan-reed', 'taylor-smith', 'dana-brooks',
     ]);
@@ -146,10 +62,6 @@ export default function CampaignSetup() {
     const availablePlayers = players.filter((player) => !campaignPlayerIds.includes(player.id));
 
     const movePlayer = (player: Player, toCampaign: boolean) => {
-        if (player.isGameMaster) {
-            return;
-        }
-
         setCampaignPlayerIds((currentIds) => {
             const isInCampaign = currentIds.includes(player.id);
             if (isInCampaign === toCampaign) {
@@ -159,14 +71,6 @@ export default function CampaignSetup() {
                 ? [...currentIds, player.id]
                 : currentIds.filter((id) => id !== player.id);
         });
-    };
-
-    const handleDrop = (event: DragEvent<HTMLDivElement>, toCampaign: boolean) => {
-        event.preventDefault();
-        const player = players.find((candidate) => candidate.id === event.dataTransfer.getData('text/plain'));
-        if (player) {
-            movePlayer(player, toCampaign);
-        }
     };
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -186,36 +90,29 @@ export default function CampaignSetup() {
     return (
         <HomeTemplate>
             <main className={styles.parchment}>
-                <header className={styles.pageHeading}>
-                    <span className={styles.compassRose} aria-hidden="true" />
-                    <div>
-                        <h1>Create a New Campaign</h1>
-                        <p>Bring your story to life. Add a campaign name, upload an image, set the rules, and invite your players.</p>
+                <header className={styles.header}>
+                    <span className={styles.compassRose} />
+                    <div className={styles.pageHeading}>
+                        <h1 className={styles.headerHeading}>{id ? 'Bearbeite die Kampagne' : 'Erstelle eine neue Kampagne'}</h1>
+                        <p className={styles.headerDescription}>Bring deine Kampagne zum Leben! Wähle einen Namen und ein episches Bild aus, stelle die Regeln ein und lade deine Spieler ein.</p>
                     </div>
                 </header>
 
-                <div className={styles.setupGrid}>
-                    <section className={styles.campaignDetails}>
-                        <label className={styles.fieldLabel} htmlFor="campaign-name">
-                            <span aria-hidden="true">⚑</span> Campaign Name
-                        </label>
+                <div className={styles.grid}>
+                    <section>
+                        <h4 className={styles.sectionHeader}>⚑ Name</h4>
                         <input
                             className={styles.nameInput}
-                            id="campaign-name"
                             type="text"
-                            value={campaignName}
-                            onChange={(event) => setCampaignName(event.target.value)}
-                            placeholder="Enter a campaign name"
+                            placeholder="F&uuml;ge einen Kampagnennamen hinzu"
                         />
-                        <p className={styles.helperText}>Choose a memorable name for your campaign.</p>
 
-                        <h2 className={styles.fieldLabel}><span aria-hidden="true">▧</span> Campaign Image</h2>
+                        <h4 className={styles.sectionHeader}>▧ &Uuml;bersichtsbild</h4>
                         <input
                             ref={imageInputRef}
-                            className={styles.fileInput}
+                            className={styles.imageHiddenInput}
                             type="file"
                             accept="image/*"
-                            aria-label="Choose a campaign image"
                             onChange={handleImageChange}
                         />
                         <button
@@ -223,65 +120,54 @@ export default function CampaignSetup() {
                             className={`${styles.imageButton} ${imagePreview ? styles.hasImage : ''}`}
                             style={imagePreview ? { backgroundImage: `url("${imagePreview}")` } : undefined}
                             onClick={() => imageInputRef.current?.click()}
-                            aria-label={imagePreview ? 'Replace campaign image' : 'Choose campaign image'}
                         >
                             {!imagePreview && (
-                                <span className={styles.imagePlaceholder}>
-                                    <span className={styles.imagePlaceholderIcon} aria-hidden="true">＋</span>
-                                    <span>Click to add a campaign image</span>
-                                </span>
+                                <span>+ Hier klicken um ein Bild hinzuzufügen</span>
                             )}
                         </button>
                     </section>
 
-                    <section className={styles.rulesSection}>
-                        <h2 className={styles.fieldLabel}><span aria-hidden="true">▤</span> Campaign Rules</h2>
-                        <p className={styles.helperText}>Select the ruleset(s) used in this campaign. Multiple rules can be active.</p>
+                    <section className={styles.rules}>
+                        <h4 className={styles.sectionHeader}>▤ Regeln</h4>
                         <div className={styles.rulesList}>
                             {campaignRules.map((rule) => (
-                                <label className={styles.ruleRow} key={rule.id}>
+                                <label className={styles.rule} key={rule.id}>
                                     <input
                                         type="checkbox"
                                         checked={selectedRules.includes(rule.id)}
                                         onChange={() => toggleRule(rule.id)}
                                     />
-                                    <span className={styles.ruleSymbol} aria-hidden="true">{rule.symbol}</span>
-                                    <span className={styles.ruleInfo}>
-                                        <span className={styles.ruleName}>{rule.name}</span>
-                                        <span className={styles.ruleDescription}>{rule.description}</span>
-                                    </span>
+                                    <span className={styles.ruleName}>{rule.name}</span>
                                 </label>
                             ))}
                         </div>
                     </section>
                 </div>
 
-                <div className={styles.playersGrid}>
+                <div className={styles.players}>
                     <PlayerList
-                        title="Available Users"
-                        description="Drag and drop players between the lists to add or remove them."
+                        title="Verf&uuml;gbare Spieler"
                         players={availablePlayers}
                         search={availableSearch}
                         onSearchChange={setAvailableSearch}
-                        onDropPlayer={(event) => handleDrop(event, false)}
                         onMovePlayer={(player) => movePlayer(player, true)}
-                        emptyMessage="Everyone is in this campaign."
+                        movement="add"
+                        emptyMessage="Alle Spieler sind bereits in dieser Kampagne."
                     />
                     <PlayerList
-                        title="Players in Campaign"
-                        description="Players currently invited to this campaign."
+                        title="Spieler in dieser Kampagne"
                         players={campaignPlayers}
                         search={campaignSearch}
                         onSearchChange={setCampaignSearch}
-                        onDropPlayer={(event) => handleDrop(event, true)}
                         onMovePlayer={(player) => movePlayer(player, false)}
-                        emptyMessage="Drop players here to invite them."
+                        movement="remove"
+                        emptyMessage="Es befindet sich noch kein Spieler in dieser Kampagne."
                     />
                 </div>
 
                 <footer className={styles.actions}>
                     <button type="button" className={theme.buttonAccent} onClick={() => navigate('/')}>
-                        <span aria-hidden="true">＋</span> Create Campaign
+                        {id ? 'Kampagne speichern' : 'Kampagne erstellen'}
                     </button>
                     <button type="button" className={theme.buttonSecondary} onClick={() => navigate('/')}>
                         Cancel
